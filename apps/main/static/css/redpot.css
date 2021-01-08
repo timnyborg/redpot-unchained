@@ -1,0 +1,842 @@
+/**
+ * A mixin which helps you to add depth to elements according to the Google Material Design spec:
+ * http://www.google.com/design/spec/layout/layout-principles.html#layout-principles-dimensionality
+ *
+ * Please note that the values given in the specification cannot be used as is. To create the same visual experience
+ * the blur parameter has to be doubled.
+ *
+ * Adapted from a LESS version at https://medium.com/@Florian/freebie-google-material-design-shadow-helper-2a0501295a2d
+ *
+ * Original Author: Florian Kutschera (@gefangenimnetz), Conceptboard GmbH (@conceptboardapp)
+ *
+ * Example usage:
+ *
+ * .card {
+ *     width: 95px;
+ *     height: 95px;
+ *     background: #f4f4f4;
+ *     -webkit-transition: all 250ms;
+ *     -moz-transition: all 250ms;
+ *     transition: all 250ms;
+ *     @include box_shadow(1);
+ *     &:hover {
+ *         @include box_shadow(3);
+ *         -webkit-transform: translateY(-5px);
+ *         -moz-transform: translateY(-5px);
+ *         transform: translateY(-5px);
+ *     }
+ * }
+ *
+ */
+/* For timestamps, etc.  Matches bootstrap's labels */
+/* These comparitors are CRAP.  Medium is f5?!*/
+/* A bit darker, to differentiate it from the table-striped color */
+/* BS3 Colours */
+/* From the BS3 nav-inverse styling */
+/*  */
+/* ------------ */
+@import url("https://fonts.googleapis.com/css?family=Open+Sans");
+html {
+  min-height: 100%;
+  padding-bottom: 30px;
+  position: relative; }
+
+body {
+  background-color: #f4f4f4;
+  font-family: "Segoe UI", "Open Sans", "Segoe", Tahoma, Helvetica, Arial, sans-serif;
+  padding-top: 0; }
+
+/*Nice bold headers*/
+.page-header {
+  border-bottom: none; }
+  @media print {
+    .page-header {
+      display: none; } }
+  .page-header h1 {
+    font-size: 40px;
+    margin: 0; }
+    .page-header h1 small {
+      font-weight: 300;
+      font-size: 22px; }
+
+h1, h4 {
+  font-weight: 700; }
+
+h2 {
+  font-weight: 600;
+  font-size: 32px; }
+
+/* Semi-bold labels */
+label {
+  font-weight: 600; }
+
+/* Wrap long text (html, URLs) in def-lists.  Has the side-effect of breaking module codes, so setting grid spans seems right*/
+dl {
+  /* , table */
+  word-wrap: break-word; }
+
+td .money, td.money {
+  text-align: right;
+  word-break: normal; }
+
+/* Compact lists (esp. button dropdowns).  Overrides w2p style to restore bs3 style */
+li {
+  margin-bottom: 0; }
+
+a {
+  white-space: inherit; }
+
+/* Vertical spacing for dl-horizontal */
+.dl-horizontal dt, .dl-horizontal dd {
+  line-height: 1.6; }
+
+/*Compact sticky footer*/
+.footer {
+  position: absolute;
+  bottom: 0;
+  height: auto;
+  width: 100%;
+  padding: 5px;
+  color: #9d9d9d; }
+  @media print {
+    .footer {
+      display: none; } }
+  .footer a {
+    color: #CFCFCF; }
+  .footer ul,
+  .footer address {
+    margin-bottom: 0; }
+
+.navbar-nav > li:hover {
+  background: #333333;
+  border-radius: 4px; }
+.navbar-nav > li > a {
+  color: #f2f2f2;
+  padding-top: 10px;
+  padding-bottom: 10px; }
+  .navbar-nav > li > a:hover, .navbar-nav > li > a:focus {
+    background-color: transparent; }
+
+.nav .open > a, .nav .open > a:focus, .nav .open > a:hover {
+  background-color: transparent; }
+
+.navbar {
+  padding: 12px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24); }
+  .navbar .navbar-brand {
+    height: 32px;
+    padding: 0 20px 0 5px;
+    font-family: "Berlin Sans FB", "Segoe UI", "Open Sans", "Segoe", Tahoma, Helvetica, Arial, sans-serif;
+    font-size: 30px;
+    color: #fff; }
+    @media only screen and (max-width: 768px) {
+      .navbar .navbar-brand {
+        /*Should be set in Less */
+        margin-top: 7px; } }
+    .navbar .navbar-brand img {
+      display: inline;
+      height: 40px;
+      padding-right: 10px;
+      vertical-align: -12px; }
+    .navbar .navbar-brand .image-circle img {
+      height: auto; }
+
+.navbar, .footer {
+  background-image: none;
+  background-color: black; }
+
+header {
+  margin-top: 84px; }
+
+/*Correct web2py's modification of bootstrap appendedInput*/
+#appendedInputButton {
+  margin-right: 0; }
+
+/* Gray non-default icons, which turn into a green check when hovered */
+.set-default-visible {
+  color: #D0D0D0; }
+
+.set-default-hidden, .fa.set-default-hidden {
+  display: none;
+  color: #3c763d;
+  cursor: pointer; }
+
+.set-default-hover:hover .set-default-visible {
+  display: none; }
+.set-default-hover:hover .set-default-hidden {
+  display: inline-block; }
+
+/*Prevent CKeditor from being crushed in w2p tables*/
+.w2p_fw .cke {
+  width: 500px !important; }
+
+/*Wider autocompletes for particular lookups*/
+#_autocomplete_module_title, #_autocomplete_module_code {
+  min-width: 450px; }
+
+/*Block format for buttons displayed in the top right of a view*/
+.corner-buttons {
+  margin-top: 10px;
+  position: absolute;
+  right: 30px; }
+  .corner-buttons .btn {
+    display: block;
+    margin-bottom: 10px; }
+
+/* Custom bootstrap modal transitions, position: remove the slide (bs3) */
+.modal-dialog {
+  padding-top: 15%; }
+
+.modal.in .modal-dialog, .modal.fade .modal-dialog {
+  transform: none; }
+
+/* Sidenav for Docs - taken directly from bs2.3.2 page, minus additional rules for responsive
+-------------------------------------------------- */
+.sidenav {
+  width: 278px;
+  margin-right: -15px;
+  margin-left: 0;
+  padding: 0;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  /* Chevrons - customized to left, w/ fontsize adaptation for bs3*/ }
+  .sidenav li {
+    margin-bottom: 0; }
+    .sidenav li a {
+      margin: 0 0 -1px;
+      padding: 8px 14px; }
+      .sidenav li a:hover {
+        background-color: #f5f5f5; }
+      .sidenav li a .badge {
+        float: right; }
+        .sidenav li a .badge.badge-warning {
+          background-color: #FF8800; }
+    .sidenav li:not(:first-child) a {
+      border-top: 1px solid #D0D0D0; }
+    .sidenav li.active a {
+      border-color: #337ab7;
+      color: #FFF;
+      background-color: #337ab7; }
+      .sidenav li.active a .badge {
+        color: #337ab7;
+        background-color: #fff; }
+        .sidenav li.active a .badge.badge-warning {
+          background-color: #FF8800;
+          color: #fff; }
+      .sidenav li.active a .glyphicon-chevron-left, .sidenav li.active a .fa-chevron-left {
+        color: #FFF; }
+  .sidenav .glyphicon-chevron-left, .sidenav .fa-chevron-left {
+    float: left;
+    margin-top: 6px;
+    margin-right: 6px;
+    font-size: 75%;
+    color: #D0D0D0; }
+
+.affix {
+  top: 0;
+  /* This margin-top adds white space to ANY affix menu, while allowing for smooth transition,
+  because the margin is inside the affix div, rather than outside it, which would make transitions jerky */ }
+  .affix > :first-child {
+    margin-top: 84px; }
+
+/* Anchors to work with sidenav */
+.nav-anchor {
+  display: block;
+  position: relative;
+  top: -94px; }
+
+/* Stronger highlighting for row hover */
+.table-hover > tbody > tr:hover {
+  background-color: #ebebeb; }
+
+/* Tables' textless action icons sit at the far right, spaced */
+.quick-icons {
+  text-align: right; }
+  .quick-icons a {
+    margin-left: 5px; }
+
+/* When quick-icons is not applied, do much the same effect.
+This has the side effect of reversing the display order (float vs text-align) so it's not recommended*/
+td:not(.quick-icons) > a:not(.set-default-hover) > .glyphicon, td:not(.quick-icons) > a:not(.set-default-hover) > .fa {
+  float: right;
+  margin-left: 5px; }
+
+td > a .glyphicon-remove:hover, td > a .fa-remove:hover {
+  color: #D9534F;
+  /*BS' red*/ }
+td > a .glyphicon-plus:hover, td > a .fa-plus:hover {
+  color: #3c763d;
+  /*BS' green*/ }
+
+/* Collapse forms, form-groups and help blocks (inserted by default by w2p) */
+.help-block {
+  margin-top: 0;
+  margin-bottom: 0; }
+
+.form-group {
+  margin-bottom: 10px; }
+
+/* Left alignment of forms, def lists */
+.form-horizontal .control-label {
+  text-align: left; }
+
+/* Add new locations submit button */
+form#location_form {
+  /* Changes all the letters in the string to uppercase */ }
+  form#location_form a.btn-primary {
+    margin-top: 1em; }
+  form#location_form input {
+    text-transform: capitalize; }
+  form#location_form input#postcode {
+    text-transform: uppercase; }
+
+.dl-horizontal dt {
+  text-align: left;
+  width: 156px;
+  /*~Same width as span-2?.  Probably better ways of doing this*/ }
+.dl-horizontal .wide dt {
+  width: 180px; }
+.dl-horizontal .wide dd {
+  margin-left: 180px; }
+
+/* No locations string message */
+span.noLocations {
+  margin-top: 10px;
+  display: block; }
+
+/* Dropdown list for locations search when Add/Editing a module*/
+#module_location > ul {
+  min-width: 400px; }
+
+/* In Mobile */
+@media only screen and (max-width: 480px) {
+  #module_location > ul {
+    min-width: 100%; } }
+@media only screen and (min-width: 768px) {
+  /*Should be set in Less */
+  .dl-horizontal dd {
+    margin-left: 156px;
+    /*~Same width as span-2?.  Probably better ways of doing this*/ }
+  .dl-horizontal dt {
+    font-weight: 600;
+    /* Lighter label when horizontal, but bold restored when collapsed to stacked*/ } }
+/* Fix autocomplete dropdown location */
+div[id^="_autocomplete_"] {
+  margin-top: 0;
+  z-index: 4; }
+
+/* Compact alerts */
+.alert {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  /*margin-bottom: 0;*/ }
+
+#top-flash {
+  min-width: 250px;
+  z-index: 10; }
+  @media only screen and (min-width: 768px) {
+    #top-flash {
+      /*Should be set in Less */
+      position: fixed;
+      right: 20%; } }
+
+/*Text over a divider, replicating <hr> style, with larger margins (40 vs 20) */
+.horizontal-divider {
+  height: 0;
+  background-color: #000;
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  border-top: 1px solid #eee; }
+  .horizontal-divider span {
+    background-color: #fff;
+    position: relative;
+    top: -.75em;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-weight: 700;
+    font-size: 120%; }
+
+.blink {
+  animation: blinker 2s linear infinite; }
+
+@keyframes blinker {
+  50% {
+    opacity: 0.0; } }
+.waitingForConnection {
+  -webkit-animation-name: blinker;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: cubic-bezier(0.5, 0, 1, 1);
+  -webkit-animation-duration: 1.7s; }
+
+#watermark {
+  color: #D0D0D0;
+  font-size: 50pt;
+  -moz-transform: rotate(-30deg);
+  -o-transform: rotate(-30deg);
+  -ms-transform: rotate(-30deg);
+  -webkit-transform: rotate(-30deg);
+  transform: rotate(-30deg);
+  z-index: -1;
+  opacity: .5;
+  text-align: center;
+  margin: 100px auto;
+  width: 150%;
+  top: -700px;
+  position: fixed;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default; }
+  @media print {
+    #watermark {
+      display: none; } }
+
+/* Experimental styling for the checkbox grid widget */
+.checkbox-grid td {
+  text-align: center;
+  /* center checkbox horizontally */
+  vertical-align: middle;
+  /* center checkbox vertically */ }
+
+.checkbox-grid th {
+  padding-right: 7px;
+  font-weight: 600; }
+
+.feedback-score-container h3 {
+  font-size: 24px; }
+
+.feedback-score {
+  width: auto; }
+
+.feedback-score td {
+  width: 75px;
+  max-width: 110px;
+  padding: 5px;
+  text-align: center; }
+
+.feedback-score label {
+  padding-left: 5px;
+  white-space: nowrap; }
+
+.rating-1 {
+  border-bottom: 5px solid red; }
+
+.rating-2 {
+  border-bottom: 5px solid orange; }
+
+.rating-3 {
+  border-bottom: 5px solid yellow; }
+
+.rating-4 {
+  border-bottom: 5px solid greenyellow; }
+
+.rating-5 {
+  border-bottom: 5px solid lime; }
+
+.rating-Skip {
+  border-bottom: 5px solid	#E6E6E6;
+  min-width: 60px; }
+
+.feedback-results table, .feedback-results th, .feedback-results td {
+  border: 1px solid #000;
+  padding: 15px;
+  text-align: right; }
+
+.feedback-results th {
+  background-color: yellow; }
+
+/* Sections are a modified bs3 panel */
+.section {
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  padding: 20px 30px;
+  margin: 0px -15px 20px -15px;
+  position: relative;
+  /* Gets absolute positioning of child buttons to work */ }
+  .section h2:first-of-type {
+    margin-top: 0; }
+  .section .section-alert-header {
+    margin-top: -20px;
+    margin-right: -30px;
+    margin-left: -30px;
+    padding: 10px 30px;
+    border-radius: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid transparent;
+    /* Have to put these BS3 colors in manually, because of order of css appliction */ }
+    .section .section-alert-header.alert-warning {
+      border-color: #faebcc; }
+    .section .section-alert-header.alert-danger {
+      border-color: #ebccd1; }
+    .section .section-alert-header.alert-info {
+      border-color: #bce8f1; }
+    .section .section-alert-header.alert-success {
+      border-collapse: #d6e9c6; }
+  .section .section-footer {
+    margin: 0px -30px -20px -30px;
+    padding: 7px 15px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #D0D0D0;
+    text-align: right; }
+    .section .section-footer .timestamp {
+      /* Spacing for multiple span items */
+      margin-left: 30px;
+      display: inline-block;
+      font-size: 12px; }
+    .section .section-footer .separator {
+      margin: 0 5px; }
+    .section .section-footer .page_review_btn {
+      float: left;
+      font-size: 12px;
+      padding: 0 5px; }
+    .section .section-footer .fa {
+      margin-left: 3px; }
+    .section .section-footer .fa-check-circle {
+      color: #5cb85c; }
+    .section .section-footer .fa-exclamation-triangle {
+      color: #ffc107;
+      border-color: #eea236;
+      font-size: 1.2em; }
+
+.timeago, .faded {
+  opacity: .75; }
+
+/* --- Square panels to match the overall design --- */
+.panel {
+  border-radius: 0; }
+
+/* --------------------- */
+.landing-banner {
+  padding: 96px 0 25px 0;
+  text-align: center;
+  color: #fff;
+  background-color: #337ab7;
+  font-size: 26px; }
+  .landing-banner h1 {
+    font-size: 85px;
+    font-family: "Berlin Sans FB", "Segoe UI", "Open Sans", "Segoe", Tahoma, Helvetica, Arial, sans-serif;
+    font-weight: 500; }
+
+.landing-page-icon {
+  text-align: center;
+  margin-bottom: 50px; }
+  .landing-page-icon a {
+    text-decoration: none;
+    color: #000; }
+
+.landing-page-image {
+  max-width: 210px;
+  margin: 0 auto; }
+  .landing-page-image.grow {
+    transition: all .2s ease-out; }
+    :hover > .landing-page-image.grow {
+      transform: scale(1.08); }
+
+/* Round edit button */
+.edit-button {
+  position: absolute;
+  right: 20px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  text-decoration: none;
+  background-color: #f5f5f5;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
+  .edit-button:hover {
+    background-color: #2b6594; }
+    .edit-button:hover span {
+      color: #fff;
+      transition: color 0.3s ease; }
+  .edit-button span {
+    margin-top: 10px;
+    font-size: 24px; }
+
+.section > .edit-button {
+  /* Spacing for immediate children equal to the padding of the section */
+  top: 20px;
+  right: 30px; }
+
+.drag-icon {
+  cursor: move; }
+  .row_buttons .drag-icon {
+    font-size: 18px;
+    vertical-align: middle;
+    padding: 0 5px; }
+
+.w2p_odd.odd.with_id:hover {
+  background-color: #ebebeb; }
+
+.w2p_even.even.with_id:hover {
+  background-color: #ebebeb; }
+
+.ui-sortable-helper {
+  cursor: move; }
+
+.hide-rows:hover {
+  text-decoration: none;
+  cursor: pointer; }
+
+.btn {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2); }
+
+.btn .btn-primary, .btn-success, .btn-warning, .btn-danger, .btn-info {
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); }
+
+.btn-default {
+  background-color: #f4f4f4; }
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  div[id^="_autocomplete_"][id$="_div"] {
+    position: relative !important; } }
+/* Chrome has added an underline to abbrs, leading to an unwanted double-underline */
+abbr[title] {
+  text-decoration: none; }
+
+/* Empty state styling */
+.empty-state {
+  text-align: center; }
+  .empty-state .empty-state-icon {
+    font-size: 110px;
+    color: #ddd; }
+    .empty-state .empty-state-icon.small {
+      font-size: 90px; }
+
+.context-menu-item .glyphicon, .context-menu-item .fa {
+  float: left;
+  padding-top: 2px; }
+.context-menu-item .description {
+  padding-left: 30px;
+  width: 260px; }
+  .context-menu-item .description span {
+    display: block;
+    white-space: normal; }
+
+ul.item-list {
+  margin: 0;
+  border-top: 1px solid #eee; }
+  .panel-heading + ul.item-list {
+    border-top: none; }
+  ul.item-list li.item, ul.item-list li.hide-toggle {
+    padding: 10px 15px;
+    display: block;
+    margin: 0;
+    border-color: #eee;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #2e2e2e; }
+    ul.item-list li.item .hide-until-hover, ul.item-list li.hide-toggle .hide-until-hover {
+      visibility: hidden; }
+    ul.item-list li.item:hover, ul.item-list li.hide-toggle:hover {
+      background-color: #f4f4f4; }
+      ul.item-list li.item:hover .hide-until-hover, ul.item-list li.hide-toggle:hover .hide-until-hover {
+        visibility: visible; }
+    ul.item-list li.item a, ul.item-list li.hide-toggle a {
+      color: black; }
+    ul.item-list li.item .item-title, ul.item-list li.hide-toggle .item-title {
+      font-weight: 600; }
+    ul.item-list li.item .item-info span.label:first-of-type, ul.item-list li.hide-toggle .item-info span.label:first-of-type {
+      margin-left: 5px; }
+    ul.item-list li.item.hide-toggle, ul.item-list li.hide-toggle.hide-toggle {
+      text-align: center;
+      cursor: pointer; }
+      ul.item-list li.item.hide-toggle .rotate-icon, ul.item-list li.hide-toggle.hide-toggle .rotate-icon {
+        transition: .2s ease-out all; }
+        ul.item-list li.item.hide-toggle .rotate-icon.rotated, ul.item-list li.hide-toggle.hide-toggle .rotate-icon.rotated {
+          transform: rotate(180deg); }
+    ul.item-list li.item.today, ul.item-list li.hide-toggle.today {
+      background: #f3fff2;
+      border-color: #e1e8d5; }
+  ul.item-list span.bordered {
+    border: 1px solid;
+    border-radius: 3px;
+    padding: 0em 0.3em 0.1em;
+    margin-left: 5px;
+    font-weight: 600;
+    background-color: white; }
+  ul.item-list .drag-icon {
+    color: #a6a6a6;
+    padding: 0 5px;
+    position: relative;
+    top: 25%; }
+  ul.item-list .drag-container {
+    position: absolute;
+    cursor: move;
+    height: 100%;
+    left: 0;
+    top: 0; }
+
+/* When putting a button-xs above an item-list */
+.top-right-button {
+  margin-top: 5px; }
+
+.form-group .length-counter-affix {
+  visibility: hidden; }
+.form-group:focus-within .length-counter-affix {
+  visibility: visible; }
+
+#no_table_username_chosen {
+  padding-top: 4px; }
+
+/****************************************************/
+/* All the part for the impersonate system interface*/
+/****************************************************/
+.impersonateBottomBlock {
+  background-color: #337ab7;
+  color: #ecf2f8;
+  font-size: 18px;
+  position: fixed;
+  bottom: 0;
+  width: calc(100% + 20px);
+  margin-left: -20px; }
+  .impersonateBottomBlock .container {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 0px;
+    position: relative; }
+  .impersonateBottomBlock .glyphicon-sunglasses {
+    font-size: 34px;
+    position: absolute;
+    top: 16px;
+    right: calc(50% - 17px);
+    color: #ecf2f8; }
+
+.impersonateContainer {
+  position: absolute;
+  top: 0;
+  bottom: 70px;
+  right: 0;
+  left: 0;
+  border-top: solid 5px #337ab7;
+  border-left: solid 5px #337ab7;
+  border-right: solid 5px #337ab7;
+  overflow: auto; }
+  .impersonateContainer .footer {
+    position: fixed;
+    bottom: 70px;
+    width: calc(100% - 10px); }
+  .impersonateContainer .navbar-fixed-top {
+    border-top: solid 5px #337ab7;
+    border-left: solid 5px #337ab7;
+    border-right: solid 5px #337ab7;
+    border-bottom: solid 0 transparent;
+    box-shadow: none; }
+
+.impersonateContainerChild {
+  position: relative; }
+
+.stopImpersonating {
+  float: right;
+  color: #ecf2f8;
+  background-color: #337ab7;
+  padding: 0px 5px 5px 5px;
+  font-weight: 600;
+  transition: 0.5s;
+  /*border: 2px solid $lightBlue;*/ }
+  .stopImpersonating:hover {
+    /*background-color: $lightBlue;*/
+    color: #b4cee4; }
+
+.leftBottomImpersonateText {
+  color: #c7daeb;
+  background-color: #337ab7;
+  position: absolute;
+  top: 21px;
+  padding-left: 8px;
+  /*border: 2px solid $lightBlue;*/ }
+
+.leftBottomImpersonateTextUser {
+  font-weight: 600;
+  color: #ecf2f8; }
+
+/* Everything for the framed corners of impersonating interface bottom part */
+.impersonateBottomBlock .top, .impersonateBottomBlock .bottom {
+  position: absolute;
+  width: 15px;
+  height: 15px; }
+.impersonateBottomBlock .top {
+  top: 11px;
+  border-top: 1px solid; }
+.impersonateBottomBlock .bottom {
+  bottom: 11px;
+  border-bottom: 1px solid; }
+.impersonateBottomBlock .left {
+  left: -9px;
+  border-left: 1px solid; }
+.impersonateBottomBlock .right {
+  right: 7px;
+  border-right: 1px solid; }
+
+/* Page review button in search on a Page & program */
+.pg-review {
+  float: right;
+  padding: 2px 2px;
+  border-color: #6c757d;
+  color: #6c757d; }
+
+.pg-review:hover {
+  background-color: #6c757d;
+  color: #ffffff; }
+
+/****************************************************/
+/****************************************************/
+/****************************************************/
+.footerLinks {
+  float: right; }
+  .footerLinks a {
+    padding-right: 5px; }
+
+/****************************************************/
+/**** All the part for the dynamic edit on redpot ***/
+/****************************************************/
+[class*=slidingOutEmailEditing] {
+  padding-left: 14px;
+  padding-top: 35px; }
+
+[class*=slidingOutEmailEditing] {
+  display: none; }
+
+#applications_wrapper tbody {
+  cursor: default; }
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  padding: 0; }
+  .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    border: 0px;
+    background: none; }
+
+#applications_paginate {
+  padding-top: 0; }
+  #applications_paginate .pagination {
+    margin: 0 0; }
+
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_desc:after {
+  content: none; }
+
+/****************************************************/
+/**** 'Application section in the Module View page***/
+/****************************************************/
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after {
+  content: none; }
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  padding: 0; }
+
+.dataTables_wrapper .dataTables_paginate {
+  padding-top: 0; }
+
+div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+  margin: 0; }
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  border-color: #fff;
+  background: none; }
+
+/*# sourceMappingURL=redpot.css.map */

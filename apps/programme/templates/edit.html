@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% load edit_button %}
+
+{% block title %} Programme {% endblock %}
+{% block subtitle %} Edit - {{ programme.title }} {% endblock %}
+
+{% block center %}
+
+<div class="section">
+	<form action="" method="post" class="form-horizontal">
+		{% csrf_token %}
+		{% bootstrap3form form %}
+		<input type="submit" value="Submit"  class="btn btn-primary">
+
+	</form>
+</div>
+{% endblock %}

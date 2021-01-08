@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+
+{% block title %}{% endblock %}
+{% block subtitle  %}{% endblock %}
+
+
+{% block banner %}
+	{% if message %}
+	<div class="broadcast-message" style="background-color: #f1e6b0; color: #7b6338; margin-top: 65px; text-align:center; padding: 10px 0" >
+		<span class="fa fa-bullhorn"></span><b> {{message}} &ndash; <a href="">Find out more!</a></b>
+	</div>
+	{% endif %}
+{% endblock %}
+
+{% block jumbotron %}
+<div class="jumbotron landing-banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <img src="{% static 'icons/redpot-circle.png' %}" class="img-responsive landing-page-image">
+                <h1>redpot</h1>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block top %}{% endblock %}
+{% block center %}
+<div class="row">
+    <style>
+        body {
+            background-color: white;
+        }
+    </style>
+    <div class="col-sm-4 landing-page-icon">
+        <a href="{% url 'programme:view' 270 %}">
+            <img src="{% static 'icons/flaticons/bicycle.png' %}" class="img-responsive grow landing-page-image" alt="">
+            <h1>Students</h1>
+        </a>
+    </div>
+    <div class="col-sm-4 landing-page-icon">
+        <a href="{% url 'programme:view' 270 %}">
+            <img src="{% static 'icons/flaticons/pencil-brush.png' %}" class="img-responsive grow landing-page-image" alt="">
+            <h1>Modules</h1>
+        </a>
+    </div>
+    <div class="col-sm-4 landing-page-icon">
+        <a href="{% url 'programme:view' 270 %}">
+            <img src="{% static 'icons/flaticons/contract.png' %}" class="img-responsive grow landing-page-image" alt="">
+            <h1>Programmes</h1>
+        </a>
+    </div>
+</div>
+{% endblock %}
