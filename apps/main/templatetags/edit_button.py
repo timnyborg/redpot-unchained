@@ -28,8 +28,8 @@ def timestamp(record):
     """)
 
 @register.inclusion_tag('utility/bootstrap3_form.html')
-def bootstrap3form(form):
-    return({'form': form})
+def bootstrap3form(form, status_classes=True):
+    return {'form': form} 
     
     
 

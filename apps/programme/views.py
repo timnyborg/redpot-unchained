@@ -10,8 +10,13 @@ from django.db.models import Q
 from django.views.generic.edit import UpdateView
 from django.views.generic.detail import DetailView
 
+import django_tables2 as tables
+from django_tables2.views import SingleTableMixin
+from django_filters.views import FilterView
+
 from .models import Programme, QA, ModuleStatus
 from .forms import ProgrammeForm
+from .datatables import ProgrammeSearchTable, ProgrammeSearchFilter
 
 # Create your views here.
 
@@ -77,3 +82,17 @@ class Edit(UpdateView):
         
     def get_success_url(self):
         return reverse('programme:view', args=[self.object.id])
+        
+        
+# def search(request):
+    # table = ProgrammeTable()
+    # return render(request, 'search.html', context={
+        # 'table': table
+    # })
+    
+class Search(SingleTableMixin, FilterView):
+    template_name = 'search.html'
+    model = Programme
+    table_class = ProgrammeSearchTable
+    filterset_class = ProgrammeSearchFilter
+    

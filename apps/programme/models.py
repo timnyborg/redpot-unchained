@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Model, CharField, DateTimeField, BooleanField, IntegerField, DateField, ManyToManyField, DecimalField, ForeignKey, DO_NOTHING
+from django.db.models import Model, CharField, DateTimeField, BooleanField, IntegerField, DateField, ManyToManyField, DecimalField, ForeignKey, DO_NOTHING, Q
 from django.core.validators import MinLengthValidator
 
 class Portfolio(Model):
@@ -140,7 +140,7 @@ class Programme(Model):
     title = CharField(max_length=96, blank=True, null=True, validators=[MinLengthValidator(70)])
     start_date = DateField(blank=True, null=True)
     end_date = DateField(blank=True, null=True)
-    division = ForeignKey(Division, DO_NOTHING, db_column='division', blank=True, null=True)
+    division = ForeignKey(Division, DO_NOTHING, db_column='division', blank=True, null=True, limit_choices_to=Q(id__gt=8) | Q(id__lt=5))
     portfolio = ForeignKey(Portfolio, DO_NOTHING, db_column='portfolio', blank=True, null=True)
     qualification = ForeignKey('Qualification', DO_NOTHING, db_column='qualification')
     created_by = CharField(max_length=8, blank=True, null=True)

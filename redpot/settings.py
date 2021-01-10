@@ -46,17 +46,21 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    # 'django.contrib.sessions', # disabled until migrated
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # django-simple-menu
-    'menu',
+    # 3rd party apps
+    'menu', # django-simple-menu
+    'django_tables2',
+    'django_filters',
     
     # project apps
     'apps.main',
     'apps.programme',    
 ]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.file' #while DB-sessions disabled
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -93,7 +97,7 @@ WSGI_APPLICATION = 'redpot.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
+DATABASES = {   
     'default': {
         'NAME': 'conted',
         'ENGINE': 'sql_server.pyodbc',
@@ -101,10 +105,23 @@ DATABASES = {
         'USER': get_secret('DB_USER'), # not really secret, but keeps credentials together
         'PASSWORD': get_secret('DB_PASSWORD'),
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server'
+            'driver': 'ODBC Driver 17 for SQL Server',
         }
-    }
+    },
+    'mirror': {
+        'NAME': 'conted',
+        'ENGINE': 'sql_server.pyodbc',
+        'HOST': 'electriccatfish',
+        'USER': get_secret('DB_USER'), # not really secret, but keeps credentials together
+        'PASSWORD': get_secret('DB_PASSWORD'),
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+        }
+    },    
 }
+
+# DATABASE_ROUTERS = ['redpot.db_routers.FailoverRouter']
+
 
 MESSAGE_TAGS = {
     'DEBUG': 'debug',
@@ -151,7 +168,10 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {"console": {"class": "logging.StreamHandler"}},
-    "loggers": {"django_auth_ldap": {"level": "DEBUG", "handlers": ["console"]}},
+    "loggers": {
+        "django_auth_ldap": {"level": "DEBUG", "handlers": ["console"]}
+        
+    },
 }
 
 
@@ -178,3 +198,5 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
+
+LOGIN_REDIRECT_URL = '/'

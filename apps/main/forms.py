@@ -1,4 +1,5 @@
-class Bootstrap3FormMixin():
+from django.forms import Form
+class Bootstrap3FormMixin(Form):
     """ 
         Adds the correct input classes for bootstrap 3 forms 
         Usage: class DerivedForm(Bootstrap3FormMixin, ModelForm): 

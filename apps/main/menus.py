@@ -18,7 +18,7 @@ Menu.add_item("main", MenuItem(
 
 Menu.add_item("main", MenuItem(
     "Programmes",
-    reverse("programme:view", args=[270])
+    reverse("programme:search")
     ))
 
 Menu.add_item("main", MenuItem(

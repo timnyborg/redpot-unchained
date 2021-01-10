@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+{% load edit_button %}
+{% load render_table from django_tables2 %}
+
+{% block title %} Programme {% endblock %}
+{% block subtitle %} Search - {{ programme.title }} {% endblock %}
+
+{% block center %}
+
+<div class="section">
+	<div class="row">
+		<div class="col-xs-12 col-md-8">
+			<form action="">
+				{% bootstrap3form filter.form True %}
+				<button class="btn btn-primary">Search</button>
+			</form>
+		</div>
+	</div>
+</div>
+{% if request.GET %}
+	<div class="section">
+		<h3>Search results ({{ table.rows|length }})</h3>
+		{#{ table }#}
+		{% render_table table %}
+	</div>
+{% endif %}
+{% endblock %}

@@ -9,7 +9,7 @@
 	{{ field }}
 {% endfor %}
 {% for field in form.visible_fields %}		
-	<div class="form-group {% if form.is_bound and field.errors %} has-error {% elif form.is_bound %} has-success {% endif %} ">
+	<div class="form-group {% if status_classes and form.is_bound and field.errors %} has-error {% elif status_classes and form.is_bound %} has-success {% endif %} ">
 	{% if field.field.widget.input_type == 'checkbox' %}
 		<div class="col-sm-offset-2 col-sm-10">
 			<div class="checkbox">
