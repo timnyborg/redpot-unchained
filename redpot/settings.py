@@ -50,6 +50,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    # django-simple-menu
+    'menu',
+    
+    # project apps
     'apps.main',
     'apps.programme',    
 ]
@@ -110,6 +114,21 @@ MESSAGE_TAGS = {
     'ERROR': 'error'
 }
 
+AUTHENTICATION_BACKENDS = [
+    "django_auth_ldap.backend.LDAPBackend",
+    "django.contrib.auth.backends.ModelBackend",  # To enable groups & permissions
+]
+
+from django_auth_ldap.config import LDAPSearch
+import ldap
+
+AUTH_LDAP_SERVER_URI = "ldaps://ad3.conted.ox.ac.uk"
+AUTH_LDAP_BIND_DN = f"CN={get_secret('LDAP_USER')},OU=Staff,OU=OUDCE,DC=conted,DC=ox,DC=ac,DC=uk"
+AUTH_LDAP_BIND_PASSWORD = get_secret('LDAP_PASSWORD')
+AUTH_LDAP_USER_SEARCH = LDAPSearch(
+    "ou=Staff,ou=OUDCE,dc=conted,dc=ox,dc=ac,dc=uk", ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)"
+)
+
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -127,6 +146,13 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "loggers": {"django_auth_ldap": {"level": "DEBUG", "handlers": ["console"]}},
+}
 
 
 # Internationalization

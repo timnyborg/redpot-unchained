@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layout_9_3.html' %}
 
 {% load edit_button %}
 
@@ -63,7 +63,9 @@
             <li class="dropdown-submenu">
                 <a tabindex="-1" href="#modules"><span class="fa fa-cog"></span> Change all modules' status</a>
                 <ul class="dropdown-menu">
-
+					{% for status in module_statuses %}
+					<li>{{ status }}</li>
+					{% endfor %}
                 </ul>
             </li>
         </ul>
@@ -97,7 +99,7 @@
 			</td>
             <td>{{ module.start_date | date:"d M Y" }}</td>
             <td>{{ module.end_date | date:"d M Y"}}</td>
-            <td class="col-xs-3">{{ module.status.short_desc }} ({{ 50 }}/{{ module.max_size }})</td>
+            <td class="col-xs-3">{{ module.status.short_desc }} ({{ module.enrolment_count }}/{{ module.max_size }})</td>
             <td><a><span class='fa fa-remove'></span></a></td>
         </tr>
     {% endfor %}

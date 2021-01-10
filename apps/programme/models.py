@@ -230,40 +230,52 @@ class QA(models.Model):
         db_table = 'qa'
 
 
-# class Enrolment(models.Model):
-    # qa = models.ForeignKey('Qa', models.DO_NOTHING, db_column='qa', blank=True, null=True)
-    # module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module', blank=True, null=True)
-    # status = models.ForeignKey('EnrolmentStatus', models.DO_NOTHING, db_column='status', blank=True, null=True)
-    # result = models.ForeignKey('EnrolmentResult', models.DO_NOTHING, db_column='result')
-    # points_awarded = models.IntegerField(blank=True, null=True)
-    # created_by = models.CharField(max_length=16, blank=True, null=True)
-    # created_on = models.DateTimeField(blank=True, null=True)
-    # modified_by = models.CharField(max_length=16, blank=True, null=True)
-    # modified_on = models.DateTimeField(blank=True, null=True)
-    # provenance = models.IntegerField(blank=True, null=True)
-    # provenance_details = models.CharField(max_length=128, blank=True, null=True)
-    # no_image_consent = models.BooleanField(blank=True, null=True)
-    # mark = models.IntegerField(blank=True, null=True)
-    # transcript_date = models.DateTimeField(blank=True, null=True)
+class Enrolment(models.Model):
+    qa = models.ForeignKey('Qa', models.DO_NOTHING, db_column='qa', blank=True, null=True)
+    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module', blank=True, null=True, related_name='enrolments')
+    status = models.ForeignKey('EnrolmentStatus', models.DO_NOTHING, db_column='status', blank=True, null=True)
+    result = models.ForeignKey('EnrolmentResult', models.DO_NOTHING, db_column='result')
+    points_awarded = models.IntegerField(blank=True, null=True)
+    created_by = models.CharField(max_length=16, blank=True, null=True)
+    created_on = models.DateTimeField(blank=True, null=True)
+    modified_by = models.CharField(max_length=16, blank=True, null=True)
+    modified_on = models.DateTimeField(blank=True, null=True)
+    provenance = models.IntegerField(blank=True, null=True)
+    provenance_details = models.CharField(max_length=128, blank=True, null=True)
+    no_image_consent = models.BooleanField(blank=True, null=True)
+    mark = models.IntegerField(blank=True, null=True)
+    transcript_date = models.DateTimeField(blank=True, null=True)
 
-    # class Meta:
-        # managed = False
-        # db_table = 'enrolment'
+    class Meta:
+        managed = False
+        db_table = 'enrolment'
         
         
 
-# class EnrolmentResult(models.Model):
-    # id = models.CharField(primary_key=True, max_length=4)
-    # description = models.CharField(max_length=128, blank=True, null=True)
-    # is_active = models.BooleanField()
-    # created_by = models.CharField(max_length=16, blank=True, null=True)
-    # created_on = models.DateTimeField(blank=True, null=True)
-    # modified_by = models.CharField(max_length=16, blank=True, null=True)
-    # modified_on = models.DateTimeField(blank=True, null=True)
-    # display_order = models.IntegerField(blank=True, null=True)
-    # hesa_code = models.CharField(max_length=1, blank=True, null=True)
-    # allow_certificate = models.BooleanField(blank=True, null=True)
+class EnrolmentResult(models.Model):
+    id = models.CharField(primary_key=True, max_length=4)
+    description = models.CharField(max_length=128, blank=True, null=True)
+    is_active = models.BooleanField()
+    created_by = models.CharField(max_length=16, blank=True, null=True)
+    created_on = models.DateTimeField(blank=True, null=True)
+    modified_by = models.CharField(max_length=16, blank=True, null=True)
+    modified_on = models.DateTimeField(blank=True, null=True)
+    display_order = models.IntegerField(blank=True, null=True)
+    hesa_code = models.CharField(max_length=1, blank=True, null=True)
+    allow_certificate = models.BooleanField(blank=True, null=True)
 
-    # class Meta:
-        # managed = False
-        # db_table = 'enrolment_result'
+    class Meta:
+        managed = False
+        db_table = 'enrolment_result'
+        
+        
+class EnrolmentStatus(models.Model):
+    id = models.IntegerField(primary_key=True)
+    description = models.CharField(max_length=64, blank=True, null=True)
+    takes_place = models.BooleanField()
+    is_debtor = models.BooleanField()
+    on_hesa_return = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'enrolment_status'

@@ -5,43 +5,65 @@ from django.http import HttpResponse
 from django.template import Template, Context
 from django.contrib import messages
 
-from apps.programme.models import Programme, QA
-from apps.programme.forms import ProgrammeForm
+from django.db.models import Q
+
+from django.views.generic.edit import UpdateView
+from django.views.generic.detail import DetailView
+
+from .models import Programme, QA, ModuleStatus
+from .forms import ProgrammeForm
 
 # Create your views here.
 
-
+from django.db.models import Count
 
 def view(request, programme_id):
     programme = Programme.objects.get(id=programme_id)
-    modules = programme.modules.select_related('status').order_by('-start_date')[:200].all()
+
+    # counting booleans broken, awaiting new version of mssql backend (https://github.com/ESSolutions/django-mssql-backend/pull/64)
+    # enrolment_count = Count('enrolments', filter=Q(enrolments__status__takes_place=1))
+    enrolment_count = Count('enrolments', filter=Q(enrolments__status__in=[10, 11, 20, 90]))
+    
+    modules = programme.modules.annotate(enrolment_count=enrolment_count).select_related('status').order_by('-start_date')[:200].all()
+    
     module_count = programme.modules.count()
     students = QA.objects.filter(programme=programme.id).select_related('student').order_by('-start_date')[:200]
 
+    module_statuses = ModuleStatus.objects.all()
 
-    return render(request, 'view.html', {'programme': programme, 'modules': modules, 'students': students, 'module_count': module_count, 'right_sidebar_enabled': True})
+    return render(request, 'view.html', context={
+        'programme': programme, 
+        'modules': modules, 
+        'students': students, 
+        'module_count': module_count,
+        'modules_statuses': module_statuses
+    })
 
-    
-def edit(request, programme_id):
-    programme = Programme.objects.get(id=programme_id)
+class View(DetailView):
+    model = Programme
+    template_name = 'view.html'
 
-    # Creating a form to add an article.
-    # form = ArticleForm()
+    def get_context_data(self, **kwargs):
+        context = super(View, self).get_context_data(**kwargs)
+        programme = self.object
 
-    # Creating a form to change an existing article.
-    if request.method == "POST":
-        form = ProgrammeForm(request.POST, instance=programme)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Details updated.')
-            return redirect('programme:view', programme_id=programme.id)
-    else:
-        form = ProgrammeForm(instance=programme)
-    
-    return render(request, 'edit.html', {'form': form, 'programme': programme, 'right_sidebar_enabled': True})
-    
-    
-from django.views.generic.edit import UpdateView
+        # Get 200 most recent child modules, with a count of enrolment places taken
+        enrolment_count = Count('enrolments', filter=Q(enrolments__status__in=[10, 11, 20, 90]))    
+        modules = programme.modules.annotate(enrolment_count=enrolment_count).select_related('status').order_by('-start_date')[:200].all()
+        
+        module_count = programme.modules.count()
+        students = QA.objects.filter(programme=programme.id).select_related('student').order_by('-start_date')[:200]
+
+        module_statuses = ModuleStatus.objects.all()
+
+        return {
+            **context,
+            'modules': modules, 
+            'students': students, 
+            'module_count': module_count,
+            'modules_statuses': module_statuses
+        }
+   
 class Edit(UpdateView):    
     template_name = 'edit.html'
     form_class = ProgrammeForm

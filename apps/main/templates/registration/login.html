@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+{% load edit_button %}
+
+{% block title %}Login{% endblock %}
+
+{% block center %}
+<div class='section'>
+  <h2>Login</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% bootstrap3form form %}
+    <button type="submit">Login</button>
+  </form>
+</div>
+{% endblock %}

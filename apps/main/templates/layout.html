@@ -1,4 +1,5 @@
 {% load static %}
+{% load menu %} 
 
 <!--[if HTML5]><![endif]-->
 <!DOCTYPE html>
@@ -62,19 +63,23 @@
         <span class="icon-bar"></span>
       </button>
 	  <a class="brand navbar-brand redpotbrand" href="/">
-		<img src="{% static 'images/redpot.svg' %}">
-		{{ application }}
+		<img src="{% static 'images/redpot.svg' %}">{{ application }}
 	  </a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="app-navbar-collapse">
-    NoMenu
+		{% generate_menu %}
+		{% with menu=menus.main %}
+			{% include 'utility/bootstrap_menu.html' %}
+		{% endwith %}
       <!-- Login (nav right) -->
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
             <!-- Login ====================-->
-            NoLogin
+		{% with menu=menus.user %}
+			{% include 'utility/bootstrap_menu.html' %}
+		{% endwith %}
         </li>
       </ul>
     </div><!-- /.navbar-collapse -->
@@ -111,19 +116,12 @@
 
 <div class="container" id="vue-mount">
     <section class="row">
-        {% if right_sidebar_enabled %}
-        <div class="col-xs-12 col-sm-3 col-sm-push-9">
-		
-            {% block right_sidebar %}
-            {% endblock %}
-        </div>
-		<div class="col-xs-12 col-sm-9 col-sm-pull-3">
-		{% else %}
+		{% block container %}
 		<div class="col-xs-12">
-		{% endif %}
             {% block center %}            
             {% endblock %}          
         </div>
+		{% endblock %}
     </section><!--/main-->
 </div> <!-- /container -->
 
