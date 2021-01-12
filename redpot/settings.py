@@ -40,6 +40,21 @@ def get_secret(setting, secrets=secrets):
     except KeyError:
         raise ImproperlyConfigured("Set the {} setting".format(setting))
 
+# Sentry integration
+
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn=get_secret("SENTRY_DSN"),
+    integrations=[DjangoIntegration()],
+    traces_sample_rate=1.0,
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -54,6 +69,7 @@ INSTALLED_APPS = [
     'menu', # django-simple-menu
     'django_tables2',
     'django_filters',
+    'widget_tweaks', # django-widget-tweaks
     
     # project apps
     'apps.main',

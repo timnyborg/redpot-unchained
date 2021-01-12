@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
-{% load edit_button %}
+{% load redpot_tags %}
 {% load render_table from django_tables2 %}
 
 {% block title %} Programme {% endblock %}
-{% block subtitle %} Search - {{ programme.title }} {% endblock %}
+{% block subtitle %} Search {% endblock %}
 
 {% block center %}
 
@@ -12,16 +12,25 @@
 		<div class="col-xs-12 col-md-8">
 			<form action="">
 				{% bootstrap3form filter.form True %}
-				<button class="btn btn-primary">Search</button>
+				{% bootstrap3submit 'Search' %}
 			</form>
 		</div>
 	</div>
 </div>
 {% if request.GET %}
 	<div class="section">
-		<h3>Search results ({{ table.rows|length }})</h3>
-		{#{ table }#}
-		{% render_table table %}
+		{% if table.rows %}
+			<h3>Search results ({{ table.rows|length }})</h3>		
+			{% render_table table %}
+		{% else %}
+		<div class="empty-state">
+            <span class="fa fa-ban empty-state-icon"></span>
+            <h4>No results found</h4>
+            <h5>
+            Try broadening your query and search again
+            </h5>            
+		</div>
+		{% endif %}
 	</div>
 {% endif %}
 {% endblock %}

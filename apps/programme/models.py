@@ -11,6 +11,7 @@ class Portfolio(Model):
     class Meta:
         managed = False
         db_table = 'portfolio'
+        ordering = ['name']
         
     def __str__(self):
         return self.name
@@ -26,6 +27,7 @@ class Division(Model):
     class Meta:
         managed = False
         db_table = 'division'
+        ordering = ['name']
         
     def __str__(self):
         return self.name
@@ -194,15 +196,13 @@ class Qualification(Model):
     class Meta:
         managed = False
         db_table = 'qualification'
+        ordering = ['elq_rank']
         
     def __str__(self):
         return self.name
         
     def name_with_code(self):
-        return f'{self.name} ({self.hesa_code})!'
-        
-    def validate_that_two_things_work():
-        pass
+        return f'{self.name} ({self.hesa_code})'
         
         
 class Student(models.Model):

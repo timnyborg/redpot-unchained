@@ -48,6 +48,8 @@ class ViewLinkColumn(tables.Column):
 
 class ProgrammeSearchTable(tables.Table):
     view = ViewLinkColumn(verbose_name='')
+    qualification = tables.Column(order_by=['qualification__name'])  # override default ordering (elq_rank)
+    
     class Meta:
         model = Programme
         template_name = "django_tables2/bootstrap.html"

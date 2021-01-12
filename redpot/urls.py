@@ -18,16 +18,18 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 import apps.main.views
 
-def index(request, i=3):
-    from django.http import HttpResponse
+def error(request):
+    1/0
     return HttpResponse(i)
 
 urlpatterns = [
-    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('login/', apps.main.views.CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='registration/logout.html'), name='logout'),
 
     path('admin/', admin.site.urls),
     path('', apps.main.views.index),
     path('index/', apps.main.views.index),
     path('programme/', include('apps.programme.urls')),
+    
+    path('error/', error),
 ]
