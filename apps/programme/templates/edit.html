@@ -12,8 +12,8 @@
 
 	<form action="" method="post" class="form-horizontal">
 		{% csrf_token %}
-		{% bootstrap3form form %}
-		<input type="submit" value="Submit"  class="btn btn-primary">
+		{% bootstrap3form form True %}
+		{% bootstrap3submit %}
 
 	</form>
 </div>

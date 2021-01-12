@@ -30,6 +30,7 @@ urlpatterns = [
     path('', apps.main.views.index),
     path('index/', apps.main.views.index),
     path('programme/', include('apps.programme.urls')),
+    path('module/', include('apps.module.urls')),
     
     path('error/', error),
 ]

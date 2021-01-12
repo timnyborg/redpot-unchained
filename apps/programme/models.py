@@ -50,34 +50,7 @@ class StudyLocation(Model):
     def __str__(self):
         return self.description
   
-        
-class Module(Model):
-    code = CharField(max_length=12)    
-    title = CharField(max_length=80)
-    
-    start_date = DateField(blank=True, null=True)
-    end_date = DateField(blank=True, null=True)
-    
-    status = ForeignKey('ModuleStatus', DO_NOTHING, db_column='status')
-    max_size = IntegerField(blank=True, null=True)
-    
-    class Meta:
-        managed = False
-        db_table = 'module'
 
-
-class ModuleStatus(Model):
-    id = IntegerField(primary_key=True)
-    description = CharField(max_length=64, blank=True, null=True)
-    publish = BooleanField(blank=True, null=True)
-    short_desc = CharField(max_length=50, blank=True, null=True)
-    waiting_list = BooleanField(blank=True, null=True)   
-
-    class Meta:
-        managed = False
-        db_table = 'module_status'
-        
-        
 class Programme(Model):
     FUNDING_LEVELS = [
         (10, 'Undergraduate'),
@@ -137,7 +110,7 @@ class Programme(Model):
 
 
 
-    modules = ManyToManyField(Module, through='ProgrammeModule')
+    modules = ManyToManyField('module.Module', through='ProgrammeModule')
 
     title = CharField(max_length=96, blank=True, null=True, validators=[MinLengthValidator(70)])
     start_date = DateField(blank=True, null=True)
@@ -149,7 +122,7 @@ class Programme(Model):
     created_on = DateTimeField(blank=True, null=True)
     modified_by = CharField(max_length=8, blank=True, null=True)
     modified_on = DateTimeField(blank=True, null=True)
-    student_load = DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
+    student_load = DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, help_text='Percent of full-time, eg. 50')
     funding_level = IntegerField(blank=True, null=True, choices=FUNDING_LEVELS)
     funding_source = IntegerField(blank=True, null=True, choices=FUNDING_SOURCES)
     study_mode = IntegerField(blank=True, null=True, choices=STUDY_MODES)
@@ -171,7 +144,7 @@ class Programme(Model):
 class ProgrammeModule(Model):
     id = IntegerField(primary_key=True)
     programme = ForeignKey(Programme, DO_NOTHING, db_column='programme', blank=True, null=True)
-    module = ForeignKey(Module, DO_NOTHING, db_column='module', blank=True, null=True)
+    module = ForeignKey('module.Module', DO_NOTHING, db_column='module', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -232,7 +205,7 @@ class QA(models.Model):
 
 class Enrolment(models.Model):
     qa = models.ForeignKey('Qa', models.DO_NOTHING, db_column='qa', blank=True, null=True)
-    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module', blank=True, null=True, related_name='enrolments')
+    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', blank=True, null=True, related_name='enrolments')
     status = models.ForeignKey('EnrolmentStatus', models.DO_NOTHING, db_column='status', blank=True, null=True)
     result = models.ForeignKey('EnrolmentResult', models.DO_NOTHING, db_column='result')
     points_awarded = models.IntegerField(blank=True, null=True)

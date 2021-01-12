@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     # project apps
     'apps.main',
     'apps.programme',    
+    'apps.module',
 ]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.file' #while DB-sessions disabled

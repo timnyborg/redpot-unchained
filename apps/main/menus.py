@@ -3,17 +3,17 @@ from menu import Menu, MenuItem
 
 Menu.add_item("main", MenuItem(
     "Apps",
-    reverse("programme:view", args=[270])
+    reverse("programme:search")
     ))
 
 Menu.add_item("main", MenuItem(
     "Students",
-    reverse("programme:view", args=[270])
+    reverse("programme:search")
     ))
 
 Menu.add_item("main", MenuItem(
     "Modules",
-    reverse("programme:view", args=[270])
+    reverse("module:search")
     ))
 
 Menu.add_item("main", MenuItem(
@@ -23,17 +23,17 @@ Menu.add_item("main", MenuItem(
 
 Menu.add_item("main", MenuItem(
     "Tutors",
-    reverse("programme:view", args=[270])
+    reverse("programme:search")
     ))
 
 Menu.add_item("main", MenuItem(
     "Finance",
-    reverse("programme:view", args=[270])
+    reverse("programme:search")
     ))
     
 Menu.add_item("main", MenuItem(
     "Dev",
-    reverse("programme:view", args=[270]),
+    reverse("programme:search"),
     check=lambda request: request.user.is_superuser
     ))
 

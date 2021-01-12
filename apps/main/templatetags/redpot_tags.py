@@ -45,7 +45,7 @@ def timestamp(record):
         
 @register.inclusion_tag('utility/bootstrap3_form.html')
 def bootstrap3form(form, status_classes=True):
-    return {'form': form} 
+    return {'form': form, 'status_classes': status_classes} 
     
     
 @register.simple_tag
