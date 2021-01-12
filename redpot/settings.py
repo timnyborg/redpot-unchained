@@ -28,7 +28,8 @@ SECRET_KEY = '!u-m(8@4j#igthpl6&lr!%x^sr967p=*c6=n^g%yl06jaav1e&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['deltamap.conted.ox.ac.uk']
+# SECURITY WARNING: don't run with allowed_hosts * in production!
+ALLOWED_HOSTS = ['*']
 
 with open(os.path.join(BASE_DIR, 'secrets.json')) as secrets_file:
     secrets = json.load(secrets_file)
