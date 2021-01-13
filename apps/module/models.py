@@ -16,7 +16,7 @@ class Module(Model):
     
     class Meta:
         managed = False
-        db_table = 'module'
+        db_table = '[app].[module]'
 
 
 class ModuleStatus(Model):
@@ -28,4 +28,4 @@ class ModuleStatus(Model):
 
     class Meta:
         managed = False
-        db_table = 'module_status'
+        db_table = '[app].[module_status]'

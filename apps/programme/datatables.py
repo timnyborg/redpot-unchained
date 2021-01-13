@@ -31,21 +31,24 @@ class ProgrammeSearchFilter(django_filters.FilterSet):
 
 
 class ViewLinkColumn(tables.Column):
-    empty_values=() # Prevents the table from rendering Nothing, since it's an entirely generated column
-    def render(self, record):
-        url = reverse('programme:view', args=[record.id])
-        return format_html(f'<a href="{url}"><span class="fa fa-search" alt="View"></span></a>')    
+    empty_values = () # Prevents the table from rendering Nothing, since it's an entirely generated column
+
+    def render(self, record): 
+        return format_html('<span class="fa fa-search" alt="View"></span>')    
         
-    def __init__(self, *args, **kwargs):
-        # Always disable sorting and header.  Avoids having to say so every time it's used: view = ViewLinkColumn(orderable=False)
+    def __init__(self, verbose_name, **kwargs):
+        # Always disable sorting and header.  Avoids having to say so every time it's used: view = ViewLinkColumn(orderable=False...)        
         kwargs.update({
             'orderable': False,
-            'verbose_name': '',
+            'linkify': True, # wraps render() in an <a> linking to get_absolute_url()
+            'accessor': 'id', # could be literally anything on the 
+            'exclude_from_export': True,
         })
-        super(ViewLinkColumn, self).__init__(*args, **kwargs)
+        super(ViewLinkColumn, self).__init__(verbose_name=verbose_name, **kwargs)     
+
 
 class ProgrammeSearchTable(tables.Table):
-    view = ViewLinkColumn(verbose_name='')
+    link = ViewLinkColumn('')
     qualification = tables.Column(order_by=['qualification__name'])  # override default ordering (elq_rank)
     
     class Meta:

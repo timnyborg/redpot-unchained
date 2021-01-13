@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Model, CharField, DateTimeField, BooleanField, IntegerField, DateField, ManyToManyField, DecimalField, ForeignKey, DO_NOTHING, Q
 from django.core.validators import MinLengthValidator
+from django.urls import reverse
 
 class Portfolio(Model):
     name = CharField(max_length=128, blank=True, null=True)
@@ -10,7 +11,7 @@ class Portfolio(Model):
 
     class Meta:
         managed = False
-        db_table = 'portfolio'
+        db_table = '[app].[portfolio]'
         ordering = ['name']
         
     def __str__(self):
@@ -26,7 +27,7 @@ class Division(Model):
 
     class Meta:
         managed = False
-        db_table = 'division'
+        db_table = '[app].[division]'
         ordering = ['name']
         
     def __str__(self):
@@ -45,7 +46,7 @@ class StudyLocation(Model):
 
     class Meta:
         managed = False
-        db_table = 'study_location'
+        db_table = '[app].[study_location]'
         
     def __str__(self):
         return self.description
@@ -108,11 +109,9 @@ class Programme(Model):
         (64, 'Dormant- previously part-time'),
     ]
 
-
-
     modules = ManyToManyField('module.Module', through='ProgrammeModule')
 
-    title = CharField(max_length=96, blank=True, null=True, validators=[MinLengthValidator(70)])
+    title = CharField(max_length=96, null=True)
     start_date = DateField(blank=True, null=True)
     end_date = DateField(blank=True, null=True)
     division = ForeignKey(Division, DO_NOTHING, db_column='division', blank=True, null=True, limit_choices_to=Q(id__gt=8) | Q(id__lt=5))
@@ -138,7 +137,11 @@ class Programme(Model):
 
     class Meta:
         managed = False
-        db_table = 'programme'
+        db_table = '[app].[programme]'
+        
+        
+    def get_absolute_url(self):
+        return reverse('programme:view', args=[self.id])
         
 
 class ProgrammeModule(Model):
@@ -148,7 +151,7 @@ class ProgrammeModule(Model):
 
     class Meta:
         managed = False
-        db_table = 'programme_module'
+        db_table = '[app].[programme_module]'
         unique_together = (('programme', 'module'), ('module', 'programme'),)
         
         
@@ -168,7 +171,7 @@ class Qualification(Model):
 
     class Meta:
         managed = False
-        db_table = 'qualification'
+        db_table = '[app].[qualification]'
         ordering = ['elq_rank']
         
     def __str__(self):
@@ -185,7 +188,7 @@ class Student(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'student'
+        db_table = '[app].[student]'
         
     def __str__(self):
         return f'{self.firstname} {self.surname}'
@@ -200,7 +203,7 @@ class QA(models.Model):
     
     class Meta:
         managed = False
-        db_table = 'qa'
+        db_table = '[app].[qa]'
 
 
 class Enrolment(models.Model):
@@ -221,7 +224,7 @@ class Enrolment(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'enrolment'
+        db_table = '[app].[enrolment]'
         
         
 
@@ -239,7 +242,7 @@ class EnrolmentResult(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'enrolment_result'
+        db_table = '[app].[enrolment_result]'
         
         
 class EnrolmentStatus(models.Model):
@@ -251,4 +254,4 @@ class EnrolmentStatus(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'enrolment_status'
+        db_table = '[app].[enrolment_status]'
