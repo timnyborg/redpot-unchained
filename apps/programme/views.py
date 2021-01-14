@@ -52,6 +52,14 @@ class Edit(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = ProgrammeForm
     template_name = 'programme/edit.html'
     success_message = 'Details updated.'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            'user': self.request.user
+        })
+        return kwargs
+         
     
     # def form_valid(self, form):
         # # This method is called when valid form data has been POSTed.

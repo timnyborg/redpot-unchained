@@ -164,6 +164,8 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch(
     "ou=Staff,ou=OUDCE,dc=conted,dc=ox,dc=ac,dc=uk", ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)"
 )
 
+AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
+
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -181,6 +183,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = 'main.User'
 
 LOGGING = {
     "version": 1,

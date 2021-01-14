@@ -1,12 +1,21 @@
 from django.db import models
-from django.db.models import Model, CharField, DateTimeField, BooleanField, IntegerField, DateField, ManyToManyField, DecimalField, ForeignKey, DO_NOTHING, Q
-from django.core.validators import MinLengthValidator
+from django.db.models import Model, CharField, DateTimeField, EmailField, BooleanField, IntegerField, DateField, ManyToManyField, DecimalField, ForeignKey, DO_NOTHING, Q
+from django.core.validators import MinLengthValidator, RegexValidator
 from django.urls import reverse
+from django.forms.widgets import TextInput
+
+
+class PhoneInput(TextInput):
+    input_type = 'tel'
+
+class PhoneField(CharField):
+    default_validators = [RegexValidator(regex='^[-0-9 +()]+$', message='Invalid phone number')]
+    widget = PhoneInput
 
 class Portfolio(Model):
     name = CharField(max_length=128, blank=True, null=True)
     division = ForeignKey('Division', DO_NOTHING, db_column='division', blank=True, null=True)
-    email = CharField(max_length=256, blank=True, null=True)
+    email = EmailField(max_length=256, blank=True, null=True)
     phone = CharField(max_length=256, blank=True, null=True)
 
     class Meta:
@@ -21,7 +30,7 @@ class Portfolio(Model):
 class Division(Model):
     name = CharField(max_length=64, blank=True, null=True)
     shortname = CharField(max_length=8, blank=True, null=True)
-    email = CharField(max_length=256, blank=True, null=True)
+    email = EmailField(max_length=256, blank=True, null=True)
     finance_prefix = CharField(max_length=2, blank=True, null=True)
     # manager = ForeignKey(AuthUser, DO_NOTHING, db_column='manager', blank=True, null=True)
 
@@ -131,18 +140,17 @@ class Programme(Model):
     sits_code = CharField(max_length=32, blank=True, null=True)
     contact_list_display = BooleanField()
     short_name = CharField(max_length=64, blank=True, null=True)
-    email = CharField(max_length=64, blank=True, null=True)
-    phone = CharField(max_length=64, blank=True, null=True)
+    email = EmailField(max_length=64, blank=True, null=True)
+    # phone = CharField(max_length=64, blank=True, null=True, validators=[RegexValidator(regex='^[-0-9 +()]+$', message='Invalid phone number')])
+    phone = PhoneField(max_length=64, blank=True, null=True)
     mailing_list_id = CharField(max_length=25, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = '[app].[programme]'
         
-        
     def get_absolute_url(self):
-        return reverse('programme:view', args=[self.id])
-        
+        return reverse('programme:view', args=[self.id])  
 
 class ProgrammeModule(Model):
     id = IntegerField(primary_key=True)

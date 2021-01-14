@@ -4,8 +4,6 @@ from .models import Module
 from django.utils.html import format_html
 import django_filters
 
-from apps.main.forms import Bootstrap3FormMixin
-
 import django.forms as forms
 import django.db.models as models
 from datetime import date
@@ -36,7 +34,6 @@ class ModuleSearchFilter(django_filters.FilterSet):
             # 'is_active': ['exact'],
         }        
         
-        form = Bootstrap3FormMixin  
         filter_overrides = {
             models.BooleanField: {
                 'filter_class': django_filters.BooleanFilter,

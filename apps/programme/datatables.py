@@ -4,37 +4,32 @@ from .models import Programme
 from django.utils.html import format_html
 import django_filters
 
-from apps.main.forms import Bootstrap3FormMixin
-
 import django.forms as forms
 import django.db.models as models
 
-class ProgrammeSearchFilter(django_filters.FilterSet):        
+class ProgrammeSearchFilter(django_filters.FilterSet):    
+    show_inactive_filter = django_filters.BooleanFilter(label='Show inactive programmes', method='show_inactive', widget=forms.CheckboxInput, initial=False)
+    
     class Meta:
         model = Programme
+        # everything else is standard, so the meta approach is simplest
         fields = {
             'title': ['icontains'],
             'division': ['exact'],
             'portfolio': ['exact'],
             'qualification': ['exact'],
-            'is_active': ['exact'],
-        }
-        form = Bootstrap3FormMixin  
-        filter_overrides = {
-            models.BooleanField: {
-                'filter_class': django_filters.BooleanFilter,
-                'extra': lambda f: {
-                   'widget': forms.CheckboxInput,
-                },
-            },
         }
 
+    def show_inactive(self, queryset, name, value):
+        if value:
+            return queryset
+        return queryset.filter(is_active=True)
 
 class ViewLinkColumn(tables.Column):
     empty_values = () # Prevents the table from rendering Nothing, since it's an entirely generated column
 
     def render(self, record): 
-        return format_html('<span class="fa fa-search" alt="View"></span>')    
+        return format_html('<span class="fas fa-search" alt="View"></span>')    
         
     def __init__(self, verbose_name, **kwargs):
         # Always disable sorting and header.  Avoids having to say so every time it's used: view = ViewLinkColumn(orderable=False...)        

@@ -5,14 +5,14 @@ import socket
 register = template.Library()
 
 @register.simple_tag
-def edit_button(url, icon='pencil', target='', tooltip='Edit details'):
+def edit_button(url, icon='edit', target='', tooltip='Edit details'):
     """Converts a string into all lowercase"""
     b = f"""
         <a href="{url}"
            class="btn btn-default btn-lg pull-right"
            target="{target}"
            data=toggle': 'tooltip'
-        ><span class='fa fa-{icon}'></span>
+        ><span class='fas fa-{icon}'></span>
         </a>
     """
     return mark_safe(b)

@@ -44,9 +44,29 @@ Menu.add_item("user", MenuItem(
     check=lambda request: not request.user.is_authenticated
     ))
 
-Menu.add_item("user", MenuItem(
-    "Logout",
-    reverse("logout"),
-    check=lambda request: request.user.is_authenticated
-    ))
+# Define children for the my account menu
+myaccount_children = (
+    MenuItem("Edit Profile",
+             None,
+             icon="user"),
+    MenuItem("Admin",
+             reverse("admin:index"),
+             separator=True,
+             icon='tools',
+             check=lambda request: request.user.is_superuser),
+    MenuItem(
+            "Logout",
+            reverse("logout"),
+            separator=True,
+            icon='sign-out-alt',
+            check=lambda request: request.user.is_authenticated
+            ),
+)
 
+Menu.add_item("user", MenuItem(
+    lambda request: request.user.get_full_name,    
+    '#',
+    icon='user-circle',
+    check=lambda request: request.user.is_authenticated,
+    children=myaccount_children
+    ))

@@ -1,9 +1,8 @@
 from django.forms import ModelForm
-from apps.main.forms import Bootstrap3FormMixin
 from apps.programme.models import Programme
 
 # Create the form class.
-class ProgrammeForm(Bootstrap3FormMixin, ModelForm):
+class ProgrammeForm(ModelForm):
     class Meta:
         model = Programme
         fields = ['title', 'division', 'portfolio', 'qualification', 'email', 'phone', 
@@ -11,3 +10,15 @@ class ProgrammeForm(Bootstrap3FormMixin, ModelForm):
                   'study_location', 'is_active', 'contact_list_display', 'sits_code'
                   ]
                   
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.user = user
+        # dynamically readonly a field
+        self.fields['title'].disabled = True
+        
+        # dynamically remove a feild
+        if not user.has_perm('registry'):
+            for f in ['student_load', 'funding_level', 'funding_source', 'study_mode', 'study_location']:
+                del self.fields[f]
+        
