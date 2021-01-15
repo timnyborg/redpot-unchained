@@ -29,11 +29,11 @@ class Module(Model):
         # if bool(self.hilary_start) != bool(self.michaelmas_end):
             # if self.hilary_start:
                 # raise ValidationError({
-                    # 'michaelmas_end': ValidationError('You must provide both term dates'),                
+                    # 'michaelmas_end': 'You must provide both term dates',                
                 # })
             # else:
                 # raise ValidationError({
-                    # 'hilary_start': ValidationError('You must provide both term dates'),                
+                    # 'hilary_start': 'You must provide both term dates',                
                 # })
 
         # Check end_date is equal or later to start_date
@@ -41,11 +41,11 @@ class Module(Model):
             if self.start_date:
                 if self.end_date < self.start_date:
                     raise ValidationError({
-                        'end_date': ValidationError('Cannot be earlier than start date'),                
+                        'end_date': 'Cannot be earlier than start date',                
                     })                    
             else:
                 raise ValidationError({
-                    'start_date': ValidationError('Please set a start date'),                
+                    'start_date': 'Please set a start date',                
                 })
 
         # # Check if all components that make up the finance code are supplied, or none
@@ -54,12 +54,12 @@ class Module(Model):
             # for field in components:
                 # if not self.__attr__(field):
                     # raise ValidationError({
-                        # field: ValidationError('Please provide all of cost centre, activity code and source of funds, or neither'),                
+                        # field: 'Please provide all of cost centre, activity code and source of funds, or neither',                
                     # })
                    
         # if not all(self.__attr__(field) for field in components) and self.enrol_online:
             # raise ValidationError({
-                # 'enrol_online': ValidationError('Online enrolment disallowed without cost centre, activity code and source of funds'),                
+                # 'enrol_online': 'Online enrolment disallowed without cost centre, activity code and source of funds',                
             # })
             
         if not self.url:
