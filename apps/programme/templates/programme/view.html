@@ -52,12 +52,12 @@
     <h2 class="pull-left">Modules</h2>
     <div class="dropdown pull-right">
         <a class="dropdown-toggle" data-toggle="dropdown" >
-            <h2 class='fa fa-tasks'></h2>
+            <h2 class='fas fa-tasks'></h2>
         </a>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
             <!--<li><a href="#">Action</a></li>-->
             <li class="dropdown-submenu">
-                <a tabindex="-1" href="#modules"><span class="fa fa-cog"></span> Change all modules' status</a>
+                <a tabindex="-1" href="#modules"><span class="fas fa-cog"></span> Change all modules' status</a>
                 <ul class="dropdown-menu">
 					{% for status in module_statuses %}
 					<li>{{ status }}</li>
@@ -70,12 +70,12 @@
     <div class="clearfix"></div>
 
     <div class="pull-right top-right-button">
-        <a href="{% url 'programme:add-module' programme.id %}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add Module</a>
+        <a href="{% url 'programme:add-module' programme.id %}" class="btn btn-success btn-xs"><span class="fas fa-plus"></span> Add Module</a>
     </div>
 
     {% if module_count > 200 %}
     <div class="alert alert-warning" role="alert">
-        <span class='fa fa-exclamation fa-fw'></span>
+        <span class='fas fa-exclamation fa-fw'></span>
 		Showing only the top 200 of {{ module_count }} modules
     </div>
     {% endif %}
@@ -96,7 +96,7 @@
             <td>{{ module.start_date | date }}</td>
             <td>{{ module.end_date | date }}</td>
             <td class="col-xs-3">{{ module.status.short_desc }} ({{ module.enrolment_count }}/{{ module.max_size }})</td>
-            <td><a><span class='fa fa-remove'></span></a></td>
+            <td><a><span class='fas fa-times'></span></a></td>
         </tr>
     {% endfor %}
     </table>
@@ -109,7 +109,7 @@
     <h2>Students</h2>
     {% if students|length >= 200 %}
     <div class="alert alert-warning" role="alert">
-        <span class='fa fa-exclamation'></span> Showing only the 200 most recent students
+        <span class='fas fa-exclamation'></span> Showing only the 200 most recent students
     </div>
     {% endif %}
     <table class="table table-condensed table-striped table-hover hide-rows">
@@ -119,7 +119,7 @@
 		<td><a href='#'>{{ qa.student}} </a></td>
 		<td>{{ qa.start_date | date  }}</td>
 		<td>{{ qa.end_date | date  }}</td>
-		<td><a href='#'><span class='fa fa-search'></span></a></td>
+		<td><a href='#'><span class='fas fa-search'></span></a></td>
 	</tr>
 	{% endfor %}
     </table>

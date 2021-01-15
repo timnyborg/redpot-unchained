@@ -16,9 +16,22 @@ Menu.add_item("main", MenuItem(
     reverse("module:search")
     ))
 
+programme_children = (
+    MenuItem("Search",
+             reverse("programme:search"),
+             icon="search"),
+    MenuItem("New",
+             reverse("programme:new"),
+             icon="plus",
+             separator=True,
+             check=lambda request: request.user.has_perm('programme.new')
+             )
+)
+
 Menu.add_item("main", MenuItem(
     "Programmes",
-    reverse("programme:search")
+    '#',
+    children=programme_children
     ))
 
 Menu.add_item("main", MenuItem(

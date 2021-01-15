@@ -15,9 +15,9 @@ class Module(Model):
     michaelmas_end = DateField(blank=True, null=True)
     hilary_start = DateField(blank=True, null=True)
 
-    division = ForeignKey('programme.Division', DO_NOTHING, db_column='division', blank=True, null=True,
+    division = ForeignKey('programme.Division', DO_NOTHING, db_column='division',
                           limit_choices_to=Q(id__gt=8) | Q(id__lt=5))
-    portfolio = ForeignKey('programme.Portfolio', DO_NOTHING, db_column='portfolio', blank=True, null=True)
+    portfolio = ForeignKey('programme.Portfolio', DO_NOTHING, db_column='portfolio')
     
     status = ForeignKey('ModuleStatus', DO_NOTHING, db_column='status')
     max_size = IntegerField(blank=True, null=True)

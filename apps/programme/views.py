@@ -1,14 +1,10 @@
-# from django.shortcuts import render, redirect
-# from django.urls import reverse
-# from django.http import HttpResponse
+from datetime import datetime
 
-# from django.template import Template, Context
-# from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.db.models import Q, Count
 
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic.detail import DetailView
 
 from django_tables2.views import SingleTableMixin
@@ -19,7 +15,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from apps.main.forms import PageTitleMixin
 from apps.module.models import ModuleStatus
 from .models import Programme, QA
-from .forms import ProgrammeForm
+from .forms import ProgrammeEditForm, ProgrammeNewForm
 from .datatables import ProgrammeSearchTable, ProgrammeSearchFilter
 
 
@@ -52,7 +48,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
 
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
     model = Programme    
-    form_class = ProgrammeForm
+    form_class = ProgrammeEditForm
     template_name = 'programme/edit.html'
     success_message = 'Details updated.'
 
@@ -62,19 +58,24 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
             'user': self.request.user
         })
         return kwargs
-    
-    # def form_valid(self, form):
-        # # This method is called when valid form data has been POSTed.
-        # # It should return an HttpResponse.
-        # messages.success(self.request, 'Details updated.')
-        # return super().form_valid(form)
+
+    def form_valid(self, form):
+        form.instance.modified_on = datetime.now()
+        form.instance.modified_by = self.request.user.username
+        return super().form_valid(form)
 
 
-# def search(request):
-    # table = ProgrammeTable()
-    # return render(request, 'search.html', context={
-        # 'table': table
-    # })
+class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, CreateView):
+    model = Programme
+    form_class = ProgrammeNewForm
+    template_name = 'programme/edit.html'
+    success_message = 'Details updated.'
+
+    def form_valid(self, form):
+        # No need to handle created_on or modified_on as they use auto_now_add=True
+        form.instance.modified_by = self.request.user.username
+        form.instance.created_by = self.request.user.username
+        return super().form_valid(form)
     
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     template_name = 'programme/search.html'

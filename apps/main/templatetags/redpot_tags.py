@@ -21,21 +21,29 @@ def edit_button(url, icon='edit', target='', tooltip='Edit details'):
 def timestamp(record):
     # This should be an inclusion tag
     
-    created_on = record.created_on.strftime('%d %b %Y') if record.created_on else ''
-    created_on_long = record.created_on.strftime('%Y-%m-%d %H:%M') if record.created_on else ''
-    modified_on = record.modified_on.strftime('%d %b %Y') if record.modified_on else ''
-    modified_on_long = record.modified_on.strftime('%Y-%m-%d %H:%M') if record.modified_on else ''
-    
+    created_on = record.created_on.strftime('%d %b %Y %H:%M') if record.created_on else ''
+    modified_on = record.modified_on.strftime('%d %b %Y %H:%M') if record.modified_on else ''
+
     return mark_safe(f"""    
         <div class="section-footer">
             <div class="timestamp">
                 Created by { record.created_by}
-                <span class="timeago" data-placement="bottom" data-title="{ created_on_long }" data-toggle="tooltip" datetime="2012-04-13 15:21">
+                <span class="timeago" 
+                    data-placement="bottom" 
+                    data-title="{ created_on }" 
+                    data-toggle="tooltip" 
+                    datetime="{ created_on }"
+                >
                     { created_on }
                 </span>
                 <span class="separator">&bull;</span>
                 Edited by { record.modified_by } 
-                <span class="timeago" data-placement="bottom" data-title="{ modified_on_long }" data-toggle="tooltip" datetime="2020-12-15 17:16">
+                <span class="timeago" 
+                    data-placement="bottom" 
+                    data-title="{ modified_on }" 
+                    data-toggle="tooltip" 
+                    datetime="{ modified_on }"
+                >
                     { modified_on }
                 </span>
             </div>

@@ -8,9 +8,11 @@ from django.forms.widgets import TextInput
 class PhoneInput(TextInput):
     input_type = 'tel'
 
+
 class PhoneField(CharField):
     default_validators = [RegexValidator(regex='^[-0-9 +()]+$', message='Invalid phone number')]
     widget = PhoneInput
+
 
 class Portfolio(Model):
     name = CharField(max_length=128, blank=True, null=True)
@@ -123,37 +125,42 @@ class Programme(Model):
     title = CharField(max_length=96, null=True)
     start_date = DateField(blank=True, null=True)
     end_date = DateField(blank=True, null=True)
-    division = ForeignKey(Division, DO_NOTHING, db_column='division', blank=True, null=True, limit_choices_to=Q(id__gt=8) | Q(id__lt=5))
-    portfolio = ForeignKey(Portfolio, DO_NOTHING, db_column='portfolio', blank=True, null=True)
+    division = ForeignKey(Division, DO_NOTHING, db_column='division', limit_choices_to=Q(id__gt=8) | Q(id__lt=5))
+    portfolio = ForeignKey(Portfolio, DO_NOTHING, db_column='portfolio')
     qualification = ForeignKey('Qualification', DO_NOTHING, db_column='qualification')
-    created_by = CharField(max_length=8, blank=True, null=True)
-    created_on = DateTimeField(blank=True, null=True)
-    modified_by = CharField(max_length=8, blank=True, null=True)
-    modified_on = DateTimeField(blank=True, null=True)
     student_load = DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, help_text='Percent of full-time, eg. 50')
     funding_level = IntegerField(blank=True, null=True, choices=FUNDING_LEVELS)
     funding_source = IntegerField(blank=True, null=True, choices=FUNDING_SOURCES)
     study_mode = IntegerField(blank=True, null=True, choices=STUDY_MODES)
     study_location = ForeignKey(StudyLocation, DO_NOTHING, db_column='study_location', blank=True, null=True)
-    reporting_year_type = IntegerField(blank=True, null=True)
-    is_active = BooleanField()
+
+    is_active = BooleanField(default=True)
     sits_code = CharField(max_length=32, blank=True, null=True)
-    contact_list_display = BooleanField()
-    short_name = CharField(max_length=64, blank=True, null=True)
+    contact_list_display = BooleanField(default=True)
+
     email = EmailField(max_length=64, blank=True, null=True)
-    # phone = CharField(max_length=64, blank=True, null=True, validators=[RegexValidator(regex='^[-0-9 +()]+$', message='Invalid phone number')])
     phone = PhoneField(max_length=64, blank=True, null=True)
-    mailing_list_id = CharField(max_length=25, blank=True, null=True)
+
+    created_by = CharField(max_length=8, blank=True, null=True, )
+    created_on = DateTimeField(blank=True, null=True, auto_now_add=True)
+    modified_by = CharField(max_length=8, blank=True, null=True)
+    modified_on = DateTimeField(blank=True, null=True, auto_now_add=True)
 
     class Meta:
         managed = False
         db_table = '[app].[programme]'
+        permissions = [
+            ('edit_registry_fields', 'Can edit programme fields like Study Location or Student Load '
+                                     '(should just be one programme.edit permission'),
+            ('edit_restricted_fields', 'Can edit dev-restricted fields (is_active, contact_list_display, sits_id'),
+        ]
         
     def get_absolute_url(self):
         return reverse('programme:view', args=[self.id])
 
     def __str__(self):
         return self.title
+
 
 class ProgrammeModule(Model):
     id = IntegerField(primary_key=True)
@@ -211,7 +218,7 @@ class QA(models.Model):
     title = models.CharField(max_length=96, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
-    
+
     class Meta:
         managed = False
         db_table = '[app].[qa]'
@@ -219,8 +226,8 @@ class QA(models.Model):
 
 class Enrolment(models.Model):
     qa = models.ForeignKey('Qa', models.DO_NOTHING, db_column='qa', blank=True, null=True)
-    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', blank=True, null=True, related_name='enrolments')
-    status = models.ForeignKey('EnrolmentStatus', models.DO_NOTHING, db_column='status', blank=True, null=True)
+    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', related_name='enrolments')
+    status = models.ForeignKey('EnrolmentStatus', models.DO_NOTHING, db_column='status')
     result = models.ForeignKey('EnrolmentResult', models.DO_NOTHING, db_column='result')
     points_awarded = models.IntegerField(blank=True, null=True)
     created_by = models.CharField(max_length=16, blank=True, null=True)
