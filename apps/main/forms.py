@@ -21,7 +21,7 @@ class PageTitleMixin:
             return self.title
         if hasattr(self, 'model'):
             # Automatically get model name for model views
-            return str(self.model.__name__)
+            return self.model._meta.verbose_name.capitalize()
 
     def get_subtitle(self):
         if self.subtitle:
