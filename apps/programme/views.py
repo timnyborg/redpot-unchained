@@ -16,13 +16,14 @@ from django_filters.views import FilterView
 
 from django.contrib.messages.views import SuccessMessageMixin
 
+from apps.main.forms import PageTitleMixin
 from apps.module.models import ModuleStatus
 from .models import Programme, QA
 from .forms import ProgrammeForm
 from .datatables import ProgrammeSearchTable, ProgrammeSearchFilter
 
 
-class View(LoginRequiredMixin, DetailView):
+class View(LoginRequiredMixin, PageTitleMixin, DetailView):
     model = Programme
     template_name = 'programme/view.html'
 
@@ -32,7 +33,8 @@ class View(LoginRequiredMixin, DetailView):
 
         # Get 200 most recent child modules, with a count of enrolment places taken
         enrolment_count = Count('enrolments', filter=Q(enrolments__status__in=[10, 11, 20, 90]))    
-        modules = programme.modules.annotate(enrolment_count=enrolment_count).select_related('status').order_by('-start_date')[:200].all()
+        modules = programme.modules.annotate(enrolment_count=enrolment_count
+                                             ).select_related('status').order_by('-start_date')[:200].all()
         
         module_count = programme.modules.count()
         students = QA.objects.filter(programme=programme.id).select_related('student').order_by('-start_date')[:200]
@@ -46,8 +48,9 @@ class View(LoginRequiredMixin, DetailView):
             'module_count': module_count,
             'modules_statuses': module_statuses
         }
-   
-class Edit(LoginRequiredMixin, SuccessMessageMixin, UpdateView):    
+
+
+class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
     model = Programme    
     form_class = ProgrammeForm
     template_name = 'programme/edit.html'
@@ -59,7 +62,6 @@ class Edit(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             'user': self.request.user
         })
         return kwargs
-         
     
     # def form_valid(self, form):
         # # This method is called when valid form data has been POSTed.
@@ -74,9 +76,11 @@ class Edit(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         # 'table': table
     # })
     
-class Search(LoginRequiredMixin, SingleTableMixin, FilterView):
+class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     template_name = 'programme/search.html'
     model = Programme
     table_class = ProgrammeSearchTable
     filterset_class = ProgrammeSearchFilter
+    subtitle = 'Search'
+
     

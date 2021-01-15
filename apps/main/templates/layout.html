@@ -4,7 +4,7 @@
 <!--[if HTML5]><![endif]-->
 <!DOCTYPE html>
 <head>
-  <title>Redpot unchained</title>
+  <title>Redpot unchained{% if title %} – {{ title }} {% if subtitle %} – {{ subtitle }} {% endif %} {% endif %}</title>
 
 
   <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
@@ -81,7 +81,7 @@
 				{% if messages %}
 				<ul class="messages">
 					{% for message in messages %}
-					<div class="alert {% if message.tags %} alert-{{ message.tags }}"{% else %} alert-warning {% endif %} alert-dismissible fade in" role="alert"> 
+					<div class="alert {% if message.tags %} alert-{{ message.tags }} {% else %} alert-warning {% endif %} alert-dismissible fade in" role="alert">
 						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 							<span aria-hidden="true">×</span>
 						</button> 
@@ -91,8 +91,8 @@
 				</ul>
 				{% endif %}
                 <h1>
-                    {% block title %}Title{% endblock %}
-                    <small>{% block subtitle %}Subtitle{% endblock %}</small>
+                    {% block title %}{{ title }}{% endblock %}
+                    <small>{% block subtitle %}{{ subtitle }}{% endblock %}</small>
                 </h1>
             </div>
         </div>
@@ -118,10 +118,10 @@
         <div class="row">
             <div class="footerLinks">
                 <a href="mailto:redpot-support@conted.ox.ac.uk">
-                    <span><i class="fa fa-life-ring"></i> Redpot Support </span> 
+                    <i class="fas fa-question"></i> Redpot support
                 </a>
                 <a href="/banner/view/">
-                    <span><i class="fa fa-refresh"></i> Updates</span>
+                    <i class="fas fa-redo"></i> Updates
                 </a>
             </div>
             <div class="copyright">

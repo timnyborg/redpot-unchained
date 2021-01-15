@@ -150,7 +150,10 @@ class Programme(Model):
         db_table = '[app].[programme]'
         
     def get_absolute_url(self):
-        return reverse('programme:view', args=[self.id])  
+        return reverse('programme:view', args=[self.id])
+
+    def __str__(self):
+        return self.title
 
 class ProgrammeModule(Model):
     id = IntegerField(primary_key=True)

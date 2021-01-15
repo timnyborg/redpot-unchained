@@ -2,10 +2,6 @@
 
 {% load redpot_tags %}
 
-{% block title %} Programme{% endblock %}
-{% block subtitle %} View - {{ programme.title }} {% endblock %}
-
-
 {% block right_sidebar %}
 <div class="hidden-xs affix-top" data-spy="affix" data-offset-top="105" id="sidebar">
     <ul class="nav sidenav">
@@ -97,8 +93,8 @@
 				{% endif %}
 				{{ module }}</a>
 			</td>
-            <td>{{ module.start_date | date:"d M Y" }}</td>
-            <td>{{ module.end_date | date:"d M Y"}}</td>
+            <td>{{ module.start_date | date }}</td>
+            <td>{{ module.end_date | date }}</td>
             <td class="col-xs-3">{{ module.status.short_desc }} ({{ module.enrolment_count }}/{{ module.max_size }})</td>
             <td><a><span class='fa fa-remove'></span></a></td>
         </tr>
@@ -121,8 +117,8 @@
 	{% for qa in students %}
 	<tr>
 		<td><a href='#'>{{ qa.student}} </a></td>
-		<td>{{ qa.start_date | date:"d M Y"  }}</td>
-		<td>{{ qa.end_date | date:"d M Y"  }}</td>
+		<td>{{ qa.start_date | date  }}</td>
+		<td>{{ qa.end_date | date  }}</td>
 		<td><a href='#'><span class='fa fa-search'></span></a></td>
 	</tr>
 	{% endfor %}

@@ -125,21 +125,8 @@ DATABASES = {
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
         }
-    },
-    'mirror': {
-        'NAME': 'conted',
-        'ENGINE': 'sql_server.pyodbc',
-        'HOST': 'electriccatfish',
-        'USER': get_secret('DB_USER'), # not really secret, but keeps credentials together
-        'PASSWORD': get_secret('DB_PASSWORD'),
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        }
-    },    
+    }
 }
-
-# DATABASE_ROUTERS = ['redpot.db_routers.FailoverRouter']
-
 
 MESSAGE_TAGS = {
     'DEBUG': 'debug',
@@ -200,15 +187,15 @@ LOGGING = {
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-gb'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = False
 
-USE_L10N = True
+USE_L10N = False
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -225,3 +212,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Login customization
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login'
+
+# Standard datetime format
+DATE_FORMAT = 'j M Y'
+DATETIME_FORMAT_FORMAT = 'j M Y H:i'
