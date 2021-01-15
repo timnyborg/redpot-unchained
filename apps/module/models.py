@@ -33,18 +33,18 @@ class Module(Model):
         # Check both term start/end date fields are filled, or neither
         if bool(self.hilary_start) != bool(self.michaelmas_end):
             raise ValidationError({
-                'hilary_start': ValidationError('You must provide both term dates'),
-                'michaelmas_end': ValidationError('You must provide both term dates'),
+                'hilary_start': 'You must provide both term dates',
+                'michaelmas_end': 'You must provide both term dates',
             })
 
         # Check end_date is equal or later to start_date
         if self.end_date and not self.start_date:
             raise ValidationError({
-                'start_date': ValidationError('Please set a start date'),
+                'start_date': 'Please set a start date',
             })
         elif self.start_date and self.end_date and self.end_date < self.start_date:
             raise ValidationError({
-                'end_date': ValidationError('End date cannot be earlier than start date'),
+                'end_date': 'End date cannot be earlier than start date',
             })
 
         # # Check if all components that make up the finance code are supplied, or none
@@ -53,12 +53,12 @@ class Module(Model):
             # for field in components:
                 # if not self.__attr__(field):
                     # raise ValidationError({
-                        # field: ValidationError('Please provide all of cost centre, activity code and source of funds, or neither'),                
+                        # field: 'Please provide all of cost centre, activity code and source of funds, or neither',
                     # })
                    
         # if not all(self.__attr__(field) for field in components) and self.enrol_online:
             # raise ValidationError({
-                # 'enrol_online': ValidationError('Online enrolment disallowed without cost centre, activity code and source of funds'),                
+                # 'enrol_online': 'Online enrolment disallowed without cost centre, activity code and source of funds',
             # })
             
         if not self.url:
