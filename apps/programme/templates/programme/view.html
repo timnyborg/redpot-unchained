@@ -115,12 +115,15 @@
     <table class="table table-condensed table-striped table-hover hide-rows">
     <thead><tr><th>Student</th><th>Start date</th><th>Leaving date</th><th></th></tr></thead>
 	{% for qa in students %}
-	<tr>
-		<td><a href='#'>{{ qa.student}} </a></td>
-		<td>{{ qa.start_date | date  }}</td>
-		<td>{{ qa.end_date | date  }}</td>
-		<td><a href='#'><span class='fas fa-search'></span></a></td>
-	</tr>
+        {% ifchanged %}
+            <th colspan="100%">{{ qa.start_date.year }}</th>
+        {% endifchanged %}
+        <tr>
+            <td><a href='#'>{{ qa.student}} </a></td>
+            <td>{{ qa.start_date | date  }}</td>
+            <td>{{ qa.end_date | date  }}</td>
+            <td><a href='#'><span class='fas fa-search'></span></a></td>
+        </tr>
 	{% endfor %}
     </table>
 </div>

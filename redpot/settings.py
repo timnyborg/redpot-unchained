@@ -214,5 +214,6 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login'
 
 # Standard datetime format
-DATE_FORMAT = 'j M Y'
+DATE_FORMAT = 'j M Y'  # Used for standard formatting (e.g. {{ start_date | date }}
+SHORT_DATE_FORMAT = 'j M Y'  # Used for datatables, or using {{ start_date | date:"SHORT_DATE_FORMAT" }}
 DATETIME_FORMAT_FORMAT = 'j M Y H:i'
