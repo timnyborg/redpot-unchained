@@ -3,6 +3,7 @@ from django.db.models import Model, CharField, DateField, ForeignKey, IntegerFie
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
 
+
 class Module(Model):
     code = CharField(max_length=12, help_text='For details on codes, see <link>')    
     title = CharField(max_length=80)
@@ -10,8 +11,12 @@ class Module(Model):
     
     start_date = DateField(blank=True, null=True)
     end_date = DateField(blank=True, null=True)
-    
-    division = ForeignKey('programme.Division', DO_NOTHING, db_column='division', blank=True, null=True, limit_choices_to=Q(id__gt=8) | Q(id__lt=5))
+
+    michaelmas_end = DateField(blank=True, null=True)
+    hilary_start = DateField(blank=True, null=True)
+
+    division = ForeignKey('programme.Division', DO_NOTHING, db_column='division', blank=True, null=True,
+                          limit_choices_to=Q(id__gt=8) | Q(id__lt=5))
     portfolio = ForeignKey('programme.Portfolio', DO_NOTHING, db_column='portfolio', blank=True, null=True)
     
     status = ForeignKey('ModuleStatus', DO_NOTHING, db_column='status')
@@ -25,28 +30,22 @@ class Module(Model):
         return self.title
         
     def clean(self): 
-        # # Check both term start/end date fields are filled, or neither
-        # if bool(self.hilary_start) != bool(self.michaelmas_end):
-            # if self.hilary_start:
-                # raise ValidationError({
-                    # 'michaelmas_end': ValidationError('You must provide both term dates'),                
-                # })
-            # else:
-                # raise ValidationError({
-                    # 'hilary_start': ValidationError('You must provide both term dates'),                
-                # })
+        # Check both term start/end date fields are filled, or neither
+        if bool(self.hilary_start) != bool(self.michaelmas_end):
+            raise ValidationError({
+                'hilary_start': ValidationError('You must provide both term dates'),
+                'michaelmas_end': ValidationError('You must provide both term dates'),
+            })
 
         # Check end_date is equal or later to start_date
-        if self.end_date:
-            if self.start_date:
-                if self.end_date < self.start_date:
-                    raise ValidationError({
-                        'end_date': ValidationError('Cannot be earlier than start date'),                
-                    })                    
-            else:
-                raise ValidationError({
-                    'start_date': ValidationError('Please set a start date'),                
-                })
+        if self.end_date and not self.start_date:
+            raise ValidationError({
+                'start_date': ValidationError('Please set a start date'),
+            })
+        elif self.start_date and self.end_date and self.end_date < self.start_date:
+            raise ValidationError({
+                'end_date': ValidationError('End date cannot be earlier than start date'),
+            })
 
         # # Check if all components that make up the finance code are supplied, or none
         # components = ['cost_centre', 'activity_code', 'source_of_funds']
