@@ -1,0 +1,12 @@
+version: "2"
+
+services:
+  app:
+    env_file:
+      - ./dev.env
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8000"
+    image: redpot:latest

@@ -1,0 +1,11 @@
+# ignore .git, sockets, secrets, etc.
+Dockerfile
+docker-compose.yml
+.git
+*.sock
+__pycache__/
+*.py[cod]
+static/
+Pipfile*
+secrets.*
+*.env
