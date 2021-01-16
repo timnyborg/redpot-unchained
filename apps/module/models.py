@@ -61,14 +61,15 @@ class Module(Model):
                 # 'enrol_online': 'Online enrolment disallowed without cost centre, activity code and source of funds',
             # })
             
+    def save(self, *args, **kwargs):
         if not self.url:
             self.url = slugify(self.title)
-        
-        # self.update_status()  # Date changes may alter auto-status
-
-        # if self.status == 33: # cancelled 
+        # if self.status == 33: # cancelled
             # self.is_cancelled = True
             # self.auto_publish = False
+        # self.update_status()  # Date changes may alter auto-status.
+
+        super().save(*args, **kwargs)
 
 
 class ModuleStatus(Model):

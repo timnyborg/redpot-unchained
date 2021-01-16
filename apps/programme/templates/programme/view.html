@@ -116,7 +116,7 @@
     <thead><tr><th>Student</th><th>Start date</th><th>Leaving date</th><th></th></tr></thead>
 	{% for qa in students %}
         {% ifchanged %}
-            <th colspan="100%">{{ qa.start_date.year }}</th>
+            <th colspan="100%">{{ qa.academic_year }} </th>
         {% endifchanged %}
         <tr>
             <td><a href='#'>{{ qa.student}} </a></td>

@@ -61,6 +61,8 @@ class ViewLinkColumn(tables.Column):
 
 class ModuleSearchTable(tables.Table):
     view = ViewLinkColumn(verbose_name='')
+    start_date = tables.Column(attrs={"td": {"style": "white-space: nowrap;"}})
+    end_date = tables.Column(attrs={"td": {"style": "white-space: nowrap;"}})
     # qualification = tables.Column(order_by=['qualification__name'])  # override default ordering (elq_rank)
     
     class Meta:

@@ -223,6 +223,11 @@ class QA(models.Model):
         managed = False
         db_table = '[app].[qa]'
 
+    @property
+    def academic_year(self):
+        if self.start_date:
+            return self.start_date.year - (1 if self.start_date.month < 8 else 0)
+
 
 class Enrolment(models.Model):
     qa = models.ForeignKey('Qa', models.DO_NOTHING, db_column='qa', blank=True, null=True)

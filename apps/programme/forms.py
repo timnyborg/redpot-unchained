@@ -1,7 +1,6 @@
 from django.forms import ModelForm
 from apps.programme.models import Programme
 
-
 # Create the form class.
 class ProgrammeEditForm(ModelForm):
     class Meta:
@@ -18,7 +17,7 @@ class ProgrammeEditForm(ModelForm):
         # dynamically readonly a field
         self.fields['title'].disabled = True
         
-        # dynamically remove a feild
+        # dynamically remove a field
         if not user.has_perm('registry'):
             for f in ['student_load', 'funding_level', 'funding_source', 'study_mode', 'study_location']:
                 del self.fields[f]
