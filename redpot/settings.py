@@ -38,14 +38,14 @@ except FileNotFoundError:
     secrets = {}
     
 
-def get_secret(setting, secrets=secrets, ignore_error=False):
+def get_secret(setting, default=None):
     """Get secret setting or fail with ImproperlyConfigured"""
     if setting in secrets:
         return secrets[setting]
     if setting in os.environ:
         return os.environ[setting]
-    if ignore_error:
-        return ''
+    if default is not None:
+        return default
     raise ImproperlyConfigured("Set the {} setting".format(setting))
 
 # Sentry integration
@@ -54,7 +54,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 sentry_sdk.init(
-    dsn=get_secret("SENTRY_DSN", ignore_error=True),
+    dsn=get_secret("SENTRY_DSN", ''),
     integrations=[DjangoIntegration()],
     traces_sample_rate=1.0,
 
@@ -77,7 +77,7 @@ INSTALLED_APPS = [
     'menu', # django-simple-menu
     'django_tables2',
     'django_filters',
-    'widget_tweaks', # django-widget-tweaks
+    'widget_tweaks',  # django-widget-tweaks
     
     # project apps
     'apps.main',
@@ -85,7 +85,24 @@ INSTALLED_APPS = [
     'apps.module',
 ]
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.file' #while DB-sessions disabled
+if get_secret('REDIS_LOCATION', ''):
+    CACHES = {
+        # To separate redis session (semi-persistent) and redis cache (ephemeral), we could define a second
+        #  cache (key: session), point it to another port/instance and use it as the SESSION_CACHE_ALIAS
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": get_secret('REDIS_LOCATION'),
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "PASSWORD": get_secret('REDIS_PASSWORD'),
+            }
+        }
+    }
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_CACHE_ALIAS = "default"
+
+else:
+    SESSION_ENGINE = 'django.contrib.sessions.backends.file'  # while DB-sessions disabled
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -127,8 +144,8 @@ DATABASES = {
         'NAME': 'conted',
         'ENGINE': 'sql_server.pyodbc',
         'HOST': 'electriceel',
-        'USER': get_secret('DB_USER', ignore_error=True), # not really secret, but keeps credentials together
-        'PASSWORD': get_secret('DB_PASSWORD', ignore_error=True),
+        'USER': get_secret('DB_USER', ''),  # not really secret, but keeps credentials together
+        'PASSWORD': get_secret('DB_PASSWORD', ''),
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
         }
@@ -152,8 +169,8 @@ from django_auth_ldap.config import LDAPSearch
 import ldap
 
 AUTH_LDAP_SERVER_URI = "ldaps://ad3.conted.ox.ac.uk"
-AUTH_LDAP_BIND_DN = f"CN={get_secret('LDAP_USER', ignore_error=True)},OU=Staff,OU=OUDCE,DC=conted,DC=ox,DC=ac,DC=uk"
-AUTH_LDAP_BIND_PASSWORD = get_secret('LDAP_PASSWORD', ignore_error=True)
+AUTH_LDAP_BIND_DN = f"CN={get_secret('LDAP_USER', '')},OU=Staff,OU=OUDCE,DC=conted,DC=ox,DC=ac,DC=uk"
+AUTH_LDAP_BIND_PASSWORD = get_secret('LDAP_PASSWORD', '')
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
     "ou=Staff,ou=OUDCE,dc=conted,dc=ox,dc=ac,dc=uk", ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)"
 )
