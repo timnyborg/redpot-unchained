@@ -1,8 +1,8 @@
 from django.db import models
-from django.db.models import Model, CharField, DateField, ForeignKey, IntegerField, BooleanField, DO_NOTHING, Q
+from django.db.models import Model, CharField, DateField, ForeignKey, IntegerField, BooleanField, ImageField, DO_NOTHING, Q
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
-
+from django.urls import reverse
 
 class Module(Model):
     code = CharField(max_length=12, help_text='For details on codes, see <link>')    
@@ -21,14 +21,19 @@ class Module(Model):
     
     status = ForeignKey('ModuleStatus', DO_NOTHING, db_column='status')
     max_size = IntegerField(blank=True, null=True)
-    
+
+    image = ImageField(upload_to='uploads/%Y/%m/%d/', max_length=512, blank=True, null=True)
+
     class Meta:
         managed = False
         db_table = '[app].[module]'
         
     def __str__(self):
         return self.title
-        
+
+    def get_absolute_url(self):
+        return reverse('module:edit', args=[self.id])
+
     def clean(self): 
         # Check both term start/end date fields are filled, or neither
         if bool(self.hilary_start) != bool(self.michaelmas_end):
