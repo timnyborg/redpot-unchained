@@ -1,12 +1,21 @@
-version: "2"
+version: "3.8"
 
 services:
-  app:
-    env_file:
-      - ./dev.env
+  django:
+    image: redpot:latest
     build:
       context: .
       dockerfile: ./Dockerfile
+    secrets:
+      - source: app_config
+        target: /code/secrets.json
     ports:
-      - "8080:8000"
-    image: redpot:latest
+      - "8001-8002:8000"
+    deploy:
+      mode: replicated
+      replicas: 2
+    restart: always
+
+secrets:
+  app_config:
+    file: ./secrets.json
