@@ -10,13 +10,12 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 
-class ModuleSearchFilter(django_filters.FilterSet):    
+class ModuleSearchFilter(django_filters.FilterSet):
     def limit_years(self, queryset, field_name, value):
         if value:
             date_threshold = date.today() - relativedelta(years=3)
             return queryset.filter(start_date__gte=date_threshold)
         return queryset
-
 
     has_category = django_filters.BooleanFilter(
         label='Limit to last three years',
@@ -27,7 +26,7 @@ class ModuleSearchFilter(django_filters.FilterSet):
     class Meta:
         model = Module
         fields = {
-            'title': ['icontains'],
+            'title': ['unaccent__icontains'],
             'code': ['startswith'],
             'division': ['exact'],
             'portfolio': ['exact'],
@@ -46,6 +45,7 @@ class ModuleSearchFilter(django_filters.FilterSet):
 
 class ViewLinkColumn(tables.Column):
     empty_values=() # Prevents the table from rendering Nothing, since it's an entirely generated column
+
     def render(self, record):
         # url = reverse('module:view', args=[record.id])
         url = ''
@@ -58,6 +58,7 @@ class ViewLinkColumn(tables.Column):
             'verbose_name': '',
         })
         super(ViewLinkColumn, self).__init__(*args, **kwargs)
+
 
 class ModuleSearchTable(tables.Table):
     view = ViewLinkColumn(verbose_name='')
