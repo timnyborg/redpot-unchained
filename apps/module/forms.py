@@ -1,6 +1,7 @@
 from django.forms import ModelForm
 from .models import Module
 
+
 # Create the form class.
 class ModuleForm(ModelForm):
     class Meta:
@@ -11,5 +12,4 @@ class ModuleForm(ModelForm):
         super().__init__(*args, **kwargs)
         
         # self.fields.pop('start_date')
-        
-                  
+

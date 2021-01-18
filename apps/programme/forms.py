@@ -1,5 +1,6 @@
 from django.forms import ModelForm
-from apps.programme.models import Programme
+from apps.programme.models import Programme, ProgrammeModule
+from dal import autocomplete
 
 
 # Create the form class.
@@ -32,3 +33,17 @@ class ProgrammeNewForm(ModelForm):
     class Meta:
         model = Programme
         fields = ['title', 'qualification', 'division', 'portfolio', 'sits_code']
+
+
+class AttachModuleForm(ModelForm):
+    class Meta:
+        model = ProgrammeModule
+        fields = ['module']
+        widgets = {
+            'module': autocomplete.ModelSelect2(
+                url='autocomplete:module',
+                attrs={
+                    'data-minimum-input-length': 3
+                }
+            )
+        }

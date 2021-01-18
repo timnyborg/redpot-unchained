@@ -163,7 +163,6 @@ class Programme(Model):
 
 
 class ProgrammeModule(Model):
-    id = IntegerField(primary_key=True)
     programme = ForeignKey(Programme, DO_NOTHING, db_column='programme', blank=True, null=True)
     module = ForeignKey('module.Module', DO_NOTHING, db_column='module', blank=True, null=True)
 
@@ -248,8 +247,7 @@ class Enrolment(models.Model):
     class Meta:
         managed = False
         db_table = '[app].[enrolment]'
-        
-        
+
 
 class EnrolmentResult(models.Model):
     id = models.CharField(primary_key=True, max_length=4)

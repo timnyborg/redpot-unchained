@@ -14,6 +14,10 @@ from pathlib import Path
 import json
 import os
 from django.core.exceptions import ImproperlyConfigured
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+import ldap
+from django_auth_ldap.config import LDAPSearch
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,17 +46,12 @@ def get_secret(setting, default=None):
     """Get secret setting or fail with ImproperlyConfigured"""
     if setting in secrets:
         return secrets[setting]
-    if setting in os.environ:
-        return os.environ[setting]
     if default is not None:
         return default
     raise ImproperlyConfigured("Set the {} setting".format(setting))
 
+
 # Sentry integration
-
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-
 sentry_sdk.init(
     dsn=get_secret("SENTRY_DSN", ''),
     integrations=[DjangoIntegration()],
@@ -66,6 +65,10 @@ sentry_sdk.init(
 # Application definition
 
 INSTALLED_APPS = [
+    'dal',  # django-autocomplete-light
+    'dal_select2',  # django-autocomplete-light
+
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -74,7 +77,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # 3rd party apps
-    'menu', # django-simple-menu
+    'menu',  # django-simple-menu
     'django_tables2',
     'django_filters',
     'widget_tweaks',  # django-widget-tweaks
@@ -165,9 +168,6 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",  # To enable groups & permissions
 ]
 
-from django_auth_ldap.config import LDAPSearch
-import ldap
-
 AUTH_LDAP_SERVER_URI = "ldaps://ad3.conted.ox.ac.uk"
 AUTH_LDAP_BIND_DN = f"CN={get_secret('LDAP_USER', '')},OU=Staff,OU=OUDCE,DC=conted,DC=ox,DC=ac,DC=uk"
 AUTH_LDAP_BIND_PASSWORD = get_secret('LDAP_PASSWORD', '')
@@ -242,3 +242,7 @@ LOGIN_URL = '/login'
 DATE_FORMAT = 'j M Y'  # Used for standard formatting (e.g. {{ start_date | date }}
 SHORT_DATE_FORMAT = 'j M Y'  # Used for datatables, or using {{ start_date | date:"SHORT_DATE_FORMAT" }}
 DATETIME_FORMAT_FORMAT = 'j M Y H:i'
+
+# Email settings
+EMAIL_HOST = get_secret('EMAIL_HOST', '')
+DEFAULT_FROM_EMAIL = get_secret('DEFAULT_FROM_EMAIL', '')

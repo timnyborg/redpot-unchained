@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 
+
 class Module(Model):
     code = CharField(max_length=12, help_text='For details on codes, see <link>')    
     title = CharField(max_length=80)
@@ -30,6 +31,12 @@ class Module(Model):
         
     def __str__(self):
         return self.title
+
+    @property
+    def long_form(self):
+        if self.start_date:
+            return f'{self.code} - {self.title} ({self.start_date:%d %b %Y})'
+        return f'{self.code} - {self.title}'
 
     def get_absolute_url(self):
         return reverse('module:edit', args=[self.id])

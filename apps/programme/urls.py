@@ -8,5 +8,6 @@ urlpatterns = [
     path('new', views.New.as_view(), name='new'),
     path('view/<int:pk>', views.View.as_view(), name='view'),
     path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
-    path('add-module/<int:programme_id>', page_not_found, name='add-module'),
+    path('add-module/<int:programme_id>', views.AddModule.as_view(), name='add-module'),
+    path('remove-module/<int:programme_id>/<int:module_id>', views.remove_module, name='remove-module'),
 ]

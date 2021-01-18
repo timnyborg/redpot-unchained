@@ -85,24 +85,31 @@
     {% for module in modules %}
       
         <tr>
-            <td><a href="/module/view/\{\{=module.module.id\}\}">{{ module.code }}</a></td>
-            <td class="col-xs-4"><a href="/module/view/{{ module.id }}">
+            <td><a href="{{ module.get_absolute_url }}">{{ module.code }}</a></td>
+            <td class="col-xs-4"><a href="{{ module.get_absolute_url }}">
 			    {% if module.credit_points and programme.qualification == 1 %}
 					<span title="Credit-bearing module within a non-credit-bearing programme" class="text-danger">
-					\{\{=icon('exclamation-circle')\}\} </span>
+                        <i class="fas fa-exclamation-circle"></i>
+                    </span>
 				{% endif %}
 				{{ module }}</a>
 			</td>
             <td>{{ module.start_date | date }}</td>
             <td>{{ module.end_date | date }}</td>
             <td class="col-xs-3">{{ module.status.short_desc }} ({{ module.enrolment_count }}/{{ module.max_size }})</td>
-            <td><a><span class='fas fa-times'></span></a></td>
+            <td>
+                <a href="#"
+                    data-toggle="modal"
+                    data-target="#confirm-remove-module"
+                    data-href="{% url 'programme:remove-module' programme.id module.id %}?next={{ request.get_full_path }}#modules"
+                ><span class='fas fa-times'></span></a>
+            </td>
         </tr>
     {% endfor %}
     </table>
 </div>
 
-
+{% bootstrap3modal 'confirm-remove-module' 'Are you sure you wish to remove this module from this programme?' 'danger' 'Remove' %}
 
 <div class="section">
     <a id='students' class='nav-anchor'></a>

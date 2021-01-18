@@ -28,5 +28,6 @@ urlpatterns = [
     path('index/', apps.main.views.index),
     path('programme/', include('apps.programme.urls')),
     path('module/', include('apps.module.urls')),
+    path('autocomplete/', include('apps.autocomplete.urls')),
 
 ]

@@ -1,21 +1,24 @@
 from datetime import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count
-
 from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic.detail import DetailView
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse
+from django.shortcuts import redirect
+from django.http import Http404
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
 
-from django.contrib.messages.views import SuccessMessageMixin
-
 from apps.main.forms import PageTitleMixin
-from apps.module.models import ModuleStatus
-from .models import Programme, QA
-from .forms import ProgrammeEditForm, ProgrammeNewForm
+from apps.module.models import ModuleStatus, Module
+from .models import Programme, QA, ProgrammeModule
+from .forms import ProgrammeEditForm, ProgrammeNewForm, AttachModuleForm
 from .datatables import ProgrammeSearchTable, ProgrammeSearchFilter
 
 
@@ -31,7 +34,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
         enrolment_count = Count('enrolments', filter=Q(enrolments__status__in=[10, 11, 20, 90]))    
         modules = programme.modules.annotate(enrolment_count=enrolment_count
                                              ).select_related('status').order_by('-start_date')[:200].all()
-        
+
         module_count = programme.modules.count()
         students = QA.objects.filter(programme=programme.id).select_related('student').order_by('-start_date')[:200]
 
@@ -76,7 +79,8 @@ class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, CreateView):
         form.instance.modified_by = self.request.user.username
         form.instance.created_by = self.request.user.username
         return super().form_valid(form)
-    
+
+
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     template_name = 'programme/search.html'
     model = Programme
@@ -84,4 +88,33 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     filterset_class = ProgrammeSearchFilter
     subtitle = 'Search'
 
-    
+
+class AddModule(LoginRequiredMixin, PageTitleMixin, CreateView):
+    template_name = 'programme/add_module.html'
+    model = ProgrammeModule
+    form_class = AttachModuleForm
+    success_message = 'Module attached'
+
+    def get_initial(self):
+        self.initial = {'programme': self.kwargs['programme_id']}
+
+    def get_success_url(self):
+        return reverse('programme:view', args=[self.object.programme])#
+
+
+@login_required
+def remove_module(request, programme_id, module_id):
+    try:
+        programme = Programme.objects.get(id=programme_id)
+        module = Module.objects.get(id=module_id)
+    except (ProgrammeModule.DoesNotExist, Module.DoesNotExist):
+        raise Http404
+
+    programme.modules.remove(module)
+    messages.success(request, 'Module removed from programme')
+
+    # Example of a safe 'next' redirect (checked against an empty host list to prevent open redirect vulnerability)
+    # could be wrapped into a helper function (safe_next_redirect, which takes next and a fallback if null or invalid)
+    if url_has_allowed_host_and_scheme(request.GET.get('next'), allowed_hosts=None):
+        return redirect(request.GET.get('next'))
+    return redirect(record.module)
