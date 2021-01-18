@@ -20,6 +20,7 @@ class ModuleSearchFilter(django_filters.FilterSet):
     has_category = django_filters.BooleanFilter(
         label='Limit to last three years',
         method='limit_years',
+        initial=True,
         widget=forms.CheckboxInput
     )
     

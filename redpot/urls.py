@@ -18,9 +18,6 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 import apps.main.views
 
-def error(request):
-    1/0
-    return HttpResponse(i)
 
 urlpatterns = [
     path('login/', apps.main.views.CustomLoginView.as_view(), name='login'),
@@ -31,6 +28,5 @@ urlpatterns = [
     path('index/', apps.main.views.index),
     path('programme/', include('apps.programme.urls')),
     path('module/', include('apps.module.urls')),
-    
-    path('error/', error),
+
 ]
