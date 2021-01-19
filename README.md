@@ -15,8 +15,9 @@ Including:
 * Mixins for Classes, Forms, Models, etc.
 * Custom-defined Views, Validators, FieldTypes, FormFields, abstract Models, 
 * Templates, sub-templates, template tags, template filters
+* Model Managers for common filters (e.g. queries using is_active)
 
-# Installation
+# Installation (virtual machine)
 
 Make sure you have venv on your machine for creating virtual environments
 ```bash
@@ -32,6 +33,7 @@ Download the repository, create a virtual environment, install pre-reqs
 ```bash 
 git clone git@gitlab.conted.ox.ac.uk:django/redpot-unchained.git
 cd redpot-unchained
+sudo apt install $(cat ./dependencies.txt)
 python3 -m venv .venv
 source .venv/bin/activate
 pip3 install -r requirements.txt

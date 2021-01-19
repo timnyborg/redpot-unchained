@@ -28,6 +28,7 @@ RUN set -ex \
 
 # Copy in your requirements file
 ADD requirements.txt /requirements.txt
+ADD dependencies.txt /dependencies.txt
 
 # OR, if you're using a directory for your requirements, copy everything (comment out the above and uncomment this if so):
 # ADD requirements /requirements
@@ -39,11 +40,7 @@ RUN set -ex \
     build-essential \
     libpcre3-dev \
     libpq-dev \
-    unixodbc-dev \
-    libsasl2-dev \
-    python-dev \
-    libldap2-dev \
-    libssl-dev \
+    $(cat /dependencies.txt) \
     " \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
     && pip install --no-cache-dir -r /requirements.txt \
