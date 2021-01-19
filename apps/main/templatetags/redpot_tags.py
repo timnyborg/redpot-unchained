@@ -1,6 +1,8 @@
 from django import template
 from django.utils.safestring import mark_safe
+from ..models import User
 import socket 
+from django.core.cache import cache
 
 register = template.Library()
 
@@ -19,41 +21,24 @@ def edit_button(url, icon='edit', target='', tooltip='Edit details'):
     """
     return mark_safe(b)
 
-    
-@register.simple_tag
-def timestamp(record):
-    # This should be an inclusion tag
-    
-    created_on = record.created_on.strftime('%d %b %Y %H:%M') if record.created_on else ''
-    modified_on = record.modified_on.strftime('%d %b %Y %H:%M') if record.modified_on else ''
 
-    return mark_safe(f"""    
-        <div class="section-footer">
-            <div class="timestamp">
-                Created by { record.created_by}
-                <span class="timeago" 
-                    data-placement="bottom" 
-                    data-title="{ created_on }" 
-                    data-toggle="tooltip" 
-                    datetime="{ created_on }"
-                >
-                    { created_on }
-                </span>
-                <span class="separator">&bull;</span>
-                Edited by { record.modified_by } 
-                <span class="timeago" 
-                    data-placement="bottom" 
-                    data-title="{ modified_on }" 
-                    data-toggle="tooltip" 
-                    datetime="{ modified_on }"
-                >
-                    { modified_on }
-                </span>
-            </div>
-        </div>
-        """)
-        
-        
+@register.inclusion_tag('utility/timestamp.html')
+def timestamp(record):
+    return {'record': record}
+
+
+@register.filter
+def user_name(username):
+    def _get_name(_username):
+        try:
+            _instance = User.objects.get(username=_username)
+            return _instance.get_full_name()
+        except User.DoesNotExist:
+            return _username
+
+    return cache.get_or_set(f'user_name_{username}', lambda: _get_name(username))
+
+
 @register.inclusion_tag('utility/bootstrap3_form.html')
 def bootstrap3form(form, status_classes=True):
     return {'form': form, 'status_classes': status_classes} 

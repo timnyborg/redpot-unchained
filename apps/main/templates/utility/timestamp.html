@@ -1,0 +1,25 @@
+{% load redpot_tags %}
+
+<div class="section-footer">
+    <div class="timestamp">
+        Created by {{ record.created_by | user_name }}
+        <span class="timeago"
+            data-placement="bottom"
+            data-title="{{ record.created_on | date:'DATETIME_FORMAT' }}"
+            data-toggle="tooltip"
+            datetime="{{ record.created_on | date:'DATETIME_FORMAT' }}"
+        >
+            {{ record.created_on }}
+        </span>
+        <span class="separator">&bull;</span>
+        Edited by {{ record.modified_by | user_name }}
+        <span class="timeago"
+            data-placement="bottom"
+            data-title="{{ record.modified_on | date:'DATETIME_FORMAT' }}"
+            data-toggle="tooltip"
+            datetime="{{ record.modified_on | date:'DATETIME_FORMAT' }}"
+        >
+            {{ record.modified_on }}
+        </span>
+    </div>
+</div>

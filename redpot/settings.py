@@ -242,7 +242,7 @@ LOGIN_URL = '/login'
 # Standard datetime format
 DATE_FORMAT = 'j M Y'  # Used for standard formatting (e.g. {{ start_date | date }}
 SHORT_DATE_FORMAT = 'j M Y'  # Used for datatables, or using {{ start_date | date:"SHORT_DATE_FORMAT" }}
-DATETIME_FORMAT_FORMAT = 'j M Y H:i'
+DATETIME_FORMAT = 'j M Y H:i'
 
 # Email settings
 EMAIL_HOST = get_secret('EMAIL_HOST', '')
