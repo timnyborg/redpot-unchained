@@ -39,9 +39,16 @@ Menu.add_item("main", MenuItem(
     reverse("programme:search")
     ))
 
+finance_children = (
+    MenuItem("Invoices",
+             reverse("invoice:search"),
+             icon="search"),
+)
+
 Menu.add_item("main", MenuItem(
     "Finance",
-    reverse("programme:search")
+    '#',
+    children=finance_children
     ))
 
 Menu.add_item("main", MenuItem(

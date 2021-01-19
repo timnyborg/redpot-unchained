@@ -32,8 +32,9 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
 
         # Get 200 most recent child modules, with a count of enrolment places taken
         enrolment_count = Count('enrolments', filter=Q(enrolments__status__in=[10, 11, 20, 90]))    
-        modules = programme.modules.annotate(enrolment_count=enrolment_count
-                                             ).select_related('status').order_by('-start_date')[:200].all()
+        modules = programme.modules.annotate(
+            enrolment_count=enrolment_count
+        ).select_related('status').order_by('-start_date')[:200].all()
 
         module_count = programme.modules.count()
         students = QA.objects.filter(programme=programme.id).select_related('student').order_by('-start_date')[:200]
@@ -117,4 +118,4 @@ def remove_module(request, programme_id, module_id):
     # could be wrapped into a helper function (safe_next_redirect, which takes next and a fallback if null or invalid)
     if url_has_allowed_host_and_scheme(request.GET.get('next'), allowed_hosts=None):
         return redirect(request.GET.get('next'))
-    return redirect(record.module)
+    return redirect(module)

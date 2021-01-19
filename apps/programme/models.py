@@ -3,6 +3,7 @@ from django.db.models import Model, CharField, DateTimeField, EmailField, Boolea
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.urls import reverse
 from django.forms.widgets import TextInput
+from apps.main.models import SignatureModel
 
 
 class PhoneInput(TextInput):
@@ -24,7 +25,7 @@ class Portfolio(Model):
         managed = False
         db_table = '[app].[portfolio]'
         ordering = ['name']
-        
+
     def __str__(self):
         return self.name
         
@@ -45,14 +46,10 @@ class Division(Model):
         return self.name
   
 
-class StudyLocation(Model):
+class StudyLocation(SignatureModel):
     id = IntegerField(primary_key=True)
     description = CharField(max_length=64, blank=True, null=True)
     hesa_code = CharField(max_length=8, blank=True, null=True)
-    created_by = CharField(max_length=16, blank=True, null=True)
-    created_on = DateTimeField(blank=True, null=True)
-    modified_by = CharField(max_length=16, blank=True, null=True)
-    modified_on = DateTimeField(blank=True, null=True)
     is_active = BooleanField()
 
     class Meta:
@@ -63,7 +60,7 @@ class StudyLocation(Model):
         return self.description
   
 
-class Programme(Model):
+class Programme(SignatureModel):
     FUNDING_LEVELS = [
         (10, 'Undergraduate'),
         (11, 'Long undergraduate'),
@@ -120,7 +117,7 @@ class Programme(Model):
         (64, 'Dormant- previously part-time'),
     ]
 
-    modules = ManyToManyField('module.Module', through='ProgrammeModule')
+    modules = ManyToManyField('module.Module', through='ProgrammeModule', related_name='programmes')
 
     title = CharField(max_length=96, null=True)
     start_date = DateField(blank=True, null=True)
@@ -141,11 +138,6 @@ class Programme(Model):
     email = EmailField(max_length=64, blank=True, null=True)
     phone = PhoneField(max_length=64, blank=True, null=True)
 
-    created_by = CharField(max_length=8, blank=True, null=True, )
-    created_on = DateTimeField(blank=True, null=True, auto_now_add=True)
-    modified_by = CharField(max_length=8, blank=True, null=True)
-    modified_on = DateTimeField(blank=True, null=True, auto_now_add=True)
-
     class Meta:
         managed = False
         db_table = '[app].[programme]'
@@ -163,8 +155,8 @@ class Programme(Model):
 
 
 class ProgrammeModule(Model):
-    programme = ForeignKey(Programme, DO_NOTHING, db_column='programme', blank=True, null=True)
-    module = ForeignKey('module.Module', DO_NOTHING, db_column='module', blank=True, null=True)
+    programme = ForeignKey(Programme, DO_NOTHING, db_column='programme', blank=True, null=True, related_name='programme_modules')
+    module = ForeignKey('module.Module', DO_NOTHING, db_column='module', blank=True, null=True, related_name='programme_modules')
 
     class Meta:
         managed = False
@@ -172,15 +164,11 @@ class ProgrammeModule(Model):
         unique_together = (('programme', 'module'), ('module', 'programme'),)
         
         
-class Qualification(Model):
+class Qualification(SignatureModel):
     id = IntegerField(primary_key=True)
     name = CharField(max_length=64, blank=True, null=True)
     is_award = BooleanField(blank=True, null=True)
     is_postgraduate = BooleanField()
-    created_by = CharField(max_length=16, blank=True, null=True)
-    created_on = DateTimeField(blank=True, null=True)
-    modified_by = CharField(max_length=16, blank=True, null=True)
-    modified_on = DateTimeField(blank=True, null=True)
     on_hesa_return = BooleanField(blank=True, null=True)
     hesa_code = CharField(max_length=8, blank=True, null=True)
     elq_rank = IntegerField(blank=True, null=True)
@@ -228,16 +216,12 @@ class QA(models.Model):
             return self.start_date.year - (1 if self.start_date.month < 8 else 0)
 
 
-class Enrolment(models.Model):
+class Enrolment(SignatureModel):
     qa = models.ForeignKey('Qa', models.DO_NOTHING, db_column='qa', blank=True, null=True)
     module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', related_name='enrolments')
     status = models.ForeignKey('EnrolmentStatus', models.DO_NOTHING, db_column='status')
     result = models.ForeignKey('EnrolmentResult', models.DO_NOTHING, db_column='result')
     points_awarded = models.IntegerField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
     provenance = models.IntegerField(blank=True, null=True)
     provenance_details = models.CharField(max_length=128, blank=True, null=True)
     no_image_consent = models.BooleanField(blank=True, null=True)
@@ -249,14 +233,10 @@ class Enrolment(models.Model):
         db_table = '[app].[enrolment]'
 
 
-class EnrolmentResult(models.Model):
+class EnrolmentResult(SignatureModel):
     id = models.CharField(primary_key=True, max_length=4)
     description = models.CharField(max_length=128, blank=True, null=True)
     is_active = models.BooleanField()
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
     display_order = models.IntegerField(blank=True, null=True)
     hesa_code = models.CharField(max_length=1, blank=True, null=True)
     allow_certificate = models.BooleanField(blank=True, null=True)

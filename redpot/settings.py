@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'apps.main',
     'apps.programme',    
     'apps.module',
+    'apps.invoice',
 ]
 
 if get_secret('REDIS_LOCATION', ''):

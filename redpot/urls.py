@@ -18,7 +18,6 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 import apps.main.views
 
-
 urlpatterns = [
     path('login/', apps.main.views.CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='registration/logout.html'), name='logout'),
@@ -26,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', apps.main.views.index),
     path('index/', apps.main.views.index),
+    path('invoice/', include('apps.invoice.urls')),
     path('programme/', include('apps.programme.urls')),
     path('module/', include('apps.module.urls')),
     path('autocomplete/', include('apps.autocomplete.urls')),

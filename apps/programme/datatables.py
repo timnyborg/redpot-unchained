@@ -1,9 +1,9 @@
 import django_tables2 as tables
 from .models import Programme
-from django.utils.html import format_html
 import django_filters
-
 import django.forms as forms
+
+from apps.main.datatables import ViewLinkColumn
 
 
 class ProgrammeSearchFilter(django_filters.FilterSet):    
@@ -28,24 +28,6 @@ class ProgrammeSearchFilter(django_filters.FilterSet):
         if value:
             return queryset
         return queryset.filter(is_active=True)
-
-
-class ViewLinkColumn(tables.Column):
-    empty_values = ()  # Prevents the table from rendering Nothing, since it's an entirely generated column
-
-    def render(self, record): 
-        return format_html('<span class="fas fa-search" alt="View"></span>')    
-        
-    def __init__(self, verbose_name, **kwargs):
-        # Always disable sorting and header.
-        # Avoids having to say so every time it's used: view = ViewLinkColumn(orderable=False...)
-        kwargs.update({
-            'orderable': False,
-            'linkify': True,  # wraps render() in an <a> linking to get_absolute_url()
-            'accessor': 'id',  # could be literally anything on the
-            'exclude_from_export': True,
-        })
-        super(ViewLinkColumn, self).__init__(verbose_name=verbose_name, **kwargs)     
 
 
 class ProgrammeSearchTable(tables.Table):

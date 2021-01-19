@@ -3,7 +3,7 @@ from django.urls import reverse
 from .models import Module
 from django.utils.html import format_html
 import django_filters
-
+from apps.main.datatables import ViewLinkColumn
 import django.forms as forms
 import django.db.models as models
 from datetime import date
@@ -42,23 +42,6 @@ class ModuleSearchFilter(django_filters.FilterSet):
                 },
             },
         }
-
-
-class ViewLinkColumn(tables.Column):
-    empty_values=() # Prevents the table from rendering Nothing, since it's an entirely generated column
-
-    def render(self, record):
-        # url = reverse('module:view', args=[record.id])
-        url = ''
-        return format_html(f'<a href="{url}"><span class="fa fa-search" alt="View"></span></a>')    
-        
-    def __init__(self, *args, **kwargs):
-        # Always disable sorting and header.  Avoids having to say so every time it's used: view = ViewLinkColumn(orderable=False)
-        kwargs.update({
-            'orderable': False,
-            'verbose_name': '',
-        })
-        super(ViewLinkColumn, self).__init__(*args, **kwargs)
 
 
 class ModuleSearchTable(tables.Table):
