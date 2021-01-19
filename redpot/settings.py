@@ -81,7 +81,9 @@ INSTALLED_APPS = [
     'django_tables2',
     'django_filters',
     'widget_tweaks',  # django-widget-tweaks
-    
+    'django_celery_beat',
+    'django_celery_results',
+
     # project apps
     'apps.main',
     'apps.programme',    
@@ -247,3 +249,14 @@ DATETIME_FORMAT = 'j M Y H:i'
 # Email settings
 EMAIL_HOST = get_secret('EMAIL_HOST', '')
 DEFAULT_FROM_EMAIL = get_secret('DEFAULT_FROM_EMAIL', '')
+
+# Celery task queue - TODO: get this using the same settings as the cache
+CELERY_BROKER_URL = "redis://"
+CELERY_BROKER_HOST = "localhost"  # Maps to redis host.
+CELERY_BROKER_PORT = 6379         # Maps to redis port.
+CELERY_BROKER_PASSWORD = get_secret('REDIS_PASSWORD')
+CELERY_BROKER_VHOST = "0"         # Maps to database number.
+
+CELERY_RESULT_BACKEND = 'django-db'
+
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
