@@ -96,7 +96,7 @@
 			</td>
             <td>{{ module.start_date | date }}</td>
             <td>{{ module.end_date | date }}</td>
-            <td class="col-xs-3">{{ module.status.short_desc }} ({{ module.enrolment_count }}/{{ module.max_size }})</td>
+            <td class="col-xs-3">{{ module.status.short_desc }} ({{ module.enrolment_count }}/{{ module.max_size | default:'∞' }})</td>
             <td>
                 <a href="#"
                     data-toggle="modal"

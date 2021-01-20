@@ -67,7 +67,14 @@ def bootstrap3submit(text='Submit', btn_type='primary', offset=2):
         </div>
     """)
     
- 
+
+@register.simple_tag
+def bootstrap3backbutton(text='Back', btn_type='default'):
+    return mark_safe(f"""
+        <a class='btn btn-{btn_type}' href="javascript:history.back()">{text}</a>
+    """)
+
+
 @register.simple_tag
 def watermark(text=socket.gethostname()):
     return mark_safe(f"""

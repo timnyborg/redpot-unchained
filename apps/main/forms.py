@@ -35,7 +35,7 @@ class PageTitleMixin:
         else:
             return ''
 
-        if hasattr(self, 'object'):
+        if self.subtitle_object and (self, 'object'):
             return f'{stem} - {self.object}'
         return stem
 

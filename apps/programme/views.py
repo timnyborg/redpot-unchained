@@ -3,7 +3,7 @@ from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count
-from django.views.generic.edit import UpdateView, CreateView
+from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -103,19 +103,44 @@ class AddModule(LoginRequiredMixin, PageTitleMixin, CreateView):
         return reverse('programme:view', args=[self.object.programme])#
 
 
-@login_required
-def remove_module(request, programme_id, module_id):
-    try:
-        programme = Programme.objects.get(id=programme_id)
-        module = Module.objects.get(id=module_id)
-    except (ProgrammeModule.DoesNotExist, Module.DoesNotExist):
-        raise Http404
+# @login_required
+# def remove_module(request, programme_id, module_id):
+#     try:
+#         programme = Programme.objects.get(id=programme_id)
+#         module = Module.objects.get(id=module_id)
+#     except (Programme.DoesNotExist, Module.DoesNotExist):
+#         raise Http404
+#
+#     # programme.modules.remove(module)
+#     messages.success(request, 'Module removed from programme')
+#
+#     # Example of a safe 'next' redirect (checked against an empty host list to prevent open redirect vulnerability)
+#     # could be wrapped into a helper function (safe_next_redirect, which takes next and a fallback if null or invalid)
+#     if url_has_allowed_host_and_scheme(request.GET.get('next'), allowed_hosts=None):
+#         return redirect(request.GET.get('next'))
+#     return redirect(module)
 
-    programme.modules.remove(module)
-    messages.success(request, 'Module removed from programme')
 
-    # Example of a safe 'next' redirect (checked against an empty host list to prevent open redirect vulnerability)
-    # could be wrapped into a helper function (safe_next_redirect, which takes next and a fallback if null or invalid)
-    if url_has_allowed_host_and_scheme(request.GET.get('next'), allowed_hosts=None):
-        return redirect(request.GET.get('next'))
-    return redirect(module)
+class RemoveModule(LoginRequiredMixin, PageTitleMixin, DeleteView):
+    model = ProgrammeModule
+    template_name = 'programme/remove_module.html'
+    subtitle = 'Remove'
+    subtitle_object = False
+    success_message = 'Module removed from programme'
+
+    def get_object(self, queryset=None):
+        # A special override because I'm calling this class with /programme_id/module_id/ instead of /pk/
+        try:
+            _object = ProgrammeModule.objects.get(
+                programme=self.kwargs['programme_id'],
+                module=self.kwargs['module_id']
+            )
+            return _object
+        except self.model.DoesNotExist:
+            raise Http404
+
+    def get_success_url(self):
+        messages.success(self.request, self.success_message)  # DeleteViews don't do this automatically
+        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
+            return self.request.GET.get('next')
+        return self.object.module
