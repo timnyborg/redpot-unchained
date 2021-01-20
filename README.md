@@ -17,6 +17,13 @@ Including:
 * Templates, sub-templates, template tags, template filters
 * Model Managers for common filters (e.g. queries using is_active)
 
+### GET requests should be read-only
+See https://twitter.com/rombulow/status/990684463007907840
+
+A GET request should never change the model's state.  So our endpoints like programme/remove-module/ or module/publish/
+should only respond to POSTs.  This can be done through confirmation forms (e.g. an UpdateView or DeleteView, maybe in a 
+modal), javascript, or a host of other approaches.
+
 # Installation (virtual machine)
 
 Make sure you have venv on your machine for creating virtual environments
