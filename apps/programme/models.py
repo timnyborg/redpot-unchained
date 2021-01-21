@@ -70,7 +70,7 @@ class Programme(SignatureModel):
         (31, 'Long postgraduate research'),
         (99, 'Not in HESES population'),
     ]
-    
+
     FUNDING_SOURCES = [
         (1, 'Office for Students'),
         (2, 'HEFCW'),
@@ -117,8 +117,6 @@ class Programme(SignatureModel):
         (64, 'Dormant- previously part-time'),
     ]
 
-    modules = ManyToManyField('module.Module', through='ProgrammeModule', related_name='programmes')
-
     title = CharField(max_length=96, null=True)
     start_date = DateField(blank=True, null=True)
     end_date = DateField(blank=True, null=True)
@@ -138,6 +136,8 @@ class Programme(SignatureModel):
     email = EmailField(max_length=64, blank=True, null=True)
     phone = PhoneField(max_length=64, blank=True, null=True)
 
+    modules = ManyToManyField('module.Module', through='ProgrammeModule', related_name='programmes')
+
     class Meta:
         managed = False
         db_table = '[app].[programme]'
@@ -146,12 +146,12 @@ class Programme(SignatureModel):
                                      '(should just be one programme.edit permission'),
             ('edit_restricted_fields', 'Can edit dev-restricted fields (is_active, contact_list_display, sits_id'),
         ]
-        
-    def get_absolute_url(self):
-        return reverse('programme:view', args=[self.id])
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('programme:view', args=[self.id])
 
 
 class ProgrammeModule(Model):
@@ -197,11 +197,14 @@ class Student(models.Model):
         
     def __str__(self):
         return f'{self.firstname} {self.surname}'
-        
+
+    def get_absolute_url(self):
+        return reverse('student-view', args=[self.id])
+
         
 class QA(models.Model):
     student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
-    programme = models.IntegerField()
+    programme = models.ForeignKey('Programme', models.DO_NOTHING, db_column='programme',    related_name='qas')
     title = models.CharField(max_length=96, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)

@@ -6,5 +6,6 @@ from . import views
 app_name = 'invoice'
 urlpatterns = [
     path('search', views.Search.as_view(), name='search'),
-    path('view/<int:pk>', page_not_found, name='view'),
+    path('view/<int:pk>', views.View.as_view(), name='view'),
+    path('edit/<int:pk>', page_not_found, name='edit'),
 ]

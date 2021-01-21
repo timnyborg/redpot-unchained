@@ -16,7 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.views.generic import RedirectView
 import apps.main.views
+from redpot.settings import W2P_REDPOT_URL
 
 urlpatterns = [
     path('login/', apps.main.views.CustomLoginView.as_view(), name='login'),
@@ -30,4 +32,13 @@ urlpatterns = [
     path('module/', include('apps.module.urls')),
     path('autocomplete/', include('apps.autocomplete.urls')),
 
+    # Example of legacy URLs
+    path('student/view/<int:id>',
+         RedirectView.as_view(url=f'{W2P_REDPOT_URL}/student/view/%(id)s'),
+         name='student-view',
+         ),
+    path('student/<str:action>/<int:id>',
+         RedirectView.as_view(url=f'{W2P_REDPOT_URL}/student/%(action)s/%(id)s'),
+         name='student-view',
+         )
 ]

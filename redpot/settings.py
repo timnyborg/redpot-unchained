@@ -260,3 +260,6 @@ CELERY_BROKER_VHOST = "0"         # Maps to database number.
 CELERY_RESULT_BACKEND = 'django-db'
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# Legacy redpot url for cross-app mapping
+W2P_REDPOT_URL = get_secret('W2P_REDPOT_URL', 'https://redpot-staging.conted.ox.ac.uk')

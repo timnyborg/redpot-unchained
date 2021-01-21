@@ -21,3 +21,8 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     table_class = InvoiceSearchTable
     filterset_class = InvoiceSearchFilter
     subtitle = 'Search'
+
+
+class View(LoginRequiredMixin, PageTitleMixin, DetailView):
+    template_name = 'invoice/view.html'
+    model = Invoice

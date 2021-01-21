@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+
+{% block center %}
+<div class="section">
+    <div class="row">
+        <div class="col-xs-12 col-md-4">
+            {% url 'programme:edit' invoice.id as edit_url %}
+            {% edit_button edit_url %}
+            <h2>{{ invoice.full_number}}</h2>
+
+            <div class="clearfix"></div>
+            <dl class="dl-horizontal">
+                <dt>Invoiced_to</dt>
+                <dd>{{ invoice.invoiced_to }}</dd>
+                {% if invoice.FAO %}
+                    <dt>FAO</dt>
+                    <dd>{{ invoice.FAO }}</dd>
+                {% endif %}
+                <dt>Amount</dt>
+                <dd>£{{ invoice.amount | floatformat:2 }}</dd>
+                <dt>Invoiced on</dt>
+                <dd>{{ invoice.date | date }}</dd>
+                <dt>Due date</dt>
+                <dd>{{ invoice.due_date | date }}</dd>
+                <dt>Balance</dt>
+                <dd>£{{ invoice.balance | floatformat:2 }}</dd>
+            </dl>
+        </div>
+        <div class="col-md-6 hidden-xs hidden-sm"></div>
+        <div class='col-xs-12 col-md-2' >
+            <a class='btn btn-default btn-block'>Buttons</a>
+            <a class='btn btn-default btn-block'>Go</a>
+            <a class='btn btn-success btn-block'>Here</a>
+            {% if perms.invoice.add_credit %}
+                <a class='btn btn-warning btn-block'>Permission-limited</a>
+            {% endif %}
+            <a class='btn btn-info btn-block'>Another button</a>
+        </div>
+    </div>
+    {% timestamp invoice %}
+</div>
+{% endblock %}

@@ -32,16 +32,26 @@ class Module(Model):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        if not self.url:
+            self.url = slugify(self.title)
+        # if self.status == 33: # cancelled
+            # self.is_cancelled = True
+            # self.auto_publish = False
+        # self.update_status()  # Date changes may alter auto-status.
+
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('module:edit', args=[self.id])
+
     @property
     def long_form(self):
         if self.start_date:
             return f'{self.code} - {self.title} ({self.start_date:%d %b %Y})'
         return f'{self.code} - {self.title}'
-
-    def get_absolute_url(self):
-        return reverse('module:edit', args=[self.id])
-
-    def clean(self): 
+            
+    def clean(self):
         # Check both term start/end date fields are filled, or neither
         if bool(self.hilary_start) != bool(self.michaelmas_end):
             raise ValidationError({
@@ -67,21 +77,11 @@ class Module(Model):
                     # raise ValidationError({
                         # field: 'Please provide all of cost centre, activity code and source of funds, or neither',
                     # })
-                   
+
         # if not all(self.__attr__(field) for field in components) and self.enrol_online:
             # raise ValidationError({
                 # 'enrol_online': 'Online enrolment disallowed without cost centre, activity code and source of funds',
             # })
-            
-    def save(self, *args, **kwargs):
-        if not self.url:
-            self.url = slugify(self.title)
-        # if self.status == 33: # cancelled
-            # self.is_cancelled = True
-            # self.auto_publish = False
-        # self.update_status()  # Date changes may alter auto-status.
-
-        super().save(*args, **kwargs)
 
 
 class ModuleStatus(Model):

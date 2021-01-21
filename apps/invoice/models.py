@@ -43,6 +43,7 @@ class Invoice(SignatureModel):
     ref_no = models.CharField(max_length=64, blank=True, null=True)
     division = models.IntegerField(blank=True, null=True)
     allocation = models.IntegerField(blank=True, null=True)
+    # Due_date mapped from a column not following our naming scheme
     due_date = models.DateField(blank=True, null=True, db_column='duedate')
     contact_person = models.CharField(max_length=128, blank=True, null=True)
     contact_email = models.CharField(max_length=255, blank=True, null=True)
@@ -67,12 +68,11 @@ class Invoice(SignatureModel):
         managed = False
         db_table = '[app].[invoice]'
 
+    def __str__(self):
+        return f'{self.prefix}{self.number}'
+
     def get_absolute_url(self):
         return reverse('invoice:view', args=[self.id])
-
-    @property
-    def full_number(self):
-        return f'{self.prefix}{self.number}'
 
     def balance(self):
         return self.allocated_ledger_items.aggregate(sum=models.Sum('amount'))['sum']

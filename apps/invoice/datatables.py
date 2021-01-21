@@ -38,7 +38,7 @@ class InvoiceSearchFilter(django_filters.FilterSet):
 
     def address(self, queryset, field_name, value):
         if value:
-            return queryset # TODO: Implement
+            return queryset  # TODO: Implement
         return queryset
 
     class Meta:
@@ -48,13 +48,16 @@ class InvoiceSearchFilter(django_filters.FilterSet):
 
 class InvoiceSearchTable(tables.Table):
     view = ViewLinkColumn(verbose_name='')
-    full_number = tables.Column('Number', order_by=("id",))
+    number = tables.Column('Number', order_by=("id",))
     amount = PoundsColumn()
     balance = PoundsColumn()
+
+    def render_number(self, record):
+        return str(record)  # Get the full invoice number (EQ12345)
 
     class Meta:
         model = Invoice
         template_name = "django_tables2/bootstrap.html"
-        fields = ('full_number', 'invoiced_to', 'date', 'created_by', 'amount', 'balance')
+        fields = ('number', 'invoiced_to', 'date', 'created_by', 'amount', 'balance')
         per_page = 10
         order_by = ('-date', '-created_on',)
