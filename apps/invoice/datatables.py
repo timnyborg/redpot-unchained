@@ -16,12 +16,7 @@ class InvoiceSearchFilter(django_filters.FilterSet):
 
     def overdue_only(self, queryset, field_name, value):
         if value:
-            # Subquery - get a list of invoices with ledger totals > 0
-            outstanding = Invoice.objects.annotate(
-                balance=models.Sum('allocated_ledger_items__amount')
-            ).filter(balance__gt=0).values('id')
-            # Apply a filter to the queryset, limiting it to those outstanding invoices, plus check they're overdue
-            return queryset.filter(due_date__lt=date.today()).filter(id__in=outstanding)
+            return queryset.overdue()
         return queryset
 
     Overdue = django_filters.BooleanFilter(
@@ -32,12 +27,7 @@ class InvoiceSearchFilter(django_filters.FilterSet):
 
     def outstanding_only(self, queryset, field_name, value):
         if value:
-            # Subquery - get a list of invoices with ledger totals > 0
-            outstanding = Invoice.objects.annotate(
-                balance=models.Sum('allocated_ledger_items__amount')
-            ).filter(balance__gt=0).values('id')
-            # Apply a filter to the queryset, limiting it to those outstanding invoices
-            return queryset.filter(id__in=outstanding)
+            return queryset.outstanding()
         return queryset
 
     Outstanding = django_filters.BooleanFilter(

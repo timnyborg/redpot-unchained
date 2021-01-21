@@ -1,6 +1,26 @@
 from django.db import models
 from django.urls import reverse
 from apps.main.models import SignatureModel
+from datetime import date
+
+
+class InvoiceQuerySet(models.QuerySet):
+    def outstanding(self):
+        # Subquery - get a list of invoices with ledger totals > 0
+        # The performance may get worse as the number of invoices increases, in which case, it may be faster if the
+        #   subquery uses an outer reference, rather than being a big 'IN' check
+        outstanding = models.Subquery(
+            Invoice.objects.annotate(
+                balance=models.Sum('allocated_ledger_items__amount')
+            ).filter(balance__gt=0).values('id')
+        )
+
+        # Apply a filter to the queryset, limiting it to those outstanding invoices, plus check they're overdue
+        return self.filter(id__in=outstanding)
+
+    def overdue(self):
+        # Overdue only applies to outstanding
+        return self.outstanding().filter(due_date__lt=date.today())
 
 
 class Invoice(SignatureModel):
@@ -40,6 +60,8 @@ class Invoice(SignatureModel):
     allocated_ledger_items = models.ManyToManyField(
         'Ledger', through='InvoiceLedger', through_fields=('allocation', 'ledger'), related_name='allocated_invoice'
     )
+
+    objects = InvoiceQuerySet.as_manager()
 
     class Meta:
         managed = False
