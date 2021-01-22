@@ -31,11 +31,16 @@ class ProgrammeSearchFilter(django_filters.FilterSet):
 
 
 class ProgrammeSearchTable(tables.Table):
+    programme = tables.CheckBoxColumn(
+        accessor='id',
+        attrs={"th__input": {"id": "toggle-all"}},
+        orderable=False
+    )
     link = ViewLinkColumn('')
     qualification = tables.Column(order_by=['qualification__name'])  # override default ordering (elq_rank)
 
     class Meta:
         model = Programme
         template_name = "django_tables2/bootstrap.html"
-        fields = ("title", "division", "portfolio", "qualification",)
+        fields = ("programme", "title", "division", "portfolio", "qualification",)
         per_page = 10

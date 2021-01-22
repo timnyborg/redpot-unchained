@@ -17,8 +17,12 @@
 {% if request.GET %}
 	<div class="section">
 		{% if table.rows %}
-			<h3>Search results ({{ table.rows|length }})</h3>		
-			{% render_table table %}
+			<h3>Search results ({{ table.rows|length }})</h3>
+            <form action="/standard">
+			    {% render_table table %}
+                <input type="submit" value="Standard" class="btn btn-primary">
+                <input type="submit" value="Alternate" formaction="/elsewhere" class="btn btn-danger">
+            </form>
 		{% else %}
 		<div class="empty-state">
             <span class="fa fa-ban empty-state-icon"></span>
@@ -27,7 +31,17 @@
             Try broadening your query and search again
             </h5>            
 		</div>
-		{% endif %}
-	</div>
+        {% endif %}
+    </div>
 {% endif %}
+<script>
+    document.getElementById('toggle-all').onclick = function() {
+        // Get all other checkboxes
+        let checkboxes = document.querySelectorAll("input[type='checkbox']:not([id*='toggle-all'])");
+        for (let checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    }
+</script>
 {% endblock %}
+
