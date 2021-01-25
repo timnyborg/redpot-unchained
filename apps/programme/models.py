@@ -225,6 +225,9 @@ class Enrolment(SignatureModel):
         managed = False
         db_table = '[app].[enrolment]'
 
+    def get_absolute_url(self):
+        return '#'
+
 
 class EnrolmentResult(SignatureModel):
     id = models.CharField(primary_key=True, max_length=4)

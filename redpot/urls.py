@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.views.defaults import page_not_found
 from django.views.generic import RedirectView
 import apps.main.views
 from redpot.settings import W2P_REDPOT_URL
@@ -41,5 +42,7 @@ urlpatterns = [
     path('student/<str:action>/<int:id>',
          RedirectView.as_view(url=f'{W2P_REDPOT_URL}/student/%(action)s/%(id)s'),
          name='student-view',
-         )
+         ),
+
+    path('unimplemented', page_not_found, {'exception': 'Haven\'t built it yet'}, name='unimplemented')
 ]

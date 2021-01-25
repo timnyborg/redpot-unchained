@@ -1,11 +1,11 @@
 import django_tables2 as tables
-from .models import Invoice
+from .models import Invoice, Ledger
 import django_filters
 from apps.main.datatables import ViewLinkColumn, PoundsColumn
 import django.forms as forms
 import django.db.models as models
 from datetime import date
-
+from django.utils.html import mark_safe
 
 class InvoiceSearchFilter(django_filters.FilterSet):
     invoiced_to = django_filters.CharFilter(field_name='invoiced_to', label='Invoiced to', lookup_expr='icontains')
@@ -61,3 +61,32 @@ class InvoiceSearchTable(tables.Table):
         fields = ('number', 'invoiced_to', 'date', 'created_by', 'amount', 'balance')
         per_page = 10
         order_by = ('-date', '-created_on',)
+
+
+class InvoiceFeesTable(tables.Table):
+    amount = PoundsColumn()
+
+    class Meta:
+        model = Ledger
+        template_name = "django_tables2/bootstrap.html"
+        fields = ('amount', 'narrative', 'type', 'date', 'enrolment')
+        order_by = ('date', 'id')
+
+    enrolment = tables.Column(accessor=tables.A('enrolment'), linkify=True)
+
+    def render_enrolment(self, value):
+        return value.module.code
+
+
+class InvoicePaymentsTable(tables.Table):
+    print = tables.Column('', linkify=('unimplemented', {}), accessor='id')
+    amount = PoundsColumn()
+
+    class Meta:
+        model = Ledger
+        template_name = "django_tables2/bootstrap.html"
+        fields = ('amount', 'narrative', 'type', 'date')
+        order_by = ('date', 'id')
+
+    def render_print(self, record):
+        return mark_safe("<i class='fas fa-print'></i>")

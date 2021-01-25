@@ -91,15 +91,29 @@ class InvoiceLedger(models.Model):
         db_table = '[app].[invoice_ledger]'
 
 
+class TransactionType(models.Model):
+    id = models.IntegerField(primary_key=True)
+    description = models.CharField(max_length=32, blank=True, null=True)
+    is_cash = models.BooleanField()
+    is_active = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = '[app].[transaction_type]'
+
+    def __str__(self):
+        return self.description
+
+
 class Ledger(models.Model):
     date = models.DateTimeField(blank=True, null=True)
     amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
     finance_code = models.CharField(max_length=64, blank=True, null=True)
     narrative = models.CharField(max_length=128, blank=True, null=True)
     # division = models.ForeignKey(Division, models.DO_NOTHING, db_column='division', blank=True, null=True)
-    # type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
+    type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
     # account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
-    # enrolment = models.ForeignKey(Enrolment, models.DO_NOTHING, db_column='enrolment', blank=True, null=True)
+    enrolment = models.ForeignKey('programme.Enrolment', models.DO_NOTHING, db_column='enrolment', blank=True, null=True)
 
     allocation = models.IntegerField(blank=True, null=True)
     ref_no = models.IntegerField(blank=True, null=True)
