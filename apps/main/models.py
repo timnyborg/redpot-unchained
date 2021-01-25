@@ -1,9 +1,20 @@
+import os
+
 from django.db import models
+from django.forms.widgets import TextInput
 from django.contrib.auth.models import AbstractUser
+from django_resized import ResizedImageField
+from django.core.validators import RegexValidator
+from django.utils.deconstruct import deconstructible
 
 
-class User(AbstractUser):
-    pass
+class PhoneInput(TextInput):
+    input_type = 'tel'
+
+
+class PhoneField(models.CharField):
+    default_validators = [RegexValidator(regex='^[-0-9 +()]+$', message='Invalid phone number')]
+    widget = PhoneInput
 
 
 class SignatureModel(models.Model):
@@ -34,6 +45,34 @@ class SignatureModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+@deconstructible
+class PathAndRename(object):
+    """See https://stackoverflow.com/questions/25767787/django-cannot-create-migrations-for-imagefield-with-dynamic-upload-to-value"""
+
+    def __init__(self, sub_path):
+        self.path = sub_path
+
+    def __call__(self, instance, filename):
+        ext = filename.split('.')[-1]
+        # get filename
+        filename = f'{instance.username}.{ext}'
+        # return the whole path to the file
+        return os.path.join(self.path, filename)
+
+
+rename_profile_image = PathAndRename('images/staff_profile/')
+
+
+class User(SignatureModel, AbstractUser):
+    """Extends the standard django user model with additional fields"""
+    default_approver = models.CharField(max_length=32, blank=True, null=True)
+    role = models.CharField(max_length=512, blank=True, null=True)
+    image = ResizedImageField(upload_to=rename_profile_image, null=True, blank=True)
+    phone = PhoneField(max_length=512, blank=True, null=True)
+    room = models.CharField(max_length=512, blank=True, null=True)
+    on_facewall = models.BooleanField(default=True)
 
 
 @models.CharField.register_lookup

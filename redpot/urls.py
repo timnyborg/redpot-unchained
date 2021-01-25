@@ -31,6 +31,7 @@ urlpatterns = [
     path('programme/', include('apps.programme.urls')),
     path('module/', include('apps.module.urls')),
     path('autocomplete/', include('apps.autocomplete.urls')),
+    path('user/', include('apps.user.urls')),
 
     # Example of legacy URLs
     path('student/view/<int:id>',

@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     'apps.programme',    
     'apps.module',
     'apps.invoice',
+    'apps.user',
 ]
 
 if get_secret('REDIS_LOCATION', ''):
@@ -179,6 +180,7 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch(
 )
 
 AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
+AUTH_LDAP_ALWAYS_UPDATE_USER = False  # Only populate fields on the first login
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

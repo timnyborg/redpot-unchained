@@ -72,7 +72,7 @@ Menu.add_item("user", MenuItem(
 # Define children for the my account menu
 myaccount_children = (
     MenuItem("Edit Profile",
-             None,
+             reverse("user:profile"),
              icon="user"),
     MenuItem("Admin",
              reverse("admin:index"),

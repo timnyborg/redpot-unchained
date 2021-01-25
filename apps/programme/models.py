@@ -2,17 +2,7 @@ from django.db import models
 from django.db.models import Model, CharField, DateTimeField, EmailField, BooleanField, IntegerField, DateField, ManyToManyField, DecimalField, ForeignKey, DO_NOTHING, Q
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.urls import reverse
-from django.forms.widgets import TextInput
-from apps.main.models import SignatureModel
-
-
-class PhoneInput(TextInput):
-    input_type = 'tel'
-
-
-class PhoneField(CharField):
-    default_validators = [RegexValidator(regex='^[-0-9 +()]+$', message='Invalid phone number')]
-    widget = PhoneInput
+from apps.main.models import SignatureModel, PhoneInput, PhoneField
 
 
 class Portfolio(Model):
