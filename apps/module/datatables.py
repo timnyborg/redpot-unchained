@@ -23,6 +23,9 @@ class ModuleSearchFilter(django_filters.FilterSet):
         initial=True,
         widget=forms.CheckboxInput
     )
+
+    # Override the label while maintaining order.  Awkward.  Might as well do a custom order in the template
+    title__unaccent__icontains = django_filters.Filter(field_name='title', lookup_expr='unaccent__icontains', label='Title')
     
     class Meta:
         model = Module
@@ -31,17 +34,7 @@ class ModuleSearchFilter(django_filters.FilterSet):
             'code': ['startswith'],
             'division': ['exact'],
             'portfolio': ['exact'],
-            # 'is_active': ['exact'],
         }        
-        
-        filter_overrides = {
-            models.BooleanField: {
-                'filter_class': django_filters.BooleanFilter,
-                'extra': lambda f: {
-                   'widget': forms.CheckboxInput,
-                },
-            },
-        }
 
 
 class ModuleSearchTable(tables.Table):
