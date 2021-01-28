@@ -18,29 +18,18 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 import ldap
 from django_auth_ldap.config import LDAPSearch
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!u-m(8@4j#igthpl6&lr!%x^sr967p=*c6=n^g%yl06jaav1e&'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-# SECURITY WARNING: don't run with allowed_hosts * in production!
-ALLOWED_HOSTS = ['*']
 # The secrets approach needs real work.  Hopefully something will work for python & env-based (docker)
 try:
     with open(os.path.join(BASE_DIR, 'secrets.json')) as secrets_file:
         secrets = json.load(secrets_file)
 except FileNotFoundError:
     secrets = {}
-    
+
 
 def get_secret(setting, default=None):
     """Get secret setting or fail with ImproperlyConfigured"""
@@ -50,6 +39,18 @@ def get_secret(setting, default=None):
         return default
     raise ImproperlyConfigured("Set the {} setting".format(setting))
 
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = get_secret('DJANGO_SECRET_KEY', default=get_random_secret_key())
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+# SECURITY WARNING: don't run with allowed_hosts * in production!
+ALLOWED_HOSTS = ['*']
 
 # Sentry integration
 sentry_sdk.init(
@@ -92,19 +93,20 @@ INSTALLED_APPS = [
     'apps.user',
 ]
 
-if get_secret('REDIS_LOCATION', ''):
+if get_secret('REDIS_HOST', ''):
     CACHES = {
         # To separate redis session (semi-persistent) and redis cache (ephemeral), we could define a second
         #  cache (key: session), point it to another port/instance and use it as the SESSION_CACHE_ALIAS
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": get_secret('REDIS_LOCATION'),
+            "LOCATION": 'redis://%s:%s' % (get_secret('REDIS_HOST'), get_secret('REDIS_PORT', 6379)),
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
-                "PASSWORD": get_secret('REDIS_PASSWORD'),
+                "PASSWORD": get_secret('REDIS_PASSWORD', '')
             }
         }
     }
+
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
     SESSION_CACHE_ALIAS = "default"
 
@@ -134,7 +136,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'redpot.processors.layout_settings'
             ],
         },
     },
@@ -255,9 +256,9 @@ DEFAULT_FROM_EMAIL = get_secret('DEFAULT_FROM_EMAIL', '')
 
 # Celery task queue - TODO: get this using the same settings as the cache
 CELERY_BROKER_URL = "redis://"
-CELERY_BROKER_HOST = "localhost"  # Maps to redis host.
-CELERY_BROKER_PORT = 6379         # Maps to redis port.
-CELERY_BROKER_PASSWORD = get_secret('REDIS_PASSWORD')
+CELERY_BROKER_HOST = get_secret('REDIS_HOST', 'redis')  # Maps to redis host.
+CELERY_BROKER_PORT = get_secret('REDIS_PORT', 6379)  # Maps to redis port.
+CELERY_BROKER_PASSWORD = get_secret('REDIS_PASSWORD', '')
 CELERY_BROKER_VHOST = "0"         # Maps to database number.
 
 CELERY_RESULT_BACKEND = 'django-db'

@@ -16,6 +16,10 @@ services:
       replicas: 2
     restart: always
 
+  redis:
+    image: redis:6.0
+    restart: always
+
 secrets:
   app_config:
     file: ./secrets.json
