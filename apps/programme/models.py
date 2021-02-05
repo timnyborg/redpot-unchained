@@ -12,8 +12,8 @@ class Portfolio(Model):
     phone = CharField(max_length=256, blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[app].[portfolio]'
+        # managed = False
+        db_table = 'portfolio'
         ordering = ['name']
 
     def __str__(self):
@@ -28,8 +28,8 @@ class Division(Model):
     # manager = ForeignKey(AuthUser, DO_NOTHING, db_column='manager', blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[app].[division]'
+        # managed = False
+        db_table = 'division'
         ordering = ['name']
         
     def __str__(self):
@@ -43,8 +43,8 @@ class StudyLocation(SignatureModel):
     is_active = BooleanField()
 
     class Meta:
-        managed = False
-        db_table = '[app].[study_location]'
+        # managed = False
+        db_table = 'study_location'
         
     def __str__(self):
         return self.description
@@ -129,8 +129,8 @@ class Programme(SignatureModel):
     modules = ManyToManyField('module.Module', through='ProgrammeModule', related_name='programmes')
 
     class Meta:
-        managed = False
-        db_table = '[app].[programme]'
+        # managed = False
+        db_table = 'programme'
         permissions = [
             ('edit_registry_fields', 'Can edit programme fields like Study Location or Student Load '
                                      '(should just be one programme.edit permission'),
@@ -149,8 +149,8 @@ class ProgrammeModule(Model):
     module = ForeignKey('module.Module', DO_NOTHING, db_column='module', blank=True, null=True, related_name='programme_modules')
 
     class Meta:
-        managed = False
-        db_table = '[app].[programme_module]'
+        # managed = False
+        db_table = 'programme_module'
         unique_together = (('programme', 'module'), ('module', 'programme'),)
         
         
@@ -165,8 +165,8 @@ class Qualification(SignatureModel):
     is_matriculated = BooleanField()
 
     class Meta:
-        managed = False
-        db_table = '[app].[qualification]'
+        # managed = False
+        db_table = 'qualification'
         ordering = ['elq_rank']
         
     def __str__(self):
@@ -182,8 +182,8 @@ class Student(models.Model):
     firstname = models.CharField(max_length=40, blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[app].[student]'
+        # managed = False
+        db_table = 'student'
         
     def __str__(self):
         return f'{self.firstname} {self.surname}'
@@ -200,8 +200,8 @@ class QA(models.Model):
     end_date = models.DateField(blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[app].[qa]'
+        # managed = False
+        db_table = 'qa'
 
     @property
     def academic_year(self):
@@ -222,8 +222,8 @@ class Enrolment(SignatureModel):
     transcript_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[app].[enrolment]'
+        # managed = False
+        db_table = 'enrolment'
 
     def get_absolute_url(self):
         return '#'
@@ -238,8 +238,8 @@ class EnrolmentResult(SignatureModel):
     allow_certificate = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[app].[enrolment_result]'
+        # managed = False
+        db_table = 'enrolment_result'
         
         
 class EnrolmentStatus(models.Model):
@@ -250,5 +250,5 @@ class EnrolmentStatus(models.Model):
     on_hesa_return = models.BooleanField()
 
     class Meta:
-        managed = False
-        db_table = '[app].[enrolment_status]'
+        # managed = False
+        db_table = 'enrolment_status'

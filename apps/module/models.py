@@ -20,10 +20,10 @@ class Module(SignatureModel, Model):
     hilary_start = DateField(blank=True, null=True)
 
     division = ForeignKey('programme.Division', DO_NOTHING, db_column='division',
-                          limit_choices_to=Q(id__gt=8) | Q(id__lt=5))
-    portfolio = ForeignKey('programme.Portfolio', DO_NOTHING, db_column='portfolio')
+                          limit_choices_to=Q(id__gt=8) | Q(id__lt=5), default=1)
+    portfolio = ForeignKey('programme.Portfolio', DO_NOTHING, db_column='portfolio', default=1)
     
-    status = ForeignKey('ModuleStatus', DO_NOTHING, db_column='status')
+    status = ForeignKey('ModuleStatus', DO_NOTHING, db_column='status', default=10)
     max_size = IntegerField(blank=True, null=True)
 
     image = ImageField(upload_to='uploads/%Y/%m/%d/', max_length=512, blank=True, null=True)
@@ -46,9 +46,9 @@ class Module(SignatureModel, Model):
     duration = models.FloatField(blank=True, null=True)
     no_meetings = models.IntegerField(blank=True, null=True)
 
-    auto_publish = models.BooleanField()
+    auto_publish = models.BooleanField(default=False)
 
-    is_published = models.BooleanField()
+    is_published = models.BooleanField(default=False)
     # finance_code = models.CharField(max_length=64, blank=True, null=True)
     email = models.CharField(max_length=256, blank=True, null=True)
     phone = models.CharField(max_length=256, blank=True, null=True)
@@ -71,26 +71,25 @@ class Module(SignatureModel, Model):
     teaching_outcomes = models.TextField(blank=True, null=True)
     selection_criteria = models.TextField(blank=True, null=True)
     it_requirements = models.TextField(blank=True, null=True)
-    full_time_equivalent = models.DecimalField(max_digits=4, decimal_places=1)
     credit_points = models.IntegerField(blank=True, null=True)
     points_level = models.IntegerField(blank=True, null=True)
     enrol_online = models.BooleanField(blank=True, null=True)
-    non_credit_bearing = models.BooleanField()
-    auto_feedback = models.BooleanField()
-    auto_reminder = models.BooleanField()
-    no_search = models.BooleanField()
+    non_credit_bearing = models.BooleanField(default=True)
+    auto_feedback = models.BooleanField(default=True)
+    auto_reminder = models.BooleanField(default=True)
+    no_search = models.BooleanField(default=False)
     week_number = models.IntegerField(blank=True, null=True)
 
     custom_fee = models.CharField(max_length=1012, blank=True, null=True)
     # format = models.ForeignKey('ModuleFormat', models.DO_NOTHING, db_column='format', blank=True, null=True)
 
-    is_cancelled = models.BooleanField()
+    is_cancelled = models.BooleanField(default=False)
     default_non_credit = models.BooleanField(blank=True, null=True)
     note = models.CharField(max_length=512, blank=True, null=True)
     # terms_and_conditions = models.ForeignKey('TermsAndConditions', models.DO_NOTHING, db_column='terms_and_conditions')
     apply_url = models.CharField(max_length=512, blank=True, null=True)
     further_details = models.TextField(blank=True, null=True)
-    is_repeat = models.BooleanField()
+    is_repeat = models.BooleanField(default=False)
     reminder_sent_on = models.DateTimeField(blank=True, null=True)
     room = models.CharField(max_length=12, blank=True, null=True)
     room_setup = models.CharField(max_length=12, blank=True, null=True)
@@ -116,8 +115,8 @@ class Module(SignatureModel, Model):
     reading_list_links = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[app].[module]'
+        # managed = False
+        db_table = 'module'
         
     def __str__(self):
         return self.title
@@ -182,8 +181,8 @@ class ModuleStatus(Model):
     waiting_list = BooleanField(blank=True, null=True)   
 
     class Meta:
-        managed = False
-        db_table = '[app].[module_status]'
+        # managed = False
+        db_table = 'module_status'
         ordering = ['id']
         
     def __str__(self):

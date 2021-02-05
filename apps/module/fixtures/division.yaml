@@ -1,0 +1,7 @@
+- model: programme.division
+  pk: 1
+  fields:
+    name: Central
+    shortname: OUDCE
+    email: redpot-support@conted.ox.ac.uk
+    finance_prefix: EQ

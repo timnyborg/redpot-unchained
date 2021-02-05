@@ -149,9 +149,9 @@ WSGI_APPLICATION = 'redpot.wsgi.application'
 
 DATABASES = {   
     'default': {
-        'NAME': 'conted',
+        'NAME': get_secret('DB_NAME', ''),
         'ENGINE': 'sql_server.pyodbc',
-        'HOST': 'electriceel',
+        'HOST': get_secret('DB_HOST', ''),
         'USER': get_secret('DB_USER', ''),  # not really secret, but keeps credentials together
         'PASSWORD': get_secret('DB_PASSWORD', ''),
         'OPTIONS': {

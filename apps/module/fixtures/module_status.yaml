@@ -1,0 +1,119 @@
+- model: module.modulestatus
+  pk: 10
+  fields:
+    description: Do not publish
+    publish: false
+    short_desc: Do not publish
+    waiting_list: true
+- model: module.modulestatus
+  pk: 11
+  fields:
+    description: Applications not yet being accepted
+    publish: true
+    short_desc: Applications not open
+    waiting_list: false
+- model: module.modulestatus
+  pk: 20
+  fields:
+    description: Applications being accepted
+    publish: true
+    short_desc: Applications open
+    waiting_list: false
+- model: module.modulestatus
+  pk: 21
+  fields:
+    description: In progress - still open to new applications
+    publish: true
+    short_desc: In progress (applications open)
+    waiting_list: false
+- model: module.modulestatus
+  pk: 22
+  fields:
+    description: See course details
+    publish: true
+    short_desc: See course details
+    waiting_list: true
+- model: module.modulestatus
+  pk: 23
+  fields:
+    description: Dates to be confirmed - Not yet accepting applications
+    publish: true
+    short_desc: Dates TBC (applications not open)
+    waiting_list: false
+- model: module.modulestatus
+  pk: 24
+  fields:
+    description: Dates to be confirmed - Accepting applications
+    publish: true
+    short_desc: Dates TBC (applications open)
+    waiting_list: false
+- model: module.modulestatus
+  pk: 30
+  fields:
+    description: Closed to new applications
+    publish: true
+    short_desc: Applications ended
+    waiting_list: true
+- model: module.modulestatus
+  pk: 31
+  fields:
+    description: In progress - closed to new applications
+    publish: true
+    short_desc: In progress (applications ended)
+    waiting_list: true
+- model: module.modulestatus
+  pk: 32
+  fields:
+    description: Course ended
+    publish: true
+    short_desc: Course ended
+    waiting_list: true
+- model: module.modulestatus
+  pk: 33
+  fields:
+    description: Course cancelled
+    publish: false
+    short_desc: Course cancelled
+    waiting_list: true
+- model: module.modulestatus
+  pk: 34
+  fields:
+    description: Course withdrawn
+    publish: false
+    short_desc: Course withdrawn
+    waiting_list: false
+- model: module.modulestatus
+  pk: 35
+  fields:
+    description: Course Full
+    publish: true
+    short_desc: Course full
+    waiting_list: true
+- model: module.modulestatus
+  pk: 36
+  fields:
+    description: Course full for current intake
+    publish: true
+    short_desc: Current course full
+    waiting_list: true
+- model: module.modulestatus
+  pk: 80
+  fields:
+    description: Unpublished
+    publish: false
+    short_desc: Unpublished
+    waiting_list: true
+- model: module.modulestatus
+  pk: 83
+  fields:
+    description: Course cancelled - Not Published
+    publish: false
+    short_desc: Course cancelled (not published)
+    waiting_list: true
+- model: module.modulestatus
+  pk: 84
+  fields:
+    description: Course withdrawn - Not Published
+    publish: false
+    short_desc: Course withdrawn (not published)
+    waiting_list: true

@@ -1,0 +1,7 @@
+- model: programme.portfolio
+  pk: 1
+  fields:
+    name: Continuing Education
+    division: 1
+    email: null
+    phone: null
