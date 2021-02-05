@@ -2,7 +2,7 @@ from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
-from apps.main.forms import PageTitleMixin
+from apps.main.utils.views import PageTitleMixin
 
 from apps.main.models import User
 

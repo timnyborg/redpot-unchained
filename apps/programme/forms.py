@@ -17,7 +17,7 @@ class ProgrammeEditForm(ModelForm):
         
         self.user = user
         # dynamically readonly a field
-        self.fields['title'].disabled = True
+        # self.fields['title'].disabled = True
         
         # dynamically remove a field
         if not user.has_perm('registry'):

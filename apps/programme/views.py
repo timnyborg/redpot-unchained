@@ -1,22 +1,20 @@
 from datetime import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse
-from django.shortcuts import redirect
 from django.http import Http404
 from django.utils.http import url_has_allowed_host_and_scheme
 
 from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
 
-from apps.main.forms import PageTitleMixin
-from apps.module.models import ModuleStatus, Module
+from apps.main.utils.views import PageTitleMixin
+from apps.module.models import ModuleStatus
 from .models import Programme, QA, ProgrammeModule
 from .forms import ProgrammeEditForm, ProgrammeNewForm, AttachModuleForm
 from .datatables import ProgrammeSearchTable, ProgrammeSearchFilter

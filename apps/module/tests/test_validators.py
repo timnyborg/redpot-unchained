@@ -5,7 +5,7 @@ from django.test import TestCase
 from ..models import Module
 
 
-class ModuleTestCase(TestCase):
+class TestModuleValidators(TestCase):
     def setUp(self):
         self.module = Module(
             title='Test module',

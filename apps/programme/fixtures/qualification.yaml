@@ -1,0 +1,150 @@
+- model: programme.qualification
+  pk: 1
+  fields:
+    name: Non-accredited activity
+    is_award: false
+    is_postgraduate: false
+    on_hesa_return: false
+    hesa_code: X99
+    elq_rank: 0
+    is_matriculated: false
+- model: programme.qualification
+  pk: 2
+  fields:
+    name: Doctorate degree mainly by research
+    is_award: true
+    is_postgraduate: true
+    on_hesa_return: false
+    hesa_code: D00
+    elq_rank: 80
+    is_matriculated: true
+- model: programme.qualification
+  pk: 3
+  fields:
+    name: Doctorate degree not mainly by research
+    is_award: true
+    is_postgraduate: true
+    on_hesa_return: false
+    hesa_code: E00
+    elq_rank: 80
+    is_matriculated: true
+- model: programme.qualification
+  pk: 5
+  fields:
+    name: Masters degree
+    is_award: true
+    is_postgraduate: true
+    on_hesa_return: false
+    hesa_code: M00
+    elq_rank: 73
+    is_matriculated: true
+- model: programme.qualification
+  pk: 6
+  fields:
+    name: Postgraduate certificate
+    is_award: true
+    is_postgraduate: true
+    on_hesa_return: false
+    hesa_code: M44
+    elq_rank: 71
+    is_matriculated: false
+- model: programme.qualification
+  pk: 7
+  fields:
+    name: Postgraduate diploma
+    is_award: true
+    is_postgraduate: true
+    on_hesa_return: false
+    hesa_code: M41
+    elq_rank: 72
+    is_matriculated: false
+- model: programme.qualification
+  pk: 8
+  fields:
+    name: Postgraduate diploma or certificate
+    is_award: true
+    is_postgraduate: true
+    on_hesa_return: false
+    hesa_code: H80
+    elq_rank: 61
+    is_matriculated: false
+- model: programme.qualification
+  pk: 30
+  fields:
+    name: Certificate of Higher Education
+    is_award: true
+    is_postgraduate: false
+    on_hesa_return: false
+    hesa_code: C20
+    elq_rank: 40
+    is_matriculated: false
+- model: programme.qualification
+  pk: 32
+  fields:
+    name: Other undergraduate diplomas and certificates
+    is_award: true
+    is_postgraduate: false
+    on_hesa_return: false
+    hesa_code: H60
+    elq_rank: 60
+    is_matriculated: false
+- model: programme.qualification
+  pk: 33
+  fields:
+    name: Undergraduate or foundation certificate
+    is_award: true
+    is_postgraduate: false
+    on_hesa_return: false
+    hesa_code: C42
+    elq_rank: 40
+    is_matriculated: false
+- model: programme.qualification
+  pk: 34
+  fields:
+    name: Undergraduate diploma
+    is_award: true
+    is_postgraduate: false
+    on_hesa_return: false
+    hesa_code: I80
+    elq_rank: 55
+    is_matriculated: false
+- model: programme.qualification
+  pk: 35
+  fields:
+    name: Undergraduate advanced diploma
+    is_award: true
+    is_postgraduate: false
+    on_hesa_return: false
+    hesa_code: H41
+    elq_rank: 51
+    is_matriculated: false
+- model: programme.qualification
+  pk: 61
+  fields:
+    name: Institutional undergraduate credit
+    is_award: false
+    is_postgraduate: false
+    on_hesa_return: true
+    hesa_code: C90
+    elq_rank: 40
+    is_matriculated: false
+- model: programme.qualification
+  pk: 62
+  fields:
+    name: Institutional doctoral credit
+    is_award: false
+    is_postgraduate: true
+    on_hesa_return: true
+    hesa_code: E90
+    elq_rank: 80
+    is_matriculated: false
+- model: programme.qualification
+  pk: 63
+  fields:
+    name: Institutional postgraduate credit (short courses)
+    is_award: false
+    is_postgraduate: true
+    on_hesa_return: true
+    hesa_code: M90
+    elq_rank: 70
+    is_matriculated: false
