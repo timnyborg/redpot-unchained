@@ -633,47 +633,6 @@ class Ethnicity(models.Model):
         db_table = 'ethnicity'
 
 
-class Fee(models.Model):
-    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module', blank=True, null=True)
-    amount = models.DecimalField(max_digits=19, decimal_places=4)
-    type = models.ForeignKey('FeeType', models.DO_NOTHING, db_column='type', blank=True, null=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
-    finance_code = models.CharField(max_length=64, blank=True, null=True)
-    account = models.CharField(max_length=64)
-    eufee = models.BooleanField()
-    is_visible = models.BooleanField()
-    is_payable = models.BooleanField()
-    is_compulsory = models.BooleanField()
-    is_catering = models.BooleanField(blank=True, null=True)
-    is_single_accom = models.BooleanField(blank=True, null=True)
-    is_twin_accom = models.BooleanField(blank=True, null=True)
-    credit_fee = models.BooleanField()
-    created_on = models.DateTimeField()
-    created_by = models.CharField(max_length=32, blank=True, null=True)
-    modified_on = models.DateTimeField()
-    modified_by = models.CharField(max_length=32, blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
-    limit = models.IntegerField(blank=True, null=True)
-    allocation = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'fee'
-
-
-class FeeType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    narrative = models.CharField(max_length=64, blank=True, null=True)
-    account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
-    display_order = models.IntegerField(blank=True, null=True)
-    is_tuition = models.BooleanField()
-    is_active = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'fee_type'
-
-
 class Feedback(models.Model):
     module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module')
     rate_tutor = models.IntegerField(blank=True, null=True)
@@ -849,25 +808,6 @@ class Limit(models.Model):
     class Meta:
         managed = False
         db_table = 'limit'
-
-
-class Location(models.Model):
-    name = models.CharField(max_length=64, blank=True, null=True)
-    address = models.CharField(max_length=128, blank=True, null=True)
-    city = models.CharField(max_length=64, blank=True, null=True)
-    postcode = models.CharField(max_length=50, blank=True, null=True)
-    longitude = models.FloatField(blank=True, null=True)
-    latitude = models.FloatField(blank=True, null=True)
-    building = models.CharField(max_length=64, blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'location'
-        unique_together = (('id', 'name'),)
 
 
 class Login(models.Model):
@@ -1061,14 +1001,6 @@ class ModuleEquipment(models.Model):
     class Meta:
         managed = False
         db_table = 'module_equipment'
-
-
-class ModuleFormat(models.Model):
-    description = models.CharField(max_length=50, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'module_format'
 
 
 class ModuleHecosSubject(models.Model):
@@ -1815,54 +1747,6 @@ class StaffRole(models.Model):
     class Meta:
         managed = False
         db_table = 'staff_role'
-
-
-class Student(models.Model):
-    husid = models.BigIntegerField(blank=True, null=True)
-    surname = models.CharField(max_length=40, blank=True, null=True)
-    firstname = models.CharField(max_length=40, blank=True, null=True)
-    title = models.CharField(max_length=20, blank=True, null=True)
-    middlename = models.CharField(max_length=40, blank=True, null=True)
-    nickname = models.CharField(max_length=64, blank=True, null=True)
-    birthdate = models.DateField(blank=True, null=True)
-    gender = models.CharField(max_length=1, blank=True, null=True)
-    domicile = models.IntegerField(blank=True, null=True)
-    nationality = models.IntegerField(blank=True, null=True)
-    ethnicity = models.IntegerField(blank=True, null=True)
-    religion_or_belief = models.IntegerField()
-    disability = models.IntegerField(blank=True, null=True)
-    occupation = models.CharField(max_length=128, blank=True, null=True)
-    termtime_postcode = models.CharField(max_length=32, blank=True, null=True)
-    note = models.CharField(max_length=1024, blank=True, null=True)
-    no_publicity = models.BooleanField(blank=True, null=True)
-    is_flagged = models.BooleanField()
-    is_eu = models.BooleanField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    deceased = models.BooleanField(db_column='Deceased', blank=True, null=True)  # Field name made lowercase.
-    disability_detail = models.CharField(max_length=2048, blank=True, null=True)
-    disability_action = models.CharField(max_length=256, blank=True, null=True)
-    dars_optout = models.BooleanField()
-    termtime_accommodation = models.IntegerField(blank=True, null=True)
-    sits_id = models.IntegerField(blank=True, null=True)
-    full_name = models.CharField(max_length=82, blank=True, null=True)
-    highest_qualification = models.CharField(max_length=128, blank=True, null=True)
-    mail_optin = models.BooleanField()
-    mail_optin_on = models.DateTimeField(blank=True, null=True)
-    mail_optin_method = models.CharField(max_length=64, blank=True, null=True)
-    email_optin = models.BooleanField()
-    email_optin_method = models.CharField(max_length=64, blank=True, null=True)
-    email_optin_on = models.DateTimeField(blank=True, null=True)
-    phone_optin = models.BooleanField()
-    phone_optin_on = models.DateTimeField(blank=True, null=True)
-    phone_optin_method = models.CharField(max_length=64, blank=True, null=True)
-    mailchimp_member_id = models.CharField(max_length=25, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'student'
 
 
 class StudentArchive(models.Model):

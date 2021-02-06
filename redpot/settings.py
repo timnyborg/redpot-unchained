@@ -87,8 +87,10 @@ INSTALLED_APPS = [
 
     # project apps
     'apps.main',
+    'apps.student',
     'apps.programme',    
     'apps.module',
+    'apps.enrolment',
     'apps.invoice',
     'apps.user',
 ]

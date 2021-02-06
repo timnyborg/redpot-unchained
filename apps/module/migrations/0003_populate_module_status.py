@@ -13,7 +13,7 @@ def load_fixture(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('module', '0002_foreign_keys'),
+        ('module', '0002_add_foreign_keys'),
     ]
 
     operations = [

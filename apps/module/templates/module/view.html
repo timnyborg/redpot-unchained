@@ -1,0 +1,694 @@
+{% extends 'layout_9_3.html' %}
+{% load redpot_tags %}
+
+{% block right_sidebar %}
+<div class="hidden-xs affix-top" data-spy="affix" data-offset-top="105" id="sidebar">
+    <ul class="nav sidenav">
+    </ul>
+</div>
+{% endblock %}
+
+{% block center %}
+
+<div class="section">
+    {% if module.is_cancelled %}
+        <div class="section-alert-header alert-danger" role="alert">
+            <i class="fa fa-exclamation-circle"></i>
+            <b>Course cancelled</b>
+        </div>
+    {% endif %}
+    <div class='row'>
+        <div class='col-md-4 col-md-push-8'>
+            <h3>Web publication</h3>
+            {% if publish_check.accepted %}
+                <h5>This course can be published</h5>
+            {% else %}
+                <h5>This course cannot be published</h5>
+
+                {% for field, error in publish_check.error.items %}
+                    =P(SPAN(_class='fa fa-times text-danger'), publishing_error_messages[field]) if error else ''
+                {% endfor %}
+            {% endif %}
+
+            {% if module.auto_publish %}
+                <div class="btn-group">
+                    <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <i class="fas fa-cog"></i>
+                        Automatic
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/manual_publish/{{ module.id }}">
+                                <span class="fas fa-user"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            {% else %}
+                <div class="btn-group">
+                    {% verbatim %}
+                    {{=A(icon_text('Manual ', 'user'), SPAN(_class='caret'), _href='#', _class='btn btn-warning dropdown-toggle', data={'toggle':'dropdown'})}}
+                    <ul class="dropdown-menu">
+                        <li>
+                            {{=rich_menu_item(
+                                url=URL('auto_publish', args=module.id), _icon='cog', header='Automatic',
+                                text='The course will be published and unpublished on the set dates. Its status will be changed according to the open, closed, start, and end dates.')
+                            }}
+                        </li>
+                    </ul>
+                    {% endverbatim %}
+                </div>
+            {% endif %}
+
+
+            {% if module.is_published %}
+                <div class="btn-group">
+                    <a href="#" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                        <i class="fas fa-check"></i>
+                        Publication stuff
+                        <span class="caret"></span>
+                    </a>
+                </div>
+            {% else %}
+
+            {% endif %}
+
+            <p></p> 
+            <!--validation for annual prospectus publication-->
+            {% if prospectus_check.included %}
+                {% if prospectus_check.accepted %}
+                    <p>
+                        <i class="fas fa-check text-success">
+                            This course will be included in the {{ 'YEAR' }} prospectus
+                        </i>
+                    </p>
+                {% else %}
+                    {% verbatim %}
+                    <h5>This course is not yet eligible for the {{=prospectus_check.prospectus_year}} prospectus</h5>
+                    {{for field, error in prospectus_check.error.items():
+                        =P(SPAN(_class='fa fa-times text-danger'), prospectus_error_messages[field]) if error else ''
+                    pass}}
+                    {% endverbatim %}
+                {% endif %}
+            {% endif %}
+
+            <p></p>
+            <h5>Course status</h5>
+            <div class="btn-group" >
+                {% verbatim %}
+                {{=A(module.status.description + ' ', SPAN(_class='caret') if not module.auto_publish else '', \
+                     _href='#', \
+                     _class='btn btn-primary' + (' disabled' if module.status == 33 else ' dropdown-toggle') + ('' if not module.auto_publish else ' disabled'), \
+                     data={'toggle':'' if module.status == 33 else 'dropdown'})}}
+                <ul class="dropdown-menu">
+                    {{for status in idb(idb.module_status.id>0).select():
+                        = LI(A(status.description, _href=URL('set_status', args=[module.id, status.id])))
+                    pass}}
+                </ul>
+                {% endverbatim %}
+            </div>
+            <!--<h5>Publication dates</h5>
+            <p>List of the dates, but maybe only if it's set to automatic?  No reason to show Publish Date and Unpublish Date otherwise.</p>-->
+
+            {% verbatim %}
+            <p>
+                <div class="btn-group">
+                    {{=A(icon_text('Webpage', 'globe'), _href='%s/courses/%s?code=%s' % (WWW_ADDRESS, module.url, module.code), _target='_blank', _class='btn btn-default')}}
+                </div>
+            </p>
+
+            <hr>
+
+            <!-- Auto remainders / feedback set to off / on upon course cancellations and uncancellations respectively-->
+            <h5>Automated reminders</h5>
+            {% if module.reminder_sent_on %}
+                <h4>
+                <span class="label label-success">
+                    {{=icon_text('Sent on %s' % formatdate(module.reminder_sent_on), 'envelope')}}
+                </span>
+                </h4>
+
+            {{elif module.auto_reminder:}}
+                <div class="btn-group">
+                    {{=A(icon_text('Enabled ', 'check'), SPAN(_class='caret'), _href='#', _class='btn btn-success dropdown-toggle', data={'toggle':'dropdown'})}}
+                    <ul class="dropdown-menu">
+                        <li>{{=A(icon_text('Disable', 'remove'), _href=URL('toggle_auto_reminder', args=module.id))}}</li>
+                    </ul>
+                </div>
+
+            {% else %}
+                <div class="btn-group">
+                    {{=A(icon_text('Disabled ', 'remove'), SPAN(_class='caret'), _href='#', _class='btn btn-danger dropdown-toggle', data={'toggle':'dropdown'})}}
+                    <ul class="dropdown-menu">
+                        <li>
+                            {{=rich_menu_item(
+                                url=URL('toggle_auto_reminder', args=module.id), _icon='check', header='Enable',
+                                text='Students will be emailed a reminder about the course, 5 days before it starts.')
+                            }}
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="btn-group">
+                {{=A(icon_text('Preview', 'exclamation'), _href=URL('notify','precourse','index',args=module.code), _target='_blank', _class='btn btn-default')}}
+            </div>
+
+            <hr>
+
+            <h5>Automated feedback</h5>
+            {% if module.auto_feedback %}
+                <div class="btn-group">
+                    {{=A(icon_text('Enabled ', 'check'), SPAN(_class='caret'), _href='#', _class='btn btn-success dropdown-toggle', data={'toggle':'dropdown'})}}
+                    <ul class="dropdown-menu">
+                        <li>{{=A(icon_text('Disable', 'remove'), _href=URL('disable_feedback', args=module.id))}}</li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    {{=A(icon_text('View', 'exclamation'), _href=URL('feedback','results','module',args=module.code), _target='_blank', _class='btn btn-default')}}
+                </div>
+            {% else %}
+                <div class="btn-group">
+                    {{=A(icon_text('Disabled ', 'remove'), SPAN(_class='caret'), _href='#', _class='btn btn-danger dropdown-toggle', data={'toggle':'dropdown'})}}
+                    <ul class="dropdown-menu">
+                        <li>
+                            {{=rich_menu_item(
+                                url=URL('enable_feedback', args=module.id), _icon='check', header='Enable',
+                                text='Students will be emailed to request feedback the morning after the course ends.')
+                            }}
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+
+            <hr>
+            <h3>Data tools</h3>
+            <p>
+
+                {{=A(
+                    SPAN(icon_text('Uncancel course' if module.is_cancelled else 'Cancel course', 'remove')),
+                    _class="btn btn-danger dropdown-toggle",
+                    _href=URL('uncancel' if module.is_cancelled else 'cancel', args=module.id)
+                )}}
+            </p>
+            <p>
+              <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <span class="fa fa-cog"></span> Other <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="{{=URL('create_moodle_ids', args=module.id)}}"><span class="fa fa-id-card"></span> Assign Moodle IDs</a></li>
+                    <li><a href="{{=URL('award_points', args=module.id)}}"><span class="fa fa-graduation-cap"></span> Award CATS points</a></li>
+                    <li><a href="{{=URL('clone', args=module.id)}}"><span class="fa fa-files-o"></span> Clone this module</a></li>
+                    <li><a href="{{=URL('copy_fields', args=module.id)}}"><span class="fa fa-paste"></span> Copy web fields</a></li>
+                    <li><a href="{{=URL('import_from_template', args=module.id)}}"><span class="fa fa-upload"></span> Import students from template</a></li>
+                    {% if auth.has_membership('cabs') and module.portfolio==32 and module.room and module.room_setup %}
+                    <li><a href="{{=URL('cabs_booking', args=module.id)}}"><span class="fa fa-taxi"></span> Book course into CABS</a></li>
+                    {% endif %}
+                </ul>
+              </div>
+            </p>
+            <p>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <span class="fa fa-file-text"></span> Reports <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="http://square/reports/report/Finance/Financial%20report%20per%20module?code={{=module.code}}" target="_blank"><span class="fa fa-gbp"></span> Financial statement</a></li>
+                        <li><a href="{{=URL('financial_statement', args=[module.id, 'summary'])}}"><span class="fa fa-gbp"></span> Financial statement (summary)</a></li>
+                        <li><a href="{{=URL('catering', args=module.id)}}"><span class="fa fa-cutlery"></span> Catering</a></li>
+                        <li><a href="{{=URL('accommodation', args=module.id)}}"><span class="fa fa-hotel"></span> Accommodation</a></li>
+                        <li><a href="{{=URL('module', 'refund_request', args=module.id)}}"><span class="fa fa-gbp"></span> Refund request (.docx)</a></li>
+                        <li><a href="{{=URL('class_register', args=module.id)}}"><span class="fa fa-file-word-o"></span> Class register (.docx)</a></li>
+                        {% if module.portfolio in (32, 17) %}
+                        <li><a href="{{=URL('syllabus', args=module.id)}}"><span class="fa fa-th-list"></span> Weekly class syllabus</a></li>
+                        {% endif %}
+                        {% if module.portfolio==32 %}
+                        <li class='{{="disabled" if not module_books else ""}}'><a href="{{=WWW_ADDRESS+'/courses/reading-list-pdf/'+module.code}}"><span class="fa fa-file-word-o"></span> Reading list for students (.pdf)</a></li>
+                        <li class='{{="disabled" if not module_books else ""}}'><a href="{{=URL('reading_list', args=[module.code,True])}}"><span class="fa fa-file-word-o"></span> Reading list for library (.docx)</a></li>
+                        {% endif %}
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{{=URL('student_list', args=module.id)}}"><span class="fa fa-file-excel-o"></span> Student list (.xlsx)</a></li>
+                        {% if module.portfolio==17 %}
+                        <li><a href="{{=URL('moodle_list', args=module.id)}}"><span class="fa fa-file-excel-o"></span> Moodle student list (.xlsx)</a></li>
+                        {% endif %}
+                        {% if module.code[-3:]=='HEC' %}
+                        <li><a href="{{=URL('student','certhe_progress', args=(0,module.id))}}"><span class="fa fa-certificate"></span> CertHE progress report (.docx)</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </p>
+        </div>
+        {% endverbatim %}
+
+        <div class='col-md-8 col-md-pull-4'>
+            <hr class='visible-xs visible-sm'>            
+            <a id='details' class='nav-anchor'></a>
+            <h2>Details</h2>
+
+            <dl class="dl-horizontal">
+                <dt>URL</dt>
+                <dd>{{ module.url }}</dd>
+                <dt>Division</dt>
+                <dd>{{ module.division }}</dd>
+                <dt>Portfolio</dt>
+                <dd>{{ module.portfolio }}</dd>
+                <dt>Format</dt>
+                <dd>{{ module.format }}</dd>
+                <dt>Finance code</dt><dd>{{ module.finance_code }}</dd>
+                <dt>Class size</dt>
+                <dd>{{ module.max_size }}</dd>
+                {% if module.no_meetings %}
+                    <dt># of meetings</dt>
+                    <dd>{{ module.no_meetings }}</dd>
+                {% endif %}
+                {% if module.credit_points %}
+                    <dt>Credit points</dt>
+                    <dd>{{ module.credit_points }}</dd>
+                {% endif %}
+                {% if module.apply_url %}
+                    <dt>Apply URL</dt>
+                    <dd>{{ module.apply_url }}</dd>
+                {% endif %}
+                <dt>Email</dt>
+                <dd>{{ module.email }}</dd>
+                {% if module.phone %}
+                    <dt>Phone</dt>
+                    <dd>{{ module.phone }}</dd>
+                {% endif %}
+                {% if module.note %}
+                    <dt>Note</dt>
+                    <dd>{{ module.note }}</dd>
+                {% endif %}
+            </dl>
+            <h4>Dates</h4>
+            <dl class="dl-horizontal">
+                <dt>Start date</dt>
+                <dd>{{ module.start_date | date:'j M Y (l)' }}</dd>
+                <dt>End date</dt>
+                <dd>{{ module.end_date | date:'j M Y (l)' }}</dd>
+
+                <dt>Start time</dt>
+                <dd>{{ module.start_time | default:'–'  }}</dd>
+                <dt>End time</dt>
+                <dd>{{ module.end_time | default:'–'  }}</dd>
+                {% if module.meeting_time %}
+                    <dt>meeting_time</dt>
+                    <dd>{{ module.meeting_time }}</dd>
+                {% endif %}
+                <dt>Open date</dt>
+                <dd>{{ module.open_date | default:'–' }}</dd>
+                <dt>Closed date</dt>
+                <dd>{{ module.closed_date | default:'–'  }}</dd>
+
+                {% if module.auto_publish %}
+                    <dt>Publish date</dt>
+                    <dd>{{ module.publish_date | default:'–'  }}</dd>
+                    <dt>Unpublish date</dt>
+                    <dd>{{ module.unpublish_date | default:'–'  }}</dd>
+                {% endif %}
+                {% if module.michaelmas_end or module.hilary_start %}
+                    <dt>michaelmas_end</dt>
+                    <dd>{{ module.michaelmas_end | default:'–'  }}</dd>
+                    <dt>hilary_start</dt>
+                    <dd>{{ module.hilary_start | default:'–'  }}</dd>
+                {% endif %}
+            </dl>
+
+            <h4>Location</h4>
+            <dl class="dl-horizontal">
+                <dt>Location</dt>
+                <dd>{{ module.location }}</dd>
+                {% if module.room %}
+                    <dt>Room</dt>
+                    <dd>{{ module.room }}</dd>
+                {% endif %}
+            </dl>
+
+            <h4>Marketing types <small>
+                <a href="/marketing_type/{{ module.id }}"><i class="fas fas-pencil-alt"></i></a>
+            </small></h4>
+            {% for marketing_type in module.marketing_types %}
+                <span class='label label-info'>{{ marketing_type.name }}</span>
+            {% endfor %}
+
+            <h4>Subjects
+                <a href="/subject/{{ module.id }}">
+                    <small><span class="fas fa-pencil-alt"></span></small>
+                </a>
+            </h4>
+            <p>
+            {% for subject in module.subjects %}
+                <span class='label label-warning'>{{ subject.name }}</span>
+            {% endfor %}
+            </p>
+            {% if not module.non_credit_bearing and not module.hecos_subjects %}
+                <p><span class="text-danger fa fa-exclamation-triangle"></span> <b>This module has no HESA-reporting subjects set</b></p>
+            {% endif %}
+        </div>
+    </div>
+    <br/>
+    {% timestamp module %}
+</div>
+
+    {% verbatim %}
+
+{% if other_runs %}
+<div class="section">
+    <a id='other_runs' class='nav-anchor'></a>
+    <h2>Other runs</h2>
+    <ul class="item-list hide-items" data-max-item=3>
+    {% for row in other_runs %}
+        <li class="item">
+            <div class="row">
+                <div class="item-title col-xs-12 col-md-2">
+                {{=A(row.code, _href=URL('view', args=row.id))}}
+                </div>
+                <div class="item-info col-xs-6 col-md-7">
+                    {{=A(row.title, _href=URL('view', args=row.id))}}
+                </div>
+                <div class="item-info col-xs-6 col-md-3">
+                {{=formatdate(row.start_date)}}
+                    {% if row.end_date and row.end_date != row.start_date %}
+                        &ndash; {{=formatdate(row.end_date)}}
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+    {% endif %}
+    </ul>
+</div>
+{% endif %}
+
+    {% endverbatim %}
+
+<div class="section">
+    <a id='enrolments' class='nav-anchor' data-badge-text='{{ enrolments | length }}'></a>
+    <h2>Enrolments</h2>
+    <dl class='dl-horizontal'>
+        <dt>Places taken<dt><dd>{{ module.places_taken }} / {{ module.max_size | default:'INFINITY' }}</dd>
+        <dt>Records<dt><dd>{{ enrolments | length }}</dd>
+    </dl>
+    {% if enrolments %}
+        <table class="table table-condensed table-striped table-hover hide-rows">
+        <thead>
+            <tr>
+                <th>Surname</th>
+                <th>Firstname</th>
+                <th>Status</th>
+                {% if not module.non_credit_bearing %}
+                <th>Result</th>
+                <th>Points</th>
+                {% endif %}
+                <th></th>
+            </tr>
+        </thead>
+    {% endif %}
+    {% for enrolment in enrolments %}
+        <tr>
+            <td><a href="">{{ enrolment.student.surname }}</a></td>
+            <td><a href="">{{ enrolment.student.firstname }}</a></td>
+            <td>{{ enrolment.status.description }}</td>
+            {% if not module.non_credit_bearing %}
+            <td>{{ enrolment.result.description }}</td>
+            <td>{{ enrolment.points_awarded | default:'–'}}</td>
+            {% endif %}
+            <td><a href=""><i class="fas fa-pencil-alt"></i></a></td>
+        </tr>
+    {% endfor %}
+
+    </table>
+    {% verbatim %}
+    {{=A(icon_text('Missing student details', 'question-mark'), _class='btn btn-success', _href=URL('module', 'missing_student_details_list', args=module.id))}}
+</div>
+
+
+
+
+{{waitlist_count = idb(idb.module_waitlist.module==module.id).count()}}
+{% if waitlist %}
+<div class="section">
+    <a id='waitlist' class='nav-anchor' data-badge-text='{{=waitlist_count}}'></a>
+    <h2>Waiting list</h2>
+        {{ =waitlist }}
+        <br>
+    <div class="btn-group pull-right" style="top:-20px">
+        {{=A(icon_text('Email entire list', 'envelope'), SPAN(_class='caret'), _href='#', _class='btn btn-info dropdown-toggle', data={'toggle':'dropdown'})}}
+        <ul class="dropdown-menu">
+            {% if next_run %}
+            <li>{{=A(icon_text('New run of course', ''), _href=URL('waitlist', 'email_list', args=[next_run, 'new', module.id]))}}</li>
+            {% endif %}
+            <li>{{=A(icon_text('Places available on course (enrol online)', ''), _href=URL('waitlist', 'email_list', args=[module.id, 'places_online']))}}</li>
+            <li>{{=A(icon_text('Places available on course (enrol by form)', ''), _href=URL('waitlist', 'email_list', args=[module.id, 'places_form']))}}</li>
+        </ul>
+    </div>
+
+</div>
+{% endif %}
+{% if applications %}
+<div class="section">
+    <a id='application_forms' class='nav-anchor'></a>
+    <h2>Applications</h2>
+    <table id="{{='applications' if applications and len(applications) > 10 else ''}}" class="table table-condensed table-striped table-hover hide-rows">
+    <thead><tr><th>Surname</th><th>Firstname</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    
+    {{for application in applications:
+        edit_button = A(icon('pencil'), _href=URL('form', 'view', args=application.id))
+        if application.is_completed == 1:
+            status_label = SPAN('Completed', _class='label label-success')
+        else:
+            status_label = SPAN('In progress', _class='label label-default')
+        pass
+        
+        if application.student:
+            student_link = URL('student', 'view', args=application.student)
+            =TR(A(application.surname, _href=student_link), A(application.fname, _href=student_link), status_label, edit_button)
+        else:
+            =TR(application.surname, application.fname, status_label, edit_button)
+        pass
+    pass}}
+    </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% endverbatim %}
+    
+<div class="section">
+    <div class="btn-group btn-group-xs pull-right top-right-button">
+        <a href="fee/new/{{ module.id }}" class="btn btn-success" role="button"><span class="fa fa-plus"></span> Add fees</a>
+      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="caret"></span>
+        <span class="sr-only">Toggle Dropdown</span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="copy-fees/{{ module.id }}"><span class="fa fa-gbp"></span> Copy fees</a></li>
+      </ul>
+    </div>
+    <a id='fees' class='nav-anchor'></a>
+    <h2>Fees</h2>
+    {% if fees %}
+        <table class="table table-condensed table-striped table-hover">
+            <thead><tr><th>Tuition</th><th></th><th></th><th></th></tr></thead>
+            {% for fee in fees %}
+                {% if fee.type.narrative == 'Programme fee' %}
+                    <tr>
+                        <td>{{ fee.description }}</td>
+                        <td></td>
+                        <td>£{{ fee.amount | floatformat:2 }}</td>
+                        <td class="quick-icons">
+                            <a href=""><i class="fas fa-pencil-alt"></i></a>
+                            <a href=""><i class="fas fa-times"></i></a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            <tr><th>Other</th><th></th><th></th><th></th></tr>
+            {% for fee in fees %}
+                {% if fee.type.narrative != 'Programme fee' %}
+                    <tr>
+                        <td>{{ fee.description }}</td>
+                        <td>{{ fee.type.narrative }}</td>
+                        <td>£{{ fee.amount | floatformat:2 }}</td>
+                        <td class="quick-icons">
+                            <a href=""><i class="fas fa-pencil-alt"></i></a>
+                            <a href=""><i class="fas fa-times"></i></a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    {% verbatim %}
+
+    {% if discounts %}
+    <table class="table table-condensed table-striped">
+      <thead><tr><th>Discount codes</th><th></th><th></th></tr></thead>
+      {{for discount in discounts:
+          =TR(discount.discount.name+' ('+str(discount.discount.percent)+'%)', discount.discount.code, 'All students eligible' if discount.eligibility==0 else 'limited eligibility (see discount manager)')
+          pass
+      }}
+    </table>
+    {% endif %}
+</div>
+
+{% if module.portfolio == 32 %}
+<div class="section">
+    <a id='reading-list' class='nav-anchor'></a>
+    <h2>Reading list</h2>
+    {{=LOAD('module', 'books.load', args=[module.id], ajax=True)}}
+    <br>
+    <a href="{{=URL('rebuild_reading_list', args=module.id)}}" class="btn btn-default"><span class="fa fa-refresh"></span> Rebuild reading list</a>
+    {% if auth.has_membership('library_staff') or auth.has_membership('dev') %}
+    <a href="http://square/reports/report/Library/Weekly%20classes%20reading%20list%20items%20by%20course?code={{=module.code}}" target='_blank' class="btn btn-default"><span class="fa fa-check-square"></span> Export list (square)</a>
+    {% endif %}
+</div>
+{% endif %}
+
+
+<div class="section">
+    <div class="pull-right top-right-button">
+        <a href="{{=URL('payment_plan', args=['new', module.id])}}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add Payment plan</a>
+    </div>
+    <a id='payment-plans' class='nav-anchor'></a>
+    <h2>Payment plans</h2>
+    {% if payment_plans %}
+    <table class="table table-condensed table-striped table-hover" >
+    <thead><tr><th>Type</th><th></th></tr></thead>
+    {{for plan in payment_plans.render():
+        delete_button = A(icon('remove'), data={'toggle': 'modal', 'target': '#confirm-remove-plan', 'href': URL('payment_plan', args=['delete', plan.id])}, _href='#')
+        =TR(plan.plan_type, TD(A(icon('pencil'), _href=URL('payment_plan', args=['edit', plan.id])), delete_button, _class='quick-icons'))
+        pass
+    }}
+    </table>
+    {% endif %}
+</div>
+{% endverbatim %}
+<div class="section">
+    <div class="pull-right top-right-button">
+        <a href="add_programme/{{ module.id }}?next={{ request.get_full_path }}#programmes" class="btn btn-success btn-xs">
+            <span class="fa fa-plus"></span> Add Programme
+        </a>
+    </div>
+    <a id='programmes' class='nav-anchor'></a>
+    <h2>Programmes</h2>
+    {% if programmes %}
+    <p>This module is part of the following programmes</p>
+    <table class="table table-condensed table-striped table-hover">
+    <thead><tr><th>Title</th><th></th></tr></thead>
+        {% for programme in programmes %}
+            {# delete_button = TD(A(icon('remove'), data={'toggle': 'modal', 'target': '#confirm-remove-module', 'href': URL('programme', 'remove_module', args=row.id, vars={'_next': URL(args=request.args, anchor='programmes')})}, _href='#'), _class='span2 quick-icons') #}
+            <tr>
+                <td>
+                    {% if programme.qualification == 1 and module.credit_points %}
+                        <span title="Credit-bearing module within a non-credit-bearing programme" class="text-danger">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </span>
+                    {% endif %}
+                    <a href="/programme/view/{{ programme.id }}"> {{ programme }}</a>
+                </td>
+                <td><a href="#"><i class="fas fa-times"></i></a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+</div>
+{% verbatim %}
+<div class="section">
+    <div class="pull-right top-right-button">
+        <a href="{{=URL('tutor_module', 'new', vars={'module': module.id})}}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add tutor</a>
+    </div>
+    <a id='tutor-modules' class='nav-anchor' data-badge-text='{{=len(tutors)}}'></a>
+
+    <h2>Tutors</h2>
+    {% if tutors %}
+        <ul class="item-list" id="tutor-list">
+        {% for row in tutors %}
+            <li class="item" id='tutor_modules_{{=row.tutor_module.id}}' style="position: relative;" data-created-on="{{row.tutor_module.created_on}}">
+                <div class="drag-container" style="z-index:2">
+                    <span class="drag-icon fa fa-ellipsis-v"></span>
+                </div>
+                <div class="item-info">
+                    <div class='row'>
+                        <div class="col-xs-4">
+                            <a href="{{=URL('student', 'view', args=row.student.id)}}">{{=row.student.firstname}} {{=row.student.surname}}</a>
+                        </div>
+                        <div class="col-xs-6">
+                           <span class="label label-primary">{{=row.tutor_module.role or ''}}</span>
+                        {% if row.tutor_module.is_published %}
+                            <span class="label label-success"
+                                data-toggle="tooltip"
+                                data-title="This tutor is visible on the course webpage"
+                            >Published</span>
+                        {% endif %}
+                        </div>
+                        <div class="col-xs-2">
+                            <div class="pull-right">
+                                {{=tutor_module_menu(row, module)}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        {% endif %}
+        </ul>
+        <br>
+        <div class="dropup">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <span class="fa fa-files-o"></span> Expense forms <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li class="dropdown-header">Format</li>
+                {% if idb((idb.module.id==module.id) & (idb.module.credit_points > 0)).select() %}
+                    {% for key, title in expense_templates_credited %}
+                        <li><a href="{{=URL('tutor', 'expense_form', args=['module', module.id, key])}}">{{ = title}}</a></li>
+                    {% endif %}
+                {% else %}
+                    {% for key, title in expense_templates %}
+                        <li><a href="{{=URL('tutor', 'expense_form', args=['module', module.id, key])}}">{{ = title}}</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+// Use the jquery-ui sortable, function, with some great helper stuff from http://www.avtex.com/blog/2015/01/27/drag-and-drop-sorting-of-table-rows-in-priority-order/
+$(document).ready(function() {
+    $("#tutor-list").sortable({
+        items: '> .item',
+        handle: '.drag-container',
+        axis: 'y',
+        stop: function(event, ui) {
+            var data = $(this).sortable('serialize');
+
+            // POST to server using $.post or $.ajax
+            $.ajax({
+                data: data,
+                type: 'POST',
+                url: '{{=URL('tutor_module', 'order')}}'
+            }).success(function (data, string, jqXHR) {
+                console.log(data);
+            });
+        }
+    });
+
+    $('#applications').DataTable({
+        "dom" : '<"top"i>rt<"bottom"flp><"clear">',
+        "pagingType": "numbers",
+        "searching": false,
+        "info": false,
+        "columnDefs": [{
+            "targets": [3],
+            "orderable": false
+        }]
+    });
+});
+</script>
+
+{% endverbatim %}
+
+{% endblock %}

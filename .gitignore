@@ -3,4 +3,5 @@ secrets.*
 __pycache__/
 *.py[cod]
 static/
+.idea/
 Pipfile*

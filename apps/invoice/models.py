@@ -113,7 +113,7 @@ class Ledger(models.Model):
     # division = models.ForeignKey(Division, models.DO_NOTHING, db_column='division', blank=True, null=True)
     type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
     # account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
-    enrolment = models.ForeignKey('programme.Enrolment', models.DO_NOTHING, db_column='enrolment', blank=True, null=True)
+    enrolment = models.ForeignKey('enrolment.Enrolment', models.DO_NOTHING, db_column='enrolment', blank=True, null=True)
 
     allocation = models.IntegerField(blank=True, null=True)
     ref_no = models.IntegerField(blank=True, null=True)

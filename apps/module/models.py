@@ -40,7 +40,7 @@ class Module(SignatureModel, Model):
     single_places = models.IntegerField(blank=True, null=True)
     twin_places = models.IntegerField(blank=True, null=True)
     double_places = models.IntegerField(blank=True, null=True)
-    # location = models.ForeignKey(Location, models.DO_NOTHING, db_column='location', blank=True, null=True)
+    location = models.ForeignKey('Location', models.DO_NOTHING, db_column='location', blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     meeting_time = models.CharField(max_length=32, blank=True, null=True)
     duration = models.FloatField(blank=True, null=True)
@@ -81,7 +81,7 @@ class Module(SignatureModel, Model):
     week_number = models.IntegerField(blank=True, null=True)
 
     custom_fee = models.CharField(max_length=1012, blank=True, null=True)
-    # format = models.ForeignKey('ModuleFormat', models.DO_NOTHING, db_column='format', blank=True, null=True)
+    format = models.ForeignKey('ModuleFormat', models.DO_NOTHING, db_column='format', blank=True, null=True)
 
     is_cancelled = models.BooleanField(default=False)
     default_non_credit = models.BooleanField(blank=True, null=True)
@@ -132,13 +132,19 @@ class Module(SignatureModel, Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('module:edit', args=[self.id])
+        return reverse('module:view', args=[self.id])
 
-    @property
     def long_form(self):
         if self.start_date:
             return f'{self.code} - {self.title} ({self.start_date:%d %b %Y})'
         return f'{self.code} - {self.title}'
+
+    def places_taken(self):
+        return self.enrolments.filter(status__takes_place=True).count()
+
+    def finance_code(self):
+        if self.cost_centre and self.activity_code and self.source_of_funds:
+            return f'{self.cost_centre} {self.activity_code} {self.source_of_funds}'
             
     def clean(self):
         # Check both term start/end date fields are filled, or neither
@@ -187,3 +193,67 @@ class ModuleStatus(Model):
         
     def __str__(self):
         return self.description
+
+
+class FeeType(models.Model):
+    id = models.IntegerField(primary_key=True)
+    narrative = models.CharField(max_length=64, blank=True, null=True)
+    # account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
+    display_order = models.IntegerField(blank=True, null=True)
+    is_tuition = models.BooleanField()
+    is_active = models.IntegerField()
+
+    class Meta:
+        # managed = False
+        db_table = 'fee_type'
+
+
+class Fee(SignatureModel):
+    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module', related_name='fees')
+    amount = models.DecimalField(max_digits=19, decimal_places=4)
+    type = models.ForeignKey('FeeType', models.DO_NOTHING, db_column='type')
+    description = models.CharField(max_length=64)
+    finance_code = models.CharField(max_length=64, blank=True, null=True)
+    account = models.CharField(max_length=64)
+    eu_fee = models.BooleanField(db_column='eufee')
+    is_visible = models.BooleanField()
+    is_payable = models.BooleanField()
+    is_compulsory = models.BooleanField()
+    is_catering = models.BooleanField(blank=True, null=True)
+    is_single_accom = models.BooleanField(blank=True, null=True)
+    is_twin_accom = models.BooleanField(blank=True, null=True)
+    credit_fee = models.BooleanField()
+    end_date = models.DateField(blank=True, null=True)
+    limit = models.IntegerField(blank=True, null=True)
+    allocation = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'fee'
+
+
+class ModuleFormat(models.Model):
+    description = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'module_format'
+
+    def __str__(self):
+        return self.description
+
+
+class Location(SignatureModel):
+    address = models.CharField(max_length=128)
+    city = models.CharField(max_length=64, blank=True, null=True)
+    postcode = models.CharField(max_length=50, blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    building = models.CharField(max_length=64, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'location'
+
+    def __str__(self):
+        return self.building
