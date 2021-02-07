@@ -8,6 +8,34 @@ from django.urls import reverse
 from apps.main.models import SignatureModel
 
 
+class ModuleManager(models.Manager):
+    """A manager which defers html blob fields by default"""
+    use_for_related_fields = True
+    defer_fields = [
+        'overview',
+        'accommodation',
+        'application',
+        'assessment_methods',
+        'certification',
+        'course_aims',
+        'level_and_demands',
+        'libraries',
+        'payment',
+        'programme_details',
+        'recommended_reading',
+        'scholarships',
+        'snippet',
+        'teaching_methods',
+        'teaching_outcomes',
+        'selection_criteria',
+        'it_requirements',
+        'further_details',
+    ]
+
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).defer(*self.defer_fields)
+
+
 class Module(SignatureModel, Model):
     code = CharField(max_length=12, help_text='For details on codes, see <link>')    
     title = CharField(max_length=80)
@@ -113,6 +141,8 @@ class Module(SignatureModel, Model):
 
     reading_list_url = models.TextField(blank=True, null=True)
     reading_list_links = models.BooleanField(blank=True, null=True)
+
+    objects = ModuleManager()
 
     class Meta:
         # managed = False

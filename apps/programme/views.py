@@ -28,11 +28,11 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
         context = super(View, self).get_context_data(**kwargs)
         programme = self.object
 
-        # Get 200 most recent child modules, with a count of enrolment places taken
+        # Get 100 most recent child modules, with a count of enrolment places taken
         enrolment_count = Count('enrolments', filter=Q(enrolments__status__in=[10, 11, 20, 90]))    
         modules = programme.modules.annotate(
             enrolment_count=enrolment_count
-        ).select_related('status').order_by('-start_date')[:200].all()
+        ).select_related('status').order_by('-start_date')[:100].all()
 
         module_count = programme.modules.count()
         students = QA.objects.filter(programme=programme.id).select_related('student').order_by('-start_date')[:200]

@@ -6,6 +6,7 @@ from django.views.generic.detail import DetailView
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models.functions import Coalesce
 
 from apps.main.utils.views import PageTitleMixin
 
@@ -36,17 +37,24 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(View, self).get_context_data(**kwargs)
 
-        enrolments = self.object.enrolments.select_related(
-            'result', 'status', 'qa__student'
-        ).order_by('qa__student__surname', 'qa__student__firstname').all()
+        enrolments = self.object.enrolments.\
+            select_related('result', 'status', 'qa__student').\
+            order_by('qa__student__surname', 'qa__student__firstname').\
+            all()
 
         fees = self.object.fees.order_by('-type__display_order', 'description').select_related('type').all()
         programmes = self.object.programmes.order_by('title').select_related('qualification').all()
+
+        tutors = self.object.tutor_modules.\
+            select_related('tutor__student').\
+            order_by(Coalesce('display_order', 999), 'id').\
+            all()
 
         return {
             'enrolments': enrolments,
             'fees': fees,
             'programmes': programmes,
+            'tutors': tutors,
             **context
         }
 
@@ -63,19 +71,6 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
     #
     # discounts = get_discounts()
 
-    # tutors = module.tutor_module.select(
-    #     idb.tutor_module.ALL,
-    #     idb.tutor_contract.id,
-    #     idb.tutor_contract.complete,
-    #     idb.student.id,
-    #     idb.student.surname,
-    #     idb.student.firstname,
-    #     orderby=[idb.tutor_module.display_order.coalesce(999), idb.tutor_module.id],
-    #     left=idb.tutor_contract.on(idb.tutor_contract.tutor_module == idb.tutor_module.id),
-    #     join=[idb.tutor.on(idb.tutor.id == idb.tutor_module.tutor),
-    #           idb.student.on(idb.student.id == idb.tutor.student)
-    #           ]
-    # )
     #
     # other_runs = idb(
     #     (idb.module.url == (module.url or 'N/A'))  # Match on URL, but avoid matches where URLs are lacking
@@ -88,11 +83,6 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
     #     # Reverse order, but prioritize nulls, which we assume are new & incomplete
     # )
     # payment_plans = module.module_payment_plan.select()
-    #
-    # # Toggle weekly classes only fields display
-    # for field in weekly_classes_fields:
-    #     idb.module[field].readable = (module.portfolio == 32)
-    #
     # def _email_students(ids):
     #     # Function called by the 'Send email to selected students' button, which redirects to the processing function.
     #     if ids:

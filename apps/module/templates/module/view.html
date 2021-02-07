@@ -1,5 +1,6 @@
 {% extends 'layout_9_3.html' %}
 {% load redpot_tags %}
+{% load tutor_module_tags %}
 
 {% block right_sidebar %}
 <div class="hidden-xs affix-top" data-spy="affix" data-offset-top="105" id="sidebar">
@@ -194,7 +195,7 @@
             <p>
               <div class="btn-group">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <span class="fa fa-cog"></span> Other <span class="caret"></span>
+                    <span class="fas fa-cog fa-fw "></span> Other <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="{{=URL('create_moodle_ids', args=module.id)}}"><span class="fa fa-id-card"></span> Assign Moodle IDs</a></li>
@@ -211,7 +212,7 @@
             <p>
                 <div class="btn-group">
                     <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                        <span class="fa fa-file-text"></span> Reports <span class="caret"></span>
+                        <span class="fas fa-fw fa-file-alt"></span> Reports <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="http://square/reports/report/Finance/Financial%20report%20per%20module?code={{=module.code}}" target="_blank"><span class="fa fa-gbp"></span> Financial statement</a></li>
@@ -326,16 +327,16 @@
             </dl>
 
             <h4>Marketing types <small>
-                <a href="/marketing_type/{{ module.id }}"><i class="fas fas-pencil-alt"></i></a>
+                <a href="/marketing_type/{{ module.id }}"><i class="fas fa-pencil-alt"></i></a>
             </small></h4>
             {% for marketing_type in module.marketing_types %}
                 <span class='label label-info'>{{ marketing_type.name }}</span>
             {% endfor %}
 
             <h4>Subjects
-                <a href="/subject/{{ module.id }}">
-                    <small><span class="fas fa-pencil-alt"></span></small>
-                </a>
+                <small><a href="/subject/{{ module.id }}">
+                    <i class="fas fa-pencil-alt"></i>
+                </a></small>
             </h4>
             <p>
             {% for subject in module.subjects %}
@@ -595,29 +596,29 @@
     </table>
     {% endif %}
 </div>
-{% verbatim %}
+
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="{{=URL('tutor_module', 'new', vars={'module': module.id})}}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add tutor</a>
+        <a href="/tutor_module/new/{{ module.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add tutor</a>
     </div>
-    <a id='tutor-modules' class='nav-anchor' data-badge-text='{{=len(tutors)}}'></a>
+    <a id='tutor-modules' class='nav-anchor' data-badge-text='{{ tutors | length }}'></a>
 
     <h2>Tutors</h2>
     {% if tutors %}
         <ul class="item-list" id="tutor-list">
         {% for row in tutors %}
-            <li class="item" id='tutor_modules_{{=row.tutor_module.id}}' style="position: relative;" data-created-on="{{row.tutor_module.created_on}}">
+            <li class="item" id='tutor_modules_{{ row.tutor_module.id }}' style="position: relative;" data-created-on="{{ row.tutor_module.created_on }}">
                 <div class="drag-container" style="z-index:2">
-                    <span class="drag-icon fa fa-ellipsis-v"></span>
+                    <span class="drag-icon"><i class="fa fa-ellipsis-v"></i></span>
                 </div>
                 <div class="item-info">
                     <div class='row'>
                         <div class="col-xs-4">
-                            <a href="{{=URL('student', 'view', args=row.student.id)}}">{{=row.student.firstname}} {{=row.student.surname}}</a>
+                            <a href="{{ row.tutor.get_absolute_url }}">{{ row.tutor.student.firstname }} {{ row.tutor.student.surname }}</a>
                         </div>
                         <div class="col-xs-6">
-                           <span class="label label-primary">{{=row.tutor_module.role or ''}}</span>
-                        {% if row.tutor_module.is_published %}
+                           <span class="label label-primary">{{ row.role | default:''}}</span>
+                        {% if row.is_published %}
                             <span class="label label-success"
                                 data-toggle="tooltip"
                                 data-title="This tutor is visible on the course webpage"
@@ -626,19 +627,20 @@
                         </div>
                         <div class="col-xs-2">
                             <div class="pull-right">
-                                {{=tutor_module_menu(row, module)}}
+                                {% tutor_module_menu row %}
                             </div>
                         </div>
                     </div>
                 </div>
             </li>
-        {% endif %}
+        {% endfor %}
         </ul>
         <br>
         <div class="dropup">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                <span class="fa fa-files-o"></span> Expense forms <span class="caret"></span>
+                <span class="fas fa-fw fa-file-alt"></span> Expense forms <span class="caret"></span>
             </button>
+        {% verbatim %}
             <ul class="dropdown-menu" role="menu">
                 <li class="dropdown-header">Format</li>
                 {% if idb((idb.module.id==module.id) & (idb.module.credit_points > 0)).select() %}
@@ -651,9 +653,12 @@
                     {% endif %}
                 {% endif %}
             </ul>
+            {% endverbatim %}
         </div>
     {% endif %}
 </div>
+
+{% verbatim %}
 
 <script>
 // Use the jquery-ui sortable, function, with some great helper stuff from http://www.avtex.com/blog/2015/01/27/drag-and-drop-sorting-of-table-rows-in-priority-order/

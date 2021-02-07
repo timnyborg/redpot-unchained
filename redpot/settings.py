@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'apps.module',
     'apps.enrolment',
     'apps.invoice',
+    'apps.tutor',
     'apps.user',
 ]
 

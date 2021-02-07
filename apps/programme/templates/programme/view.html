@@ -73,10 +73,10 @@
         <a href="{% url 'programme:add-module' programme.id %}" class="btn btn-success btn-xs"><span class="fas fa-plus"></span> Add Module</a>
     </div>
 
-    {% if module_count > 200 %}
+    {% if module_count > 100 %}
     <div class="alert alert-warning" role="alert">
         <span class='fas fa-exclamation fa-fw'></span>
-		Showing only the top 200 of {{ module_count }} modules
+		Showing only the top 100 of {{ module_count }} modules
     </div>
     {% endif %}
     <table class="table table-condensed table-striped table-hover hide-rows" data-display=10>
