@@ -4,7 +4,7 @@ from django.db.models import Model, CharField, DateField, ForeignKey, IntegerFie
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-
+from django.utils.functional import cached_property
 from apps.main.models import SignatureModel
 
 
@@ -174,6 +174,7 @@ class Module(SignatureModel, Model):
             return f'{self.code} - {self.title} ({self.start_date:%d %b %Y})'
         return f'{self.code} - {self.title}'
 
+    @cached_property
     def places_taken(self):
         return self.enrolments.filter(status__takes_place=True).count()
 
@@ -262,9 +263,20 @@ class Fee(SignatureModel):
     limit = models.IntegerField(blank=True, null=True)
     allocation = models.IntegerField(blank=True, null=True)
 
+    catering_bookings = models.ManyToManyField(
+        'enrolment.Enrolment',
+        through='enrolment.Catering',
+    )
+
+    def catering_booking_count(self):
+        return self.catering_bookings.filter(status__takes_place=True).count()
+
     class Meta:
         # managed = False
         db_table = 'fee'
+
+    def __str__(self):
+        return self.description
 
 
 class ModuleFormat(models.Model):

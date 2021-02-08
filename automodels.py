@@ -267,20 +267,6 @@ class BookStatus(models.Model):
         db_table = 'book_status'
 
 
-class Catering(models.Model):
-    id = models.AutoField()
-    fee = models.ForeignKey('Fee', models.DO_NOTHING, db_column='fee', blank=True, null=True)
-    enrolment = models.ForeignKey('Enrolment', models.DO_NOTHING, db_column='enrolment', blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'catering'
-
-
 class CertheMarks(models.Model):
     qa = models.ForeignKey('Qa', models.DO_NOTHING, db_column='qa')
     courses_transferred_in = models.TextField(blank=True, null=True)

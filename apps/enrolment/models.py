@@ -48,3 +48,12 @@ class EnrolmentStatus(models.Model):
     class Meta:
         # managed = False
         db_table = 'enrolment_status'
+
+
+class Catering(SignatureModel):
+    fee = models.ForeignKey('module.Fee', models.DO_NOTHING, db_column='fee', related_name='catering')
+    enrolment = models.ForeignKey('Enrolment', models.DO_NOTHING, db_column='enrolment', related_name='catering')
+
+    class Meta:
+        # managed = False
+        db_table = 'catering'
