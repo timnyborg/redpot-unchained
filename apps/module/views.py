@@ -55,6 +55,8 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
 
         waitlist_table = WaitlistTable(self.object.waitlist.all())
 
+        payment_plans = self.object.payment_plans.all()
+
         return {
             'enrolments': enrolments,
             'fees': fees,
@@ -62,6 +64,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'tutors': tutors,
             'expense_form_options': expense_form_options,
             'waitlist_table': waitlist_table,
+            'payment_plans': payment_plans,
             **context
         }
 
@@ -99,58 +102,6 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
     #     else:
     #         session.flash = 'No students selected on the waiting list'
     #         session.flash_type = 'danger'
-    #
-    # waitlist_query = ((idb.module_waitlist.module == module.id) &
-    #                   (idb.module_waitlist.student == idb.student.id)
-    #                   )
-    #
-    # idb.module_waitlist.id.readable = False
-    # idb.module_waitlist.module.readable = False
-    # idb.module_waitlist.student.readable = False
-    #
-    # idb.student.firstname.represent = lambda value, row: A(value,
-    #                                                        _href=URL('student', 'view',
-    #                                                                  args=row.module_waitlist.student),
-    #                                                        _target='_blank')
-    # idb.student.surname.represent = lambda value, row: A(value,
-    #                                                      _href=URL('student', 'view',
-    #                                                                args=row.module_waitlist.student),
-    #                                                      _target='_blank')
-    #
-    # waitlist = SQLFORM.grid(waitlist_query,
-    #                         fields=[
-    #                             idb.module_waitlist.id,
-    #                             idb.module_waitlist.module,
-    #                             idb.module_waitlist.student,
-    #                             idb.student.firstname,
-    #                             idb.student.surname,
-    #                             idb.module_waitlist.listed_on,
-    #                             idb.module_waitlist.emailed_on,
-    #                         ],
-    #                         args=request.args[:1],  # Preserve module id in URL
-    #                         field_id=idb.module_waitlist.student,
-    #                         selectable=[('Send email to selected students', _email_students, 'btn-primary')],
-    #                         maxtextlength=30,
-    #                         links=[
-    #                             (lambda row: A(icon('envelope'),
-    #                                            _href=URL('waitlist', 'email_student',
-    #                                                      args=[row.module_waitlist.module.id,
-    #                                                            row.module_waitlist.student]),
-    #                                            _target='_blank', _title='Email student')
-    #                              ),
-    #                             (lambda row: A(icon('remove'), _title='Remove student from waiting list',
-    #                                            data={'toggle': 'modal',
-    #                                                  'target': '#confirm-remove-student-from-waitlist',
-    #                                                  'href': URL('waitlist', 'remove',
-    #                                                              args=[module.id, row.module_waitlist.student])
-    #                                                  }
-    #                                            )
-    #                              ),
-    #                         ],
-    #                         **minimal_grid_settings
-    #                         )
-    # idb.student.firstname.represent = None
-    # idb.student.surname.represent = None
     #
     # # Take the first run which is published
     # next_run = other_runs.find(lambda row: row.is_published == True).first()

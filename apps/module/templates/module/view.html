@@ -182,17 +182,21 @@
                     </ul>
                 </div>
             {% endif %}
-
+            {% endverbatim %}
             <hr>
             <h3>Data tools</h3>
             <p>
-
-                {{=A(
-                    SPAN(icon_text('Uncancel course' if module.is_cancelled else 'Cancel course', 'remove')),
-                    _class="btn btn-danger dropdown-toggle",
-                    _href=URL('uncancel' if module.is_cancelled else 'cancel', args=module.id)
-                )}}
+                {% if module.is_cancelled %}
+                <a class="btn btn-danger" href="uncancel/{{ module.id }}">
+                    <i class="fas fa-fw fa-times"></i> Uncancel module
+                </a>
+                {% else %}
+                <a class="btn btn-danger" href="cancel/{{ module.id }}">
+                    <i class="fas fa-fw fa-times"></i> Cancel module
+                </a>
+                {% endif %}
             </p>
+            {% verbatim %}
             <p>
               <div class="btn-group">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -435,23 +439,26 @@
     <h2>Waiting list</h2>
     <form method="post" action="/send-to-the-waiting-list">
         {% render_table waitlist_table %}
+        <div class="btn-group pull-right">
+            <a href="#" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                <i class="far fa-fw fa-envelope"></i> Email entire list
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                {# Todo: implement next_run #}
+                {% if next_run %}
+                <li>{# =A(icon_text('New run of course', ''), _href=URL('waitlist', 'email_list', args=[next_run, 'new', module.id])) #}</li>
+                {% endif %}
+
+                <li><a href="/email-list/{{ module.id }}/online">Places available on course (enrol online)</a></li>
+                <li><a href="/email-list/{{ module.id }}/form">Places available on course (enrol by form)</a></li>
+            </ul>
+        </div>
         <button type="submit" value="Standard" class="btn btn-primary">
             <i class="fa fa-fw fa-envelope"></i> Email selected students
         </button>
     </form>
-    <br>
-    <div class="btn-group pull-right" style="top:-20px">
-        {% verbatim %}
-        {{=A(icon_text('Email entire list', 'envelope'), SPAN(_class='caret'), _href='#', _class='btn btn-info dropdown-toggle', data={'toggle':'dropdown'})}}
-        <ul class="dropdown-menu">
-            {% if next_run %}
-            <li>{{=A(icon_text('New run of course', ''), _href=URL('waitlist', 'email_list', args=[next_run, 'new', module.id]))}}</li>
-            {% endif %}
-            <li>{{=A(icon_text('Places available on course (enrol online)', ''), _href=URL('waitlist', 'email_list', args=[module.id, 'places_online']))}}</li>
-            <li>{{=A(icon_text('Places available on course (enrol by form)', ''), _href=URL('waitlist', 'email_list', args=[module.id, 'places_form']))}}</li>
-        </ul>
-        {% endverbatim %}
-    </div>
+
 </div>
 {% endif %}
 
@@ -558,26 +565,33 @@
     {% endif %}
 </div>
 {% endif %}
-
+{% endverbatim %}
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="{{=URL('payment_plan', args=['new', module.id])}}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add Payment plan</a>
+        <a href="module/add-payment-plan/{{ module.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add Payment plan</a>
     </div>
     <a id='payment-plans' class='nav-anchor'></a>
     <h2>Payment plans</h2>
     {% if payment_plans %}
-    <table class="table table-condensed table-striped table-hover" >
-    <thead><tr><th>Type</th><th></th></tr></thead>
-    {{for plan in payment_plans.render():
-        delete_button = A(icon('remove'), data={'toggle': 'modal', 'target': '#confirm-remove-plan', 'href': URL('payment_plan', args=['delete', plan.id])}, _href='#')
-        =TR(plan.plan_type, TD(A(icon('pencil'), _href=URL('payment_plan', args=['edit', plan.id])), delete_button, _class='quick-icons'))
-        pass
-    }}
-    </table>
+        <table class="table table-condensed table-striped table-hover" >
+        <thead><tr><th>Type</th><th></th></tr></thead>
+        {% for plan in payment_plans %}
+            <tr>
+                <td>
+                    {{ plan.name }}
+                </td>
+                <td class="quick-icons">
+                    <a href="EDIT"><i class="fas fa-fw fa-pencil-alt"></i></a>
+                    <a href="DELETE"><i class="fas fa-fw fa-times"></i></a>
+                </td>
+            </tr>
+            {# delete_button = A(icon('remove'), data={'toggle': 'modal', 'target': '#confirm-remove-plan', 'href': URL('payment_plan', args=['delete', plan.id])}, _href='#') #}
+        {% endfor %}
+        </table>
     {% endif %}
 </div>
-{% endverbatim %}
+
 <div class="section">
     <div class="pull-right top-right-button">
         <a href="add_programme/{{ module.id }}?next={{ request.get_full_path }}#programmes" class="btn btn-success btn-xs">
@@ -661,7 +675,7 @@
     {% endif %}
 </div>
 
-{% verbatim %}
+{% comment %}
 
 <script>
 // Use the jquery-ui sortable, function, with some great helper stuff from http://www.avtex.com/blog/2015/01/27/drag-and-drop-sorting-of-table-rows-in-priority-order/
@@ -696,8 +710,7 @@ $(document).ready(function() {
     });
 });
 </script>
-
-{% endverbatim %}
+{% endcomment %}
 
 {% endblock %}
 

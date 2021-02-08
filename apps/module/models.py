@@ -142,6 +142,11 @@ class Module(SignatureModel, Model):
     reading_list_url = models.TextField(blank=True, null=True)
     reading_list_links = models.BooleanField(blank=True, null=True)
 
+    payment_plans = models.ManyToManyField(
+        to='invoice.PaymentPlanType',
+        through='invoice.ModulePaymentPlan',
+    )
+
     objects = ModuleManager()
 
     class Meta:

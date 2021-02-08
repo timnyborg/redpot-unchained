@@ -1038,17 +1038,6 @@ class ModuleMarketingType(models.Model):
         unique_together = (('module', 'marketing_type'),)
 
 
-class ModulePaymentPlan(models.Model):
-    id = models.AutoField()
-    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', blank=True, null=True)
-    plan_type = models.IntegerField()
-    deposit = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'module_payment_plan'
-
-
 class ModuleRoom(models.Model):
     id = models.AutoField()
     module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
@@ -1292,23 +1281,6 @@ class PaymentPlanStatus(models.Model):
     class Meta:
         managed = False
         db_table = 'payment_plan_status'
-
-
-class PaymentPlanType(models.Model):
-    name = models.CharField(max_length=128, blank=True, null=True)
-    deposit = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
-    payments = models.IntegerField(blank=True, null=True)
-    payments_due = models.CharField(max_length=32, blank=True, null=True)
-    start_month = models.IntegerField(blank=True, null=True)
-    default_plan = models.IntegerField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'payment_plan_type'
 
 
 class PayrollUpload(models.Model):
