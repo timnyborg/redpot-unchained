@@ -5,14 +5,10 @@ import pathlib
 from .utils.mail_merge import mail_merge, MailMergeView
 from .models import TutorModule
 
+"""
+For example, the below CBV, but as a FBV
 
 def expense_form(request, pk, mode, template):
-    """Can produce a single/set of expense forms given different args:
-        /module/id/template : all tutors on the module id
-        /record/id/template : a single tutor_module record
-        /modules/0/template?search= : all tutors on matching modules.
-        """
-
     if mode == 'module':
         queryset = TutorModule.objects.filter(module=pk)
     elif mode == 'record':
@@ -86,6 +82,7 @@ def expense_form(request, pk, mode, template):
     response = HttpResponse(doc, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     response['Content-disposition'] = 'attachment; filename=%s' % re.sub('[,()\']', '', str(filename))
     return response
+"""
 
 
 class ExpenseFormView(MailMergeView):
@@ -93,22 +90,26 @@ class ExpenseFormView(MailMergeView):
         record = queryset[0]
         if self.kwargs['mode'] == 'module':
             return '%s_expense_forms.docx' % record.module.code
-        elif self.kwargs['mode'] == 'record':
+        elif self.kwargs['mode'] == 'single':
             return f'{record.tutor.student.firstname}_{record.tutor.student.surname}' \
-                       '_{record.module.code}_expense_form.docx'.replace(' ', '_')
+                       f'_{record.module.code}_expense_form.docx'.replace(' ', '_')
         else:
             return 'batch_expense_form.docx'
 
     def get_template_file(self, queryset):
-        return os.path.join(pathlib.Path(__file__).parent.absolute(), 'utils/templates', self.kwargs['template'] + '.docx')
+        return os.path.join(
+            pathlib.Path(__file__).parent.absolute(),
+            'utils/templates',
+            self.kwargs['template'] + '.docx'
+        )
 
     def get_queryset(self):
         queryset = TutorModule.objects
         if self.kwargs['mode'] == 'module':
             return queryset.filter(module=self.kwargs['pk'])
-        elif self.kwargs['mode'] == 'record':
+        elif self.kwargs['mode'] == 'single':
             return queryset.filter(pk=self.kwargs['pk'])
-        elif self.kwargs['mode'] == 'modules':
+        elif self.kwargs['mode'] == 'search':
             # Wildcard based matching
             return queryset.filter(module__code__like=self.kwargs['search'])
 

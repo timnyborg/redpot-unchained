@@ -1,9 +1,9 @@
 import django_tables2 as tables
 from django.urls import reverse
-from .models import Module
+from .models import Module, ModuleWaitlist
 from django.utils.html import format_html
 import django_filters
-from apps.main.datatables import ViewLinkColumn
+from apps.main.datatables import DeleteLinkColumn, EditLinkColumn, ViewLinkColumn
 import django.forms as forms
 import django.db.models as models
 from datetime import date
@@ -49,3 +49,19 @@ class ModuleSearchTable(tables.Table):
         fields = ('code', "title", "start_date", "end_date", "division", "portfolio",)
         per_page = 10
         order_by = ('-start_date',)
+
+
+class WaitlistTable(tables.Table):
+    id = tables.CheckBoxColumn(
+        accessor='id',
+        orderable=False
+    )
+    edits = EditLinkColumn('')
+    delete = DeleteLinkColumn('')
+
+    class Meta:
+        model = ModuleWaitlist
+        template_name = "django_tables2/bootstrap.html"
+        fields = ('id', 'student', 'listed_on', 'emailed_on')
+
+

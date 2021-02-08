@@ -13,7 +13,7 @@ from apps.tutor.utils import expense_forms
 
 from .models import Module
 from .forms import ModuleForm
-from .datatables import ModuleSearchFilter, ModuleSearchTable
+from .datatables import ModuleSearchFilter, ModuleSearchTable, WaitlistTable
 
 
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
@@ -53,12 +53,15 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
 
         expense_form_options = expense_forms.template_options(self.object)
 
+        waitlist_table = WaitlistTable(self.object.waitlist.all())
+
         return {
             'enrolments': enrolments,
             'fees': fees,
             'programmes': programmes,
             'tutors': tutors,
             'expense_form_options': expense_form_options,
+            'waitlist_table': waitlist_table,
             **context
         }
 

@@ -1100,15 +1100,7 @@ class ModuleType(models.Model):
         db_table = 'module_type'
 
 
-class ModuleWaitlist(models.Model):
-    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
-    listed_on = models.DateTimeField(blank=True, null=True)
-    emailed_on = models.DateTimeField(blank=True, null=True)
 
-    class Meta:
-        managed = False
-        db_table = 'module_waitlist'
 
 
 class MoodleId(models.Model):

@@ -287,3 +287,23 @@ class Location(SignatureModel):
 
     def __str__(self):
         return self.building
+
+
+class ModuleWaitlist(models.Model):
+    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', related_name='waitlist')
+    student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
+    listed_on = models.DateTimeField(auto_now_add=True)
+    emailed_on = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'module_waitlist'
+
+    def get_absolute_url(self):
+        return '#'
+
+    def get_edit_url(self):
+        return '#'
+
+    def get_delete_url(self):
+        return '#'

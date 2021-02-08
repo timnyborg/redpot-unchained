@@ -1,6 +1,7 @@
 {% extends 'layout_9_3.html' %}
 {% load redpot_tags %}
 {% load tutor_module_tags %}
+{% load render_table from django_tables2 %}
 
 {% block right_sidebar %}
 <div class="hidden-xs affix-top" data-spy="affix" data-offset-top="105" id="sidebar">
@@ -424,16 +425,23 @@
 </div>
 
 
+{% endverbatim %}
 
 
-{{waitlist_count = idb(idb.module_waitlist.module==module.id).count()}}
-{% if waitlist %}
+{% if waitlist_table.rows %}
+
 <div class="section">
-    <a id='waitlist' class='nav-anchor' data-badge-text='{{=waitlist_count}}'></a>
+    <a id='waitlist' class='nav-anchor' data-badge-text='{{ waitlist_table.rows | length }}'></a>
     <h2>Waiting list</h2>
-        {{ =waitlist }}
-        <br>
+    <form method="post" action="/send-to-the-waiting-list">
+        {% render_table waitlist_table %}
+        <button type="submit" value="Standard" class="btn btn-primary">
+            <i class="fa fa-fw fa-envelope"></i> Email selected students
+        </button>
+    </form>
+    <br>
     <div class="btn-group pull-right" style="top:-20px">
+        {% verbatim %}
         {{=A(icon_text('Email entire list', 'envelope'), SPAN(_class='caret'), _href='#', _class='btn btn-info dropdown-toggle', data={'toggle':'dropdown'})}}
         <ul class="dropdown-menu">
             {% if next_run %}
@@ -442,10 +450,13 @@
             <li>{{=A(icon_text('Places available on course (enrol online)', ''), _href=URL('waitlist', 'email_list', args=[module.id, 'places_online']))}}</li>
             <li>{{=A(icon_text('Places available on course (enrol by form)', ''), _href=URL('waitlist', 'email_list', args=[module.id, 'places_form']))}}</li>
         </ul>
+        {% endverbatim %}
     </div>
-
 </div>
 {% endif %}
+
+{% verbatim %}
+
 {% if applications %}
 <div class="section">
     <a id='application_forms' class='nav-anchor'></a>
@@ -453,7 +464,7 @@
     <table id="{{='applications' if applications and len(applications) > 10 else ''}}" class="table table-condensed table-striped table-hover hide-rows">
     <thead><tr><th>Surname</th><th>Firstname</th><th>Status</th><th></th></tr></thead>
     <tbody>
-    
+
     {{for application in applications:
         edit_button = A(icon('pencil'), _href=URL('form', 'view', args=application.id))
         if application.is_completed == 1:
@@ -461,7 +472,7 @@
         else:
             status_label = SPAN('In progress', _class='label label-default')
         pass
-        
+
         if application.student:
             student_link = URL('student', 'view', args=application.student)
             =TR(A(application.surname, _href=student_link), A(application.fname, _href=student_link), status_label, edit_button)
@@ -475,7 +486,7 @@
 {% endif %}
 
 {% endverbatim %}
-    
+
 <div class="section">
     <div class="btn-group btn-group-xs pull-right top-right-button">
         <a href="fee/new/{{ module.id }}" class="btn btn-success" role="button"><span class="fa fa-plus"></span> Add fees</a>
@@ -666,7 +677,7 @@ $(document).ready(function() {
             $.ajax({
                 data: data,
                 type: 'POST',
-                url: '{{=URL('tutor_module', 'order')}}'
+                url: 'notimplemented'
             }).success(function (data, string, jqXHR) {
                 console.log(data);
             });
@@ -689,3 +700,4 @@ $(document).ready(function() {
 {% endverbatim %}
 
 {% endblock %}
+
