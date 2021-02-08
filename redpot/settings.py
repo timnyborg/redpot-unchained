@@ -50,18 +50,22 @@ SECRET_KEY = get_secret('DJANGO_SECRET_KEY', default=get_random_secret_key())
 DEBUG = True
 
 # SECURITY WARNING: don't run with allowed_hosts * in production!
-ALLOWED_HOSTS = ['*']
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = get_secret('ALLOWED_HOSTS')
 
 # Sentry integration
-sentry_sdk.init(
-    dsn=get_secret("SENTRY_DSN", ''),
-    integrations=[DjangoIntegration()],
-    traces_sample_rate=1.0,
+if not DEBUG:
+    sentry_sdk.init(
+        dsn=get_secret("SENTRY_DSN", ''),
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=1.0,
 
-    # If you wish to associate users to errors (assuming you are using
-    # django.contrib.auth) you may enable sending PII data.
-    send_default_pii=True
-)
+        # If you wish to associate users to errors (assuming you are using
+        # django.contrib.auth) you may enable sending PII data.
+        send_default_pii=True
+    )
 
 # Application definition
 

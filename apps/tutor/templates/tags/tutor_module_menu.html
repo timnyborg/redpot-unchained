@@ -31,7 +31,7 @@
             <a href="#"><span class="fa fa-fw fa-print"></span> Expense forms</a>
             <ul class="dropdown-menu">
                 {% for key, title in expense_templates %}
-                    <li><a href="tutor/expense_form/record/{{ tutor_module.id }}/{{ key }}">
+                    <li><a href="{% url 'tutor:expense-form-single' tutor_module.id key %}">
                         {{ title}}
                     </a></li>
                 {% endfor %}

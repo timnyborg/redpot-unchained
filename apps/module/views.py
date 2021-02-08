@@ -9,6 +9,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.functions import Coalesce
 
 from apps.main.utils.views import PageTitleMixin
+from apps.tutor.utils import expense_forms
 
 from .models import Module
 from .forms import ModuleForm
@@ -50,11 +51,14 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             order_by(Coalesce('display_order', 999), 'id').\
             all()
 
+        expense_form_options = expense_forms.template_options(self.object)
+
         return {
             'enrolments': enrolments,
             'fees': fees,
             'programmes': programmes,
             'tutors': tutors,
+            'expense_form_options': expense_form_options,
             **context
         }
 

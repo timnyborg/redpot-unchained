@@ -640,20 +640,12 @@
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                 <span class="fas fa-fw fa-file-alt"></span> Expense forms <span class="caret"></span>
             </button>
-        {% verbatim %}
             <ul class="dropdown-menu" role="menu">
                 <li class="dropdown-header">Format</li>
-                {% if idb((idb.module.id==module.id) & (idb.module.credit_points > 0)).select() %}
-                    {% for key, title in expense_templates_credited %}
-                        <li><a href="{{=URL('tutor', 'expense_form', args=['module', module.id, key])}}">{{ = title}}</a></li>
-                    {% endif %}
-                {% else %}
-                    {% for key, title in expense_templates %}
-                        <li><a href="{{=URL('tutor', 'expense_form', args=['module', module.id, key])}}">{{ = title}}</a></li>
-                    {% endif %}
-                {% endif %}
+                {% for key, title in expense_form_options %}
+                    <li><a href="{% url 'tutor:expense-form-module' module.id key %}">{{ title }}</a></li>
+                {% endfor %}
             </ul>
-            {% endverbatim %}
         </div>
     {% endif %}
 </div>
