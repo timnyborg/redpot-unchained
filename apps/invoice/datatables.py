@@ -1,10 +1,8 @@
 import django_tables2 as tables
 from .models import Invoice, Ledger
 import django_filters
-from apps.main.datatables import ViewLinkColumn, PoundsColumn
+from apps.main.utils.datatables import ViewLinkColumn, PoundsColumn
 import django.forms as forms
-import django.db.models as models
-from datetime import date
 from django.utils.html import mark_safe
 
 class InvoiceSearchFilter(django_filters.FilterSet):

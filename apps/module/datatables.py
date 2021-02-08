@@ -1,11 +1,8 @@
 import django_tables2 as tables
-from django.urls import reverse
 from .models import Module, ModuleWaitlist
-from django.utils.html import format_html
 import django_filters
-from apps.main.datatables import DeleteLinkColumn, EditLinkColumn, ViewLinkColumn
+from apps.main.utils.datatables import DeleteLinkColumn, LinkColumn, ViewLinkColumn
 import django.forms as forms
-import django.db.models as models
 from datetime import date
 from dateutil.relativedelta import relativedelta
 
@@ -56,8 +53,9 @@ class WaitlistTable(tables.Table):
         accessor='id',
         orderable=False
     )
-    edits = EditLinkColumn('')
-    delete = DeleteLinkColumn('')
+
+    email = LinkColumn('', icon='envelope', title='Email student', linkify=lambda record: f'email-one/{record.id}')
+    delete = DeleteLinkColumn('', title='Remove from waiting list')
 
     class Meta:
         model = ModuleWaitlist

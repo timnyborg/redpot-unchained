@@ -3,7 +3,7 @@ from .models import Programme
 import django_filters
 import django.forms as forms
 
-from apps.main.datatables import ViewLinkColumn
+from apps.main.utils.datatables import ViewLinkColumn
 
 
 class ProgrammeSearchFilter(django_filters.FilterSet):    
