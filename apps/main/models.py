@@ -38,10 +38,10 @@ class SignatureModel(models.Model):
 
         We could turn that into a form mixin, which does one of the behaviours based on class
     """
-    created_by = models.CharField(max_length=8, blank=True, null=True, )
-    created_on = models.DateTimeField(blank=True, null=True, auto_now_add=True)
-    modified_by = models.CharField(max_length=8, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    created_by = models.CharField(max_length=8, blank=True, null=True, editable=False)
+    created_on = models.DateTimeField(blank=True, null=True, auto_now_add=True, editable=False)
+    modified_by = models.CharField(max_length=8, blank=True, null=True, editable=False)
+    modified_on = models.DateTimeField(blank=True, null=True, auto_now_add=True, editable=False)
 
     class Meta:
         abstract = True

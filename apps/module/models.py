@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.validators import RegexValidator
-from django.db.models import Model, CharField, DateField, ForeignKey, IntegerField, BooleanField, ImageField, DO_NOTHING, Q
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
 from django.urls import reverse
@@ -36,25 +35,25 @@ class ModuleManager(models.Manager):
         return super().get_queryset(*args, **kwargs).defer(*self.defer_fields)
 
 
-class Module(SignatureModel, Model):
-    code = CharField(max_length=12, help_text='For details on codes, see <link>')    
-    title = CharField(max_length=80)
+class Module(SignatureModel, models.Model):
+    code = models.CharField(max_length=12, help_text='For details on codes, see <link>')
+    title = models.CharField(max_length=80)
     url = models.SlugField(max_length=256, blank=True, null=True)
     
-    start_date = DateField(blank=True, null=True)
-    end_date = DateField(blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
 
-    michaelmas_end = DateField(blank=True, null=True)
-    hilary_start = DateField(blank=True, null=True)
+    michaelmas_end = models.DateField(blank=True, null=True)
+    hilary_start = models.DateField(blank=True, null=True)
 
-    division = ForeignKey('programme.Division', DO_NOTHING, db_column='division',
-                          limit_choices_to=Q(id__gt=8) | Q(id__lt=5), default=1)
-    portfolio = ForeignKey('programme.Portfolio', DO_NOTHING, db_column='portfolio', default=1)
+    division = models.ForeignKey('programme.Division', models.DO_NOTHING, db_column='division',
+                          limit_choices_to=models.Q(id__gt=8) | models.Q(id__lt=5), default=1)
+    portfolio = models.ForeignKey('programme.Portfolio', models.DO_NOTHING, db_column='portfolio', default=1)
     
-    status = ForeignKey('ModuleStatus', DO_NOTHING, db_column='status', default=10)
-    max_size = IntegerField(blank=True, null=True)
+    status = models.ForeignKey('ModuleStatus', models.DO_NOTHING, db_column='status', default=10)
+    max_size = models.IntegerField(blank=True, null=True)
 
-    image = ImageField(upload_to='uploads/%Y/%m/%d/', max_length=512, blank=True, null=True)
+    image = models.ImageField(upload_to='uploads/%Y/%m/%d/', max_length=512, blank=True, null=True)
 
     # type = models.ForeignKey('ModuleType', models.DO_NOTHING, db_column='type', blank=True, null=True)
 
@@ -169,6 +168,9 @@ class Module(SignatureModel, Model):
     def get_absolute_url(self):
         return reverse('module:view', args=[self.id])
 
+    def get_edit_url(self):
+        return reverse('module:edit', args=[self.id])
+
     def long_form(self):
         if self.start_date:
             return f'{self.code} - {self.title} ({self.start_date:%d %b %Y})'
@@ -200,27 +202,25 @@ class Module(SignatureModel, Model):
                 'end_date': 'End date cannot be earlier than start date',
             })
 
-        # # Check if all components that make up the finance code are supplied, or none
-        # components = ['cost_centre', 'activity_code', 'source_of_funds']
-        # if any(self.__attr__(field) for field in components) and not all(self.__attr__(field) for field in components):
-            # for field in components:
-                # if not self.__attr__(field):
-                    # raise ValidationError({
-                        # field: 'Please provide all of cost centre, activity code and source of funds, or neither',
-                    # })
+        # Check if all components that make up the finance code are supplied, or none
+        finance_components = [self.cost_centre, self.activity_code, self.source_of_funds]
+        if any(finance_components) and not all(finance_components):
+            raise ValidationError({
+                'cost_centre': 'Please provide all of cost centre, activity code and source of funds, or none',
+            })
 
-        # if not all(self.__attr__(field) for field in components) and self.enrol_online:
-            # raise ValidationError({
-                # 'enrol_online': 'Online enrolment disallowed without cost centre, activity code and source of funds',
-            # })
+        if not all(finance_components) and self.enrol_online:
+            raise ValidationError({
+                'enrol_online': 'Online enrolment disallowed without cost centre, activity code and source of funds',
+            })
 
 
-class ModuleStatus(Model):
-    id = IntegerField(primary_key=True)
-    description = CharField(max_length=64, blank=True, null=True)
-    publish = BooleanField(blank=True, null=True)
-    short_desc = CharField(max_length=50, blank=True, null=True)
-    waiting_list = BooleanField(blank=True, null=True)   
+class ModuleStatus(models.Model):
+    id = models.IntegerField(primary_key=True)
+    description = models.CharField(max_length=64, blank=True, null=True)
+    publish = models.BooleanField(blank=True, null=True)
+    short_desc = models.CharField(max_length=50, blank=True, null=True)
+    waiting_list = models.BooleanField(blank=True, null=True)
 
     class Meta:
         # managed = False
@@ -303,8 +303,11 @@ class Location(SignatureModel):
         db_table = 'location'
 
     def __str__(self):
-        return self.building
-
+        if self.city and self.building:
+            return f'{self.building}, {self.city}'
+        elif self.building:
+            return self.building
+        return 'Invalid: no city or building'
 
 class ModuleWaitlist(models.Model):
     module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', related_name='waitlist')
