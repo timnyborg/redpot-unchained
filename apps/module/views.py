@@ -7,6 +7,7 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.functions import Coalesce
+from django.db.models.expressions import F
 
 from apps.main.utils.views import PageTitleMixin
 from apps.tutor.utils import expense_forms
@@ -57,6 +58,17 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
 
         payment_plans = self.object.payment_plans.all()
 
+        other_runs = None
+        if self.object.url:
+            other_runs = Module.objects.filter(
+                url=self.object.url,
+                division=self.object.division
+            ).exclude(
+                id=self.object.id
+            ).order_by(
+                F('start_date').desc(nulls_last=True)
+            ).all()
+
         return {
             'enrolments': enrolments,
             'fees': fees,
@@ -65,6 +77,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'expense_form_options': expense_form_options,
             'waitlist_table': waitlist_table,
             'payment_plans': payment_plans,
+            'other_runs': other_runs,
             **context
         }
 
@@ -81,28 +94,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
     #
     # discounts = get_discounts()
 
-    #
-    # other_runs = idb(
-    #     (idb.module.url == (module.url or 'N/A'))  # Match on URL, but avoid matches where URLs are lacking
-    #     & (idb.module.id != module.id)
-    #     & (idb.module.division == module.division)
-    # ).select(
-    #     idb.module.id, idb.module.code, idb.module.title, idb.module.start_date, idb.module.end_date,
-    #     idb.module.is_published,
-    #     orderby=[~idb.module.start_date.coalesce('2099-01-01')]
-    #     # Reverse order, but prioritize nulls, which we assume are new & incomplete
-    # )
-    # payment_plans = module.module_payment_plan.select()
-    # def _email_students(ids):
-    #     # Function called by the 'Send email to selected students' button, which redirects to the processing function.
-    #     if ids:
-    #
-    #         redirect(URL('waitlist', 'email_list', args=[module.id, 'places_online'],
-    #                      vars={'students': ids, '_next': URL()}))
-    #     else:
-    #         session.flash = 'No students selected on the waiting list'
-    #         session.flash_type = 'danger'
-    #
+
     # # Take the first run which is published
     # next_run = other_runs.find(lambda row: row.is_published == True).first()
     # next_run = next_run.id if next_run and next_run.is_published and module.start_date and next_run.start_date and next_run.start_date >= module.start_date else None

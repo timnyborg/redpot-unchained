@@ -357,36 +357,32 @@
     {% timestamp module %}
 </div>
 
-    {% verbatim %}
-
 {% if other_runs %}
 <div class="section">
     <a id='other_runs' class='nav-anchor'></a>
     <h2>Other runs</h2>
     <ul class="item-list hide-items" data-max-item=3>
-    {% for row in other_runs %}
+    {% for other_run in other_runs %}
         <li class="item">
             <div class="row">
                 <div class="item-title col-xs-12 col-md-2">
-                {{=A(row.code, _href=URL('view', args=row.id))}}
+                    <a href="{{ other_run.get_absolute_url }}">{{ other_run.code }}</a>
                 </div>
                 <div class="item-info col-xs-6 col-md-7">
-                    {{=A(row.title, _href=URL('view', args=row.id))}}
+                    <a href="{{ other_run.get_absolute_url }}">{{ other_run.title }}</a>
                 </div>
                 <div class="item-info col-xs-6 col-md-3">
-                {{=formatdate(row.start_date)}}
-                    {% if row.end_date and row.end_date != row.start_date %}
-                        &ndash; {{=formatdate(row.end_date)}}
+                    {{ other_run.start_date | date }}
+                    {% if other_run.end_date and other_run.end_date != other_run.start_date %}
+                        &ndash; {{ other_run.end_date | date }}
                     {% endif %}
                 </div>
             </div>
         </li>
-    {% endif %}
+    {% endfor %}
     </ul>
 </div>
 {% endif %}
-
-    {% endverbatim %}
 
 <div class="section">
     <a id='enrolments' class='nav-anchor' data-badge-text='{{ enrolments | length }}'></a>
