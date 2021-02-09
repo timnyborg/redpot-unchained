@@ -175,25 +175,9 @@ class Qualification(SignatureModel):
     def name_with_code(self):
         return f'{self.name} ({self.hesa_code})'
         
-        
-class Student(models.Model):
-    husid = models.BigIntegerField(blank=True, null=True)
-    surname = models.CharField(max_length=40, blank=True, null=True)
-    firstname = models.CharField(max_length=40, blank=True, null=True)
 
-    class Meta:
-        # managed = False
-        db_table = 'student'
-        
-    def __str__(self):
-        return f'{self.firstname} {self.surname}'
-
-    def get_absolute_url(self):
-        return reverse('student-view', args=[self.id])
-
-        
 class QA(models.Model):
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
+    student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
     programme = models.ForeignKey('Programme', models.DO_NOTHING, db_column='programme',    related_name='qas')
     title = models.CharField(max_length=96, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
@@ -209,46 +193,3 @@ class QA(models.Model):
             return self.start_date.year - (1 if self.start_date.month < 8 else 0)
 
 
-class Enrolment(SignatureModel):
-    qa = models.ForeignKey('Qa', models.DO_NOTHING, db_column='qa', blank=True, null=True)
-    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', related_name='enrolments')
-    status = models.ForeignKey('EnrolmentStatus', models.DO_NOTHING, db_column='status')
-    result = models.ForeignKey('EnrolmentResult', models.DO_NOTHING, db_column='result')
-    points_awarded = models.IntegerField(blank=True, null=True)
-    provenance = models.IntegerField(blank=True, null=True)
-    provenance_details = models.CharField(max_length=128, blank=True, null=True)
-    no_image_consent = models.BooleanField(blank=True, null=True)
-    mark = models.IntegerField(blank=True, null=True)
-    transcript_date = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'enrolment'
-
-    def get_absolute_url(self):
-        return '#'
-
-
-class EnrolmentResult(SignatureModel):
-    id = models.CharField(primary_key=True, max_length=4)
-    description = models.CharField(max_length=128, blank=True, null=True)
-    is_active = models.BooleanField()
-    display_order = models.IntegerField(blank=True, null=True)
-    hesa_code = models.CharField(max_length=1, blank=True, null=True)
-    allow_certificate = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'enrolment_result'
-        
-        
-class EnrolmentStatus(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
-    takes_place = models.BooleanField()
-    is_debtor = models.BooleanField()
-    on_hesa_return = models.BooleanField()
-
-    class Meta:
-        # managed = False
-        db_table = 'enrolment_status'

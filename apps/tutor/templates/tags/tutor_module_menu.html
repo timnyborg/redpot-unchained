@@ -1,0 +1,53 @@
+<div class="dropdown pull-right">
+    <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        <span class="fa fa-ellipsis-h fa-lg"></span>
+    </a>
+    <ul class="dropdown-menu" role="menu">
+        <li>
+            <a href="tutor_module/edit/{{ tutor_module.id }}?next={{ request.get_full_path }}#tutor-modules">
+                <i class="fas fa-fw fa-pencil-alt"></i> Edit
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="tutor_module/edit/{{ tutor_module.id }}#fees">
+                <i class="fas fa-briefcase fa-fw"></i> Fees
+            </a>
+        </li>
+        <li>
+            <a href="contract/view/{{ tutor_module.id }}">
+                <span class="fas fa-fw fa-file-alt"></span>
+                {% if contract.complete %}
+                    View contract (complete)
+                {% elif contract.id %}
+                    View contract (incomplete)
+                {% else %}
+                    Create contract
+                {% endif %}
+            </a>
+        </li>
+
+        <li class="dropdown-submenu">
+            <a style="cursor: pointer;"><span class="fa fa-fw fa-print"></span> Expense forms</a>
+            <ul class="dropdown-menu">
+                {% for key, title in expense_templates %}
+                    <li><a href="{% url 'tutor:expense-form-single' tutor_module.id key %}">
+                        {{ title}}
+                    </a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="#"
+               data-toggle='modal'
+               data-target='#confirm-remove-tutor'
+               data-href="tutor_module/delete/{{ tutor_module.id }}?next={{ request.get_full_path }}"
+            >
+                <div class="text-danger">
+                    <i class="fas fa-times fa-fw"></i> Remove
+                </div>
+            </a>
+        </li>
+    </ul>
+</div>

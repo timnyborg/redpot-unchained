@@ -110,10 +110,10 @@ class Ledger(models.Model):
     amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
     finance_code = models.CharField(max_length=64, blank=True, null=True)
     narrative = models.CharField(max_length=128, blank=True, null=True)
-    # division = models.ForeignKey(Division, models.DO_NOTHING, db_column='division', blank=True, null=True)
+    division = models.ForeignKey('programme.Division', models.DO_NOTHING, db_column='division', blank=True, null=True)
     type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
     # account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
-    enrolment = models.ForeignKey('programme.Enrolment', models.DO_NOTHING, db_column='enrolment', blank=True, null=True)
+    enrolment = models.ForeignKey('enrolment.Enrolment', models.DO_NOTHING, db_column='enrolment', blank=True, null=True)
 
     allocation = models.IntegerField(blank=True, null=True)
     ref_no = models.IntegerField(blank=True, null=True)
@@ -122,3 +122,28 @@ class Ledger(models.Model):
     class Meta:
         managed = False
         db_table = '[app].[ledger]'
+
+
+class PaymentPlanType(SignatureModel):
+    name = models.CharField(max_length=128, blank=True, null=True)
+    deposit = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+    payments = models.IntegerField(blank=True, null=True)
+    payments_due = models.CharField(max_length=32, blank=True, null=True)
+    start_month = models.IntegerField(blank=True, null=True)
+    default_plan = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'payment_plan_type'
+
+
+class ModulePaymentPlan(models.Model):
+    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module')
+    plan_type = models.ForeignKey('PaymentPlanType', models.DO_NOTHING, db_column='plan_type')
+
+    # Obsolete
+    # deposit = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'module_payment_plan'

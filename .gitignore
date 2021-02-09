@@ -2,5 +2,5 @@ secrets.*
 *.env
 __pycache__/
 *.py[cod]
-static/
+.idea/
 Pipfile*

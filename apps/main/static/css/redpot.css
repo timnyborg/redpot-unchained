@@ -617,6 +617,7 @@ abbr[title] {
 
 ul.item-list {
   margin: 0;
+  padding-inline-start: 0;
   border-top: 1px solid #eee; }
   .panel-heading + ul.item-list {
     border-top: none; }

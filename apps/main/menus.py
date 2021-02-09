@@ -56,9 +56,22 @@ Menu.add_item("main", MenuItem(
     '#',
     ))
 
+
+def dev_children(request):
+    return [
+        MenuItem(
+            "View on redpot-staging",
+            f'https://redpot-staging.conted.ox.ac.uk{request.get_full_path()}',
+            icon="server",
+            target='_blank',
+        ),
+    ]
+
+
 Menu.add_item("main", MenuItem(
     "Dev",
-    reverse("programme:search"),
+    '#',
+    children=dev_children,
     check=lambda request: request.user.is_superuser
     ))
 

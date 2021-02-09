@@ -31,6 +31,7 @@ urlpatterns = [
     path('invoice/', include('apps.invoice.urls')),
     path('programme/', include('apps.programme.urls')),
     path('module/', include('apps.module.urls')),
+    path('tutor/', include('apps.tutor.urls')),
     path('autocomplete/', include('apps.autocomplete.urls')),
     path('user/', include('apps.user.urls')),
 
