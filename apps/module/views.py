@@ -70,9 +70,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             next_run = other_runs.filter(
                 is_published=True,
                 start_date__gte=self.object.start_date
-            ).order_by(
-                'start_date'
-            ).first()
+            ).earliest('start_date')
         return {
             'enrolments': enrolments,
             'fees': fees,

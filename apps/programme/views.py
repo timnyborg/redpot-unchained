@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Subquery, OuterRef
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.contrib import messages
@@ -14,7 +14,7 @@ from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
 
 from apps.main.utils.views import PageTitleMixin
-from apps.module.models import ModuleStatus
+from apps.module.models import ModuleStatus, Module
 from .models import Programme, QA, ProgrammeModule
 from .forms import ProgrammeEditForm, ProgrammeNewForm, AttachModuleForm
 from .datatables import ProgrammeSearchTable, ProgrammeSearchFilter
@@ -29,13 +29,21 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
         programme = self.object
 
         # Get 100 most recent child modules, with a count of enrolment places taken
-        enrolment_count = Count('enrolments', filter=Q(enrolments__status__in=[10, 11, 20, 90]))    
+        # Subquery to get places_taken per module
+        enrolment_count = Module.objects.filter(
+            id=OuterRef('id')
+        ).filter(
+            enrolments__status__takes_place=True
+        ).annotate(
+            count=Count('enrolments__id')
+        ).values('count')
+
         modules = programme.modules.annotate(
-            enrolment_count=enrolment_count
-        ).select_related('status').order_by('-start_date')[:100].all()
+            enrolment_count=Subquery(enrolment_count)
+        ).select_related('status').order_by('-start_date')[:100]
 
         module_count = programme.modules.count()
-        students = QA.objects.filter(programme=programme.id).select_related('student').order_by('-start_date')[:200]
+        students = programme.qas.select_related('student').order_by('-start_date')[:200]
 
         module_statuses = ModuleStatus.objects.all()
 
