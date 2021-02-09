@@ -41,16 +41,14 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
 
         enrolments = self.object.enrolments.\
             select_related('result', 'status', 'qa__student').\
-            order_by('qa__student__surname', 'qa__student__firstname').\
-            all()
+            order_by('qa__student__surname', 'qa__student__firstname')
 
         fees = self.object.fees.order_by('-type__display_order', 'description').select_related('type').all()
         programmes = self.object.programmes.order_by('title').select_related('qualification').all()
 
         tutors = self.object.tutor_modules.\
             select_related('tutor__student').\
-            order_by(Coalesce('display_order', 999), 'id').\
-            all()
+            order_by(Coalesce('display_order', 999), 'id')
 
         expense_form_options = expense_forms.template_options(self.object)
 
@@ -58,7 +56,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
 
         payment_plans = self.object.payment_plans.all()
 
-        other_runs = None
+        other_runs = next_run = None
         if self.object.url:
             other_runs = Module.objects.filter(
                 url=self.object.url,
@@ -67,8 +65,14 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
                 id=self.object.id
             ).order_by(
                 F('start_date').desc(nulls_last=True)
-            ).all()
+            )
 
+            next_run = other_runs.filter(
+                is_published=True,
+                start_date__gte=self.object.start_date
+            ).order_by(
+                'start_date'
+            ).first()
         return {
             'enrolments': enrolments,
             'fees': fees,
@@ -78,19 +82,10 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'waitlist_table': waitlist_table,
             'payment_plans': payment_plans,
             'other_runs': other_runs,
+            'next_run': next_run,
             **context
         }
 
-
-
-    # # Add counter for catering items
-    # for fee in fees:
-    #     if (fee.fee_type.narrative == 'Catering'):
-    #         fee.fee.description = fee.fee.description + ' (' + \
-    #                               str(idb((idb.catering.fee == fee.fee.id)
-    #                                       & (idb.catering.enrolment == idb.enrolment.id)
-    #                                       & (idb.enrolment.status.belongs(10, 90))).count()) + '/' + \
-    #                               (str(fee.fee.allocation) if fee.fee.allocation else '∞') + ')'
     #
     # discounts = get_discounts()
 

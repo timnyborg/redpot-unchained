@@ -442,9 +442,10 @@
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                {# Todo: implement next_run #}
                 {% if next_run %}
-                <li>{# =A(icon_text('New run of course', ''), _href=URL('waitlist', 'email_list', args=[next_run, 'new', module.id])) #}</li>
+                <li>
+                    <a href="email-list/{{ module.id }}/new/{{ next_run.id }}">New run of course</a>
+                </li>
                 {% endif %}
 
                 <li><a href="/email-list/{{ module.id }}/online">Places available on course (enrol online)</a></li>
