@@ -22,14 +22,17 @@
     <div class='row'>
         <div class='col-md-4 col-md-push-8'>
             <h3>Web publication</h3>
-            {% if publish_check.accepted %}
+            {% if module.is_publishable %}
                 <h5>This course can be published</h5>
             {% else %}
                 <h5>This course cannot be published</h5>
-
-                {% for field, error in publish_check.error.items %}
-                    =P(SPAN(_class='fa fa-times text-danger'), publishing_error_messages[field]) if error else ''
-                {% endfor %}
+                <p>
+                    {% for error in module.publish_errors.values %}
+                    <span class="text-danger"><i class="fas fa-fw fa-times"></i>
+                                        {{ error }}
+                                    </span><br/>
+                    {% endfor %}
+                </p>
             {% endif %}
 
             {% if module.auto_publish %}
@@ -42,24 +45,33 @@
                     <ul class="dropdown-menu">
                         <li>
                             <a href="/manual_publish/{{ module.id }}">
-                                <span class="fas fa-user"></span>
+                                <span class="fas fa-user"></span> Manual
                             </a>
                         </li>
                     </ul>
                 </div>
             {% else %}
                 <div class="btn-group">
-                    {% verbatim %}
-                    {{=A(icon_text('Manual ', 'user'), SPAN(_class='caret'), _href='#', _class='btn btn-warning dropdown-toggle', data={'toggle':'dropdown'})}}
+                    <a href="#" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
+                        <i class="fas fa-fw fa-user"></i>
+                        Manual
+                        <span class="caret"></span>
+                    </a>
                     <ul class="dropdown-menu">
                         <li>
-                            {{=rich_menu_item(
-                                url=URL('auto_publish', args=module.id), _icon='cog', header='Automatic',
-                                text='The course will be published and unpublished on the set dates. Its status will be changed according to the open, closed, start, and end dates.')
-                            }}
+                            <a href="auto-publish/{{ module.id }}">
+                                <div class="context-menu-item" >
+                                    <i class="fas fa-fw fa-cog fa-pull-left"></i>
+                                    <div class="description">
+                                        <strong>Automatic</strong>
+                                        <span>The course will be published and unpublished on the set dates. Its status
+                                            will be changed according to the open, closed, start, and end dates.
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
                         </li>
                     </ul>
-                    {% endverbatim %}
                 </div>
             {% endif %}
 
@@ -67,17 +79,38 @@
             {% if module.is_published %}
                 <div class="btn-group">
                     <a href="#" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-                        <i class="fas fa-check"></i>
-                        Publication stuff
+                        <i class="fas fa-fw fa-play"></i>
+                        Published
                         <span class="caret"></span>
                     </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="unpublish/{{ module.id }}">
+                                <i class="fas fa-fw fa-stop"></i> Unpublish
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             {% else %}
-
+                <div class="btn-group">
+                    <a href="#" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                        <i class="fas fa-fw fa-stop"></i>
+                        Unpublished
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="publish/{{ module.id }}">
+                                <i class="fas fa-fw fa-play"></i> Publish
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             {% endif %}
 
             <p></p>
             <!--validation for annual prospectus publication-->
+            {# todo: implement #}
             {% if prospectus_check.included %}
                 {% if prospectus_check.accepted %}
                     <p>
@@ -98,30 +131,31 @@
             <p></p>
             <h5>Course status</h5>
             <div class="btn-group" >
-                {% verbatim %}
-                {{=A(module.status.description + ' ', SPAN(_class='caret') if not module.auto_publish else '', \
-                     _href='#', \
-                     _class='btn btn-primary' + (' disabled' if module.status == 33 else ' dropdown-toggle') + ('' if not module.auto_publish else ' disabled'), \
-                     data={'toggle':'' if module.status == 33 else 'dropdown'})}}
+                {# todo: implement locking on auto_publishing or cancelled #}
+                <a href="#" class="btn btn-primary" data-toggle="dropdown">
+                    {{ module.status }}
+                    <span class="caret"></span>
+                </a>
                 <ul class="dropdown-menu">
-                    {{for status in idb(idb.module_status.id>0).select():
-                        = LI(A(status.description, _href=URL('set_status', args=[module.id, status.id])))
-                    pass}}
+                    {% for status in statuses %}
+                        <li>
+                            <a href="set-status/{{ module.id }}/{{ status.id }}">
+                                {{ status }}
+                            </a>
+                        </li>
+                    {% endfor %}
                 </ul>
-                {% endverbatim %}
             </div>
-            <!--<h5>Publication dates</h5>
-            <p>List of the dates, but maybe only if it's set to automatic?  No reason to show Publish Date and Unpublish Date otherwise.</p>-->
-
-            {% verbatim %}
             <p>
                 <div class="btn-group">
-                    {{=A(icon_text('Webpage', 'globe'), _href='%s/courses/%s?code=%s' % (WWW_ADDRESS, module.url, module.code), _target='_blank', _class='btn btn-default')}}
+                    <a href="{{ module.get_website_url }}" target="_blank" class="btn btn-default">
+                        <i class="fas fa-fw fa-globe"></i> Webpage
+                    </a>
                 </div>
             </p>
 
             <hr>
-
+            {% verbatim %}
             <!-- Auto remainders / feedback set to off / on upon course cancellations and uncancellations respectively-->
             <h5>Automated reminders</h5>
             {% if module.reminder_sent_on %}
@@ -196,20 +230,20 @@
                 </a>
                 {% endif %}
             </p>
-            {% verbatim %}
             <p>
               <div class="btn-group">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                     <span class="fas fa-cog fa-fw "></span> Other <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{=URL('create_moodle_ids', args=module.id)}}"><span class="fa fa-id-card"></span> Assign Moodle IDs</a></li>
-                    <li><a href="{{=URL('award_points', args=module.id)}}"><span class="fa fa-graduation-cap"></span> Award CATS points</a></li>
-                    <li><a href="{{=URL('clone', args=module.id)}}"><span class="fa fa-files-o"></span> Clone this module</a></li>
-                    <li><a href="{{=URL('copy_fields', args=module.id)}}"><span class="fa fa-paste"></span> Copy web fields</a></li>
-                    <li><a href="{{=URL('import_from_template', args=module.id)}}"><span class="fa fa-upload"></span> Import students from template</a></li>
-                    {% if auth.has_membership('cabs') and module.portfolio==32 and module.room and module.room_setup %}
-                    <li><a href="{{=URL('cabs_booking', args=module.id)}}"><span class="fa fa-taxi"></span> Book course into CABS</a></li>
+                    <li><a href="create-moodle-ids/{{ module.id }}"><span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs</a></li>
+                    <li><a href="award_points/{{ module.id }}"><span class="fas fa-fw fa-graduation-cap"></span> Award CATS points</a></li>
+                    <li><a href="clone/{{ module.id }}"><span class="fas fa-fw fa-files-o"></span> Clone this module</a></li>
+                    <li><a href="copy_fields/{{ module.id }}"><span class="fas fa-fw fa-paste"></span> Copy web fields</a></li>
+                    <li><a href="import_from_template/{{ module.id }}"><span class="fas fa-fw fa-upload"></span> Import students from template</a></li>
+                    {% if perms.cabs and module.portfolio == 32 and module.room and module.room_setup %}
+                        {# todo: handle this logic better (elsewhere as can_send_to_cabs or something) #}
+                        <li><a href="cabs_booking/{{ module.id }}"><span class="fas fa-fw fa-taxi"></span> Book course into CABS</a></li>
                     {% endif %}
                 </ul>
               </div>
@@ -220,32 +254,31 @@
                         <span class="fas fa-fw fa-file-alt"></span> Reports <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="http://square/reports/report/Finance/Financial%20report%20per%20module?code={{=module.code}}" target="_blank"><span class="fa fa-gbp"></span> Financial statement</a></li>
-                        <li><a href="{{=URL('financial_statement', args=[module.id, 'summary'])}}"><span class="fa fa-gbp"></span> Financial statement (summary)</a></li>
-                        <li><a href="{{=URL('catering', args=module.id)}}"><span class="fa fa-cutlery"></span> Catering</a></li>
-                        <li><a href="{{=URL('accommodation', args=module.id)}}"><span class="fa fa-hotel"></span> Accommodation</a></li>
-                        <li><a href="{{=URL('module', 'refund_request', args=module.id)}}"><span class="fa fa-gbp"></span> Refund request (.docx)</a></li>
-                        <li><a href="{{=URL('class_register', args=module.id)}}"><span class="fa fa-file-word-o"></span> Class register (.docx)</a></li>
-                        {% if module.portfolio in (32, 17) %}
-                        <li><a href="{{=URL('syllabus', args=module.id)}}"><span class="fa fa-th-list"></span> Weekly class syllabus</a></li>
+                        <li><a href="http://square/reports/report/Finance/Financial%20report%20per%20module?code={{ module.code }}" target="_blank"><span class="fas fa-fw fa-gbp"></span> Financial statement</a></li>
+                        <li><a href="financial_statement', args=[module.id, 'summary']"><span class="fas fa-fw fa-gbp"></span> Financial statement (summary)</a></li>
+                        <li><a href="catering/{{ module.id }}"><span class="fas fa-fw fa-cutlery"></span> Catering</a></li>
+                        <li><a href="accommodation/{{ module.id }}"><span class="fas fa-fw fa-hotel"></span> Accommodation</a></li>
+                        <li><a href="module', 'refund_request/{{ module.id }}"><span class="fas fa-fw fa-gbp"></span> Refund request (.docx)</a></li>
+                        <li><a href="class_register/{{ module.id }}"><span class="fas fa-fw fa-file-word-o"></span> Class register (.docx)</a></li>
+                        {# todo: better portfolio logic, relying on tags #}
+                        {% if module.portfolio  in '32, 17' %}
+                        <li><a href="syllabus/{{ module.id }}"><span class="fas fa-fw fa-th-list"></span> Weekly class syllabus</a></li>
                         {% endif %}
-                        {% if module.portfolio==32 %}
-                        <li class='{{="disabled" if not module_books else ""}}'><a href="{{=WWW_ADDRESS+'/courses/reading-list-pdf/'+module.code}}"><span class="fa fa-file-word-o"></span> Reading list for students (.pdf)</a></li>
-                        <li class='{{="disabled" if not module_books else ""}}'><a href="{{=URL('reading_list', args=[module.code,True])}}"><span class="fa fa-file-word-o"></span> Reading list for library (.docx)</a></li>
+                        {% if module.portfolio_id == 32 %}
+                        <li><a href="WWW_ADDRESS+'/courses/reading-list-pdf/'+module.code"><span class="fas fa-fw fa-file-word-o"></span> Reading list for students (.pdf)</a></li>
                         {% endif %}
                         <li role="separator" class="divider"></li>
-                        <li><a href="{{=URL('student_list', args=module.id)}}"><span class="fa fa-file-excel-o"></span> Student list (.xlsx)</a></li>
-                        {% if module.portfolio==17 %}
-                        <li><a href="{{=URL('moodle_list', args=module.id)}}"><span class="fa fa-file-excel-o"></span> Moodle student list (.xlsx)</a></li>
+                        <li><a href="student_list/{{ module.id }}"><span class="fas fa-fw fa-file-excel-o"></span> Student list (.xlsx)</a></li>
+                        {% if module.portfolio_id == 17 %}
+                        <li><a href="moodle_list/{{ module.id }}"><span class="fas fa-fw fa-file-excel-o"></span> Moodle student list (.xlsx)</a></li>
                         {% endif %}
-                        {% if module.code[-3:]=='HEC' %}
-                        <li><a href="{{=URL('student','certhe_progress', args=(0,module.id))}}"><span class="fa fa-certificate"></span> CertHE progress report (.docx)</a></li>
+                        {% if module.code|slice:'-3:' == 'HEC' %}
+                        <li><a href="student','certhe_progress', args=(0,module.id)"><span class="fas fa-fw fa-certificate"></span> CertHE progress report (.docx)</a></li>
                         {% endif %}
                     </ul>
                 </div>
             </p>
         </div>
-        {% endverbatim %}
 
         <div class='col-md-8 col-md-pull-4'>
             <hr class='visible-xs visible-sm'>

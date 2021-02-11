@@ -80,7 +80,7 @@ PREREQ_APPS = [
     # 'django.contrib.sessions', # disabled until migrated
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # 3rd party apps
     'menu',  # django-simple-menu
     'django_tables2',
@@ -158,7 +158,7 @@ WSGI_APPLICATION = 'redpot.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {   
+DATABASES = {
     'default': {
         'NAME': get_secret('DB_NAME', ''),
         'ENGINE': 'sql_server.pyodbc',
@@ -278,3 +278,5 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 # Legacy redpot url for cross-app mapping
 W2P_REDPOT_URL = get_secret('W2P_REDPOT_URL', 'https://redpot-staging.conted.ox.ac.uk')
+# Website url for outbound linking
+PUBLIC_WEBSITE_URL = get_secret('PUBLIC_WEBSITE_URL', 'https://conted.ox.ac.uk')

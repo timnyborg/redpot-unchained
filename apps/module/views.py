@@ -12,7 +12,7 @@ from apps.main.utils.views import PageTitleMixin
 from apps.tutor.utils import expense_forms
 from apps.discount.models import Discount
 
-from .models import Module
+from .models import Module, ModuleStatus
 from .forms import ModuleForm
 from .datatables import ModuleSearchFilter, ModuleSearchTable, WaitlistTable, BookTable
 
@@ -66,6 +66,8 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
         other_runs = self.object.other_runs()
         next_run = self.object.next_run()
 
+        statuses = ModuleStatus.objects.all()
+
         return {
             'enrolments': enrolments,
             'fees': fees,
@@ -78,6 +80,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'other_runs': other_runs,
             'next_run': next_run,
             'discounts': discounts,
+            'statuses': statuses,
             **context
         }
 

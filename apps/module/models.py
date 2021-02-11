@@ -6,7 +6,7 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.functional import cached_property
 from apps.main.models import SignatureModel
-
+from redpot.settings import PUBLIC_WEBSITE_URL
 
 class ModuleManager(models.Manager):
     """A manager which defers html blob fields by default"""
@@ -172,6 +172,9 @@ class Module(SignatureModel, models.Model):
     def get_edit_url(self):
         return reverse('module:edit', args=[self.id])
 
+    def get_website_url(self):
+        return f'{PUBLIC_WEBSITE_URL}/courses/{self.url}?code={self.code}'
+
     def long_form(self):
         if self.start_date:
             return f'{self.code} - {self.title} ({self.start_date:%d %b %Y})'
@@ -181,6 +184,7 @@ class Module(SignatureModel, models.Model):
     def places_taken(self):
         return self.enrolments.filter(status__takes_place=True).count()
 
+    @property
     def finance_code(self):
         if self.cost_centre and self.activity_code and self.source_of_funds:
             return f'{self.cost_centre} {self.activity_code} {self.source_of_funds}'
@@ -201,6 +205,50 @@ class Module(SignatureModel, models.Model):
             is_published=True,
             start_date__gte=self.start_date
         ).order_by('-start_date').first()
+
+    @cached_property
+    def _publish_check(self):
+        print('start checks')
+        errors = {}
+
+        if not self.snippet:
+            errors['snippet'] = 'Snippet required'
+        if not self.overview:
+            errors['overview'] = 'Overview required'
+        if not self.email:
+            errors['email'] = 'Email required'
+        if not self.programmes.exists():
+            errors['programme'] = 'Not attached to a programme'
+        # if not self.marketing_types.exists():
+        #     pass # TODO: implement
+        # if not self.subjects.exists():
+        #     pass # TODO: implement
+        if not self.custom_fee and not self.fees.filter(
+                is_visible=True, type__is_tuition=True, eu_fee=False
+        ).exists():
+            errors['fee'] = 'Published non-EU programme fee required'
+        if not self.location_id:
+            errors['location'] = 'Location required'
+        if not self.format_id:
+            errors['format'] = 'Format required'
+        if self.enrol_online and not self.finance_code:
+            errors['enrol_online'] = 'Finance code components required for online enrolment'
+        # if self.proposal.status < 5:
+        #     errors['proposal'] = 'Proposal unapproved' # Todo: Implement
+
+        print('end checks')
+        return {
+            'success': not errors,
+            'errors': errors
+        }
+
+    @property
+    def is_publishable(self):
+        return self._publish_check['success']
+
+    @property
+    def publish_errors(self):
+        return self._publish_check['errors']
 
     def clean(self):
         # Check both term start/end date fields are filled, or neither
