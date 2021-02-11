@@ -8,6 +8,7 @@ from django.utils.functional import cached_property
 from apps.main.models import SignatureModel
 from redpot.settings import PUBLIC_WEBSITE_URL
 
+
 class ModuleManager(models.Manager):
     """A manager which defers html blob fields by default"""
     use_for_related_fields = True
@@ -84,7 +85,7 @@ class Module(SignatureModel, models.Model):
     source_module_code = models.CharField(max_length=12, blank=True, null=True)
     overview = models.TextField(blank=True, null=True)
     accommodation = models.TextField(blank=True, null=True)
-    application = models.TextField(blank=True, null=True)
+    how_to_apply = models.TextField(blank=True, null=True, db_column='application')
     assessment_methods = models.TextField(blank=True, null=True)
     certification = models.TextField(blank=True, null=True)
     course_aims = models.TextField(blank=True, null=True)
@@ -208,7 +209,6 @@ class Module(SignatureModel, models.Model):
 
     @cached_property
     def _publish_check(self):
-        print('start checks')
         errors = {}
 
         if not self.snippet:
@@ -236,7 +236,6 @@ class Module(SignatureModel, models.Model):
         # if self.proposal.status < 5:
         #     errors['proposal'] = 'Proposal unapproved' # Todo: Implement
 
-        print('end checks')
         return {
             'success': not errors,
             'errors': errors

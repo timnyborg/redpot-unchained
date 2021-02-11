@@ -33,7 +33,7 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
 
 
 class View(LoginRequiredMixin, PageTitleMixin, DetailView):
-    model = Module
+    queryset = Module.objects.defer()  # Get all fields
     template_name = 'module/view.html'
 
     def get_context_data(self, **kwargs):
@@ -53,6 +53,8 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             .select_related('tutor__student')
             .order_by(Coalesce('display_order', 999), 'id')
         )
+
+        applications = self.object.applications.select_related('student')
 
         expense_form_options = expense_forms.template_options(self.object)
 
@@ -81,7 +83,6 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'next_run': next_run,
             'discounts': discounts,
             'statuses': statuses,
+            'applications': applications,
             **context
         }
-
-    # applications = idb(idb.course_application.module == module.id).select()

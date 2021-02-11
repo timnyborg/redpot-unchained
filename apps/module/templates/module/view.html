@@ -155,68 +155,107 @@
             </p>
 
             <hr>
-            {% verbatim %}
-            <!-- Auto remainders / feedback set to off / on upon course cancellations and uncancellations respectively-->
+            <!-- Auto reminders / feedback set to off / on upon course cancellations and uncancellations respectively-->
             <h5>Automated reminders</h5>
             {% if module.reminder_sent_on %}
                 <h4>
                 <span class="label label-success">
-                    {{=icon_text('Sent on %s' % formatdate(module.reminder_sent_on), 'envelope')}}
+                    <i class="fas fa-fw fa-envelope"></i>
+                    Sent on {{ module.reminder_sent_on | date }}
                 </span>
                 </h4>
 
-            {{elif module.auto_reminder:}}
+            {% elif module.auto_reminder %}
                 <div class="btn-group">
-                    {{=A(icon_text('Enabled ', 'check'), SPAN(_class='caret'), _href='#', _class='btn btn-success dropdown-toggle', data={'toggle':'dropdown'})}}
+                    <a href="#" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                        <i class="fas fa-fw fa-check"></i> Enabled
+                        <span class="caret"></span>
+                    </a>
                     <ul class="dropdown-menu">
-                        <li>{{=A(icon_text('Disable', 'remove'), _href=URL('toggle_auto_reminder', args=module.id))}}</li>
+                        <li><a href="toggle-auto-reminder/{{ module.id }}">
+                            <i class="fas fa-fw fa-times"></i> Disable
+                        </a></li>
                     </ul>
                 </div>
 
             {% else %}
                 <div class="btn-group">
-                    {{=A(icon_text('Disabled ', 'remove'), SPAN(_class='caret'), _href='#', _class='btn btn-danger dropdown-toggle', data={'toggle':'dropdown'})}}
+                    <a href="#" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                        <i class="fas fa-fw fa-times"></i> Disabled
+                        <span class="caret"></span>
+                    </a>
                     <ul class="dropdown-menu">
                         <li>
-                            {{=rich_menu_item(
-                                url=URL('toggle_auto_reminder', args=module.id), _icon='check', header='Enable',
-                                text='Students will be emailed a reminder about the course, 5 days before it starts.')
-                            }}
+                            <a href="toggle-auto-reminder/{{ module.id }}">
+                                <div class="context-menu-item" >
+                                    <i class="fas fa-fw fa-check fa-pull-left"></i>
+                                    <div class="description">
+                                        <strong>Enable</strong>
+                                        <span>
+                                            Students will be emailed a reminder about the course, 5 days before it starts.
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
                         </li>
                     </ul>
                 </div>
             {% endif %}
             <div class="btn-group">
-                {{=A(icon_text('Preview', 'exclamation'), _href=URL('notify','precourse','index',args=module.code), _target='_blank', _class='btn btn-default')}}
+                <a href="precourse-notification/preview/{{ module.id }}" class="btn btn-default" target="_blank">
+                    <i class="fas fa-fw fa-exclamation"></i> Preview
+                </a>
             </div>
 
             <hr>
-
             <h5>Automated feedback</h5>
             {% if module.auto_feedback %}
                 <div class="btn-group">
-                    {{=A(icon_text('Enabled ', 'check'), SPAN(_class='caret'), _href='#', _class='btn btn-success dropdown-toggle', data={'toggle':'dropdown'})}}
+                    <a href="#" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                        <i class="fas fa-fw fa-check"></i>
+                        Enabled
+                        <span class="caret"></span>
+                    </a>
                     <ul class="dropdown-menu">
-                        <li>{{=A(icon_text('Disable', 'remove'), _href=URL('disable_feedback', args=module.id))}}</li>
+                        <li>
+                            <a href="disable-feedback/{{ module.id }}">
+                                <i class="fas fa-fw fa-times"></i>
+                                Disable
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <div class="btn-group">
-                    {{=A(icon_text('View', 'exclamation'), _href=URL('feedback','results','module',args=module.code), _target='_blank', _class='btn btn-default')}}
+                    <a href="feedback/results/{{ module.id }}" class="btn btn-default">
+                        <i class="fas fa-fw fa-exclamation"></i>
+                        View
+                    </a>
                 </div>
             {% else %}
                 <div class="btn-group">
-                    {{=A(icon_text('Disabled ', 'remove'), SPAN(_class='caret'), _href='#', _class='btn btn-danger dropdown-toggle', data={'toggle':'dropdown'})}}
+                    <a href="#" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                        <i class="fas fa-fw fa-check"></i>
+                        Disabled
+                        <span class="caret"></span>
+                    </a>
                     <ul class="dropdown-menu">
                         <li>
-                            {{=rich_menu_item(
-                                url=URL('enable_feedback', args=module.id), _icon='check', header='Enable',
-                                text='Students will be emailed to request feedback the morning after the course ends.')
-                            }}
+                            <a href="enable-feedback/{{ module.id }}">
+                                <div class="context-menu-item" >
+                                    <i class="fas fa-fw fa-check fa-pull-left"></i>
+                                    <div class="description">
+                                        <strong>Enable</strong>
+                                        <span>
+                                            Students will be emailed to request feedback the morning after the course ends.
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
                         </li>
                     </ul>
                 </div>
             {% endif %}
-            {% endverbatim %}
+
             <hr>
             <h3>Data tools</h3>
             <p>
@@ -454,16 +493,15 @@
     {% endfor %}
 
     </table>
-    {% verbatim %}
-    {{=A(icon_text('Missing student details', 'question-mark'), _class='btn btn-success', _href=URL('module', 'missing_student_details_list', args=module.id))}}
+
+    {# todo: logic which decides whether to display this #}
+    <a href="missing-student-details-list/{{ module.id }}" class="btn btn-success">
+        <i class="far fa-fw fa-question-circle"></i>
+        Missing student details
+    </a>
 </div>
 
-
-{% endverbatim %}
-
-
 {% if waitlist_table.rows %}
-
 <div class="section">
     <a id='waitlist' class='nav-anchor' data-badge-text='{{ waitlist_table.rows | length }}'></a>
     <h2>Waiting list</h2>
@@ -493,37 +531,40 @@
 </div>
 {% endif %}
 
-{% verbatim %}
-
 {% if applications %}
 <div class="section">
-    <a id='application_forms' class='nav-anchor'></a>
+    <a id='application_forms' class='nav-anchor' data-badge-text='{{ applications | length }}'></a>
     <h2>Applications</h2>
-    <table id="{{='applications' if applications and len(applications) > 10 else ''}}" class="table table-condensed table-striped table-hover hide-rows">
+    <table id="applications" class="table table-condensed table-striped table-hover hide-rows">
     <thead><tr><th>Surname</th><th>Firstname</th><th>Status</th><th></th></tr></thead>
     <tbody>
-
-    {{for application in applications:
-        edit_button = A(icon('pencil'), _href=URL('form', 'view', args=application.id))
-        if application.is_completed == 1:
-            status_label = SPAN('Completed', _class='label label-success')
-        else:
-            status_label = SPAN('In progress', _class='label label-default')
-        pass
-
-        if application.student:
-            student_link = URL('student', 'view', args=application.student)
-            =TR(A(application.surname, _href=student_link), A(application.fname, _href=student_link), status_label, edit_button)
-        else:
-            =TR(application.surname, application.fname, status_label, edit_button)
-        pass
-    pass}}
+    {% for application in applications %}
+        <tr>
+            {% if application.student %}
+                <td><a href="{{ application.student.get_absolute_url }}">{{ application.surname }}</a></td>
+                <td><a href="{{ application.student.get_absolute_url }}">{{ application.firstname }}</a></td>
+            {% else %}
+                <td>{{ application.surname }}</td>
+                <td>{{ application.firstname }}</td>
+            {% endif %}
+            <td>
+                {% if application.is_completed %}
+                    <span class="label label-success">Completed</span>
+                {% else %}
+                    <span class="label label-default">In progress</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="form/view/{{ application.id }}">
+                    <i class="fas fa-fw fa-pencil-alt"></i>
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
     </tbody>
     </table>
 </div>
 {% endif %}
-
-{% endverbatim %}
 
 <div class="section">
     <div class="btn-group btn-group-xs pull-right top-right-button">
