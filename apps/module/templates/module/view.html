@@ -76,7 +76,7 @@
 
             {% endif %}
 
-            <p></p> 
+            <p></p>
             <!--validation for annual prospectus publication-->
             {% if prospectus_check.included %}
                 {% if prospectus_check.accepted %}
@@ -550,10 +550,10 @@
                 <td>{{ discount }} ({{ discount.percent }}%)</td>
                 <td>{{ discount.code }}</td>
                 <td>
-                {% if discount.eligibility == 0 %}
+                {% if discount.all_eligible %}
                     All students eligible
                 {% else %}
-                    limited eligibility (see discount manager)
+                    Limited eligibility (see discount manager)
                 {% endif %}
                 </td>
             </tr>
@@ -730,4 +730,3 @@ $(document).ready(function() {
 {% endcomment %}
 
 {% endblock %}
-

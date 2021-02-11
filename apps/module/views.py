@@ -10,7 +10,7 @@ from django.db.models.functions import Coalesce
 
 from apps.main.utils.views import PageTitleMixin
 from apps.tutor.utils import expense_forms
-from apps.discount.utils import get_module_discounts
+from apps.discount.models import Discount
 
 from .models import Module
 from .forms import ModuleForm
@@ -61,7 +61,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
         payment_plans = self.object.payment_plans.all()
         book_table = BookTable(self.object.books.all())
 
-        discounts = get_module_discounts(self.object)
+        discounts = Discount.objects.matching_module(self.object).with_eligibility()
 
         other_runs = self.object.other_runs()
         next_run = self.object.next_run()
