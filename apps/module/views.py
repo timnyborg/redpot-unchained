@@ -7,7 +7,6 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.functions import Coalesce
-from django.db.models.expressions import F
 
 from apps.main.utils.views import PageTitleMixin
 from apps.tutor.utils import expense_forms
@@ -64,19 +63,9 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
 
         discounts = get_module_discounts(self.object)
 
-        other_runs = next_run = None
-        if self.object.url:
-            other_runs = (
-                Module.objects
-                .filter(url=self.object.url, division=self.object.division)
-                .exclude(id=self.object.id)
-                .order_by(F('start_date').desc(nulls_last=True))
-            )
+        other_runs = self.object.other_runs()
+        next_run = self.object.next_run()
 
-            next_run = other_runs.filter(
-                is_published=True,
-                start_date__gte=self.object.start_date
-            ).order_by('-start_date').first()
         return {
             'enrolments': enrolments,
             'fees': fees,

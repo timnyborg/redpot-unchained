@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.expressions import F
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
@@ -39,7 +40,7 @@ class Module(SignatureModel, models.Model):
     code = models.CharField(max_length=12, help_text='For details on codes, see <link>')
     title = models.CharField(max_length=80)
     url = models.SlugField(max_length=256, blank=True, null=True)
-    
+
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
 
@@ -49,7 +50,7 @@ class Module(SignatureModel, models.Model):
     division = models.ForeignKey('programme.Division', models.DO_NOTHING, db_column='division',
                           limit_choices_to=models.Q(id__gt=8) | models.Q(id__lt=5), default=1)
     portfolio = models.ForeignKey('programme.Portfolio', models.DO_NOTHING, db_column='portfolio', default=1)
-    
+
     status = models.ForeignKey('ModuleStatus', models.DO_NOTHING, db_column='status', default=10)
     max_size = models.IntegerField(blank=True, null=True)
 
@@ -151,7 +152,7 @@ class Module(SignatureModel, models.Model):
     class Meta:
         # managed = False
         db_table = 'module'
-        
+
     def __str__(self):
         return self.title
 
@@ -183,7 +184,24 @@ class Module(SignatureModel, models.Model):
     def finance_code(self):
         if self.cost_centre and self.activity_code and self.source_of_funds:
             return f'{self.cost_centre} {self.activity_code} {self.source_of_funds}'
-            
+
+    def other_runs(self):
+        # Provides a list of other module runs, if url is set
+        if self.url:
+            return (
+                Module.objects
+                .filter(url=self.url, division=self.division)
+                .exclude(id=self.id)
+                .order_by(F('start_date').desc(nulls_last=True))
+            )
+        return Module.objects.none()
+
+    def next_run(self):
+        return self.other_runs().filter(
+            is_published=True,
+            start_date__gte=self.start_date
+        ).order_by('-start_date').first()
+
     def clean(self):
         # Check both term start/end date fields are filled, or neither
         if bool(self.hilary_start) != bool(self.michaelmas_end):
@@ -226,7 +244,7 @@ class ModuleStatus(models.Model):
         # managed = False
         db_table = 'module_status'
         ordering = ['id']
-        
+
     def __str__(self):
         return self.description
 
