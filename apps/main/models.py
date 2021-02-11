@@ -85,3 +85,14 @@ class UnAccent(models.Transform):
     def as_sql(self, compiler, connection):
         lhs, params = compiler.compile(self.lhs)
         return '{} COLLATE Latin1_General_CI_AI'.format(lhs), params
+
+
+@models.CharField.register_lookup
+class Like(models.Lookup):
+    lookup_name = 'like'
+
+    def as_sql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+        params = lhs_params + rhs_params
+        return '%s LIKE %s' % (lhs, rhs), params
