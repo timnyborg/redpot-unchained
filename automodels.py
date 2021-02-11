@@ -241,33 +241,7 @@ class Banner(models.Model):
         db_table = 'banner'
 
 
-class Book(models.Model):
-    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module')
-    title = models.TextField(blank=True, null=True)
-    author = models.TextField(blank=True, null=True)
-    type = models.CharField(max_length=24)
-    additional_information = models.TextField(blank=True, null=True)
-    solo_link = models.TextField(blank=True, null=True)
-    isbn_shelfmark = models.TextField(db_column='ISBN_shelfmark', blank=True, null=True)  # Field name made lowercase.
-    price = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    library_note = models.TextField(blank=True, null=True)
-    status = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'book'
-
-
-class BookStatus(models.Model):
-    id = models.IntegerField(primary_key=True)
-    status = models.TextField()
-
-    class Meta:
-        managed = False
-        db_table = 'book_status'
-
-
-class CertheMarks(models.Model):
+class CertHEMarks(models.Model):
     qa = models.ForeignKey('Qa', models.DO_NOTHING, db_column='qa')
     courses_transferred_in = models.TextField(blank=True, null=True)
     credits_transferred_in = models.IntegerField(blank=True, null=True)
@@ -423,38 +397,6 @@ class Disability(models.Model):
         managed = False
         db_table = 'disability'
         unique_together = (('id', 'description', 'custom_description'),)
-
-
-class Discount(models.Model):
-    name = models.TextField()
-    code = models.CharField(max_length=20)
-    percent = models.IntegerField(blank=True, null=True)
-    usable_once = models.BooleanField(blank=True, null=True)
-    expires_on = models.DateField(blank=True, null=True)
-    module_mask = models.CharField(max_length=20, blank=True, null=True)
-    portfolio = models.ForeignKey('Portfolio', models.DO_NOTHING, db_column='portfolio', blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    created_by = models.TextField(blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'discount'
-        unique_together = (('code', 'usable_once'),)
-
-
-class DiscountStudent(models.Model):
-    id = models.AutoField()
-    discount = models.ForeignKey(Discount, models.DO_NOTHING, db_column='discount')
-    student = models.IntegerField()
-    redeemed = models.BooleanField(blank=True, null=True)
-    expires_on = models.DateField(blank=True, null=True)
-    email = models.CharField(max_length=50, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'discount_student'
 
 
 class Division(models.Model):

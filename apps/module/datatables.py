@@ -1,7 +1,7 @@
 import django_tables2 as tables
-from .models import Module, ModuleWaitlist
+from .models import Module, ModuleWaitlist, Book
 import django_filters
-from apps.main.utils.datatables import DeleteLinkColumn, LinkColumn, ViewLinkColumn
+from apps.main.utils.datatables import DeleteLinkColumn, LinkColumn, ViewLinkColumn, EditLinkColumn
 import django.forms as forms
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -63,3 +63,12 @@ class WaitlistTable(tables.Table):
         fields = ('id', 'student', 'listed_on', 'emailed_on')
 
 
+class BookTable(tables.Table):
+    edit = EditLinkColumn('')
+    delete = DeleteLinkColumn('')
+
+    class Meta:
+        model = Book
+        template_name = "django_tables2/bootstrap.html"
+        fields = ('author', 'title', 'type')
+        order_by = ('-type', 'author', 'title')

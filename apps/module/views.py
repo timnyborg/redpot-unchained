@@ -11,14 +11,15 @@ from django.db.models.expressions import F
 
 from apps.main.utils.views import PageTitleMixin
 from apps.tutor.utils import expense_forms
+from apps.discount.utils import get_module_discounts
 
 from .models import Module
 from .forms import ModuleForm
-from .datatables import ModuleSearchFilter, ModuleSearchTable, WaitlistTable
+from .datatables import ModuleSearchFilter, ModuleSearchTable, WaitlistTable, BookTable
 
 
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
-    model = Module    
+    model = Module
     form_class = ModuleForm
     template_name = 'module/edit.html'
     success_message = 'Details updated.'
@@ -59,16 +60,17 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
         waitlist_table = WaitlistTable(self.object.waitlist.all())
 
         payment_plans = self.object.payment_plans.all()
+        book_table = BookTable(self.object.books.all())
+
+        discounts = get_module_discounts(self.object)
 
         other_runs = next_run = None
         if self.object.url:
-            other_runs = Module.objects.filter(
-                url=self.object.url,
-                division=self.object.division
-            ).exclude(
-                id=self.object.id
-            ).order_by(
-                F('start_date').desc(nulls_last=True)
+            other_runs = (
+                Module.objects
+                .filter(url=self.object.url, division=self.object.division)
+                .exclude(id=self.object.id)
+                .order_by(F('start_date').desc(nulls_last=True))
             )
 
             next_run = other_runs.filter(
@@ -83,24 +85,11 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'expense_form_options': expense_form_options,
             'waitlist_table': waitlist_table,
             'payment_plans': payment_plans,
+            'book_table': book_table,
             'other_runs': other_runs,
             'next_run': next_run,
+            'discounts': discounts,
             **context
         }
 
-    #
-    # discounts = get_discounts()
-
-
-    # # Take the first run which is published
-    # next_run = other_runs.find(lambda row: row.is_published == True).first()
-    # next_run = next_run.id if next_run and next_run.is_published and module.start_date and next_run.start_date and next_run.start_date >= module.start_date else None
-    #
     # applications = idb(idb.course_application.module == module.id).select()
-    # module_books = idb.book(module=module.id)
-    #
-    # return dict(publish_form=publish_form, module=module, students=students, fees=fees, programmes=programmes,
-    #             tutors=tutors, publish_check=module_publish_check(module.id),
-    #             prospectus_check=module_prospectus_check(module.id), other_runs=other_runs,
-    #             payment_plans=payment_plans, discounts=discounts, applications=applications,
-    #             module_books=module_books, waitlist=waitlist, next_run=next_run)

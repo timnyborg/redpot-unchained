@@ -69,7 +69,7 @@ if not DEBUG:
 
 # Application definition
 
-INSTALLED_APPS = [
+PREREQ_APPS = [
     'dal',  # django-autocomplete-light
     'dal_select2',  # django-autocomplete-light
 
@@ -88,17 +88,21 @@ INSTALLED_APPS = [
     'widget_tweaks',  # django-widget-tweaks
     'django_celery_beat',
     'django_celery_results',
+]
 
-    # project apps
+PROJECT_APPS = [
     'apps.main',
     'apps.student',
-    'apps.programme',    
+    'apps.programme',
     'apps.module',
     'apps.enrolment',
     'apps.invoice',
     'apps.tutor',
     'apps.user',
+    'apps.discount',
 ]
+
+INSTALLED_APPS = PREREQ_APPS + PROJECT_APPS
 
 if get_secret('REDIS_HOST', ''):
     CACHES = {

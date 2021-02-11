@@ -542,32 +542,47 @@
         </table>
     {% endif %}
 
-    {% verbatim %}
-
     {% if discounts %}
     <table class="table table-condensed table-striped">
-      <thead><tr><th>Discount codes</th><th></th><th></th></tr></thead>
-      {{for discount in discounts:
-          =TR(discount.discount.name+' ('+str(discount.discount.percent)+'%)', discount.discount.code, 'All students eligible' if discount.eligibility==0 else 'limited eligibility (see discount manager)')
-          pass
-      }}
+        <thead><tr><th>Discount codes</th><th></th><th></th></tr></thead>
+        {% for discount in discounts %}
+            <tr>
+                <td>{{ discount }} ({{ discount.percent }}%)</td>
+                <td>{{ discount.code }}</td>
+                <td>
+                {% if discount.eligibility == 0 %}
+                    All students eligible
+                {% else %}
+                    limited eligibility (see discount manager)
+                {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
     </table>
     {% endif %}
 </div>
 
-{% if module.portfolio == 32 %}
+{# TODO: turn the '== 32' into a portfolio property/tag #}
+{% if module.portfolio_id == 32 %}
 <div class="section">
     <a id='reading-list' class='nav-anchor'></a>
     <h2>Reading list</h2>
-    {{=LOAD('module', 'books.load', args=[module.id], ajax=True)}}
+    {% render_table book_table %}
     <br>
-    <a href="{{=URL('rebuild_reading_list', args=module.id)}}" class="btn btn-default"><span class="fa fa-refresh"></span> Rebuild reading list</a>
-    {% if auth.has_membership('library_staff') or auth.has_membership('dev') %}
-    <a href="http://square/reports/report/Library/Weekly%20classes%20reading%20list%20items%20by%20course?code={{=module.code}}" target='_blank' class="btn btn-default"><span class="fa fa-check-square"></span> Export list (square)</a>
+    <a href="rebuild_reading_list/{{ module.id }}" class="btn btn-default">
+        <i class="fas fa-fw fa-redo"></i> Rebuild reading list
+    </a>
+    {% if perms.books.export_list %}
+        {#  Todo: figure out to do with square & other external urls. simple key-value table? #}
+        <a href="https://square.conted.ox.ac.uk/reports/report/Library/Weekly%20classes%20reading%20list%20items%20by%20course?code={{ module.code }}"
+           target='_blank'
+           class="btn btn-default"
+        >
+            <span class="fas fa-fw fa-check-square"></span> Export list (square)
+        </a>
     {% endif %}
 </div>
 {% endif %}
-{% endverbatim %}
 
 <div class="section">
     <div class="pull-right top-right-button">

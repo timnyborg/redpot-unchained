@@ -309,6 +309,7 @@ class Location(SignatureModel):
             return self.building
         return 'Invalid: no city or building'
 
+
 class ModuleWaitlist(models.Model):
     module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', related_name='waitlist')
     student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
@@ -327,3 +328,41 @@ class ModuleWaitlist(models.Model):
 
     def get_delete_url(self):
         return '#'
+
+
+class Book(models.Model):
+    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module', related_name='books')
+    title = models.TextField(blank=True, null=True)
+    author = models.TextField(blank=True, null=True)
+    type = models.CharField(max_length=24)
+    additional_information = models.TextField(blank=True, null=True)
+    solo_link = models.TextField(blank=True, null=True)
+    isbn_shelfmark = models.TextField(db_column='ISBN_shelfmark', blank=True, null=True)  # Field name made lowercase.
+    price = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
+    library_note = models.TextField(blank=True, null=True)
+    status = models.ForeignKey('BookStatus', models.DO_NOTHING, db_column='status')
+
+    class Meta:
+        # managed = False
+        db_table = 'book'
+
+    def get_absolute_url(self):
+        return '#'
+
+    def get_edit_url(self):
+        return '#'
+
+    def get_delete_url(self):
+        return '#'
+
+
+class BookStatus(models.Model):
+    id = models.IntegerField(primary_key=True)
+    status = models.TextField()
+
+    class Meta:
+        # managed = False
+        db_table = 'book_status'
+
+    def __str__(self):
+        return self.status
