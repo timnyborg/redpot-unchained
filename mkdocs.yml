@@ -1,14 +1,21 @@
 site_name: Redpot unchained docs!
-
+repo_name: oudce/redpot-unchained
 repo_url: https://gitlab.conted.ox.ac.uk/django/redpot-unchained
 edit_uri: edit/master/docs/
-site_desciption: describes!
+
+site_dir: static/docs
+
 google_analytics: ['gaid', 'url']
 
 theme:
   name: material
   features:
     - navigation.tabs
+  icon:
+    repo: fontawesome/brands/gitlab
+    logo: material/book-open-page-variant
+  palette:
+    scheme: preference
 
 nav:
   - Home: index.md
@@ -17,11 +24,10 @@ nav:
     - Enrolments: enrolment.md
   - About: about.md
   - Development:
-      - App file structure: app-structure.md
+      - Development principles: development-principles.md
       - Style guide: style-guide.md
+      - App file structure: app-structure.md
       - Gotchas: gotchas.md
-
-site_dir: static/docs
 
 markdown_extensions:
   - admonition

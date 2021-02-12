@@ -2,7 +2,7 @@
 The following is a list of issues and challenges discovered while attempting to port redpot code to Django.
 
 ## No auto-rollback by default	
-Web2py run each request in a single transaction, and rolls it all back if it hits an unhandled error, so you don't
+Web2py runs each request in a single transaction, and rolls it all back if it hits an unhandled error, so you don't
 end up with half of your database commands commited and the other half not.
 
 Django runs in auto-commit mode, so each command is run independently.  If transactions are required, 

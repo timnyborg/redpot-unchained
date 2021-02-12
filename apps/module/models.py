@@ -147,7 +147,14 @@ class Module(SignatureModel, models.Model):
         to='invoice.PaymentPlanType',
         through='invoice.ModulePaymentPlan',
     )
-
+    subjects = models.ManyToManyField(
+        to='Subject',
+        through='ModuleSubject',
+    )
+    marketing_types = models.ManyToManyField(
+        to='MarketingType',
+        through='ModuleMarketingType',
+    )
     objects = ModuleManager()
 
     class Meta:
@@ -431,3 +438,50 @@ class BookStatus(models.Model):
 
     def __str__(self):
         return self.status
+
+
+class Subject(models.Model):
+    name = models.CharField(max_length=64, blank=True, null=True)
+    area = models.CharField(max_length=64, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'subject'
+
+    def __str__(self):
+        return self.name
+
+    def long_form(self):
+        return f'{self.name} ({self.area})'
+
+
+class ModuleSubject(models.Model):
+    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
+    subject = models.ForeignKey('Subject', models.DO_NOTHING, db_column='subject')
+
+    class Meta:
+        # managed = False
+        db_table = 'module_subject'
+        unique_together = (('module', 'subject'),)
+
+
+class MarketingType(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=64, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'marketing_type'
+
+    def __str__(self):
+        return self.name
+
+
+class ModuleMarketingType(models.Model):
+    marketing_type = models.ForeignKey(MarketingType, models.DO_NOTHING, db_column='marketing_type')
+    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
+
+    class Meta:
+        # managed = False
+        db_table = 'module_marketing_type'
+        unique_together = (('module', 'marketing_type'),)

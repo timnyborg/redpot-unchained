@@ -400,56 +400,6 @@ class Enquiry(models.Model):
         db_table = 'enquiry'
 
 
-class Enrolment(models.Model):
-    qa = models.ForeignKey('Qa', models.DO_NOTHING, db_column='qa', blank=True, null=True)
-    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module', blank=True, null=True)
-    status = models.ForeignKey('EnrolmentStatus', models.DO_NOTHING, db_column='status', blank=True, null=True)
-    result = models.ForeignKey('EnrolmentResult', models.DO_NOTHING, db_column='result')
-    points_awarded = models.IntegerField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    provenance = models.IntegerField(blank=True, null=True)
-    provenance_details = models.CharField(max_length=128, blank=True, null=True)
-    no_image_consent = models.BooleanField(blank=True, null=True)
-    mark = models.IntegerField(blank=True, null=True)
-    transcript_date = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'enrolment'
-
-
-class EnrolmentResult(models.Model):
-    id = models.CharField(primary_key=True, max_length=4)
-    description = models.CharField(max_length=128, blank=True, null=True)
-    is_active = models.BooleanField()
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    display_order = models.IntegerField(blank=True, null=True)
-    hesa_code = models.CharField(max_length=1, blank=True, null=True)
-    allow_certificate = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'enrolment_result'
-
-
-class EnrolmentStatus(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
-    takes_place = models.BooleanField()
-    is_debtor = models.BooleanField()
-    on_hesa_return = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'enrolment_status'
-
-
 class EntryQualification(models.Model):
     id = models.CharField(primary_key=True, max_length=10)
     description = models.CharField(max_length=128, blank=True, null=True)
@@ -542,17 +492,6 @@ class HesaCostCentre(models.Model):
     class Meta:
         managed = False
         db_table = 'hesa_cost_centre'
-
-
-class HesaSubject(models.Model):
-    jacs_code = models.CharField(primary_key=True, max_length=8)
-    description = models.CharField(max_length=64, blank=True, null=True)
-    general_subject = models.CharField(max_length=64, blank=True, null=True)
-    cost_centre = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'hesa_subject'
 
 
 class Invoice(models.Model):
@@ -685,15 +624,6 @@ class Login(models.Model):
         unique_together = (('student', 'username'),)
 
 
-class MarketingType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'marketing_type'
-
-
 class MenuHeadings(models.Model):
     title = models.CharField(max_length=100, blank=True, null=True)
     root_menu = models.CharField(max_length=50, blank=True, null=True)
@@ -730,106 +660,6 @@ class MergeCandidates(models.Model):
     class Meta:
         managed = False
         db_table = 'merge_candidates'
-
-
-class Module(models.Model):
-    code = models.CharField(max_length=12)
-    type = models.ForeignKey('ModuleType', models.DO_NOTHING, db_column='type', blank=True, null=True)
-    persistent_id = models.CharField(max_length=64, blank=True, null=True)
-    title = models.CharField(max_length=80)
-    hesa_subject1 = models.ForeignKey(HesaSubject, models.DO_NOTHING, db_column='hesa_subject1', blank=True, null=True)
-    hesa_subject1_percent = models.DecimalField(max_digits=5, decimal_places=1, blank=True, null=True)
-    hesa_subject2 = models.CharField(max_length=8, blank=True, null=True)
-    hesa_subject2_percent = models.DecimalField(max_digits=5, decimal_places=1, blank=True, null=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
-    start_time = models.TimeField(blank=True, null=True)
-    end_time = models.TimeField(blank=True, null=True)
-    publish_date = models.DateField(blank=True, null=True)
-    open_date = models.DateField(blank=True, null=True)
-    closed_date = models.DateTimeField(blank=True, null=True)
-    unpublish_date = models.DateField(blank=True, null=True)
-    max_size = models.IntegerField(blank=True, null=True)
-    single_places = models.IntegerField(blank=True, null=True)
-    twin_places = models.IntegerField(blank=True, null=True)
-    double_places = models.IntegerField(blank=True, null=True)
-    location = models.ForeignKey(Location, models.DO_NOTHING, db_column='location', blank=True, null=True)
-    address = models.CharField(max_length=255, blank=True, null=True)
-    meeting_time = models.CharField(max_length=32, blank=True, null=True)
-    duration = models.FloatField(blank=True, null=True)
-    no_meetings = models.IntegerField(blank=True, null=True)
-    division = models.IntegerField()
-    portfolio = models.IntegerField()
-    auto_publish = models.BooleanField()
-    status = models.ForeignKey('ModuleStatus', models.DO_NOTHING, db_column='status')
-    is_published = models.BooleanField()
-    finance_code = models.CharField(max_length=64, blank=True, null=True)
-    email = models.CharField(max_length=256, blank=True, null=True)
-    phone = models.CharField(max_length=256, blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    source_module_code = models.CharField(max_length=12, blank=True, null=True)
-    overview = models.TextField(blank=True, null=True)
-    accommodation = models.TextField(blank=True, null=True)
-    application = models.TextField(blank=True, null=True)
-    assessment_methods = models.TextField(blank=True, null=True)
-    certification = models.TextField(blank=True, null=True)
-    course_aims = models.TextField(blank=True, null=True)
-    level_and_demands = models.TextField(blank=True, null=True)
-    libraries = models.TextField(blank=True, null=True)
-    payment = models.TextField(blank=True, null=True)
-    programme_details = models.TextField(blank=True, null=True)
-    recommended_reading = models.TextField(blank=True, null=True)
-    scholarships = models.TextField(blank=True, null=True)
-    snippet = models.CharField(max_length=512, blank=True, null=True)
-    teaching_methods = models.TextField(blank=True, null=True)
-    teaching_outcomes = models.TextField(blank=True, null=True)
-    selection_criteria = models.TextField(blank=True, null=True)
-    it_requirements = models.TextField(blank=True, null=True)
-    full_time_equivalent = models.DecimalField(max_digits=4, decimal_places=1)
-    credit_points = models.IntegerField(blank=True, null=True)
-    points_level = models.IntegerField(blank=True, null=True)
-    enrol_online = models.BooleanField(blank=True, null=True)
-    non_credit_bearing = models.BooleanField()
-    auto_feedback = models.BooleanField()
-    auto_reminder = models.BooleanField()
-    no_search = models.BooleanField()
-    week_number = models.IntegerField(blank=True, null=True)
-    url = models.CharField(max_length=256, blank=True, null=True)
-    adhocfee = models.CharField(db_column='adhocFee', max_length=1012, blank=True, null=True)  # Field name made lowercase.
-    custom_fee = models.CharField(max_length=1012, blank=True, null=True)
-    format = models.ForeignKey('ModuleFormat', models.DO_NOTHING, db_column='format', blank=True, null=True)
-    image = models.CharField(max_length=512, blank=True, null=True)
-    is_cancelled = models.BooleanField()
-    default_non_credit = models.BooleanField(blank=True, null=True)
-    note = models.CharField(max_length=512, blank=True, null=True)
-    terms_and_conditions = models.ForeignKey('TermsAndConditions', models.DO_NOTHING, db_column='terms_and_conditions')
-    apply_url = models.CharField(max_length=512, blank=True, null=True)
-    further_details = models.TextField(blank=True, null=True)
-    is_repeat = models.BooleanField()
-    reminder_sent_on = models.DateTimeField(blank=True, null=True)
-    room = models.CharField(max_length=12, blank=True, null=True)
-    room_setup = models.CharField(max_length=12, blank=True, null=True)
-    hilary_start = models.DateField(blank=True, null=True)
-    michaelmas_end = models.DateField(blank=True, null=True)
-    mailing_list = models.CharField(max_length=25, blank=True, null=True)
-    notification = models.CharField(max_length=512, blank=True, null=True)
-    cost_centre = models.CharField(max_length=6, blank=True, null=True)
-    activity_code = models.CharField(max_length=2, blank=True, null=True)
-    source_of_funds = models.CharField(max_length=5, blank=True, null=True)
-    fee_code = models.CharField(max_length=1, blank=True, null=True)
-    term_starts = models.DateField(blank=True, null=True)
-    half_term = models.DateField(blank=True, null=True)
-    image_upload = models.CharField(max_length=512, blank=True, null=True)
-    reading_list_url = models.TextField(blank=True, null=True)
-    reading_list_links = models.BooleanField(blank=True, null=True)
-    invoice_online = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'module'
 
 
 class ModuleCabsBooking(models.Model):
@@ -875,27 +705,6 @@ class ModuleHecosSubject(models.Model):
         db_table = 'module_hecos_subject'
 
 
-class ModuleHesaSubject(models.Model):
-    module = models.IntegerField()
-    subject = models.CharField(max_length=8, blank=True, null=True)
-    percentage = models.DecimalField(max_digits=5, decimal_places=1, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'module_hesa_subject'
-
-
-class ModuleMarketingType(models.Model):
-    id = models.AutoField()
-    marketing_type = models.ForeignKey(MarketingType, models.DO_NOTHING, db_column='marketing_type', blank=True, null=True)
-    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'module_marketing_type'
-        unique_together = (('module', 'marketing_type'),)
-
-
 class ModuleRoom(models.Model):
     id = models.AutoField()
     module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
@@ -923,31 +732,12 @@ class ModuleStatus(models.Model):
         db_table = 'module_status'
 
 
-class ModuleSubject(models.Model):
-    id = models.AutoField()
-    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', blank=True, null=True)
-    subject = models.ForeignKey('Subject', models.DO_NOTHING, db_column='subject')
-    id_0 = models.AutoField(db_column='id')  # Field renamed because of name conflict.
-    batch = models.IntegerField(blank=True, null=True)
-    modid_fk = models.CharField(db_column='MODID_FK', max_length=32, blank=True, null=True)  # Field name made lowercase.
-    costcn = models.IntegerField(db_column='COSTCN', blank=True, null=True)  # Field name made lowercase.
-    modsbjp = models.IntegerField(db_column='MODSBJP', blank=True, null=True)  # Field name made lowercase.
-    modsbj = models.CharField(db_column='MODSBJ', max_length=6, blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'module_subject'
-
-
 class ModuleType(models.Model):
     type = models.CharField(max_length=50)
 
     class Meta:
         managed = False
         db_table = 'module_type'
-
-
-
 
 
 class MoodleId(models.Model):
@@ -1253,16 +1043,6 @@ class ProgrammeHecosSubject(models.Model):
     class Meta:
         managed = False
         db_table = 'programme_hecos_subject'
-
-
-class ProgrammeHesaSubject(models.Model):
-    programme = models.ForeignKey(Programme, models.DO_NOTHING, db_column='programme', blank=True, null=True)
-    subject = models.ForeignKey(HesaSubject, models.DO_NOTHING, db_column='subject', blank=True, null=True)
-    percentage = models.DecimalField(max_digits=18, decimal_places=0, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'programme_hesa_subject'
 
 
 class ProgrammeModule(models.Model):
@@ -1614,15 +1394,6 @@ class StudyLocation(models.Model):
     class Meta:
         managed = False
         db_table = 'study_location'
-
-
-class Subject(models.Model):
-    name = models.CharField(max_length=64, blank=True, null=True)
-    area = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'subject'
 
 
 class Suspension(models.Model):

@@ -54,19 +54,20 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             .order_by(Coalesce('display_order', 999), 'id')
         )
 
-        applications = self.object.applications.select_related('student')
-
         expense_form_options = expense_forms.template_options(self.object)
 
         waitlist_table = WaitlistTable(self.object.waitlist.all())
-
-        payment_plans = self.object.payment_plans.all()
         book_table = BookTable(self.object.books.all())
 
         discounts = Discount.objects.matching_module(self.object).with_eligibility()
 
         other_runs = self.object.other_runs()
         next_run = self.object.next_run()
+
+        applications = self.object.applications.select_related('student')
+        subjects = self.object.subjects.all()
+        payment_plans = self.object.payment_plans.all()
+        marketing_types = self.object.marketing_types.all()
 
         statuses = ModuleStatus.objects.all()
 
@@ -84,5 +85,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'discounts': discounts,
             'statuses': statuses,
             'applications': applications,
+            'subjects': subjects,
+            'marketing_types': marketing_types,
             **context
         }
