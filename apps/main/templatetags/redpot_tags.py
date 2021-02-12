@@ -1,14 +1,14 @@
 from django import template
 from django.utils.safestring import mark_safe
 from ..models import User
-import socket 
+import socket
 from django.core.cache import cache
 
 register = template.Library()
 
 
 @register.simple_tag
-def edit_button(url, icon='edit', target='', tooltip='Edit details'):
+def edit_button(url, icon='pencil-alt', target='', tooltip='Edit details'):
     """Produces a standard edit button"""
     b = f"""
         <a href="{url}"
@@ -41,7 +41,7 @@ def user_name(username):
 
 @register.inclusion_tag('utility/bootstrap3_form.html')
 def bootstrap3form(form, status_classes=True):
-    return {'form': form, 'status_classes': status_classes} 
+    return {'form': form, 'status_classes': status_classes}
 
 
 @register.inclusion_tag('utility/bootstrap3_modal.html')
@@ -66,7 +66,7 @@ def bootstrap3submit(text='Submit', btn_type='primary', offset=2):
             </div>
         </div>
     """)
-    
+
 
 @register.simple_tag
 def bootstrap3backbutton(text='Back', btn_type='default'):
