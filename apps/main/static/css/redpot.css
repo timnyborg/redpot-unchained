@@ -788,7 +788,7 @@ ul.item-list {
 .footerLinks {
   float: right; }
   .footerLinks a {
-    padding-right: 5px; }
+    margin-left: 15px; }
 
 /****************************************************/
 /**** All the part for the dynamic edit on redpot ***/
