@@ -1,0 +1,34 @@
+site_name: Redpot unchained docs!
+
+repo_url: https://gitlab.conted.ox.ac.uk/django/redpot-unchained
+edit_uri: edit/master/docs/
+site_desciption: describes!
+google_analytics: ['gaid', 'url']
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+
+nav:
+  - Home: index.md
+  - How to:
+    - Invoices: invoices.md
+    - Enrolments: enrolment.md
+  - About: about.md
+  - Development:
+      - App file structure: app-structure.md
+      - Style guide: style-guide.md
+      - Gotchas: gotchas.md
+
+site_dir: static/docs
+
+markdown_extensions:
+  - admonition
+  - pymdownx.tabbed
+  - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - toc:
+      permalink: true
