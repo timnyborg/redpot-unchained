@@ -19,11 +19,12 @@ class PageTitleMixin:
     def get_title(self):
         if self.title:
             return self.title
-        if hasattr(self, 'model') and self.model:
+        if hasattr(self, 'model') and self.model is not None:
             # Automatically get model name for model views
             return self.model._meta.verbose_name.capitalize()
-        if hasattr(self, 'queryset') and self.queryset:
-            # Automatically get model name for model views with a queryset
+        if hasattr(self, 'queryset') and self.queryset is not None:
+            # Automatically get model name for model views with a queryset.  Is not None is critical, to prevent loading
+            # the entire set into memory before casting as True/False!
             return self.queryset.model._meta.verbose_name.capitalize()
 
     def get_subtitle(self):
