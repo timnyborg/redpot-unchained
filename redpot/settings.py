@@ -73,7 +73,6 @@ PREREQ_APPS = [
     'dal',  # django-autocomplete-light
     'dal_select2',  # django-autocomplete-light
 
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -98,6 +97,7 @@ PROJECT_APPS = [
     'apps.enrolment',
     'apps.invoice',
     'apps.tutor',
+    'apps.tutor_payment',
     'apps.user',
     'apps.discount',
     'apps.application',

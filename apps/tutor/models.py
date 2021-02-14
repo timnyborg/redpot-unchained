@@ -67,3 +67,4 @@ class TutorModule(SignatureModel):
     class Meta:
         # managed = False
         db_table = 'tutor_module'
+        verbose_name = 'Tutor on module'

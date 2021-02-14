@@ -37,7 +37,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
     template_name = 'module/view.html'
 
     def get_context_data(self, **kwargs):
-        context = super(View, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         enrolments = (
             self.object.enrolments

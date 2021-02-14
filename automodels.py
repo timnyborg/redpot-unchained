@@ -1303,61 +1303,6 @@ class TutorContractStatus(models.Model):
         db_table = 'tutor_contract_status'
 
 
-class TutorFee(models.Model):
-    tutor_module = models.ForeignKey('TutorModule', models.DO_NOTHING, db_column='tutor_module')
-    amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    type = models.ForeignKey('TutorFeeType', models.DO_NOTHING, db_column='type', blank=True, null=True)
-    pay_after = models.DateField(blank=True, null=True)
-    raised_by = models.CharField(max_length=50, blank=True, null=True)
-    raised_on = models.DateTimeField(blank=True, null=True)
-    approved_by = models.CharField(max_length=50, blank=True, null=True)
-    approved_on = models.DateTimeField(blank=True, null=True)
-    transferred_by = models.CharField(max_length=50, blank=True, null=True)
-    transferred_on = models.DateTimeField(blank=True, null=True)
-    status = models.ForeignKey('TutorFeeStatus', models.DO_NOTHING, db_column='status')
-    details = models.CharField(max_length=500, blank=True, null=True)
-    batch = models.IntegerField(blank=True, null=True)
-    hourly_rate = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    hours_worked = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
-    weeks = models.IntegerField(blank=True, null=True)
-    approver = models.CharField(max_length=32, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'tutor_fee'
-
-
-class TutorFeeRate(models.Model):
-    tag = models.CharField(max_length=64, blank=True, null=True)
-    amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    type = models.CharField(max_length=64, blank=True, null=True)
-    description = models.CharField(max_length=128, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'tutor_fee_rate'
-
-
-class TutorFeeStatus(models.Model):
-    description = models.CharField(max_length=50, blank=True, null=True)
-    paid = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'tutor_fee_status'
-
-
-class TutorFeeType(models.Model):
-    description = models.CharField(max_length=64, blank=True, null=True)
-    is_hourly = models.BooleanField()
-    code = models.CharField(max_length=64, blank=True, null=True)
-    is_active = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'tutor_fee_type'
-
-
 class TutorSubject(models.Model):
     tutor = models.ForeignKey(Tutor, models.DO_NOTHING, db_column='tutor', blank=True, null=True)
     subject = models.ForeignKey(Subject, models.DO_NOTHING, db_column='subject', blank=True, null=True)

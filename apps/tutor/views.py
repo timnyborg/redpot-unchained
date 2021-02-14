@@ -2,8 +2,38 @@ from django.http import HttpResponse, Http404
 import re
 import os
 import pathlib
+
+from django.views.generic import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from apps.core.utils.views import PageTitleMixin
+
 from .utils.mail_merge import mail_merge, MailMergeView
 from .models import TutorModule
+
+
+class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, DetailView):
+    model = TutorModule
+    template_name = 'tutor_module/view.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        payments = self.object.payments.order_by('id')
+
+        add_buttons = []
+        if self.object.module.portfolio_id == 17:  # Online
+            add_buttons = ['online_teaching', 'marking_link']
+        elif self.object.module.portfolio_id == 32:
+            add_buttons = ['weekly_teaching', 'marking_link', 'weekly_syllabus']
+
+        return {
+            'payments': payments,
+            'add_buttons': add_buttons,
+            **context
+        }
+
+
 
 """
 For example, the below CBV, but as a FBV
