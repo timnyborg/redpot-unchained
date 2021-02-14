@@ -1,5 +1,12 @@
+## Indentation, line endings , etc.
+Basic code style rules (4-space indents for most languages, LF line endings,
+etc.) are defined in [.editorconfig](https://gitlab.conted.ox.ac.uk/django/redpot-unchained/-/blob/master/.editorconfig)
+
+.editorconfig is supported out of the box by PyCharm, and packages are
+available for VSCode, Atom, etc.
+
 ## Multiline queries
-Complicated queries are guaranteed to break the [PEP8 79-character limit](https://www.python.org/dev/peps/pep-0008/#maximum-line-length) 
+Complicated queries are guaranteed to break the [PEP8 79-character limit](https://www.python.org/dev/peps/pep-0008/#maximum-line-length)
 and become unreadable.
 
 For example, this query that gets other runs of a module (`self`):
@@ -12,7 +19,7 @@ Python syntax allows a few approaches for splitting them across multiple lines.
 ### Extra lines per operation
 ```python
 other_runs =  Module.objects.filter(
-    url=self.url, 
+    url=self.url,
     division=self.division
 ).exclude(
     id=self.id
@@ -45,7 +52,7 @@ The most compact, but arguable the ugliest.  The identation varies wildly, depen
 ## Organizing imports
 Since more or less every file in Django is a module, many of them will end up filled with imports.
 
-Extending [PEP8's guidelines](https://www.python.org/dev/peps/pep-0008/#imports), imports 
+Extending [PEP8's guidelines](https://www.python.org/dev/peps/pep-0008/#imports), imports
 should be at the top of the file, grouped in the following order:
 
 1. Standard library imports (os, sys)
