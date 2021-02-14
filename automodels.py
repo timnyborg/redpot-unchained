@@ -32,7 +32,7 @@ class AcornPostcodes(models.Model):
         db_table = 'acorn_postcodes'
 
 
-class Activity(models.Model):
+class TutorActivity(models.Model):
     description = models.CharField(max_length=128, blank=True, null=True)
     is_active = models.BooleanField()
 
@@ -274,18 +274,6 @@ class CourseApplicationAttachment(models.Model):
     class Meta:
         managed = False
         db_table = 'course_application_attachment'
-
-
-class DateFormats(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=32)
-    format = models.CharField(max_length=16)
-    sample = models.CharField(max_length=16)
-    jsformat = models.CharField(max_length=16)
-
-    class Meta:
-        managed = False
-        db_table = 'date_formats'
 
 
 class Diet(models.Model):
@@ -624,44 +612,6 @@ class Login(models.Model):
         unique_together = (('student', 'username'),)
 
 
-class MenuHeadings(models.Model):
-    title = models.CharField(max_length=100, blank=True, null=True)
-    root_menu = models.CharField(max_length=50, blank=True, null=True)
-    column_width = models.IntegerField(blank=True, null=True)
-    heading_order = models.IntegerField(blank=True, null=True)
-    column_number = models.IntegerField(blank=True, null=True)
-    overview = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'menu_headings'
-
-
-class MenuLinks(models.Model):
-    menu_heading_id = models.IntegerField(blank=True, null=True)
-    title = models.CharField(max_length=200, blank=True, null=True)
-    url = models.CharField(max_length=256, blank=True, null=True)
-    column_number = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'menu_links'
-
-
-class MergeCandidates(models.Model):
-    source = models.IntegerField()
-    target = models.IntegerField()
-    merged = models.BooleanField()
-    created_by = models.CharField(max_length=64, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=64, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'merge_candidates'
-
-
 class ModuleCabsBooking(models.Model):
     module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
     mbr_id = models.TextField(blank=True, null=True)
@@ -703,21 +653,6 @@ class ModuleHecosSubject(models.Model):
     class Meta:
         managed = False
         db_table = 'module_hecos_subject'
-
-
-class ModuleRoom(models.Model):
-    id = models.AutoField()
-    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
-    room = models.ForeignKey('Room', models.DO_NOTHING, db_column='room')
-    setup = models.CharField(max_length=12)
-    created_on = models.DateTimeField(blank=True, null=True)
-    created_by = models.TextField(blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'module_room'
 
 
 class ModuleStatus(models.Model):
@@ -931,16 +866,6 @@ class PaymentPlanStatus(models.Model):
         db_table = 'payment_plan_status'
 
 
-class PayrollUpload(models.Model):
-    employee_no = models.CharField(max_length=32, blank=True, null=True)
-    appointment_id = models.CharField(max_length=32, blank=True, null=True)
-    nino = models.CharField(max_length=32, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'payroll_upload'
-
-
 class Phone(models.Model):
     student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
     type = models.ForeignKey('PhoneType', models.DO_NOTHING, db_column='type')
@@ -996,45 +921,6 @@ class Portfolio(models.Model):
         db_table = 'portfolio'
 
 
-class Post(models.Model):
-    your_message = models.CharField(max_length=512, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'post'
-
-
-class Programme(models.Model):
-    persistent_id = models.CharField(max_length=64, blank=True, null=True)
-    title = models.CharField(max_length=96, blank=True, null=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
-    division = models.ForeignKey(Division, models.DO_NOTHING, db_column='division', blank=True, null=True)
-    portfolio = models.IntegerField(blank=True, null=True)
-    qualification = models.ForeignKey('Qualification', models.DO_NOTHING, db_column='qualification')
-    created_by = models.CharField(max_length=8, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=8, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    student_load = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
-    funding_level = models.IntegerField(blank=True, null=True)
-    funding_source = models.IntegerField(blank=True, null=True)
-    study_mode = models.IntegerField(blank=True, null=True)
-    study_location = models.SmallIntegerField(blank=True, null=True)
-    reporting_year_type = models.IntegerField(blank=True, null=True)
-    is_active = models.BooleanField()
-    sits_code = models.CharField(max_length=32, blank=True, null=True)
-    contact_list_display = models.BooleanField()
-    short_name = models.CharField(max_length=64, blank=True, null=True)
-    email = models.CharField(max_length=64, blank=True, null=True)
-    phone = models.CharField(max_length=64, blank=True, null=True)
-    mailing_list_id = models.CharField(max_length=25, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'programme'
-
-
 class ProgrammeHecosSubject(models.Model):
     programme = models.ForeignKey(Programme, models.DO_NOTHING, db_column='programme')
     hecos_subject = models.ForeignKey(HecosSubject, models.DO_NOTHING, db_column='hecos_subject')
@@ -1043,17 +929,6 @@ class ProgrammeHecosSubject(models.Model):
     class Meta:
         managed = False
         db_table = 'programme_hecos_subject'
-
-
-class ProgrammeModule(models.Model):
-    id = models.AutoField()
-    programme = models.ForeignKey(Programme, models.DO_NOTHING, db_column='programme', blank=True, null=True)
-    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'programme_module'
-        unique_together = (('programme', 'module'), ('module', 'programme'),)
 
 
 class ProgrammeStaff(models.Model):
@@ -1165,59 +1040,6 @@ class ProposalStatus(models.Model):
     class Meta:
         managed = False
         db_table = 'proposal_status'
-
-
-class PublicAuthCas(models.Model):
-    user_id = models.IntegerField(blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    service = models.CharField(max_length=512, blank=True, null=True)
-    ticket = models.CharField(max_length=512, blank=True, null=True)
-    renew = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'public_auth_cas'
-
-
-class PublicAuthEvent(models.Model):
-    time_stamp = models.DateTimeField(blank=True, null=True)
-    client_ip = models.CharField(max_length=512, blank=True, null=True)
-    user_id = models.IntegerField(blank=True, null=True)
-    origin = models.CharField(max_length=512, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'public_auth_event'
-
-
-class PublicAuthGroup(models.Model):
-    role = models.CharField(max_length=512, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'public_auth_group'
-
-
-class PublicAuthMembership(models.Model):
-    user_id = models.IntegerField(blank=True, null=True)
-    group_id = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'public_auth_membership'
-
-
-class PublicAuthPermission(models.Model):
-    group_id = models.IntegerField(blank=True, null=True)
-    name = models.CharField(max_length=512, blank=True, null=True)
-    table_name = models.CharField(max_length=512, blank=True, null=True)
-    record_id = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'public_auth_permission'
 
 
 class Qa(models.Model):
@@ -1366,21 +1188,6 @@ class StudentArchive(models.Model):
         db_table = 'student_archive'
 
 
-class StudentJobTitle(models.Model):
-    id = models.AutoField()
-    student = models.ForeignKey(Student, models.DO_NOTHING, db_column='student', blank=True, null=True)
-    title = models.CharField(max_length=128, blank=True, null=True)
-    position = models.IntegerField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'student_job_title'
-
-
 class StudyLocation(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.CharField(max_length=64, blank=True, null=True)
@@ -1411,106 +1218,6 @@ class Suspension(models.Model):
     class Meta:
         managed = False
         db_table = 'suspension'
-
-
-class TempAwardData2(models.Model):
-    id = models.IntegerField()
-    qa = models.IntegerField()
-    sits_id = models.CharField(db_column='SITS_ID', max_length=50)  # Field name made lowercase.
-    surname = models.CharField(max_length=50)
-    firstname = models.CharField(max_length=50)
-    birthdate = models.DateTimeField(blank=True, null=True)
-    programme_title = models.CharField(max_length=100)
-    start_date = models.DateTimeField(blank=True, null=True)
-    found_on_dataview = models.CharField(max_length=50)
-    comments = models.TextField(db_column='Comments', blank=True, null=True)  # Field name made lowercase.
-    row_number_for_sits_id = models.CharField(db_column='row_number_for_SITS_ID', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    row_number_for_surname = models.CharField(max_length=50, blank=True, null=True)
-    row_number_for_birthdate = models.CharField(max_length=50, blank=True, null=True)
-    evision_student_number = models.CharField(db_column='eVision_student_number', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    title = models.CharField(db_column='Title', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    surname2 = models.CharField(db_column='Surname2', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    forename_s = models.CharField(db_column='Forename_s', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    forename_1 = models.CharField(db_column='Forename_1', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    forename_2 = models.CharField(db_column='Forename_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    forename_3 = models.CharField(db_column='Forename_3', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    preferred_name_s = models.CharField(db_column='Preferred_Name_s', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    initials = models.CharField(db_column='Initials', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    sex = models.CharField(db_column='Sex', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    college = models.CharField(db_column='College', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    specialism_code = models.CharField(db_column='Specialism_Code', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    specialism = models.CharField(db_column='Specialism', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    award_programme_code = models.CharField(db_column='Award_Programme_Code', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    award_programme_title = models.CharField(db_column='Award_Programme_Title', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    status_type = models.CharField(db_column='Status_Type', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    student_status = models.CharField(db_column='Student_Status', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    award_programme_type = models.CharField(db_column='Award_Programme_Type', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    programme_group_code = models.CharField(db_column='Programme_Group_Code', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    programme_group_title = models.CharField(db_column='Programme_Group_Title', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    department = models.CharField(db_column='Department', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    division = models.CharField(db_column='Division', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    mode_of_attendance = models.CharField(db_column='Mode_of_Attendance', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    previous_college = models.CharField(db_column='Previous_College', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    location_of_study = models.CharField(db_column='Location_of_Study', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    start_date1 = models.CharField(db_column='Start_Date1', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    year_of_programme = models.CharField(db_column='Year_of_Programme', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    expected_end_date = models.CharField(db_column='Expected_End_Date', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    award_outcome = models.CharField(db_column='Award_Outcome', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    end_date = models.CharField(db_column='End_Date', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    date_of_last_attendance = models.CharField(db_column='Date_of_Last_Attendance', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    reason_for_leaving = models.CharField(db_column='Reason_For_Leaving', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    degree_ceremony_date = models.CharField(db_column='Degree_Ceremony_Date', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    reason_for_absence = models.CharField(db_column='Reason_for_Absence', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    age = models.CharField(db_column='Age', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    date_of_birth = models.CharField(db_column='Date_of_Birth', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    student_oxford_email = models.CharField(db_column='Student_Oxford_Email', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    personal_email = models.CharField(db_column='Personal_Email', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    phone_mobile = models.CharField(db_column='Phone_Mobile', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    phone_contact = models.CharField(db_column='Phone_Contact', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    fee_status = models.CharField(db_column='Fee_Status', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    country_of_birth = models.CharField(db_column='Country_of_Birth', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    nationality = models.CharField(db_column='Nationality', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    dual_nationality = models.CharField(db_column='Dual_Nationality', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    domicile = models.CharField(db_column='Domicile', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    funding_source = models.CharField(db_column='Funding_Source', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    college_advisor_person_number_1 = models.CharField(db_column='College_Advisor_Person_Number_1', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    college_advisor_name_1 = models.CharField(db_column='College_Advisor_Name_1', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    college_advisor_person_number_2 = models.CharField(db_column='College_Advisor_Person_Number_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    college_advisor_name_2 = models.CharField(db_column='College_Advisor_Name_2', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    oxford_user_id = models.CharField(db_column='Oxford_User_ID', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    card_number = models.CharField(db_column='Card_Number', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    husid = models.CharField(db_column='HUSID', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    hesa_instance_numhus = models.CharField(db_column='HESA_Instance_NUMHUS', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    rhodes_year = models.CharField(db_column='Rhodes_Year', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    ucas_number = models.CharField(db_column='UCAS_Number', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    ucas_personal_id = models.CharField(db_column='UCAS_Personal_ID', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    student_support_number_slc = models.CharField(db_column='Student_Support_Number_SLC', max_length=50, blank=True, null=True)  # Field name made lowercase.
-    term_time_accommodation_type = models.CharField(db_column='Term_Time_Accommodation_Type', max_length=50, blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'temp_award_data2'
-
-
-class TempFeedback(models.Model):
-    rate_tutor = models.CharField(max_length=50, blank=True, null=True)
-    rate_content = models.CharField(max_length=50, blank=True, null=True)
-    rate_admin = models.CharField(max_length=50, blank=True, null=True)
-    rate_facilities = models.CharField(max_length=50, blank=True, null=True)
-    rate_refreshments = models.CharField(max_length=50, blank=True, null=True)
-    rate_accommodation = models.CharField(max_length=50, blank=True, null=True)
-    your_name = models.CharField(max_length=250, blank=True, null=True)
-    module_id = models.CharField(max_length=50, blank=True, null=True)
-    hash_id = models.CharField(max_length=50, blank=True, null=True)
-    notified = models.DateTimeField(blank=True, null=True)
-    submitted = models.DateTimeField(blank=True, null=True)
-    avg_score = models.CharField(max_length=50, blank=True, null=True)
-    reminder = models.DateTimeField(blank=True, null=True)
-    comments = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'temp_feedback'
 
 
 class TermsAndConditions(models.Model):
@@ -1662,233 +1369,3 @@ class TutorSubject(models.Model):
     class Meta:
         managed = False
         db_table = 'tutor_subject'
-
-
-class UgApplicationAttachment(models.Model):
-    application = models.IntegerField(blank=True, null=True)
-    filename = models.CharField(max_length=50, blank=True, null=True)
-    attachment = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'ug_application_attachment'
-
-
-class UgApplicationCerthe(models.Model):
-    application = models.IntegerField(blank=True, null=True)
-    primary_subject = models.CharField(max_length=64, blank=True, null=True)
-    secondary_subject = models.CharField(max_length=2048, blank=True, null=True)
-    study_mode = models.CharField(max_length=64, blank=True, null=True)
-    face_to_face = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'ug_application_certhe'
-
-
-class UgApplicationEntryQualification(models.Model):
-    application = models.IntegerField(blank=True, null=True)
-    institution = models.CharField(max_length=128, blank=True, null=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
-    qualification = models.CharField(max_length=128, blank=True, null=True)
-    subject = models.CharField(max_length=128, blank=True, null=True)
-    result = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'ug_application_entry_qualification'
-
-
-class UgApplicationFunding(models.Model):
-    application = models.IntegerField(blank=True, null=True)
-    source = models.CharField(max_length=256, blank=True, null=True)
-    source_details = models.CharField(max_length=256, blank=True, null=True)
-    per_year = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    duration = models.CharField(max_length=64, blank=True, null=True)
-    status = models.CharField(max_length=32, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'ug_application_funding'
-
-
-class UgApplicationNationality(models.Model):
-    application = models.IntegerField()
-    nationality = models.IntegerField()
-    start_date = models.DateField()
-    passport_no = models.CharField(max_length=32, blank=True, null=True)
-    country_of_issue = models.IntegerField(blank=True, null=True)
-    passport_expiry_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'ug_application_nationality'
-
-
-class UgApplicationOtherQualification(models.Model):
-    application = models.IntegerField(blank=True, null=True)
-    institution = models.CharField(max_length=128, blank=True, null=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
-    course_title = models.CharField(max_length=128, blank=True, null=True)
-    level = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'ug_application_other_qualification'
-
-
-class UgApplicationReferee(models.Model):
-    application = models.IntegerField(blank=True, null=True)
-    title = models.CharField(max_length=64, blank=True, null=True)
-    firstname = models.CharField(max_length=40, blank=True, null=True)
-    surname = models.CharField(max_length=40, blank=True, null=True)
-    role = models.CharField(max_length=128, blank=True, null=True)
-    address = models.CharField(max_length=512, blank=True, null=True)
-    email = models.CharField(max_length=64, blank=True, null=True)
-    type = models.CharField(max_length=32, blank=True, null=True)
-    requested = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'ug_application_referee'
-
-
-class UgApplicationResidence(models.Model):
-    application = models.IntegerField(blank=True, null=True)
-    country = models.IntegerField(blank=True, null=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'ug_application_residence'
-
-
-class UndergraduateApplication(models.Model):
-    academic_credit = models.BooleanField(blank=True, null=True)
-    title = models.CharField(max_length=20, blank=True, null=True)
-    surname = models.CharField(max_length=40, blank=True, null=True)
-    previous_surname = models.CharField(max_length=40, blank=True, null=True)
-    previous_surname_start = models.DateField(blank=True, null=True)
-    previous_surname_end = models.DateField(blank=True, null=True)
-    firstname = models.CharField(max_length=40, blank=True, null=True)
-    previous_firstname = models.CharField(max_length=40, blank=True, null=True)
-    previous_firstname_start = models.DateField(blank=True, null=True)
-    previous_firstname_end = models.DateField(blank=True, null=True)
-    preferred_name = models.CharField(max_length=40, blank=True, null=True)
-    middle_names = models.CharField(max_length=80, blank=True, null=True)
-    birthdate = models.DateField(blank=True, null=True)
-    sex = models.CharField(max_length=1, blank=True, null=True)
-    birth_country = models.IntegerField(blank=True, null=True)
-    nationality = models.IntegerField(blank=True, null=True)
-    nationality_start_date = models.DateField(blank=True, null=True)
-    dual_national = models.BooleanField(blank=True, null=True)
-    other_nationality = models.IntegerField(blank=True, null=True)
-    other_nationality_start_date = models.DateField(blank=True, null=True)
-    visa_required = models.CharField(max_length=16, blank=True, null=True)
-    passport_no = models.CharField(max_length=32, blank=True, null=True)
-    country_of_issue = models.IntegerField(blank=True, null=True)
-    passport_issue_date = models.DateField(blank=True, null=True)
-    passport_expiry_date = models.DateField(blank=True, null=True)
-    eu_national_in_uk = models.BooleanField(blank=True, null=True)
-    indefinite_leave = models.BooleanField(blank=True, null=True)
-    indefinite_leave_date = models.DateField(blank=True, null=True)
-    residence = models.IntegerField(blank=True, null=True)
-    residence_start_date = models.DateField(blank=True, null=True)
-    previous_residence = models.IntegerField(blank=True, null=True)
-    previous_residence_start_date = models.DateField(blank=True, null=True)
-    previous_residence_end_date = models.DateField(blank=True, null=True)
-    address1 = models.CharField(max_length=128, blank=True, null=True)
-    address2 = models.CharField(max_length=128, blank=True, null=True)
-    city = models.CharField(max_length=64, blank=True, null=True)
-    county_state = models.CharField(max_length=64, blank=True, null=True)
-    postcode = models.CharField(max_length=32, blank=True, null=True)
-    native = models.BooleanField(blank=True, null=True)
-    entry_qualification = models.CharField(max_length=500, blank=True, null=True)
-    entry_qualification_details = models.CharField(max_length=500, blank=True, null=True)
-    occupation = models.CharField(max_length=128, blank=True, null=True)
-    employer = models.CharField(max_length=128, blank=True, null=True)
-    statement = models.CharField(max_length=3000, blank=True, null=True)
-    funding = models.CharField(max_length=128, blank=True, null=True)
-    invoice_details = models.CharField(max_length=500, blank=True, null=True)
-    ethnicity = models.SmallIntegerField(blank=True, null=True)
-    religion = models.SmallIntegerField(blank=True, null=True)
-    disability = models.CharField(max_length=512, blank=True, null=True)
-    disability_details = models.CharField(max_length=128, blank=True, null=True)
-    marketing_preferences = models.CharField(max_length=128, blank=True, null=True)
-    country = models.CharField(max_length=64, blank=True, null=True)
-    email = models.CharField(max_length=64, blank=True, null=True)
-    other_email = models.CharField(max_length=64, blank=True, null=True)
-    phone = models.CharField(max_length=64, blank=True, null=True)
-    english_language_degree = models.BooleanField(blank=True, null=True)
-    tier_4_child_visa = models.BooleanField(blank=True, null=True)
-    language_test_type = models.CharField(max_length=64, blank=True, null=True)
-    language_test_date = models.DateField(blank=True, null=True)
-    language_test_result = models.CharField(max_length=128, blank=True, null=True)
-    language_test_scores = models.CharField(max_length=128, blank=True, null=True)
-    language_test_number = models.CharField(max_length=64, blank=True, null=True)
-    test_waiver_request = models.BooleanField(blank=True, null=True)
-    referee_name = models.CharField(max_length=50, blank=True, null=True)
-    referee_institution = models.CharField(max_length=128, blank=True, null=True)
-    referee_email_address = models.CharField(max_length=64, blank=True, null=True)
-    attachment_name_1 = models.CharField(max_length=50, blank=True, null=True)
-    programme = models.IntegerField()
-    is_completed = models.BooleanField(blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    created_by = models.CharField(max_length=50, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=50, blank=True, null=True)
-    sexual_orientation = models.CharField(max_length=32, blank=True, null=True)
-    gender_identity = models.CharField(max_length=32, blank=True, null=True)
-    adult_carer = models.BooleanField(blank=True, null=True)
-    child_carer = models.BooleanField(blank=True, null=True)
-    uk_secondary = models.CharField(max_length=32, blank=True, null=True)
-    free_school_meals = models.CharField(max_length=32, blank=True, null=True)
-    parental_undergrad = models.CharField(max_length=32, blank=True, null=True)
-    parent_categories_1 = models.CharField(max_length=128, blank=True, null=True)
-    parent_categories_2 = models.CharField(max_length=128, blank=True, null=True)
-    state_care = models.CharField(max_length=32, blank=True, null=True)
-    uk_undergrad = models.CharField(max_length=512, blank=True, null=True)
-    undergrad_funding = models.CharField(max_length=512, blank=True, null=True)
-    support_needs = models.CharField(max_length=512, blank=True, null=True)
-    incomplete_study = models.BooleanField(blank=True, null=True)
-    incomplete_study_details = models.CharField(max_length=512, blank=True, null=True)
-    concurrent_study = models.BooleanField(blank=True, null=True)
-    concurrent_study_details = models.CharField(max_length=512, blank=True, null=True)
-    uk_student_loan = models.BooleanField(blank=True, null=True)
-    dates_unavailable = models.CharField(max_length=512, blank=True, null=True)
-    application = models.IntegerField(blank=True, null=True)
-    primary_subject = models.CharField(max_length=64, blank=True, null=True)
-    secondary_subject = models.CharField(max_length=2048, blank=True, null=True)
-    study_mode = models.CharField(max_length=64, blank=True, null=True)
-    face_to_face = models.CharField(max_length=64, blank=True, null=True)
-    signature = models.CharField(max_length=128, blank=True, null=True)
-    hash = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'undergraduate_application'
-
-
-class Voucher(models.Model):
-    code = models.CharField(max_length=50)
-    amount = models.DecimalField(max_digits=19, decimal_places=4)
-    created_on = models.DateTimeField(blank=True, null=True)
-    created_by = models.CharField(max_length=32, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=32, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'voucher'
-
-
-class VoucherLedger(models.Model):
-    voucher = models.ForeignKey(Voucher, models.DO_NOTHING, db_column='voucher')
-    ledger = models.ForeignKey(Ledger, models.DO_NOTHING, db_column='ledger')
-
-    class Meta:
-        managed = False
-        db_table = 'voucher_ledger'

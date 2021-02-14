@@ -5,8 +5,8 @@ from apps.main.models import SignatureModel
 
 class Student(SignatureModel):
     husid = models.BigIntegerField(blank=True, null=True)
-    surname = models.CharField(max_length=40, blank=True, null=True)
-    firstname = models.CharField(max_length=40, blank=True, null=True)
+    surname = models.CharField(max_length=40)
+    firstname = models.CharField(max_length=40)
     title = models.CharField(max_length=20, blank=True, null=True)
     middlename = models.CharField(max_length=40, blank=True, null=True)
     nickname = models.CharField(max_length=64, blank=True, null=True)
