@@ -58,6 +58,7 @@ should be at the top of the file, grouped in the following order:
 Each group should be separated by a line
 
 ### Example
+
 ```python
 import os
 
@@ -72,7 +73,7 @@ from django.db.models.functions import Coalesce
 from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
 
-from apps.main.utils.views import PageTitleMixin
+from apps.core.utils.views import PageTitleMixin
 from apps.tutor.utils import expense_forms
 from apps.discount.models import Discount
 

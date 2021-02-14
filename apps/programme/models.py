@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Model, CharField, DateTimeField, EmailField, BooleanField, IntegerField, DateField, ManyToManyField, DecimalField, ForeignKey, DO_NOTHING, Q
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.urls import reverse
-from apps.main.models import SignatureModel, PhoneInput, PhoneField
+from apps.core.models import SignatureModel, PhoneInput, PhoneField
 
 
 class Portfolio(Model):
@@ -18,7 +18,7 @@ class Portfolio(Model):
 
     def __str__(self):
         return self.name
-        
+
 
 class Division(Model):
     name = CharField(max_length=64, blank=True, null=True)
@@ -31,10 +31,10 @@ class Division(Model):
         # managed = False
         db_table = 'division'
         ordering = ['name']
-        
+
     def __str__(self):
         return self.name
-  
+
 
 class StudyLocation(SignatureModel):
     id = IntegerField(primary_key=True)
@@ -45,10 +45,10 @@ class StudyLocation(SignatureModel):
     class Meta:
         # managed = False
         db_table = 'study_location'
-        
+
     def __str__(self):
         return self.description
-  
+
 
 class Programme(SignatureModel):
     FUNDING_LEVELS = [
@@ -152,8 +152,8 @@ class ProgrammeModule(Model):
         # managed = False
         db_table = 'programme_module'
         unique_together = (('programme', 'module'), ('module', 'programme'),)
-        
-        
+
+
 class Qualification(SignatureModel):
     id = IntegerField(primary_key=True)
     name = CharField(max_length=64, blank=True, null=True)
@@ -168,13 +168,13 @@ class Qualification(SignatureModel):
         # managed = False
         db_table = 'qualification'
         ordering = ['elq_rank']
-        
+
     def __str__(self):
         return self.name
-        
+
     def name_with_code(self):
         return f'{self.name} ({self.hesa_code})'
-        
+
 
 class QA(models.Model):
     student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
@@ -191,5 +191,3 @@ class QA(models.Model):
     def academic_year(self):
         if self.start_date:
             return self.start_date.year - (1 if self.start_date.month < 8 else 0)
-
-

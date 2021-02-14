@@ -13,7 +13,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
 
-from apps.main.utils.views import PageTitleMixin
+from apps.core.utils.views import PageTitleMixin
 from apps.module.models import ModuleStatus, Module
 from .models import Programme, QA, ProgrammeModule
 from .forms import ProgrammeEditForm, ProgrammeNewForm, AttachModuleForm
@@ -52,15 +52,15 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
 
         return {
             **context,
-            'modules': modules, 
-            'students': students, 
+            'modules': modules,
+            'students': students,
             'module_count': module_count,
             'modules_statuses': module_statuses
         }
 
 
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
-    model = Programme    
+    model = Programme
     form_class = ProgrammeEditForm
     template_name = 'programme/edit.html'
     success_message = 'Details updated.'

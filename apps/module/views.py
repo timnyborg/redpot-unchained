@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.functions import Coalesce
 
-from apps.main.utils.views import PageTitleMixin
+from apps.core.utils.views import PageTitleMixin
 from apps.tutor.utils import expense_forms
 from apps.discount.models import Discount
 

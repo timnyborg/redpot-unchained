@@ -91,7 +91,7 @@ PREREQ_APPS = [
 ]
 
 PROJECT_APPS = [
-    'apps.main',
+    'apps.core',
     'apps.student',
     'apps.programme',
     'apps.module',
@@ -213,7 +213,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'main.User'
+AUTH_USER_MODEL = 'core.User'
 
 LOGGING = {
     "version": 1,

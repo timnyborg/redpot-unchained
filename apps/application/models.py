@@ -1,5 +1,5 @@
 from django.db import models
-from apps.main.models import SignatureModel
+from apps.core.models import SignatureModel
 
 
 class CourseApplication(SignatureModel):

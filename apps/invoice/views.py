@@ -5,7 +5,7 @@ from django.views.generic.detail import DetailView
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from apps.main.utils.views import PageTitleMixin
+from apps.core.utils.views import PageTitleMixin
 
 from .models import Invoice
 from .datatables import InvoiceSearchFilter, InvoiceSearchTable, InvoiceFeesTable, InvoicePaymentsTable
@@ -39,4 +39,3 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'fee_table': fee_table,
             'payment_table': payment_table,
         }
-

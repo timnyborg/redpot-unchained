@@ -1,7 +1,7 @@
 import django_tables2 as tables
 from .models import Module, ModuleWaitlist, Book
 import django_filters
-from apps.main.utils.datatables import DeleteLinkColumn, LinkColumn, ViewLinkColumn, EditLinkColumn
+from apps.core.utils.datatables import DeleteLinkColumn, LinkColumn, ViewLinkColumn, EditLinkColumn
 import django.forms as forms
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -23,7 +23,7 @@ class ModuleSearchFilter(django_filters.FilterSet):
 
     # Override the label while maintaining order.  Awkward.  Might as well do a custom order in the template
     title__unaccent__icontains = django_filters.Filter(field_name='title', lookup_expr='unaccent__icontains', label='Title')
-    
+
     class Meta:
         model = Module
         fields = {
@@ -31,7 +31,7 @@ class ModuleSearchFilter(django_filters.FilterSet):
             'code': ['startswith'],
             'division': ['exact'],
             'portfolio': ['exact'],
-        }        
+        }
 
 
 class ModuleSearchTable(tables.Table):
@@ -39,7 +39,7 @@ class ModuleSearchTable(tables.Table):
     start_date = tables.Column(attrs={"td": {"style": "white-space: nowrap;"}})
     end_date = tables.Column(attrs={"td": {"style": "white-space: nowrap;"}})
     # qualification = tables.Column(order_by=['qualification__name'])  # override default ordering (elq_rank)
-    
+
     class Meta:
         model = Module
         template_name = "django_tables2/bootstrap.html"

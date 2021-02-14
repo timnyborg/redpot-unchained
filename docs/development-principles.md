@@ -12,7 +12,7 @@ To separate concerns, and to keep models and views manageable, each app should b
 You may wind up with more imports, but it'll be easier to find what you're looking for once there's a form for every model object.
 
 ## DRY
-Where you find yourself doing the same thing over and over in different apps generalize it and put it in the `main` app. (Maybe it should be called `core`?)
+Where you find yourself doing the same thing over and over in different apps generalize it and put it in the `core` app.
 Including:
 
  * Mixins for Classes, Forms, Models, etc.

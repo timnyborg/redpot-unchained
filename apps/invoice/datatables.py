@@ -1,7 +1,7 @@
 import django_tables2 as tables
 from .models import Invoice, Ledger
 import django_filters
-from apps.main.utils.datatables import ViewLinkColumn, PoundsColumn
+from apps.core.utils.datatables import ViewLinkColumn, PoundsColumn
 import django.forms as forms
 from django.utils.html import mark_safe
 

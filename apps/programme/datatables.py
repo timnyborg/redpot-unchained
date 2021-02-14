@@ -3,17 +3,17 @@ from .models import Programme
 import django_filters
 import django.forms as forms
 
-from apps.main.utils.datatables import ViewLinkColumn
+from apps.core.utils.datatables import ViewLinkColumn
 
 
-class ProgrammeSearchFilter(django_filters.FilterSet):    
+class ProgrammeSearchFilter(django_filters.FilterSet):
     show_inactive_filter = django_filters.BooleanFilter(
         label='Show inactive programmes',
         method='show_inactive',
         widget=forms.CheckboxInput,
         initial=False
     )
-    
+
     class Meta:
         model = Programme
         # everything else is standard, so the meta approach is simplest

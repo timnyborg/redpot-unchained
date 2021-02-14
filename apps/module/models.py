@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.functional import cached_property
-from apps.main.models import SignatureModel
+from apps.core.models import SignatureModel
 from redpot.settings import PUBLIC_WEBSITE_URL
 
 
