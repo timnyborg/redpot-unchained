@@ -13,6 +13,7 @@ variables:
 stages:
   - build
   - test
+  - lint
   - release
   - deploy
 
@@ -48,6 +49,12 @@ pytest:
 
 include:
   - template: Security/SAST.gitlab-ci.yml
+
+python-safety:
+  stage: lint
+  image: pipelinecomponents/python-safety:latest
+  script:
+    - safety check --full-report -r requirements.txt
 
 release-image:
   stage: release
