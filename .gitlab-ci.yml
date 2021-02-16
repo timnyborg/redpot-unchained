@@ -33,7 +33,7 @@ pytest:
     - coverage run manage.py test --noinput --testrunner="xmlrunner.extra.djangotestrunner.XMLTestRunner" apps
   after_script:
     # must be in the after section to be run even if tests fail
-    - coverage xml coverage.xml
+    - coverage xml
   artifacts:
     when: always
     reports:
