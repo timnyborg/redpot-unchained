@@ -50,7 +50,8 @@ RUN set -ex \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy your application code to the container (make sure you create a .dockerignore file if any large files or directories should be excluded)
-RUN mkdir /code/
+RUN mkdir /code/ \
+    && chown ${APP_USER}:${APP_USER} /code/
 WORKDIR /code/
 ADD --chown=${APP_USER}:${APP_USER} . /code/
 

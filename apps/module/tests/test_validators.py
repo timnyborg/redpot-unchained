@@ -14,6 +14,7 @@ class TestModuleValidators(TestCase):
 
     def test_finance_code_success(self):
         try:
+            self.module.cost_centre = 'XB1000'
             self.module.activity_code = '15'
             self.module.source_of_funds = 'XA123'
             self.module.full_clean()
