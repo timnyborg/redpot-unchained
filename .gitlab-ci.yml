@@ -34,6 +34,8 @@ pytest:
   after_script:
     # must be in the after section to be run even if tests fail
     - coverage xml
+    # text output to capture the total
+    - coverage report
   artifacts:
     when: always
     reports:
