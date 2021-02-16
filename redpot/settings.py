@@ -160,12 +160,13 @@ WSGI_APPLICATION = 'redpot.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
+    # Fallback credentials only used against the test database created as part of CI
     'default': {
-        'NAME': get_secret('DB_NAME', ''),
+        'NAME': get_secret('DB_NAME', 'redpot'),
         'ENGINE': 'sql_server.pyodbc',
-        'HOST': get_secret('DB_HOST', ''),
-        'USER': get_secret('DB_USER', ''),  # not really secret, but keeps credentials together
-        'PASSWORD': get_secret('DB_PASSWORD', ''),
+        'HOST': get_secret('DB_HOST', 'mssql'),
+        'USER': get_secret('DB_USER', 'sa'),
+        'PASSWORD': get_secret('DB_PASSWORD', 'Test@only'),
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
         }
@@ -281,3 +282,8 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 W2P_REDPOT_URL = get_secret('W2P_REDPOT_URL', 'https://redpot-staging.conted.ox.ac.uk')
 # Website url for outbound linking
 PUBLIC_WEBSITE_URL = get_secret('PUBLIC_WEBSITE_URL', 'https://conted.ox.ac.uk')
+
+# These may be unnecessary if passed into coverage from command line
+TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
+# TEST_OUTPUT_DIR = BASE_DIR
+TEST_OUTPUT_FILE_NAME = 'test_results.xml'

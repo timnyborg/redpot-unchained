@@ -1,0 +1,67 @@
+image: docker:latest
+services:
+  - docker:dind
+
+variables:
+  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+
+  # only run bandit (for now)
+  SAST_DEFAULT_ANALYZERS: "bandit"
+
+
+stages:
+  - build
+  - test
+  - release
+  - deploy
+
+build:
+  stage: build
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CONTAINER_RELEASE_IMAGE || true
+    - docker build --cache-from $CONTAINER_RELEASE_IMAGE --tag $CONTAINER_TEST_IMAGE .
+    - docker push $CONTAINER_TEST_IMAGE
+
+pytest:
+  stage: test
+  image: $CONTAINER_TEST_IMAGE
+  script: 
+    # XMLRunner to generate results for gitlab
+    - coverage run manage.py test --noinput --testrunner="xmlrunner.extra.djangotestrunner.XMLTestRunner" apps
+  after_script:
+    # must be in the after section to be run even if tests fail
+    - coverage xml coverage.xml
+  artifacts:
+    when: always
+    reports:
+      junit: test_results.xml
+      cobertura: coverage.xml
+  services:
+    - name: mcr.microsoft.com/mssql/server:2019-latest
+      alias: mssql
+  variables:
+    # MSSQL config
+    MSSQL_SA_PASSWORD: Test@only
+    ACCEPT_EULA: Y
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+release-image:
+  stage: release
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CONTAINER_TEST_IMAGE
+    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
+    - docker push $CONTAINER_RELEASE_IMAGE
+  when: manual
+
+#deploy:
+#  stage: deploy
+#  script:
+#    - ./deploy.sh
+#  only:
+#    - master
+#  when: manual
