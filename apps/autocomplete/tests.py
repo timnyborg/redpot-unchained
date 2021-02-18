@@ -14,12 +14,12 @@ class TestModuleAutocomplete(TestCase):
 
     def test_search_by_code(self):
         response = self.client.get(reverse('autocomplete:module'), {'q': '2T12'})
-        self.assertIn('The Brontës', response)
+        self.assertContains(response, 'The Bront')
 
     def test_search_by_title_with_accent(self):
         response = self.client.get(reverse('autocomplete:module'), {'q': 'Bronte'})
-        self.assertIn('The Brontës', response)
+        self.assertContains(response, 'The Bront')
 
     def test_search_without_match(self):
         response = self.client.get(reverse('autocomplete:module'), {'q': 'Durer'})
-        self.assertNotIn('The Brontës', response)
+        self.assertNotContains(response, 'The Bront')

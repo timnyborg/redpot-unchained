@@ -17,7 +17,7 @@ class InvoiceSearchFilter(django_filters.FilterSet):
             return queryset.overdue()
         return queryset
 
-    Overdue = django_filters.BooleanFilter(
+    overdue = django_filters.BooleanFilter(
         label='Overdue only?',
         method='overdue_only',
         widget=forms.CheckboxInput
@@ -28,7 +28,7 @@ class InvoiceSearchFilter(django_filters.FilterSet):
             return queryset.outstanding()
         return queryset
 
-    Outstanding = django_filters.BooleanFilter(
+    outstanding = django_filters.BooleanFilter(
         label='Outstanding only?',
         method='outstanding_only',
         widget=forms.CheckboxInput

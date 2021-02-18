@@ -65,8 +65,8 @@ class Invoice(SignatureModel):
     objects = InvoiceQuerySet.as_manager()
 
     class Meta:
-        managed = False
-        db_table = '[app].[invoice]'
+        # managed = False
+        db_table = 'invoice'
 
     def __str__(self):
         return f'{self.prefix}{self.number}'
@@ -87,8 +87,8 @@ class InvoiceLedger(models.Model):
     # type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[app].[invoice_ledger]'
+        # managed = False
+        db_table = 'invoice_ledger'
 
 
 class TransactionType(models.Model):
@@ -98,8 +98,8 @@ class TransactionType(models.Model):
     is_active = models.BooleanField()
 
     class Meta:
-        managed = False
-        db_table = '[app].[transaction_type]'
+        # managed = False
+        db_table = 'transaction_type'
 
     def __str__(self):
         return self.description
@@ -120,8 +120,8 @@ class Ledger(models.Model):
     batch = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[app].[ledger]'
+        # managed = False
+        db_table = 'ledger'
 
 
 class PaymentPlanType(SignatureModel):

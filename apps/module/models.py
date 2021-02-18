@@ -183,6 +183,7 @@ class Module(SignatureModel, models.Model):
     def get_website_url(self):
         return f'{PUBLIC_WEBSITE_URL}/courses/{self.url}?code={self.code}'
 
+    @property
     def long_form(self):
         if self.start_date:
             return f'{self.code} - {self.title} ({self.start_date:%d %b %Y})'
