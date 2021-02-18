@@ -1,0 +1,21 @@
+- model: student.student
+  pk: 1
+  fields:
+    firstname: Steve
+    surname: Test
+
+- model: tutor.tutor
+  pk: 1
+  fields:
+    student: 1
+
+- model: module.module
+  pk: 1
+  fields:
+    title: Test module
+
+- model: tutor.tutormodule
+  pk: 1
+  fields:
+    tutor: 1
+    module: 1

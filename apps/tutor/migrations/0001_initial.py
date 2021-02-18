@@ -36,8 +36,6 @@ class Migration(migrations.Migration):
                 ('iban', models.CharField(blank=True, max_length=34, null=True)),
                 ('other_bank_details', models.CharField(blank=True, max_length=512, null=True)),
                 ('biography', models.TextField(blank=True, null=True)),
-                ('has_right_to_work_a', models.BooleanField()),
-                ('has_right_to_work_b', models.BooleanField()),
                 ('image', models.CharField(blank=True, max_length=255, null=True)),
                 ('rtw_check_on', models.DateField(blank=True, null=True)),
                 ('rtw_check_by', models.CharField(blank=True, max_length=50, null=True)),

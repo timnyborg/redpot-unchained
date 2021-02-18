@@ -129,7 +129,7 @@ class ExpenseFormView(MailMergeView):
     def get_template_file(self, queryset):
         return os.path.join(
             pathlib.Path(__file__).parent.absolute(),
-            'utils/templates',
+            'templates/tutor_expense_forms',
             self.kwargs['template'] + '.docx'
         )
 

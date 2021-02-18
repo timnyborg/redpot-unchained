@@ -27,8 +27,6 @@ class Tutor(SignatureModel):
     iban = models.CharField(max_length=34, blank=True, null=True)  # Field name made lowercase.
     other_bank_details = models.CharField(max_length=512, blank=True, null=True)
     biography = models.TextField(blank=True, null=True)
-    has_right_to_work_a = models.BooleanField()
-    has_right_to_work_b = models.BooleanField()
     image = models.CharField(max_length=255, blank=True, null=True)
 
     # todo: longterm - move rtw data into a one-to-one table (easier permissioning)
