@@ -8,11 +8,10 @@ class CustomAuthForm(AuthenticationForm):
         'invalid_login': "Please enter your departmental %(username)s and password",
         'inactive': "This account is inactive."
     }
-    
+
 class CustomLoginView(LoginView):
     authentication_form = CustomAuthForm
 
 
 def index(request):
-    return render(request, 'index.html', {})
-
+    return render(request, 'index.html')
