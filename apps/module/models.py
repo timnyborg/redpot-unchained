@@ -209,10 +209,11 @@ class Module(SignatureModel, models.Model):
         return Module.objects.none()
 
     def next_run(self):
-        return self.other_runs().filter(
-            is_published=True,
-            start_date__gte=self.start_date
-        ).order_by('-start_date').first()
+        if self.start_date:
+            return self.other_runs().filter(
+                is_published=True,
+                start_date__gte=self.start_date
+            ).order_by('-start_date').first()
 
     @cached_property
     def _publish_check(self):

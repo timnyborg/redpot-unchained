@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .forms import ProgrammeEditForm
+from ..forms import ProgrammeEditForm
 
 
 class TestEditForm(TestCase):

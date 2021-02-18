@@ -5,14 +5,12 @@ FROM python:3.7-slim
 ARG APP_USER=appuser
 RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USER}
 
-# Get Debian 10
-RUN apt-get update && apt-get install -y curl gnupg
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
-RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
+# Add microsoft package repository
+RUN apt-get update && apt-get install -y curl gnupg \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
 
 # Install packages needed to run your application (not build deps):
-#   mime-support -- for mime types when serving static files
-#   postgresql-client -- for running database commands
 # We need to recreate the /usr/share/man/man{1..8} directories first because
 # they were clobbered by a parent image.
 ENV ACCEPT_EULA=Y
@@ -22,13 +20,12 @@ RUN set -ex \
     mime-support \
     msodbcsql17 \
     " \
-    && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
     && apt-get update && apt-get install -y --no-install-recommends $RUN_DEPS \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy in your requirements file
-ADD requirements.txt /requirements.txt
-ADD dependencies.txt /dependencies.txt
+COPY requirements.txt /requirements.txt
+COPY dependencies.txt /dependencies.txt
 
 # OR, if you're using a directory for your requirements, copy everything (comment out the above and uncomment this if so):
 # ADD requirements /requirements

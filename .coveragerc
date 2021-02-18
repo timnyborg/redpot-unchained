@@ -1,4 +1,8 @@
 [run]
 omit=
     .venv/*
+    automodels.py
+    redpot/wsgi.py
+    redpog/asgi.py
+
 source= .

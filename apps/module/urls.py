@@ -1,9 +1,6 @@
 from django.urls import path
 from . import views
 
-def index(request, i=3):
-    from django.http import HttpResponse
-    return HttpResponse(i)
 
 app_name = 'module'
 urlpatterns = [
