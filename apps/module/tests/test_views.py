@@ -15,7 +15,7 @@ class TestViewsWithoutLogin(TestCase):
 class TestViewsWithLogin(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.user = get_user_model().objects.create_user(username='test_user')
+        cls.user = get_user_model().objects.create_user(username='testuser')
         cls.object = Module.objects.create(
             title='Test module'
         )

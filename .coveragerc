@@ -3,6 +3,6 @@ omit=
     .venv/*
     automodels.py
     redpot/wsgi.py
-    redpog/asgi.py
+    redpot/asgi.py
 
 source= .

@@ -12,7 +12,7 @@ class TestTemplateTags(TestCase):
 
     def test_timestamp(self):
         obj = SimpleNamespace(
-            created_by='test_user',
+            created_by='testuser',
             created_on=datetime(2020, 1, 1, 12)
         )
 

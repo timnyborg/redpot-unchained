@@ -16,7 +16,7 @@ class TestViewsWithoutLogin(TestCase):
 class TestViewsWithLogin(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.user = get_user_model().objects.create_user(username='test_user')
+        cls.user = get_user_model().objects.create_user(username='testuser')
         cls.object = Programme.objects.create(
             title='Test programme',
             division_id=1,
@@ -57,10 +57,23 @@ class TestViewsWithLogin(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_add_module(self):
-        import json
         response = self.client.post(
             reverse('programme:add-module', args=[self.object.pk]),
             data={'module': self.module.pk},
+        )
+        # Redirects on success
+        self.assertEqual(response.status_code, 302)
+
+    def test_new(self):
+        response = self.client.post(
+            reverse('programme:new'),
+            data={
+                'title': 'Test programme',
+                'qualification': 1,
+                'division': 1,
+                'sits_code': 'TE_ST',
+                'portfolio': 1
+            },
         )
         # Redirects on success
         self.assertEqual(response.status_code, 302)
