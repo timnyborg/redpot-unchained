@@ -145,13 +145,13 @@ class Programme(SignatureModel):
 
 
 class ProgrammeModule(Model):
-    programme = ForeignKey(Programme, DO_NOTHING, db_column='programme', blank=True, null=True, related_name='programme_modules')
-    module = ForeignKey('module.Module', DO_NOTHING, db_column='module', blank=True, null=True, related_name='programme_modules')
+    programme = ForeignKey(Programme, DO_NOTHING, db_column='programme', related_name='programme_modules')
+    module = ForeignKey('module.Module', DO_NOTHING, db_column='module', related_name='programme_modules')
 
     class Meta:
         # managed = False
         db_table = 'programme_module'
-        unique_together = (('programme', 'module'), ('module', 'programme'),)
+        unique_together = ('programme', 'module')
 
 
 class Qualification(SignatureModel):

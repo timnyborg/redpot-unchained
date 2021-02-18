@@ -7,6 +7,7 @@ from django.views.generic.detail import DetailView
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse
+from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.utils.http import url_has_allowed_host_and_scheme
 
@@ -99,17 +100,28 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     subtitle = 'Search'
 
 
-class AddModule(LoginRequiredMixin, PageTitleMixin, CreateView):
+class AddModule(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, CreateView):
     template_name = 'programme/add_module.html'
     model = ProgrammeModule
     form_class = AttachModuleForm
     success_message = 'Module attached'
 
-    def get_initial(self):
-        self.initial = {'programme': self.kwargs['programme_id']}
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Overridden so we can make sure the Programme instance exists
+        """
+        self.programme = get_object_or_404(Programme, pk=kwargs['programme_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        """
+        Overridden to add the programme
+        """
+        form.instance.programme = self.programme
+        return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('programme:view', args=[self.object.programme])#
+        return reverse('programme:view', args=[self.object.programme_id])
 
 
 # @login_required
@@ -139,14 +151,12 @@ class RemoveModule(LoginRequiredMixin, PageTitleMixin, DeleteView):
 
     def get_object(self, queryset=None):
         # A special override because I'm calling this class with /programme_id/module_id/ instead of /pk/
-        try:
-            _object = ProgrammeModule.objects.get(
-                programme=self.kwargs['programme_id'],
-                module=self.kwargs['module_id']
-            )
-            return _object
-        except self.model.DoesNotExist:
-            raise Http404
+        # use get_object_or_404
+        return get_object_or_404(
+            ProgrammeModule,
+            programme=self.kwargs['programme_id'],
+            module=self.kwargs['module_id']
+        )
 
     def get_success_url(self):
         messages.success(self.request, self.success_message)  # DeleteViews don't do this automatically

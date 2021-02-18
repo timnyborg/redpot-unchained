@@ -1,10 +1,10 @@
-from django.forms import ModelForm
+from django import forms
 from apps.programme.models import Programme, ProgrammeModule
 from dal import autocomplete
 
 
 # Create the form class.
-class ProgrammeEditForm(ModelForm):
+class ProgrammeEditForm(forms.ModelForm):
     class Meta:
         model = Programme
         fields = ['title', 'division', 'portfolio', 'qualification', 'email', 'phone',
@@ -29,13 +29,13 @@ class ProgrammeEditForm(ModelForm):
                 del self.fields[f]
 
 
-class ProgrammeNewForm(ModelForm):
+class ProgrammeNewForm(forms.ModelForm):
     class Meta:
         model = Programme
         fields = ['title', 'qualification', 'division', 'portfolio', 'sits_code']
 
 
-class AttachModuleForm(ModelForm):
+class AttachModuleForm(forms.ModelForm):
     class Meta:
         model = ProgrammeModule
         fields = ['module']
