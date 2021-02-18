@@ -35,7 +35,7 @@ pytest:
     # must be in the after section to be run even if tests fail
     - coverage xml
     # text output to capture the total
-    - coverage report
+    - coverage report --precision=2
   artifacts:
     when: always
     reports:
