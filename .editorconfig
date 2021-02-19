@@ -19,5 +19,6 @@ indent_size = 2
 [{*.yaml,*.yml}]
 indent_size = 2
 
-[docs/**.md]
-max_line_length = 79
+[*.md]
+# auto-soft-wrap in PyCharm, et
+ij_any_wrap_long_lines = true
