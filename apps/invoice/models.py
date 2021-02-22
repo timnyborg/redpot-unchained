@@ -38,7 +38,7 @@ class Invoice(SignatureModel):
     country = models.CharField(max_length=64, blank=True, null=True)
     postcode = models.CharField(max_length=32, blank=True, null=True)
     amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    custom_narrative = models.BooleanField()
+    custom_narrative = models.BooleanField(default=False)
     narrative = models.TextField(blank=True, null=True)
     ref_no = models.CharField(max_length=64, blank=True, null=True)
     division = models.IntegerField(blank=True, null=True)
@@ -50,7 +50,6 @@ class Invoice(SignatureModel):
     contact_phone = models.CharField(max_length=64, blank=True, null=True)
     company = models.CharField(max_length=128, blank=True, null=True)
     formatted_addressee = models.TextField(blank=True, null=True)
-    referred = models.BooleanField()
     vat_no = models.CharField(max_length=64, blank=True, null=True)
 
     ledger_items = models.ManyToManyField(
@@ -76,6 +75,14 @@ class Invoice(SignatureModel):
 
     def balance(self):
         return self.allocated_ledger_items.aggregate(sum=models.Sum('amount'))['sum']
+
+    def get_fees(self):
+        # Quickly get all an invoice's fee lines.  Fees are add with an incrementing `number`
+        return self.ledger_items.filter(invoice_ledger__item_no__gt=0)
+
+    def get_payments(self):
+        # Quickly get all an invoice's payment lines.  Payments are added with `number`=0
+        return self.ledger_items.filter(invoice_ledger__item_no=0)
 
 
 class InvoiceLedger(models.Model):

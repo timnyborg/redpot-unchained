@@ -5,6 +5,7 @@ from apps.core.utils.datatables import ViewLinkColumn, PoundsColumn
 import django.forms as forms
 from django.utils.html import mark_safe
 
+
 class InvoiceSearchFilter(django_filters.FilterSet):
     invoiced_to = django_filters.CharFilter(field_name='invoiced_to', label='Invoiced to', lookup_expr='icontains')
     minimum = django_filters.NumberFilter(field_name='amount', label='Minimum amount', lookup_expr='gte')

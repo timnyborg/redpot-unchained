@@ -1,0 +1,88 @@
+- model: enrolment.enrolmentresult
+  pk: '1'
+  fields:
+    description: Passed
+    is_active: true
+    display_order: 1
+    hesa_code: '1'
+    allow_certificate: true
+- model: enrolment.enrolmentresult
+  pk: '2'
+  fields:
+    description: Failed
+    is_active: true
+    display_order: 2
+    hesa_code: '2'
+    allow_certificate: true
+- model: enrolment.enrolmentresult
+  pk: '2.1'
+  fields:
+    description: Incomplete assessment
+    is_active: true
+    display_order: 3
+    hesa_code: '4'
+    allow_certificate: false
+- model: enrolment.enrolmentresult
+  pk: '3'
+  fields:
+    description: Referred
+    is_active: true
+    display_order: 4
+    hesa_code: C
+    allow_certificate: false
+- model: enrolment.enrolmentresult
+  pk: '4'
+  fields:
+    description: No work submitted
+    is_active: true
+    display_order: 5
+    hesa_code: '4'
+    allow_certificate: false
+- model: enrolment.enrolmentresult
+  pk: '5'
+  fields:
+    description: Module taken on a not-for-credit basis
+    is_active: true
+    display_order: 6
+    hesa_code: '5'
+    allow_certificate: false
+- model: enrolment.enrolmentresult
+  pk: '6'
+  fields:
+    description: Module outcome not yet known
+    is_active: true
+    display_order: 7
+    hesa_code: '6'
+    allow_certificate: false
+- model: enrolment.enrolmentresult
+  pk: '7'
+  fields:
+    description: Not coded
+    is_active: true
+    display_order: 8
+    hesa_code: '7'
+    allow_certificate: false
+- model: enrolment.enrolmentresult
+  pk: A
+  fields:
+    description: Passed (late result)
+    is_active: false
+    display_order: 95
+    hesa_code: A
+    allow_certificate: false
+- model: enrolment.enrolmentresult
+  pk: B
+  fields:
+    description: Failed (late result)
+    is_active: false
+    display_order: 96
+    hesa_code: B
+    allow_certificate: false
+- model: enrolment.enrolmentresult
+  pk: C
+  fields:
+    description: Completion - award of credit not known
+    is_active: true
+    display_order: 97
+    hesa_code: C
+    allow_certificate: false

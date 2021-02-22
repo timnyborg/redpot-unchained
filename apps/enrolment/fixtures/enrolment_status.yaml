@@ -1,0 +1,84 @@
+- model: enrolment.enrolmentstatus
+  pk: 10
+  fields:
+    description: Confirmed
+    takes_place: true
+    is_debtor: true
+    on_hesa_return: true
+- model: enrolment.enrolmentstatus
+  pk: 11
+  fields:
+    description: Confirmed - retrospective credit
+    takes_place: true
+    is_debtor: true
+    on_hesa_return: false
+- model: enrolment.enrolmentstatus
+  pk: 20
+  fields:
+    description: Provisional
+    takes_place: true
+    is_debtor: true
+    on_hesa_return: false
+- model: enrolment.enrolmentstatus
+  pk: 25
+  fields:
+    description: Applied to course/programme
+    takes_place: false
+    is_debtor: true
+    on_hesa_return: false
+- model: enrolment.enrolmentstatus
+  pk: 26
+  fields:
+    description: Application rejected
+    takes_place: false
+    is_debtor: false
+    on_hesa_return: false
+- model: enrolment.enrolmentstatus
+  pk: 60
+  fields:
+    description: Declined offer
+    takes_place: false
+    is_debtor: true
+    on_hesa_return: false
+- model: enrolment.enrolmentstatus
+  pk: 70
+  fields:
+    description: Withdrawn (up to 3 weeks)
+    takes_place: false
+    is_debtor: true
+    on_hesa_return: false
+- model: enrolment.enrolmentstatus
+  pk: 71
+  fields:
+    description: Withdrawn (after 3 weeks)
+    takes_place: false
+    is_debtor: true
+    on_hesa_return: true
+- model: enrolment.enrolmentstatus
+  pk: 75
+  fields:
+    description: Transferred
+    takes_place: false
+    is_debtor: true
+    on_hesa_return: false
+- model: enrolment.enrolmentstatus
+  pk: 76
+  fields:
+    description: Deferred
+    takes_place: false
+    is_debtor: true
+    on_hesa_return: false
+- model: enrolment.enrolmentstatus
+  pk: 77
+  fields:
+    description: Suspended
+    takes_place: false
+    is_debtor: true
+    on_hesa_return: true
+- model: enrolment.enrolmentstatus
+  pk: 90
+  fields:
+    description: "Confirmed \u2013 non-credit"
+    takes_place: true
+    is_debtor: true
+    on_hesa_return: false

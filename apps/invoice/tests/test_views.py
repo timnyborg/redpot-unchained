@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 
 
 class TestViewsWithLogin(TestCase):
+    fixtures = ['test_invoices.yaml']
+
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
@@ -16,7 +18,12 @@ class TestViewsWithLogin(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_search_with_outstanding_filter(self):
+        # Todo: test for results with each of these
         response = self.client.get(reverse('invoice:search'), {'outstanding': 'on'})
+        self.assertEqual(response.status_code, 200)
+
+    def test_search_with_overdue_filter(self):
+        response = self.client.get(reverse('invoice:search'), {'overdue': 'on'})
         self.assertEqual(response.status_code, 200)
 
     def test_search_without_filters(self):
@@ -27,4 +34,9 @@ class TestViewsWithLogin(TestCase):
             'created_by': '',
             'created_after': '',
         })
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_invoice(self):
+        response = self.client.get(reverse('invoice:view', args=[1]))
+        # TODO: We should use a factory, and check for invoice data being present
         self.assertEqual(response.status_code, 200)

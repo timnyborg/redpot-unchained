@@ -29,7 +29,7 @@ def mail_merge(docx_file, filename, records=None, **merge_fields):
 class MailMergeView(MultipleObjectTemplateResponseMixin, View):
     """
         Can take a list of records for multiple pages:
-            def get_context_data(...): 
+            def get_context_data(...):
                 return [{'a': 1}, {'a': 2}]
         Or a single record, which can include repeat rows: a=1, b=2, c=3, rows=[{...}]
             def get_context_data(...):

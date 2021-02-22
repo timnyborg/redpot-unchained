@@ -25,12 +25,11 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
-        # Filters could be refactored to custom manytomanymanagers on Invoice
-        fees = self.object.ledger_items.filter(invoice_ledger__item_no__gt=0).select_related('enrolment__module', 'type')
+        fees = self.object.get_fees().select_related('enrolment__module', 'type')
         fee_table = InvoiceFeesTable(fees, prefix="fees-")
         RequestConfig(self.request).configure(fee_table)  # Enables sorting, in lieu of the MultiTableMixin
 
-        payments = self.object.ledger_items.filter(invoice_ledger__item_no=0).select_related('enrolment__module', 'type')
+        payments = self.object.get_payments().select_related('enrolment__module', 'type')
         payment_table = InvoicePaymentsTable(payments, prefix="payments-")
         RequestConfig(self.request).configure(payment_table)
 

@@ -6,7 +6,7 @@ class Enrolment(SignatureModel):
     qa = models.ForeignKey('programme.QA', models.DO_NOTHING, db_column='qa', blank=True, null=True)
     module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', related_name='enrolments')
     status = models.ForeignKey('EnrolmentStatus', models.DO_NOTHING, db_column='status')
-    result = models.ForeignKey('EnrolmentResult', models.DO_NOTHING, db_column='result')
+    result = models.ForeignKey('EnrolmentResult', models.DO_NOTHING, db_column='result', default=7)
     points_awarded = models.IntegerField(blank=True, null=True)
     provenance = models.IntegerField(blank=True, null=True)
     provenance_details = models.CharField(max_length=128, blank=True, null=True)

@@ -1,0 +1,48 @@
+# Person with a single line invoice
+- model: student.student
+  pk: 1
+  fields:
+    firstname: Steve
+    surname: Test
+
+- model: programme.programme
+  pk: 1
+  fields:
+    title: Test programme
+
+- model: programme.qa
+  pk: 1
+  fields:
+    student: 1
+    programme: 1
+
+- model: module.module
+  pk: 1
+  fields:
+    title: Test module
+
+- model: enrolment.enrolment
+  pk: 1
+  fields:
+    qa: 1
+    module: 1
+    status: 10
+
+- model: invoice.ledger
+  pk: 1
+  fields:
+    enrolment: 1
+    amount: 100
+
+- model: invoice.invoice
+  pk: 1
+  fields:
+    fao: Person
+    number: 1
+
+- model: invoice.invoiceledger
+  pk: 1
+  fields:
+    invoice: 1
+    ledger: 1
+    allocation: 1

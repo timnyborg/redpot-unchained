@@ -48,7 +48,6 @@ class Migration(migrations.Migration):
                 ('contact_phone', models.CharField(blank=True, max_length=64, null=True)),
                 ('company', models.CharField(blank=True, max_length=128, null=True)),
                 ('formatted_addressee', models.TextField(blank=True, null=True)),
-                ('referred', models.BooleanField()),
                 ('vat_no', models.CharField(blank=True, max_length=64, null=True)),
             ],
             options={
