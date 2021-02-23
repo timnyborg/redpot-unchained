@@ -1,3 +1,5 @@
+# playing with fabric for common jobs
+
 from invoke import task
 
 @task

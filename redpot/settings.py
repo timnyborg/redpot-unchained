@@ -278,6 +278,9 @@ CELERY_RESULT_BACKEND = 'django-db'
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
+# Since we have USE_TZ = False, celery beats must also be set to be timezone-naive
+DJANGO_CELERY_BEAT_TZ_AWARE = False
+
 # Legacy redpot url for cross-app mapping
 W2P_REDPOT_URL = get_secret('W2P_REDPOT_URL', 'https://redpot-staging.conted.ox.ac.uk')
 # Website url for outbound linking
@@ -287,3 +290,6 @@ PUBLIC_WEBSITE_URL = get_secret('PUBLIC_WEBSITE_URL', 'https://conted.ox.ac.uk')
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
 # TEST_OUTPUT_DIR = BASE_DIR
 TEST_OUTPUT_FILE_NAME = 'test_results.xml'
+
+# WPM Credentials
+WPM_FTP = get_secret('WPM_FTP', {})
