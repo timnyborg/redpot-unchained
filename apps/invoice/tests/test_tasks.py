@@ -1,5 +1,4 @@
-from unittest.mock import patch, Mock, ANY
-from ftplib import FTP_TLS
+from unittest.mock import patch, ANY
 
 from django.test import TestCase
 
