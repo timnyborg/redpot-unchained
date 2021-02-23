@@ -20,13 +20,11 @@ class TestWPMDownload(TestCase):
 
     @patch('ftplib.FTP_TLS', autospec=True)
     def test_missing_file_error(self, mock_class):
-        filename = 'missing.csv'
-
         # Patch the returned object's nlst() method so the file appears unavailable
         mock_ftp_obj = mock_class()
         mock_ftp_obj.nlst.return_value = ['other.csv']
 
         with self.assertRaises(FileNotFoundError):
-            wpm_ftp_download(filename)
+            wpm_ftp_download('missing.csv')
 
     # todo: test parsing and db methods

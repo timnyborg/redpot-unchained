@@ -18,8 +18,15 @@ class TestViewsWithLogin(TestCase):
         response = self.client.get(reverse('tutor:module:view', args=[1]))
         self.assertEqual(response.status_code, 200)
 
-    def test_expense_form(self):
+    def test_expense_form_single(self):
         response = self.client.get(reverse('tutor:expense-form-single', args=[1, 'weekly']))
+        # Check that it returns a docx file
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('Content-Type'), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        self.assertIn(".docx", response.get('Content-Disposition'))
+
+    def test_expense_form_module(self):
+        response = self.client.get(reverse('tutor:expense-form-module', args=[1, 'weekly']))
         # Check that it returns a docx file
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
