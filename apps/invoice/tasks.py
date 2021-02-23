@@ -1,4 +1,12 @@
+import csv
+from decimal import Decimal
+from datetime import datetime, date
+from ftplib import FTP_TLS
+from io import StringIO
+
 from celery import shared_task
+
+from redpot.settings import WPM_FTP as CONFIG
 
 from .models import Invoice
 
@@ -9,13 +17,6 @@ def wpm_ftp_download(filename=None):
         Gets today's rcp payment data from WPM via ftp and creates invoice payments
         Can be overridden to download a particular file (e.g. a past date) via `filename`
     """
-    import csv
-    from decimal import Decimal
-    from datetime import datetime, date
-    from ftplib import FTP_TLS
-    from io import StringIO
-    from redpot.settings import WPM_FTP as CONFIG
-
     # Log into wpm ftp
     ftp = FTP_TLS(CONFIG['HOST'])
     # They use a self-signed cert, so no loading of the system's ssl context
