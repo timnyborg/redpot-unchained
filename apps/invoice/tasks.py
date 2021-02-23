@@ -1,7 +1,7 @@
 import csv
 from decimal import Decimal
 from datetime import datetime, date
-from ftplib import FTP_TLS
+import ftplib
 from io import StringIO
 
 from celery import shared_task
@@ -18,7 +18,7 @@ def wpm_ftp_download(filename=None):
         Can be overridden to download a particular file (e.g. a past date) via `filename`
     """
     # Log into wpm ftp
-    ftp = FTP_TLS(CONFIG['HOST'])
+    ftp = ftplib.FTP_TLS(CONFIG['HOST'])
     # They use a self-signed cert, so no loading of the system's ssl context
     ftp.login(user=CONFIG['USER'], passwd=CONFIG['PASSWORD'])
     ftp.prot_p()  # Switch to a secure data connection
@@ -28,6 +28,7 @@ def wpm_ftp_download(filename=None):
     filename = filename or 'RCP_Payments_%s.csv' % date.today().strftime("%d%m%y")
 
     if filename not in ftp.nlst():
+        n = ftp.nlst()
         raise FileNotFoundError('RCP file not found on WPM FTP server: %s' % filename)
 
     # Write the file into a buffer

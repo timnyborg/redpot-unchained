@@ -292,4 +292,9 @@ TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
 TEST_OUTPUT_FILE_NAME = 'test_results.xml'
 
 # WPM Credentials
-WPM_FTP = get_secret('WPM_FTP', {})
+WPM_FTP = get_secret('WPM_FTP', {
+    'HOST': '',
+    'USER': '',
+    'PASSWORD': '',
+    'DIRECTORY': '',
+})

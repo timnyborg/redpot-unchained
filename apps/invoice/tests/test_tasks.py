@@ -6,9 +6,8 @@ from ..tasks import wpm_ftp_download
 
 
 class TestWPMDownload(TestCase):
-
     @patch('ftplib.FTP_TLS', autospec=True)
-    def test_requests_correct_file(self, mock_class):
+    def test_retrieves_correct_file(self, mock_class):
         filename = 'test.csv'
 
         # Patch the returned object's nlst() method so the file appears available
