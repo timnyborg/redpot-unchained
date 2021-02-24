@@ -175,7 +175,7 @@ DATABASES = {
 
 MESSAGE_TAGS = {
     'DEBUG': 'debug',
-    'INFO':	'info',
+    'INFO': 'info',
     'SUCCESS': 'success',
     'WARNING': 'warning',
     'ERROR': 'error'

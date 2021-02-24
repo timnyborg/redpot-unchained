@@ -1,5 +1,3 @@
-from django.http import HttpResponse, Http404
-import re
 import os
 import pathlib
 
@@ -136,7 +134,7 @@ class ExpenseFormView(MailMergeView):
             return '%s_expense_forms.docx' % record.module.code
         elif self.kwargs['mode'] == 'single':
             return f'{record.tutor.student.firstname}_{record.tutor.student.surname}' \
-                       f'_{record.module.code}_expense_form.docx'.replace(' ', '_')
+                   f'_{record.module.code}_expense_form.docx'.replace(' ', '_')
         else:
             return 'batch_expense_form.docx'
 
@@ -162,7 +160,9 @@ class ExpenseFormView(MailMergeView):
             dict(
                 tutor_name="('%(title)s %(firstname)s %(surname)s' % record.tutor.student).strip()",
                 nickname=record.tutor.student.nickname,
-                birthdate=record.tutor.student.birthdate.strftime('%d %B %y') if record.tutor.student.birthdate else '',
+                birthdate=(
+                    record.tutor.student.birthdate.strftime('%d %B %y') if record.tutor.student.birthdate else ''
+                ),
                 gender=record.tutor.student.gender,
 
                 line1='record.address.line1',

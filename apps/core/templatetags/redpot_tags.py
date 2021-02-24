@@ -45,7 +45,9 @@ def bootstrap3form(form, status_classes=True):
 
 
 @register.inclusion_tag('utility/bootstrap3_modal.html')
-def bootstrap3modal(modal_id, body, confirm_class='primary', confirm_text='Submit', cancel_text='Close', header='Confirm'):
+def bootstrap3modal(
+    modal_id, body, confirm_class='primary', confirm_text='Submit', cancel_text='Close', header='Confirm'
+):
     """Description from redpot: "A first stab at a terse modal generator".  Guess it stuck?"""
     return {
         'modal_id': modal_id,
@@ -60,7 +62,7 @@ def bootstrap3modal(modal_id, body, confirm_class='primary', confirm_text='Submi
 @register.simple_tag
 def bootstrap3submit(text='Submit', btn_type='primary', offset=2):
     return mark_safe(f"""
-        <div class="form-group">    
+        <div class="form-group">
             <div class="col-sm-offset-{offset} col-sm-{12-offset}">
                 <button type="submit" class="btn btn-{btn_type}">{text}</button>
             </div>
