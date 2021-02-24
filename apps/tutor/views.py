@@ -3,13 +3,16 @@ import re
 import os
 import pathlib
 
-from django.views.generic import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.generic import DetailView, UpdateView
 
 from apps.core.utils.views import PageTitleMixin
 
-from .utils.mail_merge import mail_merge, MailMergeView
+from .forms import TutorModuleEditForm
 from .models import TutorModule
+from .utils.mail_merge import mail_merge, MailMergeView
 
 
 class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, DetailView):
@@ -34,6 +37,17 @@ class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, DetailView):
         }
 
 
+
+class TutorOnModuleEdit(PageTitleMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    model = TutorModule
+    form_class = TutorModuleEditForm
+    template_name = 'tutor_module/edit.html'
+    success_message = 'Tutor-on-module record updated'
+
+    def get_success_url(self):
+        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
+            return self.request.GET.get('next')
+        return self.object.get_absolute_url()
 
 """
 For example, the below CBV, but as a FBV

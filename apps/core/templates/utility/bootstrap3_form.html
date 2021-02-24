@@ -9,10 +9,10 @@
     {% endfor %}
   </div>
 {% endif %}
-{% for field in form.hidden_fields %}		
+{% for field in form.hidden_fields %}
 	{{ field }}
 {% endfor %}
-{% for field in form.visible_fields %}		
+{% for field in form.visible_fields %}
 	<div class="form-group {% if status_classes and form.is_bound and field.errors %} has-error {% elif status_classes and form.is_bound %} has-success {% endif %} ">
 	{% if field.field.widget.input_type == 'checkbox' %}
 		<div class="col-sm-offset-2 col-sm-10">
@@ -20,9 +20,15 @@
 				<label>
 					{{ field }} {{ field.label }}
 				</label>
-			</div>
+            </div>
+            {% for error in field.errors %}
+            <span class="help-block">
+                {{ error }}
+            </span>
+            {% endfor %}
+            <p class="help-block">{{ field.help_text }}</p>
 		</div>
-	{% else %}		
+	{% else %}
 		<label class="col-sm-2 control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
 		<div class="col-sm-10 ">
             {% if field.field.widget.input_type == 'file' %}

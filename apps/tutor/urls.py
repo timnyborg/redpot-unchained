@@ -6,6 +6,7 @@ app_name = 'tutor'
 
 tutor_module_patterns = ([
     path('view/<int:pk>', views.TutorOnModuleView.as_view(), name='view'),  # tutor:module:view
+    path('edit/<int:pk>', views.TutorOnModuleEdit.as_view(), name='edit'),  # tutor:module:edit
 ], 'module')
 
 urlpatterns = [
