@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+
 from apps.core.models import SignatureModel
 
 
@@ -58,10 +60,28 @@ class TutorModule(SignatureModel):
     biography = models.TextField(blank=True, null=True)
     is_published = models.BooleanField(default=False)
     display_order = models.IntegerField(blank=True, null=True)
-    is_teaching = models.BooleanField(default=True)
-    director_of_studies = models.BooleanField(default=False)
+    is_teaching = models.BooleanField(
+        default=True,
+        verbose_name='Is this person teaching or speaking on the course?',
+        help_text='i.e. not a course director or demonstrator',
+    )
+    director_of_studies = models.BooleanField(
+        default=False,
+        verbose_name='Director of studies / course director',
+        help_text='Feedback results will be sent to director automatically',
+    )
 
     class Meta:
         # managed = False
         db_table = 'tutor_module'
         verbose_name = 'Tutor on module'
+
+    def __str__(self):
+        person = self.tutor.student
+        return f'{person.firstname} {person.surname} on {self.module.title} ({self.module.code})'
+
+    def get_absolute_url(self):
+        return reverse('tutor:module:view', args=[self.pk])
+
+    def get_edit_url(self):
+        return reverse('tutor:module:edit', args=[self.pk])

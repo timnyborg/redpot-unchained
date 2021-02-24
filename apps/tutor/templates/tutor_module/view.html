@@ -6,7 +6,28 @@
 {% url 'tutor:payment:new' object.id as add_url %}
 
 <div class="section">
-    DETAILS HERE!
+    {% edit_button object.get_edit_url %}
+    <h2>Details</h2>
+    <dl class="dl-horizontal">
+        <dt>Tutor</dt>
+        <dd><a href="{% url 'student-view' object.tutor.student_id %}">
+            {{ object.tutor.student }}
+        </a></dd>
+        <dt>Module</dt>
+        <dd><a href="{% url 'module:view' object.module.id %}">
+            {{ object.module.long_form }}
+        </a></dd>
+        <dt>Role</dt>
+        <dd>{{ object.role }}</dd>
+        <dt>Teaching</dt>
+        <dd>{{ object.is_teaching | yesno | title }}</dd>
+        <dt>Director of studies</dt>
+        <dd>{{ object.director_of_studies | yesno | title }}</dd>
+        <dt>Published</dt>
+        <dd>{{ object.is_published | yesno | title }}</dd>
+        <dt>Biography</dt>
+        <dd>{{ object.biography | striptags | truncatewords:50 }}</dd>
+    </dl>
     {% timestamp object %}
 </div>
 
