@@ -1,6 +1,5 @@
 from django.db import models
 from apps.core.models import SignatureModel
-from apps.student.models import Student
 
 
 class TutorManager(models.Manager):
@@ -55,7 +54,7 @@ class Tutor(SignatureModel):
 class TutorModule(SignatureModel):
     module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', related_name='tutor_modules')
     tutor = models.ForeignKey('Tutor', models.DO_NOTHING, db_column='tutor', related_name='tutor_modules')
-    role = models.CharField(max_length=64, blank=True, null=True)
+    role = models.CharField(max_length=64, blank=True)
     biography = models.TextField(blank=True, null=True)
     is_published = models.BooleanField(default=False)
     display_order = models.IntegerField(blank=True, null=True)

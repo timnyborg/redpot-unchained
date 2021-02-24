@@ -1,8 +1,11 @@
 from django.db import models
-from django.db.models import Model, CharField, DateTimeField, EmailField, BooleanField, IntegerField, DateField, ManyToManyField, DecimalField, ForeignKey, DO_NOTHING, Q
-from django.core.validators import MinLengthValidator, RegexValidator
+from django.db.models import (
+    Model, CharField, EmailField, BooleanField, IntegerField, DateField, ManyToManyField, DecimalField, ForeignKey,
+    DO_NOTHING, Q
+)
 from django.urls import reverse
-from apps.core.models import SignatureModel, PhoneInput, PhoneField
+
+from apps.core.models import SignatureModel, PhoneField
 
 
 class Portfolio(Model):
@@ -110,10 +113,18 @@ class Programme(SignatureModel):
     title = CharField(max_length=96, null=True)
     start_date = DateField(blank=True, null=True)
     end_date = DateField(blank=True, null=True)
-    division = ForeignKey(Division, DO_NOTHING, db_column='division', limit_choices_to=Q(id__gt=8) | Q(id__lt=5), default=1)
+    division = ForeignKey(
+        Division, DO_NOTHING,
+        db_column='division',
+        limit_choices_to=Q(id__gt=8) | Q(id__lt=5),
+        default=1
+    )
     portfolio = ForeignKey(Portfolio, DO_NOTHING, db_column='portfolio', default=1)
     qualification = ForeignKey('Qualification', DO_NOTHING, db_column='qualification', default=1)
-    student_load = DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, help_text='Percent of full-time, eg. 50')
+    student_load = DecimalField(
+        max_digits=10, decimal_places=4, blank=True, null=True,
+        help_text='Percent of full-time, eg. 50'
+    )
     funding_level = IntegerField(blank=True, null=True, choices=FUNDING_LEVELS)
     funding_source = IntegerField(blank=True, null=True, choices=FUNDING_SOURCES)
     study_mode = IntegerField(blank=True, null=True, choices=STUDY_MODES)
@@ -178,7 +189,7 @@ class Qualification(SignatureModel):
 
 class QA(models.Model):
     student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
-    programme = models.ForeignKey('Programme', models.DO_NOTHING, db_column='programme',    related_name='qas')
+    programme = models.ForeignKey('Programme', models.DO_NOTHING, db_column='programme', related_name='qas')
     title = models.CharField(max_length=96, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)

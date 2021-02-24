@@ -2,6 +2,7 @@
 
 from invoke import task
 
+
 @task
 def refresh_uwsgi(c):
     c.run("python3 ./manage.py collectstatic --noinput")

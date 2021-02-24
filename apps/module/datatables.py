@@ -22,7 +22,11 @@ class ModuleSearchFilter(django_filters.FilterSet):
     )
 
     # Override the label while maintaining order.  Awkward.  Might as well do a custom order in the template
-    title__unaccent__icontains = django_filters.Filter(field_name='title', lookup_expr='unaccent__icontains', label='Title')
+    title__unaccent__icontains = django_filters.Filter(
+        field_name='title',
+        lookup_expr='unaccent__icontains',
+        label='Title'
+    )
 
     class Meta:
         model = Module
