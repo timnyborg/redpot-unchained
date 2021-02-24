@@ -89,7 +89,12 @@ class InvoiceLedger(models.Model):
     ledger = models.ForeignKey('Ledger', models.DO_NOTHING, db_column='ledger', related_name='invoice_ledger')
     invoice = models.ForeignKey(Invoice, models.DO_NOTHING, db_column='invoice', related_name='invoice_ledger')
     # Awful backwards-compatibility. Allocation was used some items on some invoices ("credit notes") paid off others?!
-    allocation = models.ForeignKey(Invoice, models.DO_NOTHING, db_column='allocation', to_field='number', related_name='invoice_ledger_allocations')
+    allocation = models.ForeignKey(
+        Invoice, models.DO_NOTHING,
+        db_column='allocation',
+        to_field='number',
+        related_name='invoice_ledger_allocations'
+    )
     item_no = models.IntegerField(blank=True, null=True)
     # type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
 
@@ -120,7 +125,11 @@ class Ledger(models.Model):
     division = models.ForeignKey('programme.Division', models.DO_NOTHING, db_column='division', blank=True, null=True)
     type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
     # account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
-    enrolment = models.ForeignKey('enrolment.Enrolment', models.DO_NOTHING, db_column='enrolment', blank=True, null=True)
+    enrolment = models.ForeignKey(
+        'enrolment.Enrolment', models.DO_NOTHING,
+        db_column='enrolment',
+        blank=True, null=True
+    )
 
     allocation = models.IntegerField(blank=True, null=True)
     ref_no = models.IntegerField(blank=True, null=True)

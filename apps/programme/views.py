@@ -1,14 +1,13 @@
 from datetime import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q, Count, Subquery, OuterRef
+from django.db.models import Count, Subquery, OuterRef
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
-from django.http import Http404
 from django.utils.http import url_has_allowed_host_and_scheme
 
 from django_tables2.views import SingleTableMixin
@@ -16,7 +15,7 @@ from django_filters.views import FilterView
 
 from apps.core.utils.views import PageTitleMixin
 from apps.module.models import ModuleStatus, Module
-from .models import Programme, QA, ProgrammeModule
+from .models import Programme, ProgrammeModule
 from .forms import ProgrammeEditForm, ProgrammeNewForm, AttachModuleForm
 from .datatables import ProgrammeSearchTable, ProgrammeSearchFilter
 
@@ -136,7 +135,8 @@ class AddModule(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, CreateV
 #     messages.success(request, 'Module removed from programme')
 #
 #     # Example of a safe 'next' redirect (checked against an empty host list to prevent open redirect vulnerability)
-#     # could be wrapped into a helper function (safe_next_redirect, which takes next and a fallback if null or invalid)
+#     # could be wrapped into a helper function (safe_next_redirect, which takes next and a fallback if null
+#       or invalid)
 #     if url_has_allowed_host_and_scheme(request.GET.get('next'), allowed_hosts=None):
 #         return redirect(request.GET.get('next'))
 #     return redirect(module)

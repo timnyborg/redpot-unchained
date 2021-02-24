@@ -65,4 +65,3 @@ class DeleteLinkColumn(LinkColumn):
                 <i class="fas fa-{self.icon}"></i>
             </span>
         """)
-

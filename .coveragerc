@@ -1,8 +1,0 @@
-[run]
-omit=
-    .venv/*
-    automodels.py
-    redpot/wsgi.py
-    redpot/asgi.py
-
-source= .
