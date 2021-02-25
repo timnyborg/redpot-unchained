@@ -35,7 +35,6 @@ class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, DetailView):
         }
 
 
-
 class TutorOnModuleEdit(PageTitleMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = TutorModule
     form_class = TutorModuleEditForm
@@ -46,6 +45,7 @@ class TutorOnModuleEdit(PageTitleMixin, SuccessMessageMixin, LoginRequiredMixin,
         if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
             return self.request.GET.get('next')
         return self.object.get_absolute_url()
+
 
 """
 For example, the below CBV, but as a FBV

@@ -104,10 +104,9 @@ class InvoiceLedger(models.Model):
 
 
 class TransactionType(models.Model):
-    id = models.IntegerField(primary_key=True)
     description = models.CharField(max_length=32, blank=True, null=True)
     is_cash = models.BooleanField()
-    is_active = models.BooleanField()
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         # managed = False
@@ -117,13 +116,15 @@ class TransactionType(models.Model):
         return self.description
 
 
+# ledger should got in a finance models file (or core model file)
 class Ledger(models.Model):
-    date = models.DateTimeField(blank=True, null=True)
-    amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
+    date = models.DateTimeField()
+    amount = models.DecimalField(max_digits=19, decimal_places=4)
     finance_code = models.CharField(max_length=64, blank=True, null=True)
-    narrative = models.CharField(max_length=128, blank=True, null=True)
+    narrative = models.CharField(max_length=128)
+    # todo: investigate if this (division) has value
     division = models.ForeignKey('programme.Division', models.DO_NOTHING, db_column='division', blank=True, null=True)
-    type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
+    type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type')
     # account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
     enrolment = models.ForeignKey(
         'enrolment.Enrolment', models.DO_NOTHING,
@@ -131,7 +132,7 @@ class Ledger(models.Model):
         blank=True, null=True
     )
 
-    allocation = models.IntegerField(blank=True, null=True)
+    allocation = models.IntegerField()
     ref_no = models.IntegerField(blank=True, null=True)
     batch = models.IntegerField(blank=True, null=True)
 
@@ -140,17 +141,76 @@ class Ledger(models.Model):
         db_table = 'ledger'
 
 
+class PaymentPlan(SignatureModel):
+    # Constants used in logic (because we are using foreign keys, not choices)
+    CUSTOM_TYPE = 16
+    PENDING_STATUS = 1  # student has selected a plan, but not activated it
+
+    type = models.ForeignKey('PaymentPlanType', models.DO_NOTHING, db_column='type')
+    status = models.ForeignKey('PaymentPlanStatus', models.DO_NOTHING, db_column='status')
+    # This hasn't strictly been a 1-to-1 relationship, but we've treated it as one for years
+    invoice = models.OneToOneField(
+        'Invoice', models.DO_NOTHING,
+        related_name='payment_plan',
+        db_column='invoice',
+    )
+    amount = models.DecimalField(max_digits=19, decimal_places=4)
+
+    class Meta:
+        # managed = False
+        db_table = 'payment_plan'
+
+    def is_pending_activation(self):
+        return self.status_id == self.PENDING_STATUS
+
+    def is_custom(self):
+        return self.type_id == self.CUSTOM_TYPE
+
+
+class PaymentPlanSchedule(SignatureModel):
+    CUSTOM_TYPE = 16
+
+    payment_plan = models.ForeignKey(PaymentPlan, models.DO_NOTHING, db_column='payment_plan', related_name='schedule')
+    due_date = models.DateField()
+    amount = models.DecimalField(max_digits=16, decimal_places=2)
+    number = models.IntegerField()  # todo: investigate if this has value
+    is_deposit = models.BooleanField()  # todo: investigate if this has value
+
+    class Meta:
+        # managed = False
+        db_table = 'payment_plan_schedule'
+
+
+# Todo: consider whether to remove and convert status to a text field with choices
+class PaymentPlanStatus(models.Model):
+    description = models.CharField(max_length=64)
+
+    class Meta:
+        # managed = False
+        db_table = 'payment_plan_status'
+
+    def __str__(self):
+        return self.description
+
+
 class PaymentPlanType(SignatureModel):
-    name = models.CharField(max_length=128, blank=True, null=True)
-    deposit = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+    class FrequencyChoices(models.TextChoices):
+        IMMEDIATELY = "IMMEDIATELY", "Immediately"
+        TERMLY = "TERMLY", "Termly"
+        MONTHLY = "MONTHLY", "Monthly"
+
+    name = models.CharField(max_length=128)
+    deposit = models.DecimalField(max_digits=16, decimal_places=2)
     payments = models.IntegerField(blank=True, null=True)
-    payments_due = models.CharField(max_length=32, blank=True, null=True)
+    payments_due = models.CharField(max_length=32, blank=True, null=True, choices=FrequencyChoices.choices)
     start_month = models.IntegerField(blank=True, null=True)
-    default_plan = models.IntegerField(blank=True, null=True)
 
     class Meta:
         # managed = False
         db_table = 'payment_plan_type'
+
+    def __str__(self):
+        return self.name
 
 
 class ModulePaymentPlan(models.Model):

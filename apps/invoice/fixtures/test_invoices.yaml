@@ -28,17 +28,27 @@
     module: 1
     status: 10
 
+- model: invoice.transactiontype
+  pk: 1
+  fields:
+    description: Test
+    is_cash: True
+
 - model: invoice.ledger
   pk: 1
   fields:
     enrolment: 1
     amount: 100
+    date: '2020-01-01'
+    type: 1
+    allocation: 1
 
 - model: invoice.invoice
   pk: 1
   fields:
     fao: Person
     number: 1
+    date: '2020-01-01'
 
 - model: invoice.invoiceledger
   pk: 1

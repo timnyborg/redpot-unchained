@@ -49,6 +49,65 @@
 
 <div class="section">
     <h2>Payments</h2>
-    {% render_table payment_table %}
+    {% if payment_table.rows %}
+			{% render_table payment_table %}
+    {% else %}
+		<div class="empty-state">
+            <span class="fa fa-ban empty-state-icon"></span>
+            <h4>No payments</h4>
+		</div>
+    {% endif %}
 </div>
+
+{# todo: real payment plan permission #}
+{% if plan %}
+<div class="section">
+    <div class='row'>
+        <div class='col-sm-6'>
+            {% if perms.finance %}
+            <div class="pull-right top-right-button">
+                <a href="plan/{{ invoice.id }}" class="btn btn-success btn-xs"><span class="fas fa-fw fa-pencil-alt"></span> Edit plan</a>
+            </div>
+            {% endif %}
+            <h2>Payment plan</h2>
+            {% if plan.is_pending_activation %}
+                <div class="alert alert-info">
+                    <span class="fas fa-fw fa-exclamation-triangle"></span>
+                    A payment plan has been selected, but not activated
+                </div>
+            {% endif %}
+            <dl class='dl-horizontal'>
+                <dt>Amount</dt><dd>£{{ plan.amount | floatformat:2}}</dd>
+                <dt>Type</dt><dd>{{ plan.type.name }}</dd>
+                <dt>Status</dt><dd>{{ plan.status }}</dd>
+            </dl>
+        </div>
+        <div class='col-sm-6'>
+            {% if plan.is_custom and perms.finance %}
+                <div class="pull-right top-right-button">
+                    <a href="schedule/{{ invoice.id }}" class="btn btn-success btn-xs"><span class="fas fa-fw fa-plus"></span> Edit Schedule</a>
+                </div>
+            {% endif %}
+            <a id="schedule"></a>
+            <h2>Schedule</h2>
+            {% render_table schedule_table %}
+        </div>
+    </div>
+    {% timestamp plan %}
+</div>
+{% elif perms.finance %}
+<div class="section">
+    <div class="pull-right top-right-button">
+        <a href="plan/{{ invoice.id }}" class="btn btn-success btn-xs">
+            <span class="fas fa-fw fa-plus"></span> Add Payment plan
+        </a>
+    </div>
+    <h2>Payment plan</h2>
+    <div class="empty-state">
+        <span class="fa fa-ban empty-state-icon"></span>
+        <h4>No payment plan</h4>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}

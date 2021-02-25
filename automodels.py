@@ -824,48 +824,6 @@ class PaymentItem(models.Model):
         db_table = 'payment_item'
 
 
-class PaymentPlan(models.Model):
-    type = models.ForeignKey('PaymentPlanType', models.DO_NOTHING, db_column='type', blank=True, null=True)
-    status = models.ForeignKey('PaymentPlanStatus', models.DO_NOTHING, db_column='status', blank=True, null=True)
-    invoice = models.IntegerField(blank=True, null=True)
-    amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    deposit = models.DecimalField(max_digits=14, decimal_places=2, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'payment_plan'
-
-
-class PaymentPlanSchedule(models.Model):
-    id = models.AutoField()
-    payment_plan = models.ForeignKey(PaymentPlan, models.DO_NOTHING, db_column='payment_plan', blank=True, null=True)
-    due_date = models.DateField(blank=True, null=True)
-    amount = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
-    number = models.IntegerField(blank=True, null=True)
-    is_deposit = models.BooleanField()
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'payment_plan_schedule'
-
-
-class PaymentPlanStatus(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'payment_plan_status'
-
-
 class Phone(models.Model):
     student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
     type = models.ForeignKey('PhoneType', models.DO_NOTHING, db_column='type')

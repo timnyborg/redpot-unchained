@@ -1,5 +1,6 @@
 {% load redpot_tags %}
-
+{# don't render if passed record=None #}
+{% if record %}
 <div class="section-footer">
     <div class="timestamp">
         Created by {{ record.created_by | user_name }}
@@ -23,3 +24,4 @@
         </span>
     </div>
 </div>
+{% endif %}

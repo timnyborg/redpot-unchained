@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from .models import Invoice, Ledger
+from .models import Invoice, Ledger, PaymentPlanSchedule
 import django_filters
 from apps.core.utils.datatables import ViewLinkColumn, PoundsColumn
 import django.forms as forms
@@ -89,3 +89,12 @@ class InvoicePaymentsTable(tables.Table):
 
     def render_print(self, record):
         return mark_safe("<i class='fas fa-print'></i>")
+
+
+class PaymentScheduleTable(tables.Table):
+    class Meta:
+        model = PaymentPlanSchedule
+        template_name = "django_tables2/bootstrap.html"
+        fields = ('due_date', 'amount', 'is_deposit')
+        order_by = ('due_date',)
+        orderable = False
