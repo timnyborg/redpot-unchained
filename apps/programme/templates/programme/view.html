@@ -21,7 +21,7 @@
     {% url 'programme:edit' programme.id as edit_url %}
 
     {% edit_button edit_url %}
-	
+
     <a id='details' class='nav-anchor'></a>
 
     <h2>Details</h2>
@@ -29,18 +29,18 @@
 		<dt>Title</dt>
 		<dd>{{ programme.title }}</dd>
 		<dt>Division</dt>
-        <dd>{{programme.division.name}}</dd>
+        <dd>{{ programme.division.name }}</dd>
 		<dt>Portfolio</dt>
-        <dd>{{programme.portfolio}}</dd>
+        <dd>{{ programme.portfolio }}</dd>
 		<dt>Qualification</dt>
-        <dd>{{programme.qualification.name_with_code}}</dd>
+        <dd>{{ programme.qualification.name_with_code }}</dd>
 		<dt>Email</dt>
-        <dd>{{programme.email}}</dd>
+        <dd>{{ programme.email | default:'–' }}</dd>
 		<dt>Phone</dt>
-        <dd>{{programme.phone}}</dd>
+        <dd>{{ programme.phone | default:'–' }}</dd>
         {% if programme.sits_code %}
 			<dt>Sits Code</dt>
-            <dd>{{programme.sits_code}}</dd>
+            <dd>{{ programme.sits_code }}</dd>
         {% endif %}
     </dl>
 
@@ -81,9 +81,9 @@
     {% endif %}
     <table class="table table-condensed table-striped table-hover hide-rows" data-display=10>
     <thead><tr><th>Code</th><th>Title</th><th>Start date</th><th>End date</th><th>Status (enrolments)</th><th></th></tr></thead>
-    
+
     {% for module in modules %}
-      
+
         <tr>
             <td><a href="{{ module.get_absolute_url }}">{{ module.code }}</a></td>
             <td class="col-xs-4"><a href="{{ module.get_absolute_url }}">
@@ -96,7 +96,7 @@
 			</td>
             <td>{{ module.start_date | date }}</td>
             <td>{{ module.end_date | date }}</td>
-            <td class="col-xs-3">{{ module.status.short_desc }} ({{ module.enrolment_count }}/{{ module.max_size | default:'∞' }})</td>
+            <td class="col-xs-3">{{ module.status.short_desc }} ({{ module.enrolment_count | default:0 }}/{{ module.max_size | default:'∞' }})</td>
             <td>
                 <a href="#"
                     data-toggle="modal"

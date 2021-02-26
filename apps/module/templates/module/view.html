@@ -333,8 +333,8 @@
                 <dt>Portfolio</dt>
                 <dd>{{ module.portfolio }}</dd>
                 <dt>Format</dt>
-                <dd>{{ module.format }}</dd>
-                <dt>Finance code</dt><dd>{{ module.finance_code }}</dd>
+                <dd>{{ module.format | default:'–' }}</dd>
+                <dt>Finance code</dt><dd>{{ module.finance_code | default:'–' }}</dd>
                 <dt>Class size</dt>
                 <dd>{{ module.max_size }}</dd>
                 {% if module.no_meetings %}
@@ -350,11 +350,9 @@
                     <dd>{{ module.apply_url }}</dd>
                 {% endif %}
                 <dt>Email</dt>
-                <dd>{{ module.email }}</dd>
-                {% if module.phone %}
-                    <dt>Phone</dt>
-                    <dd>{{ module.phone }}</dd>
-                {% endif %}
+                <dd>{{ module.email | default:'–' }}</dd>
+                <dt>Phone</dt>
+                <dd>{{ module.phone | default:'–'  }}</dd>
                 {% if module.note %}
                     <dt>Note</dt>
                     <dd>{{ module.note }}</dd>

@@ -1,5 +1,5 @@
 {# See https://github.com/jazzband/django-simple-menu/tree/master/menu/templates for BS4 and a submodel #}
-<ul class='navbar-nav nav navbar-left'>
+<ul class='navbar-nav nav navbar-{{ side | default:'left' }}'>
 {% for item in menu %}
     {% if item.visible %}
         {% if item.separator %}
@@ -12,7 +12,7 @@
                 {% endif %}
                 <span>{{ item.title }}</span>
                 {% if item.children %}
-                    &nbsp;<b class="caret"></b>
+                    <b class="caret"></b>
                 {% endif %}
             </a>
             {% if item.children %}
