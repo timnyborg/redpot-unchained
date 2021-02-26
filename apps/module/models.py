@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 from django.db import models
 from django.db.models.expressions import F
 from django.core.validators import RegexValidator
@@ -5,8 +9,11 @@ from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.functional import cached_property
-from apps.core.models import SignatureModel
+
 from redpot.settings import PUBLIC_WEBSITE_URL
+
+from apps.core.models import SignatureModel
+from apps.core.utils.dates import academic_year
 
 
 class ModuleManager(models.Manager):
@@ -209,7 +216,7 @@ class Module(SignatureModel, models.Model):
             )
         return Module.objects.none()
 
-    def next_run(self):
+    def next_run(self) -> Optional[Module]:
         if self.start_date:
             return self.other_runs().filter(
                 is_published=True,
@@ -217,7 +224,7 @@ class Module(SignatureModel, models.Model):
             ).order_by('-start_date').first()
 
     @cached_property
-    def _publish_check(self):
+    def _publish_check(self) -> dict:
         errors = {}
 
         if not self.snippet:
@@ -228,12 +235,12 @@ class Module(SignatureModel, models.Model):
             errors['email'] = 'Email required'
         if not self.programmes.exists():
             errors['programme'] = 'Not attached to a programme'
-        # if not self.marketing_types.exists():
-        #     pass # TODO: implement
-        # if not self.subjects.exists():
-        #     pass # TODO: implement
+        if not self.marketing_types.exists():
+            errors['marketing_type'] = 'Missing a marketing type'
+        if not self.subjects.exists():
+            errors['subject'] = 'Missing a marketing subject'
         if not self.custom_fee and not self.fees.filter(
-                is_visible=True, type__is_tuition=True, eu_fee=False
+            is_visible=True, type__is_tuition=True, eu_fee=False
         ).exists():
             errors['fee'] = 'Published non-EU programme fee required'
         if not self.location_id:
@@ -257,6 +264,39 @@ class Module(SignatureModel, models.Model):
     @property
     def publish_errors(self):
         return self._publish_check['errors']
+
+    @cached_property
+    def prospectus_check(self, prospectus_year: int = None) -> dict:
+        """Checks if a module will be included in a year's prospectus (the upcoming academic year, by default)"""
+        if not prospectus_year:
+            prospectus_year = academic_year() + 1
+
+        # We only include one academic year, hiding any cancelled or non-searchable courses
+        in_scope = (
+            academic_year(self.start_date) == prospectus_year
+            and not self.is_cancelled
+            and not self.no_search
+        )
+
+        errors = {}
+        if in_scope:
+            if not self.format_id:
+                errors['format'] = 'Format required'
+            if not self.snippet:
+                errors['snippet'] = 'Snippet required'
+            if not self.custom_fee and not self.fees.filter(
+                is_visible=True, type__is_tuition=True, eu_fee=False
+            ).exists():
+                errors['fee'] = 'Published non-EU programme fee required'
+            if not self.subjects.exists():
+                errors['subject'] = 'Missing a marketing subject'
+
+        return {
+            'success': in_scope and not errors,
+            'errors': errors,
+            'year': prospectus_year,
+            'included': in_scope
+        }
 
     def clean(self):
         # Check both term start/end date fields are filled, or neither

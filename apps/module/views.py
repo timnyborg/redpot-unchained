@@ -33,7 +33,7 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
 
 
 class View(LoginRequiredMixin, PageTitleMixin, DetailView):
-    queryset = Module.objects.defer()  # Get all fields
+    queryset = Module.objects.defer(None)  # Get all fields
     template_name = 'module/view.html'
 
     def get_context_data(self, **kwargs):

@@ -29,8 +29,8 @@
                 <p>
                     {% for error in module.publish_errors.values %}
                     <span class="text-danger"><i class="fas fa-fw fa-times"></i>
-                                        {{ error }}
-                                    </span><br/>
+                        {{ error }}
+                    </span><br/>
                     {% endfor %}
                 </p>
             {% endif %}
@@ -110,21 +110,21 @@
 
             <p></p>
             <!--validation for annual prospectus publication-->
-            {# todo: implement #}
-            {% if prospectus_check.included %}
-                {% if prospectus_check.accepted %}
+            {% if module.prospectus_check.included %}
+                {% if module.prospectus_check.success %}
                     <p>
-                        <i class="fas fa-check text-success">
-                            This course will be included in the {{ 'YEAR' }} prospectus
-                        </i>
+                        <span class="text-success">
+                            <i class="fas fa-check text-success"></i>
+                            This course will be included in the {{ module.prospectus_check.year }} prospectus
+                        </span>
                     </p>
                 {% else %}
-                    {% verbatim %}
-                    <h5>This course is not yet eligible for the {{=prospectus_check.prospectus_year}} prospectus</h5>
-                    {{for field, error in prospectus_check.error.items():
-                        =P(SPAN(_class='fa fa-times text-danger'), prospectus_error_messages[field]) if error else ''
-                    pass}}
-                    {% endverbatim %}
+                    <h5>This course is not yet eligible for the {{ module.prospectus_check.year }} prospectus</h5>
+                    {% for error in module.prospectus_check.errors.values %}
+                        <span class="text-danger"><i class="fas fa-fw fa-times"></i>
+                            {{ error }}
+                        </span><br/>
+                    {% endfor %}
                 {% endif %}
             {% endif %}
 
