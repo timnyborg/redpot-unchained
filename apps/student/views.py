@@ -16,21 +16,25 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     subtitle = 'Search'
     template_name = 'student/search.html'
 
-    table_class = datatables.StudentSearchTable
-    filterset_class = datatables.StudentSearchFilter
+    table_class = datatables.SearchTable
+    filterset_class = datatables.SearchFilter
 
     # A bit complicated, since this search tool also searches on email, phone, address, which are one-to-many relations
-    queryset = Student.objects.filter(
-        # This is a way of joining in the one-to-many joined fields into the select.
-        # We always want the default address data, whether we filter on it or not
-        models.Q(address__is_default=True) | models.Q(address__is_default__isnull=True),
+    queryset = Student.objects.annotate(
+        # Creates a left join with a condition.  The resulting relation can be used in annotations or
+        # django-filter filters, e.g. django_filter.Column(..., field_name='default_address__postcode', ...)
+        default_address=models.FilteredRelation(
+            'address',
+            condition=models.Q(address__is_default=True)
+        )
     ).annotate(
         # And we want two fields available to the table in the end
-        postcode=models.F('address__postcode'),
-        line1=models.F('address__line1'),
-    ).distinct()
+        postcode=models.F('default_address__postcode'),
+        line1=models.F('default_address__line1'),
+    )
 
     def get_table_kwargs(self):
+        # Can also be used for hiding the merge column based on permissions
         # Hide the email column unless we search by it
         exclude = []
         if not self.request.GET.get('email'):
