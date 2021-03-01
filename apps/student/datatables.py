@@ -1,14 +1,14 @@
 from django.db import models
 
 import django_tables2 as tables
-import django_filters
+import django_filters as filters
 
 from apps.core.utils.datatables import ViewLinkColumn
 
 from .models import Student
 
 
-class StudentSearchFilter(django_filters.FilterSet):
+class SearchFilter(filters.FilterSet):
     """An unusually complicated search filter, which does extra filtering on nicknames, default and non-default
        contact details, unaccented filtering
     """
@@ -19,32 +19,26 @@ class StudentSearchFilter(django_filters.FilterSet):
             | models.Q(nickname__unaccent__startswith=value)
         )
 
-    firstname = django_filters.CharFilter(
+    firstname = filters.CharFilter(
         label='First name',
         method='filter_firstname'
     )
 
-    surname = django_filters.CharFilter(
+    surname = filters.CharFilter(
         label='Surname',
         field_name='surname',
         lookup_expr='unaccent__startswith',
     )
 
-    birthdate = django_filters.DateFilter(
+    birthdate = filters.DateFilter(
         label='Birthdate',
         field_name='birthdate'
     )
 
-    def filter_postcode(self, queryset, field_name, value):
-        """Filters on the (default) address postcode"""
-        return queryset.filter(
-            address__is_default=True,
-            address__postcode__startswith=value,
-        )
-
-    postcode = django_filters.CharFilter(
+    postcode = filters.CharFilter(
         label='Postcode',
-        method='filter_postcode',
+        field_name='default_address__postcode',
+        lookup_expr='startswith'
     )
 
     def filter_email(self, queryset, field_name, value):
@@ -53,9 +47,9 @@ class StudentSearchFilter(django_filters.FilterSet):
             email__email__contains=value
         ).annotate(
             email_address=models.F('email__email'),
-        )
+        ).distinct()
 
-    email = django_filters.CharFilter(
+    email = filters.CharFilter(
         label='Email',
         method='filter_email',
     )
@@ -67,7 +61,7 @@ class StudentSearchFilter(django_filters.FilterSet):
         fields = {}  # All defined above
 
 
-class StudentSearchTable(tables.Table):
+class SearchTable(tables.Table):
     link = ViewLinkColumn('')
     first_or_nickname = tables.Column('First name')
 
