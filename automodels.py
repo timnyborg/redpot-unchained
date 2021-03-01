@@ -41,39 +41,6 @@ class TutorActivity(models.Model):
         db_table = 'activity'
 
 
-class Address(models.Model):
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
-    type = models.ForeignKey('AddressType', models.DO_NOTHING, db_column='type', blank=True, null=True)
-    line1 = models.CharField(max_length=128, blank=True, null=True)
-    line2 = models.CharField(max_length=128, blank=True, null=True)
-    line3 = models.CharField(max_length=128, blank=True, null=True)
-    town = models.CharField(max_length=64, blank=True, null=True)
-    countystate = models.CharField(max_length=64, blank=True, null=True)
-    country = models.CharField(max_length=64, blank=True, null=True)
-    postcode = models.CharField(max_length=32, blank=True, null=True)
-    formatted = models.CharField(max_length=1024, blank=True, null=True)
-    is_default = models.BooleanField()
-    is_billing = models.BooleanField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    sits_type = models.CharField(max_length=1, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'address'
-
-
-class AddressType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=128, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'address_type'
-
-
 class Amendment(models.Model):
     type = models.ForeignKey('AmendmentType', models.DO_NOTHING, db_column='type')
     status = models.ForeignKey('AmendmentStatus', models.DO_NOTHING, db_column='status')
@@ -340,22 +307,6 @@ class Domicile(models.Model):
     class Meta:
         managed = False
         db_table = 'domicile'
-
-
-class Email(models.Model):
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
-    email = models.CharField(max_length=64, blank=True, null=True)
-    note = models.CharField(max_length=128, blank=True, null=True)
-    is_default = models.BooleanField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    mailchimp_web_id = models.CharField(max_length=25, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'email'
 
 
 class EmergencyContact(models.Model):
