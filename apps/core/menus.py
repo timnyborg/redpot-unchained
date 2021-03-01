@@ -8,7 +8,7 @@ Menu.add_item("main", MenuItem(
 
 Menu.add_item("main", MenuItem(
     "Students",
-    reverse("programme:search")
+    reverse("student:search")
 ))
 
 Menu.add_item("main", MenuItem(
