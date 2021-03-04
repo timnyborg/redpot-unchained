@@ -33,6 +33,7 @@ urlpatterns = [
     path('module/', include('apps.module.urls')),
     path('student/', include('apps.student.urls')),
     path('tutor/', include('apps.tutor.urls')),
+    path('tutor-payment/', include('apps.tutor_payment.urls')),
     path('autocomplete/', include('apps.autocomplete.urls')),
     path('user/', include('apps.user.urls')),
 

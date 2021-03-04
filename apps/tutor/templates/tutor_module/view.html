@@ -90,7 +90,7 @@
     {% else %}
         <h2 id="fees">Fees</h2>
         <div class="empty-state">
-            <span class="fa fa-gbp empty-state-icon"></span>
+            <i class="fas fa-pound-sign empty-state-icon"></i>
             <h4>No fees</h4>
             <h5>
             Once payments have been raised for the tutor on this course, you'll see them here
@@ -107,7 +107,7 @@
         <h4>Add quick fees</h4>
         {# todo: programatize the selection of buttons and display #}
         {% if 'marking_link' in add_buttons %}
-            <a href="tutor-payment/extras/{{ object.id }}" class="btn btn-primary">
+            <a href="{% url 'tutor-payment:quick:extras' object.id %}" class="btn btn-primary">
                 <i class="fas fa-fw fa-check"></i> Marking & extra students
             </a>
         {% endif %}
