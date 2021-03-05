@@ -89,6 +89,7 @@ class UnAccent(models.Transform):
 
 @models.CharField.register_lookup
 class Like(models.Lookup):
+    """Allows us to do lookups with MSSQL's LIKE wildcards, like Modelname.objects.filter(code__like='O18%p%')"""
     lookup_name = 'like'
 
     def as_sql(self, compiler, connection):
