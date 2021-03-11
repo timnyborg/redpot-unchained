@@ -160,7 +160,7 @@ WSGI_APPLICATION = 'redpot.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    # Fallback credentials only used against the test database created as part of CI
+    # Default credentials only used against the test database created as part of CI
     'default': {
         'NAME': get_secret('DB_NAME', 'redpot'),
         'ENGINE': 'sql_server.pyodbc',
@@ -172,6 +172,21 @@ DATABASES = {
         }
     }
 }
+
+# Enable mirroring router if 2nd host is defined
+# This can be deprecated once mirroring is replaced by AlwaysOn
+if get_secret('DB_MIRROR_HOST', ''):
+    DATABASES['mirror'] = {
+        'NAME': get_secret('DB_NAME', 'redpot'),
+        'ENGINE': 'sql_server.pyodbc',
+        'HOST': get_secret('DB_MIRROR_HOST', 'mssql'),
+        'USER': get_secret('DB_USER', 'sa'),
+        'PASSWORD': get_secret('DB_PASSWORD', 'Test@only'),
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+        }
+    }
+    DATABASE_ROUTERS = ["redpot.router.MSSQLMirroringRouter"]
 
 MESSAGE_TAGS = {
     'DEBUG': 'debug',
@@ -186,11 +201,11 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",  # To enable groups & permissions
 ]
 
-AUTH_LDAP_SERVER_URI = "ldaps://ad3.conted.ox.ac.uk"
-AUTH_LDAP_BIND_DN = f"CN={get_secret('LDAP_USER', '')},OU=Staff,OU=OUDCE,DC=conted,DC=ox,DC=ac,DC=uk"
+AUTH_LDAP_SERVER_URI = get_secret('LDAP_HOST', '')
+AUTH_LDAP_BIND_DN = get_secret('LDAP_BIND_DN', '%s') % get_secret('LDAP_USER', '')
 AUTH_LDAP_BIND_PASSWORD = get_secret('LDAP_PASSWORD', '')
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
-    "ou=Staff,ou=OUDCE,dc=conted,dc=ox,dc=ac,dc=uk", ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)"
+    get_secret('LDAP_BASE_DN', ''), ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)"
 )
 
 AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
