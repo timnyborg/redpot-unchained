@@ -8,15 +8,15 @@ class MSSQLMirroringRouter:
     PRINCIPAL = 'default'
     MIRROR = 'mirror'
 
-    def for_read(self, model, **hints):
+    def db_for_read(self, model, **hints):
         if not self.test_connection_to_db(self.PRINCIPAL):
             self.PRINCIPAL, self.MIRROR = self.MIRROR, self.PRINCIPAL
         return self.PRINCIPAL
 
-    def for_write(self, model, **hints):
+    def db_for_write(self, model, **hints):
         return self.for_read(model, **hints)
 
-    def test_connection_to_db(database_name):
+    def test_connection_to_db(self, database_name):
         db_conn = connections[database_name]
         try:
             db_conn.cursor()

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.db import models
 from django.db.models import (
     Model, CharField, EmailField, BooleanField, IntegerField, DateField, ManyToManyField, DecimalField, ForeignKey,
@@ -6,6 +8,7 @@ from django.db.models import (
 from django.urls import reverse
 
 from apps.core.models import SignatureModel, PhoneField
+from apps.core.utils.dates import academic_year
 
 
 class Portfolio(Model):
@@ -199,6 +202,6 @@ class QA(models.Model):
         db_table = 'qa'
 
     @property
-    def academic_year(self):
+    def academic_year(self) -> Optional[int]:
         if self.start_date:
-            return self.start_date.year - (1 if self.start_date.month < 8 else 0)
+            return academic_year(self.start_date)

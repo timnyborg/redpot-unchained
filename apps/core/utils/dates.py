@@ -9,4 +9,4 @@ def academic_year(_date: date = None):
     """
     if not _date:
         _date = date.today()
-    return _date.year - 1 if _date.month < 9 else _date.year
+    return _date.year - 1 if _date.month < 8 else _date.year
