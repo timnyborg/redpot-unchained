@@ -1,9 +1,13 @@
-import django_tables2 as tables
-from .models import Invoice, Ledger, PaymentPlanSchedule
-import django_filters
-from apps.core.utils.datatables import ViewLinkColumn, PoundsColumn
-import django.forms as forms
+from django import forms
+from django.db.models import Q
 from django.utils.html import mark_safe
+
+import django_tables2 as tables
+import django_filters
+
+from apps.core.utils.datatables import ViewLinkColumn, PoundsColumn
+
+from .models import Invoice, Ledger, PaymentPlanSchedule
 
 
 class InvoiceSearchFilter(django_filters.FilterSet):
@@ -12,6 +16,26 @@ class InvoiceSearchFilter(django_filters.FilterSet):
     maximum = django_filters.NumberFilter(field_name='amount', label='Maximum amount', lookup_expr='lte')
     created_by = django_filters.CharFilter(field_name='created_by', label='Created by (username)', lookup_expr='exact')
     created_after = django_filters.DateFilter(field_name='created_on', label='Created on or after', lookup_expr='gte')
+
+    def filter_address(self, queryset, field_name, value):
+        """Filters on any invoice address field"""
+        if value:
+            return queryset.filter(
+                Q(line1__icontains=value)
+                | Q(line2__icontains=value)
+                | Q(line3__icontains=value)
+                | Q(town__icontains=value)
+                | Q(countystate__icontains=value)
+                | Q(country__icontains=value)
+                | Q(postcode__icontains=value)
+            )
+        return queryset
+
+    address = django_filters.CharFilter(
+        label='Address',
+        method='filter_address',
+        help_text="E.g. 'OX1 2JA', 'Sacramento', or 'Mexico'"
+    )
 
     def overdue_only(self, queryset, field_name, value):
         if value:
@@ -35,14 +59,11 @@ class InvoiceSearchFilter(django_filters.FilterSet):
         widget=forms.CheckboxInput
     )
 
-    def address(self, queryset, field_name, value):
-        if value:
-            return queryset  # TODO: Implement
-        return queryset
-
     class Meta:
         model = Invoice
-        fields = []  # all defined above
+        fields = [
+            'invoiced_to', 'address', 'minimum', 'maximum', 'created_by', 'created_after', 'overdue', 'outstanding'
+        ]
 
 
 class InvoiceSearchTable(tables.Table):

@@ -14,7 +14,7 @@ class MSSQLMirroringRouter:
         return self.PRINCIPAL
 
     def db_for_write(self, model, **hints):
-        return self.for_read(model, **hints)
+        return self.db_for_read(model, **hints)
 
     def test_connection_to_db(self, database_name):
         db_conn = connections[database_name]

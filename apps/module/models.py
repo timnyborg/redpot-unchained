@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from datetime import datetime, date
 from typing import Optional
+from enum import IntEnum
 
 from django.db import models
 from django.db.models.expressions import F
@@ -14,6 +16,18 @@ from redpot.settings import PUBLIC_WEBSITE_URL
 
 from apps.core.models import SignatureModel
 from apps.core.utils.dates import academic_year
+
+
+class Statuses(IntEnum):
+    UNPUBLISHED = 10
+    NOT_YET_OPEN = 11
+    CLOSED = 30
+    OPEN = 20
+    RUNNING_AND_OPEN = 21
+    RUNNING_AND_CLOSED = 31
+    ENDED = 32
+    CANCELLED = 33
+    FULL = 35
 
 
 class ModuleManager(models.Manager):
@@ -200,6 +214,9 @@ class Module(SignatureModel, models.Model):
     def places_taken(self):
         return self.enrolments.filter(status__takes_place=True).count()
 
+    def is_full(self):
+        return self.max_size and self.places_taken() >= self.max_size
+
     @property
     def finance_code(self):
         if self.cost_centre and self.activity_code and self.source_of_funds:
@@ -297,6 +314,77 @@ class Module(SignatureModel, models.Model):
             'year': prospectus_year,
             'included': in_scope
         }
+
+    def update_status(self):
+        """Routine to update module status and is_published if set to automatic publication"""
+
+        now = datetime.now()
+        today = now.date()
+
+        # Store initial values to check for changes
+        initial_status = self.status_id
+        initial_pub = self.is_published
+
+        if self.auto_publish:
+            # Automatic only, and we require start and end dates
+            if self.publish_date and self.start_date and self.end_date:
+                # Default dates (unpublish is not required, and so is set later)
+                if not self.open_date:
+                    self.open_date = self.publish_date
+                if not self.closed_date:
+                    # If undefined, default our closing to midnight the day the course starts
+                    self.closed_date = datetime.combine(self.start_date, datetime.min.time())
+
+                # Automatic date logic
+                if self.publish_date > today:
+                    # Todo: determine if this has any value
+                    self.status_id = Statuses.UNPUBLISHED  # Do not publish
+                elif self.is_cancelled:
+                    self.status_id = Statuses.CANCELLED  # Cancelled
+                elif self.open_date > today >= self.publish_date:
+                    self.status_id = Statuses.NOT_YET_OPEN  # Not yet open
+                elif self.start_date > today and now >= self.closed_date:
+                    self.status_id = Statuses.CLOSED  # Closed to apps
+                elif self.start_date > today >= self.open_date:
+                    self.status_id = Statuses.OPEN  # Accepting apps
+                elif self.closed_date > now and today >= self.start_date:
+                    self.status_id = Statuses.RUNNING_AND_OPEN  # Running, Accepting Apps
+                elif self.end_date >= today and now >= self.closed_date:
+                    self.status_id = Statuses.RUNNING_AND_CLOSED
+                elif today > self.end_date:
+                    self.status_id = Statuses.ENDED  # Ended
+                else:
+                    # Todo: determine if this has any value
+                    self.status_id = Statuses.UNPUBLISHED  # All others are unpublished, if any others exist
+
+                # Full courses overrides current statuses
+                if self.status_id in (Statuses.CLOSED, Statuses.OPEN, Statuses.RUNNING_AND_OPEN) and self.is_full():
+                    self.status_id = Statuses.FULL
+
+                self.is_published = (
+                    (not self.unpublish_date or self.unpublish_date >= today)
+                    # Status flagged as publishable
+                    and self.status.publish
+                    # Only do publishable check if not already publishable
+                    and (self.is_published or self.is_publishable)
+                )
+
+                # Notify weeklyclasses if a course isn't published ONLY because of a proposal being incomplete
+                # todo: determine usefulness of this check
+                # if not self.is_published and idb.module_status(self.status_id).publish:
+                #     _check_ongoing_proposal(self.id)
+            else:
+                # Lacks required fields for auto
+                self.is_published = False
+
+        else:
+            # Manual. Unpublish if it fails the check
+            self.is_published = self.is_published and self.is_publishable
+
+        # Check for changes, and only update the db if found
+        changed = initial_status != self.status_id or initial_pub != self.is_published
+        if changed:
+            self.save()
 
     def clean(self):
         # Check both term start/end date fields are filled, or neither
