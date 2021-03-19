@@ -47,6 +47,7 @@
   pk: 1
   fields:
     fao: Person
+    prefix: XG
     number: 1
     date: '2020-01-01'
 

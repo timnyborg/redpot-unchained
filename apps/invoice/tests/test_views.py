@@ -40,3 +40,17 @@ class TestViewsWithLogin(TestCase):
         response = self.client.get(reverse('invoice:view', args=[1]))
         # TODO: We should use a factory, and check for invoice data being present
         self.assertEqual(response.status_code, 200)
+
+    def test_lookup_succeeds(self):
+        response = self.client.post(reverse('invoice:lookup'), data={'number': 'XG1'})
+        self.assertRedirects(response, '/invoice/view/1')
+        response = self.client.post(reverse('invoice:lookup'), data={'number': '1'})
+        self.assertRedirects(response, '/invoice/view/1')
+
+    def test_lookup_fails(self):
+        response = self.client.post(reverse('invoice:lookup'), data={'number': 'XG99999'})
+        self.assertRedirects(response, '/invoice/search')
+
+    def test_lookup_fails_with_bad_number(self):
+        response = self.client.post(reverse('invoice:lookup'), data={'number': 'ABCDEFG'})
+        self.assertRedirects(response, '/invoice/search')
