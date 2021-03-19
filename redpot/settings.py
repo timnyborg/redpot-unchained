@@ -10,15 +10,18 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
 import json
+import ldap
 import os
-from django.core.exceptions import ImproperlyConfigured
+from pathlib import Path
+
+from django_auth_ldap.config import LDAPSearch
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-import ldap
-from django_auth_ldap.config import LDAPSearch
+
+from django.core.exceptions import ImproperlyConfigured
 from django.core.management.utils import get_random_secret_key
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -60,7 +63,8 @@ if not DEBUG:
     sentry_sdk.init(
         dsn=get_secret("SENTRY_DSN", ''),
         integrations=[DjangoIntegration()],
-        traces_sample_rate=1.0,
+        # You may wish to set the sample_rate to 1.0 in dev, but it should be scaled much lower in production
+        traces_sample_rate=get_secret("SENTRY_SAMPLE_RATE", 0.01),
 
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
@@ -68,7 +72,6 @@ if not DEBUG:
     )
 
 # Application definition
-
 PREREQ_APPS = [
     'dal',  # django-autocomplete-light
     'dal_select2',  # django-autocomplete-light
@@ -154,7 +157,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'redpot.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
