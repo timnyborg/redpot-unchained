@@ -8,15 +8,15 @@ from dateutil.relativedelta import relativedelta
 
 
 class ModuleSearchFilter(django_filters.FilterSet):
-    def limit_years(self, queryset, field_name, value):
+    def limit_years_filter(self, queryset, field_name, value):
         if value:
             date_threshold = date.today() - relativedelta(years=3)
             return queryset.filter(start_date__gte=date_threshold)
         return queryset
 
-    has_category = django_filters.BooleanFilter(
+    limit_years = django_filters.BooleanFilter(
         label='Limit to last three years',
-        method='limit_years',
+        method='limit_years_filter',
         initial=True,
         widget=forms.CheckboxInput
     )
