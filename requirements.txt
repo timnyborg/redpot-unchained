@@ -10,7 +10,7 @@ invoke==1.5.0
 django_simple_menu==1.2.1
 python-dateutil==2.8.1
 python-ldap==3.3.1
-django-mssql-backend==2.8.1
+mssql-django==1.0a5
 Pillow==8.1.0
 celery==5.0.5
 django-celery-beat==2.2.0

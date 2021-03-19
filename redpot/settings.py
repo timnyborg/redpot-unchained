@@ -21,7 +21,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.utils import get_random_secret_key
-
+from django.contrib import messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -165,7 +165,7 @@ DATABASES = {
     # Default credentials only used against the test database created as part of CI
     'default': {
         'NAME': get_secret('DB_NAME', 'redpot'),
-        'ENGINE': 'sql_server.pyodbc',
+        'ENGINE': 'mssql',
         'HOST': get_secret('DB_HOST', 'mssql'),
         'USER': get_secret('DB_USER', 'sa'),
         'PASSWORD': get_secret('DB_PASSWORD', 'Test@only'),
@@ -180,7 +180,7 @@ DATABASES = {
 if get_secret('DB_MIRROR_HOST', ''):
     DATABASES['mirror'] = {
         'NAME': get_secret('DB_NAME', 'redpot'),
-        'ENGINE': 'sql_server.pyodbc',
+        'ENGINE': 'mssql',
         'HOST': get_secret('DB_MIRROR_HOST', 'mssql'),
         'USER': get_secret('DB_USER', 'sa'),
         'PASSWORD': get_secret('DB_PASSWORD', 'Test@only'),
@@ -191,11 +191,8 @@ if get_secret('DB_MIRROR_HOST', ''):
     DATABASE_ROUTERS = ["redpot.router.MSSQLMirroringRouter"]
 
 MESSAGE_TAGS = {
-    'DEBUG': 'debug',
-    'INFO': 'info',
-    'SUCCESS': 'success',
-    'WARNING': 'warning',
-    'ERROR': 'error'
+    # Overriding the error tag to match bootstrap 3
+    messages.ERROR: 'danger'
 }
 
 AUTHENTICATION_BACKENDS = [
