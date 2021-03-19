@@ -2,23 +2,43 @@ from django_tables2.views import SingleTableMixin, RequestConfig
 from django_filters.views import FilterView
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import FormMixin
 
 from apps.core.utils.views import PageTitleMixin
 
 from .models import Invoice
-from .datatables import (
-    InvoiceSearchFilter, InvoiceSearchTable, InvoiceFeesTable, InvoicePaymentsTable, PaymentScheduleTable
-)
+from . import datatables, forms
 
 
-class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
+class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FormMixin, FilterView):
     template_name = 'invoice/search.html'
     model = Invoice
-    table_class = InvoiceSearchTable
-    filterset_class = InvoiceSearchFilter
+    table_class = datatables.InvoiceSearchTable
+    filterset_class = datatables.InvoiceSearchFilter
     subtitle = 'Search'
+    form_class = forms.InvoiceLookupForm
+
+
+def lookup(request):
+    """Redirects to an invoice matching `number` with or without EQ prefix.
+       When not found, sends the user back to /search
+    """
+    invnum = request.POST['number']
+    if not invnum.isdigit():
+        # If they've included a prefix (eg EQ), strip it out
+        invnum = invnum[2:]
+
+    try:
+        invoice = Invoice.objects.get(number=invnum)
+        return redirect(invoice.get_absolute_url())
+    except (Invoice.DoesNotExist, ValueError):
+        messages.error(request, 'Invoice not found')
+        return redirect(reverse('invoice:search'))
 
 
 class View(LoginRequiredMixin, PageTitleMixin, DetailView):
@@ -28,16 +48,16 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
         fees = self.object.get_fees().select_related('enrolment__module', 'type')
-        fee_table = InvoiceFeesTable(fees, prefix="fees-")
+        fee_table = datatables.InvoiceFeesTable(fees, prefix="fees-")
         RequestConfig(self.request).configure(fee_table)  # Enables sorting, in lieu of the MultiTableMixin
 
         payments = self.object.get_payments().select_related('enrolment__module', 'type')
-        payment_table = InvoicePaymentsTable(payments, prefix="payments-")
+        payment_table = datatables.InvoicePaymentsTable(payments, prefix="payments-")
         RequestConfig(self.request).configure(payment_table)
 
         try:
             plan = self.object.payment_plan
-            schedule_table = PaymentScheduleTable(plan.schedule.all())
+            schedule_table = datatables.PaymentScheduleTable(plan.schedule.all())
         except ObjectDoesNotExist:
             plan = None
             schedule_table = None

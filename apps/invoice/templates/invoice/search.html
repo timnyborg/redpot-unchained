@@ -5,6 +5,19 @@
 {% block center %}
 
 <div class="section">
+    <div class="row">
+        <div class="col-xs-6">
+            <form method='POST' action="{% url 'invoice:lookup' %}" class='form-horizontal'>
+                {# todo: turn this into an inline with appended submit button (bootstrap3_lookup_form?) #}
+                {% csrf_token %}
+                {% bootstrap3form form False %}
+                {% bootstrap3submit 'Find' %}
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="section">
 	<div class="row">
 		<div class="col-xs-12 col-md-8">
 			<form action="" class='form-horizontal'>
@@ -17,7 +30,7 @@
 {% if request.GET %}
 	<div class="section">
 		{% if table.rows %}
-			<h3>Search results ({{ table.rows|length }})</h3>		
+			<h3>Search results ({{ table.rows|length }})</h3>
 			{% render_table table %}
 		{% else %}
 		<div class="empty-state">
@@ -25,7 +38,7 @@
             <h4>No results found</h4>
             <h5>
             Try broadening your query and search again
-            </h5>            
+            </h5>
 		</div>
 		{% endif %}
 	</div>
