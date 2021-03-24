@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, date
+from datetime import datetime
 from typing import Optional
 from enum import IntEnum
 
@@ -315,6 +315,32 @@ class Module(SignatureModel, models.Model):
             'included': in_scope
         }
 
+    def _get_auto_status(self):
+        now = datetime.now()
+        today = now.date()
+
+        # Automatic date logic
+        if self.publish_date > today:
+            # Todo: determine if this has any value
+            return Statuses.UNPUBLISHED
+        elif self.is_cancelled:
+            return Statuses.CANCELLED
+        elif self.open_date > today >= self.publish_date:
+            return Statuses.NOT_YET_OPEN
+        elif self.start_date > today and now >= self.closed_date:
+            return Statuses.CLOSED
+        elif self.start_date > today >= self.open_date:
+            return Statuses.OPEN
+        elif self.closed_date > now and today >= self.start_date:
+            return Statuses.RUNNING_AND_OPEN
+        elif self.end_date >= today and now >= self.closed_date:
+            return Statuses.RUNNING_AND_CLOSED
+        elif today > self.end_date:
+            return Statuses.ENDED
+        else:
+            # Todo: determine if this has any value
+            return Statuses.UNPUBLISHED  # All others are unpublished, if any others exist
+
     def update_status(self):
         """Routine to update module status and is_published if set to automatic publication"""
 
@@ -335,27 +361,7 @@ class Module(SignatureModel, models.Model):
                     # If undefined, default our closing to midnight the day the course starts
                     self.closed_date = datetime.combine(self.start_date, datetime.min.time())
 
-                # Automatic date logic
-                if self.publish_date > today:
-                    # Todo: determine if this has any value
-                    self.status_id = Statuses.UNPUBLISHED  # Do not publish
-                elif self.is_cancelled:
-                    self.status_id = Statuses.CANCELLED  # Cancelled
-                elif self.open_date > today >= self.publish_date:
-                    self.status_id = Statuses.NOT_YET_OPEN  # Not yet open
-                elif self.start_date > today and now >= self.closed_date:
-                    self.status_id = Statuses.CLOSED  # Closed to apps
-                elif self.start_date > today >= self.open_date:
-                    self.status_id = Statuses.OPEN  # Accepting apps
-                elif self.closed_date > now and today >= self.start_date:
-                    self.status_id = Statuses.RUNNING_AND_OPEN  # Running, Accepting Apps
-                elif self.end_date >= today and now >= self.closed_date:
-                    self.status_id = Statuses.RUNNING_AND_CLOSED
-                elif today > self.end_date:
-                    self.status_id = Statuses.ENDED  # Ended
-                else:
-                    # Todo: determine if this has any value
-                    self.status_id = Statuses.UNPUBLISHED  # All others are unpublished, if any others exist
+                self.status = self._get_auto_status()
 
                 # Full courses overrides current statuses
                 if self.status_id in (Statuses.CLOSED, Statuses.OPEN, Statuses.RUNNING_AND_OPEN) and self.is_full():

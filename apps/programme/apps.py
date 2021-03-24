@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class ProgrammeConfig(AppConfig):
-    name = 'programme'
+    name = 'apps.programme'
