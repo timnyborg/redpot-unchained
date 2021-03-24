@@ -28,7 +28,6 @@ def wpm_ftp_download(filename=None):
     filename = filename or 'RCP_Payments_%s.csv' % date.today().strftime("%d%m%y")
 
     if filename not in ftp.nlst():
-        n = ftp.nlst()
         raise FileNotFoundError('RCP file not found on WPM FTP server: %s' % filename)
 
     # Write the file into a buffer
@@ -49,7 +48,7 @@ def wpm_ftp_download(filename=None):
         if amount > 0:  # Filter out RCP refunds, which will have already been listed in the ledger
             continue
 
-        date = datetime.strptime(row['date'], '%d/%m/%y %H:%M')
+        payment_date = datetime.strptime(row['date'], '%d/%m/%y %H:%M')
         narrative = f"{row['name']}, card: {row['card']}, digits: {row['digits']}, trans: {row['trans_id']}"[:128]
         invoice = Invoice.objects.get(number=row['invoice_no'])
 
@@ -59,7 +58,7 @@ def wpm_ftp_download(filename=None):
         #     amount,
         #     17,  # RCP
         #     narrative,
-        #     date=date
+        #     date=payment_date
         # )
 
         # debugging while above not implemented

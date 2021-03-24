@@ -32,7 +32,11 @@ class Tutor(SignatureModel):
 
     # todo: longterm - move rtw data into a one-to-one table (easier permissioning)
     # rtw_type = models.ForeignKey(RtwType, models.DO_NOTHING, db_column='rtw_type', blank=True, null=True)
-    # rtw_document_type = models.ForeignKey(RtwDocumentType, models.DO_NOTHING, db_column='rtw_document_type', blank=True, null=True)
+    # rtw_document_type = models.ForeignKey(
+    #     RtwDocumentType, models.DO_NOTHING,
+    #     db_column='rtw_document_type',
+    #     blank=True, null=True
+    # )
     rtw_check_on = models.DateField(blank=True, null=True)
     rtw_check_by = models.CharField(max_length=50, blank=True, null=True)
     rtw_start_date = models.DateField(blank=True, null=True)

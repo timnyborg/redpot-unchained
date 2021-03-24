@@ -85,7 +85,8 @@ def expense_form(request, pk, mode, template):
                 records=[dict(
                     tutor_name="('%(title)s %(firstname)s %(surname)s' % record.tutor.student).strip()",
                     nickname=record.tutor.student.nickname,
-                    birthdate=record.tutor.student.birthdate.strftime('%d %B %y') if record.tutor.student.birthdate else '',
+                    birthdate=record.tutor.student.birthdate.strftime('%d %B %y')
+                              if record.tutor.student.birthdate else '',
                     gender=record.tutor.student.gender,
 
                     line1='record.address.line1',
@@ -121,7 +122,9 @@ def expense_form(request, pk, mode, template):
     except FileNotFoundError:
         raise Http404
 
-    response = HttpResponse(doc, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response = HttpResponse(
+        doc, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
     response['Content-disposition'] = 'attachment; filename=%s' % re.sub('[,()\']', '', str(filename))
     return response
 """

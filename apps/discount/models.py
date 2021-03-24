@@ -41,7 +41,11 @@ class Discount(SignatureModel):
     usable_once = models.BooleanField(blank=True, null=True)
     expires_on = models.DateField(blank=True, null=True)
     module_mask = models.CharField(max_length=20)
-    portfolio = models.ForeignKey('programme.Portfolio', models.DO_NOTHING, db_column='portfolio', blank=True, null=True)
+    portfolio = models.ForeignKey(
+        'programme.Portfolio', models.DO_NOTHING,
+        db_column='portfolio',
+        blank=True, null=True
+    )
 
     objects = DiscountQuerySet.as_manager()
 

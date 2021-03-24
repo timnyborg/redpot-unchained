@@ -135,7 +135,11 @@ class Module(SignatureModel, models.Model):
     is_cancelled = models.BooleanField(default=False)
     default_non_credit = models.BooleanField(blank=True, null=True)
     note = models.CharField(max_length=512, blank=True, null=True)
-    # terms_and_conditions = models.ForeignKey('TermsAndConditions', models.DO_NOTHING, db_column='terms_and_conditions')
+    # terms_and_conditions = models.ForeignKey(
+    #     'TermsAndConditions',
+    #     models.DO_NOTHING,
+    #     db_column='terms_and_conditions'
+    # )
     apply_url = models.CharField(max_length=512, blank=True, null=True)
     further_details = models.TextField(blank=True, null=True)
     is_repeat = models.BooleanField(default=False)

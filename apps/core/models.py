@@ -50,7 +50,7 @@ class SignatureModel(models.Model):
 
 @deconstructible
 class PathAndRename(object):
-    """See https://stackoverflow.com/questions/25767787/django-cannot-create-migrations-for-imagefield-with-dynamic-upload-to-value"""
+    """See https://stackoverflow.com/q/25767787/9461432"""
 
     def __init__(self, sub_path):
         self.path = sub_path
