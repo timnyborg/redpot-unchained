@@ -1,14 +1,14 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-
-from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
+from django_tables2.views import SingleTableMixin
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import models
 from django.db.models import Prefetch
 
 from apps.core.utils.views import PageTitleMixin
-from .models import Student, Address
-from . import datatables
 
-from django.db import models
+from . import datatables
+from .models import Address, Student
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):

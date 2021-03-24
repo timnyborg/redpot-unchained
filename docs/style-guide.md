@@ -56,11 +56,10 @@ Extending [PEP8's guidelines](https://www.python.org/dev/peps/pep-0008/#imports)
 should be at the top of the file, grouped in the following order:
 
 1. Standard library imports (os, sys)
-2. Third party imports (dateutil, redis, requests)
+2. Third party imports (dateutil, django_filters, django_tables2, redis, requests)
 3. Django core library (django.db.models, django.urls)
-4. Third party django apps (django_filters, django_tables2)
-5. Other apps in the project (apps.module.models, apps.main.utils.mixins)
-6. The current app (.models, .views, .urls)
+4. Other apps in the project (apps.module.models, apps.main.utils.mixins, redpot.settings)
+5. The current app (.models, .views, .urls)
 
 Each group should be separated by a line
 
@@ -70,15 +69,14 @@ Each group should be separated by a line
 import os
 
 from dateutil import relativedelta
+from django_tables2.views import SingleTableMixin
+from django_filters.views import FilterView
 
 from django.views.generic.edit import UpdateView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.functions import Coalesce
-
-from django_tables2.views import SingleTableMixin
-from django_filters.views import FilterView
 
 from apps.core.utils.views import PageTitleMixin
 from apps.tutor.utils import expense_forms
@@ -88,3 +86,8 @@ from .models import Module, ModuleStatus
 from .forms import ModuleForm
 from .datatables import ModuleSearchTable, WaitlistTable
 ```
+
+### isort makes it easy
+To automatically organize your imports, run `isort <filename>`, or run `isort .` to recursively reformat an entire directory (or project).
+
+isort uses default settings in `pyproject.toml`

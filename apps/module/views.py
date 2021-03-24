@@ -1,20 +1,21 @@
-from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
-
-from django.views.generic.edit import UpdateView
-from django.views.generic.detail import DetailView
+from django_tables2.views import SingleTableMixin
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.functions import Coalesce
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import UpdateView
 
 from apps.core.utils.views import PageTitleMixin
-from apps.tutor.utils import expense_forms
 from apps.discount.models import Discount
+from apps.tutor.utils import expense_forms
 
-from .models import Module, ModuleStatus
+from .datatables import (
+    BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
+)
 from .forms import ModuleForm
-from .datatables import ModuleSearchFilter, ModuleSearchTable, WaitlistTable, BookTable
+from .models import Module, ModuleStatus
 
 
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):

@@ -1,7 +1,9 @@
 from datetime import datetime
+
 from django.db import models
-from django.db.models import Q, Value, Min, When, Case
+from django.db.models import Case, Min, Q, Value, When
 from django.db.models.functions import Replace
+
 from apps.core.models import SignatureModel
 from apps.module.models import Module
 

@@ -1,0 +1,5 @@
+[tool.isort]
+known_django = 'django'
+multi_line_output = 5
+sections = 'FUTURE,STDLIB,THIRDPARTY,DJANGO,FIRSTPARTY,LOCALFOLDER'
+skip = ['migrations', '.venv']

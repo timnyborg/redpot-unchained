@@ -14,10 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.urls import include, path
 from django.views.defaults import page_not_found
 from django.views.generic import RedirectView
+
 import apps.core.views
 from redpot.settings import W2P_REDPOT_URL
 

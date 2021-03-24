@@ -1,5 +1,5 @@
-from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView
 
 
 class PageTitleMixin:

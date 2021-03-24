@@ -1,6 +1,6 @@
-from django.shortcuts import render
-from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import LoginView
+from django.shortcuts import render
 
 
 # A custom Login form & view to enable overriding error_messages

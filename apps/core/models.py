@@ -1,10 +1,11 @@
 import os
 
+from django_resized import ResizedImageField
+
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
 from django.forms.widgets import TextInput
-from django.contrib.auth.models import AbstractUser
-from django_resized import ResizedImageField
-from django.core.validators import RegexValidator
 from django.utils.deconstruct import deconstructible
 
 

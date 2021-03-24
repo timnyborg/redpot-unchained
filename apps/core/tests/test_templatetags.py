@@ -1,7 +1,8 @@
 from datetime import datetime
 from types import SimpleNamespace
-from django.test import TestCase
+
 from django.template import Context, Template
+from django.test import TestCase
 
 
 class TestTemplateTags(TestCase):

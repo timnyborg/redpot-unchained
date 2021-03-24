@@ -1,11 +1,11 @@
+import django_filters
+import django_tables2 as tables
+
 from django import forms
 from django.db.models import Q
 from django.utils.html import mark_safe
 
-import django_tables2 as tables
-import django_filters
-
-from apps.core.utils.datatables import ViewLinkColumn, PoundsColumn
+from apps.core.utils.datatables import PoundsColumn, ViewLinkColumn
 
 from .models import Invoice, Ledger, PaymentPlanSchedule
 

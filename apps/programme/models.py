@@ -2,12 +2,12 @@ from typing import Optional
 
 from django.db import models
 from django.db.models import (
-    Model, CharField, EmailField, BooleanField, IntegerField, DateField, ManyToManyField, DecimalField, ForeignKey,
-    DO_NOTHING, Q
+    DO_NOTHING, BooleanField, CharField, DateField, DecimalField, EmailField,
+    ForeignKey, IntegerField, ManyToManyField, Model, Q
 )
 from django.urls import reverse
 
-from apps.core.models import SignatureModel, PhoneField
+from apps.core.models import PhoneField, SignatureModel
 from apps.core.utils.dates import academic_year
 
 

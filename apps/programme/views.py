@@ -1,23 +1,24 @@
 from datetime import datetime
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Subquery, OuterRef
-from django.views.generic.edit import UpdateView, CreateView, DeleteView
-from django.views.generic.detail import DetailView
-from django.contrib import messages
-from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse
-from django.shortcuts import get_object_or_404
-from django.utils.http import url_has_allowed_host_and_scheme
-
-from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
+from django_tables2.views import SingleTableMixin
+
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Count, OuterRef, Subquery
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from apps.core.utils.views import PageTitleMixin
-from apps.module.models import ModuleStatus, Module
+from apps.module.models import Module, ModuleStatus
+
+from .datatables import ProgrammeSearchFilter, ProgrammeSearchTable
+from .forms import AttachModuleForm, ProgrammeEditForm, ProgrammeNewForm
 from .models import Programme, ProgrammeModule
-from .forms import ProgrammeEditForm, ProgrammeNewForm, AttachModuleForm
-from .datatables import ProgrammeSearchTable, ProgrammeSearchFilter
 
 
 class View(LoginRequiredMixin, PageTitleMixin, DetailView):

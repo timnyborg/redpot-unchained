@@ -1,6 +1,8 @@
-from django import forms
-from apps.programme.models import Programme, ProgrammeModule
 from dal import autocomplete
+
+from django import forms
+
+from apps.programme.models import Programme, ProgrammeModule
 
 
 # Create the form class.

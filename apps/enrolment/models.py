@@ -1,4 +1,5 @@
 from django.db import models
+
 from apps.core.models import SignatureModel
 
 # Constants used as defaults.  If used more extensively, we may need to use enums

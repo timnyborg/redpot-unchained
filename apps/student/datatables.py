@@ -1,7 +1,7 @@
-from django.db import models
-
-import django_tables2 as tables
 import django_filters as filters
+import django_tables2 as tables
+
+from django.db import models
 
 from apps.core.utils.datatables import ViewLinkColumn
 

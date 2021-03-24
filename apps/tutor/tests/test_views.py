@@ -1,7 +1,7 @@
-from django.test import TestCase
-from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.template import TemplateDoesNotExist
+from django.test import TestCase
+from django.urls import reverse
 
 DOCX_MIMETYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 

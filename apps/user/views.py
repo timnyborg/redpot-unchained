@@ -1,10 +1,9 @@
-from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-
-from apps.core.utils.views import PageTitleMixin
+from django.views.generic.edit import UpdateView
 
 from apps.core.models import User
+from apps.core.utils.views import PageTitleMixin
 
 
 class EditProfile(PageTitleMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):

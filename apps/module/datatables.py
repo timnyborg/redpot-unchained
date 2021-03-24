@@ -1,10 +1,16 @@
-import django_tables2 as tables
-from .models import Module, ModuleWaitlist, Book
-import django_filters
-from apps.core.utils.datatables import DeleteLinkColumn, LinkColumn, ViewLinkColumn, EditLinkColumn
-import django.forms as forms
 from datetime import date
+
+import django_filters
+import django_tables2 as tables
 from dateutil.relativedelta import relativedelta
+
+import django.forms as forms
+
+from apps.core.utils.datatables import (
+    DeleteLinkColumn, EditLinkColumn, LinkColumn, ViewLinkColumn
+)
+
+from .models import Book, Module, ModuleWaitlist
 
 
 class ModuleSearchFilter(django_filters.FilterSet):

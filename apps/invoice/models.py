@@ -1,7 +1,9 @@
+from datetime import date
+
 from django.db import models
 from django.urls import reverse
+
 from apps.core.models import SignatureModel
-from datetime import date
 
 
 class InvoiceQuerySet(models.QuerySet):

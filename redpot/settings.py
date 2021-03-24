@@ -11,17 +11,17 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import json
-import ldap
 import os
 from pathlib import Path
 
-from django_auth_ldap.config import LDAPSearch
+import ldap
 import sentry_sdk
+from django_auth_ldap.config import LDAPSearch
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.utils import get_random_secret_key
-from django.contrib import messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

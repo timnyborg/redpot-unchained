@@ -1,9 +1,9 @@
 from django import forms
+from django.db import transaction
 from django.forms import ValidationError
 from django.forms.models import fields_for_model
-from django.db import transaction
 
-from .models import TutorFeeRate, TutorFee
+from .models import TutorFee, TutorFeeRate
 
 
 class ExtrasForm(forms.Form):

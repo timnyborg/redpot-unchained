@@ -1,21 +1,20 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 from enum import IntEnum
+from typing import Optional
 
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.expressions import F
-from django.core.validators import RegexValidator
-from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.functional import cached_property
 
-from redpot.settings import PUBLIC_WEBSITE_URL
-
 from apps.core.models import SignatureModel
 from apps.core.utils.dates import academic_year
+from redpot.settings import PUBLIC_WEBSITE_URL
 
 
 class Statuses(IntEnum):

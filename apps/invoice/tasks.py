@@ -1,7 +1,7 @@
 import csv
-from decimal import Decimal
-from datetime import datetime, date
 import ftplib
+from datetime import date, datetime
+from decimal import Decimal
 from io import StringIO
 
 from celery import shared_task

@@ -1,8 +1,8 @@
-from django_tables2.views import SingleTableMixin, RequestConfig
 from django_filters.views import FilterView
+from django_tables2.views import RequestConfig, SingleTableMixin
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -11,8 +11,8 @@ from django.views.generic.edit import FormMixin
 
 from apps.core.utils.views import PageTitleMixin
 
-from .models import Invoice
 from . import datatables, forms
+from .models import Invoice
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FormMixin, FilterView):

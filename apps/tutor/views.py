@@ -10,7 +10,7 @@ from apps.core.utils.views import PageTitleMixin
 
 from .forms import TutorModuleEditForm
 from .models import TutorModule
-from .utils.mail_merge import mail_merge, MailMergeView
+from .utils.mail_merge import MailMergeView, mail_merge
 
 
 class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, DetailView):

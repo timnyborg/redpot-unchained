@@ -1,11 +1,13 @@
 # Todo: put this somewhere sensible
-from django.views.generic.list import MultipleObjectTemplateResponseMixin
-from django.views.generic.base import View
-from django.http import HttpResponse
-from io import BytesIO as StringIO
 import re
+from io import BytesIO as StringIO
+
 from mailmerge import MailMerge
+
+from django.http import HttpResponse
 from django.template.exceptions import TemplateDoesNotExist
+from django.views.generic.base import View
+from django.views.generic.list import MultipleObjectTemplateResponseMixin
 
 
 def mail_merge(docx_file, filename, records=None, **merge_fields):

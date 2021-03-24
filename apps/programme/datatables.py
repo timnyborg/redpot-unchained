@@ -1,9 +1,11 @@
-import django_tables2 as tables
-from .models import Programme
 import django_filters
+import django_tables2 as tables
+
 import django.forms as forms
 
 from apps.core.utils.datatables import ViewLinkColumn
+
+from .models import Programme
 
 
 class ProgrammeSearchFilter(django_filters.FilterSet):
