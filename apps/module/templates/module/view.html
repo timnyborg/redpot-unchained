@@ -20,344 +20,7 @@
         </div>
     {% endif %}
     <div class='row'>
-        <div class='col-md-4 col-md-push-8'>
-            <h3>Web publication</h3>
-            {% if module.is_publishable %}
-                <h5>This course can be published</h5>
-            {% else %}
-                <h5>This course cannot be published</h5>
-                <p>
-                    {% for error in module.publish_errors.values %}
-                    <span class="text-danger"><i class="fas fa-fw fa-times"></i>
-                        {{ error }}
-                    </span><br/>
-                    {% endfor %}
-                </p>
-            {% endif %}
-
-            {% if module.auto_publish %}
-                <div class="btn-group">
-                    <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                        <i class="fas fa-cog"></i>
-                        Automatic
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="/manual_publish/{{ module.id }}">
-                                <span class="fas fa-user"></span> Manual
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            {% else %}
-                <div class="btn-group">
-                    <a href="#" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
-                        <i class="fas fa-fw fa-user"></i>
-                        Manual
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="auto-publish/{{ module.id }}">
-                                <div class="context-menu-item" >
-                                    <i class="fas fa-fw fa-cog fa-pull-left"></i>
-                                    <div class="description">
-                                        <strong>Automatic</strong>
-                                        <span>The course will be published and unpublished on the set dates. Its status
-                                            will be changed according to the open, closed, start, and end dates.
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            {% endif %}
-
-
-            {% if module.is_published %}
-                <div class="btn-group">
-                    <a href="#" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-                        <i class="fas fa-fw fa-play"></i>
-                        Published
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="unpublish/{{ module.id }}">
-                                <i class="fas fa-fw fa-stop"></i> Unpublish
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            {% else %}
-                <div class="btn-group">
-                    <a href="#" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
-                        <i class="fas fa-fw fa-stop"></i>
-                        Unpublished
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="publish/{{ module.id }}">
-                                <i class="fas fa-fw fa-play"></i> Publish
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            {% endif %}
-
-            <p></p>
-            <!--validation for annual prospectus publication-->
-            {% if module.prospectus_check.included %}
-                {% if module.prospectus_check.success %}
-                    <p>
-                        <span class="text-success">
-                            <i class="fas fa-check text-success"></i>
-                            This course will be included in the {{ module.prospectus_check.year }} prospectus
-                        </span>
-                    </p>
-                {% else %}
-                    <h5>This course is not yet eligible for the {{ module.prospectus_check.year }} prospectus</h5>
-                    {% for error in module.prospectus_check.errors.values %}
-                        <span class="text-danger"><i class="fas fa-fw fa-times"></i>
-                            {{ error }}
-                        </span><br/>
-                    {% endfor %}
-                {% endif %}
-            {% endif %}
-
-            <p></p>
-            <h5>Course status</h5>
-            <div class="btn-group" >
-                {# todo: implement locking on auto_publishing or cancelled #}
-                <a href="#" class="btn btn-primary" data-toggle="dropdown">
-                    {{ module.status }}
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                    {% for status in statuses %}
-                        <li>
-                            <a href="set-status/{{ module.id }}/{{ status.id }}">
-                                {{ status }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <p>
-                <div class="btn-group">
-                    <a href="{{ module.get_website_url }}" target="_blank" class="btn btn-default">
-                        <i class="fas fa-fw fa-globe"></i> Webpage
-                    </a>
-                </div>
-            </p>
-
-            <hr>
-            <!-- Auto reminders / feedback set to off / on upon course cancellations and uncancellations respectively-->
-            <h5>Automated reminders</h5>
-            {% if module.reminder_sent_on %}
-                <h4>
-                <span class="label label-success">
-                    <i class="fas fa-fw fa-envelope"></i>
-                    Sent on {{ module.reminder_sent_on | date }}
-                </span>
-                </h4>
-
-            {% elif module.auto_reminder %}
-                <div class="btn-group">
-                    <a href="#" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-                        <i class="fas fa-fw fa-check"></i> Enabled
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="toggle-auto-reminder/{{ module.id }}">
-                            <i class="fas fa-fw fa-times"></i> Disable
-                        </a></li>
-                    </ul>
-                </div>
-
-            {% else %}
-                <div class="btn-group">
-                    <a href="#" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
-                        <i class="fas fa-fw fa-times"></i> Disabled
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="toggle-auto-reminder/{{ module.id }}">
-                                <div class="context-menu-item" >
-                                    <i class="fas fa-fw fa-check fa-pull-left"></i>
-                                    <div class="description">
-                                        <strong>Enable</strong>
-                                        <span>
-                                            Students will be emailed a reminder about the course, 5 days before it starts.
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            {% endif %}
-            <div class="btn-group">
-                <a href="precourse-notification/preview/{{ module.id }}" class="btn btn-default" target="_blank">
-                    <i class="fas fa-fw fa-exclamation"></i> Preview
-                </a>
-            </div>
-
-            <hr>
-            <h5>Automated feedback</h5>
-            {% if module.auto_feedback %}
-                <div class="btn-group">
-                    <a href="#" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-                        <i class="fas fa-fw fa-check"></i>
-                        Enabled
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="disable-feedback/{{ module.id }}">
-                                <i class="fas fa-fw fa-times"></i>
-                                Disable
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="btn-group">
-                    <a href="feedback/results/{{ module.id }}" class="btn btn-default">
-                        <i class="fas fa-fw fa-exclamation"></i>
-                        View
-                    </a>
-                </div>
-            {% else %}
-                <div class="btn-group">
-                    <a href="#" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
-                        <i class="fas fa-fw fa-check"></i>
-                        Disabled
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="enable-feedback/{{ module.id }}">
-                                <div class="context-menu-item" >
-                                    <i class="fas fa-fw fa-check fa-pull-left"></i>
-                                    <div class="description">
-                                        <strong>Enable</strong>
-                                        <span>
-                                            Students will be emailed to request feedback the morning after the course ends.
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            {% endif %}
-
-            <hr>
-            <h3>Data tools</h3>
-            <p>
-                {% if module.is_cancelled %}
-                <a class="btn btn-danger" href="uncancel/{{ module.id }}">
-                    <i class="fas fa-fw fa-times"></i> Uncancel module
-                </a>
-                {% else %}
-                <a class="btn btn-danger" href="cancel/{{ module.id }}">
-                    <i class="fas fa-fw fa-times"></i> Cancel module
-                </a>
-                {% endif %}
-            </p>
-            <p>
-              <div class="btn-group">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <span class="fas fa-cog fa-fw "></span> Other <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="create-moodle-ids/{{ module.id }}"><span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs</a></li>
-                    <li><a href="award_points/{{ module.id }}"><span class="fas fa-fw fa-graduation-cap"></span> Award CATS points</a></li>
-                    <li><a href="clone/{{ module.id }}"><span class="fas fa-fw fa-clone"></span> Clone this module</a></li>
-                    <li><a href="copy_fields/{{ module.id }}"><span class="fas fa-fw fa-paste"></span> Copy web fields</a></li>
-                    <li><a href="import_from_template/{{ module.id }}"><span class="fas fa-fw fa-upload"></span> Import students from template</a></li>
-                    {% if perms.cabs and module.portfolio == 32 and module.room and module.room_setup %}
-                        {# todo: handle this logic better (elsewhere as can_send_to_cabs or something) #}
-                        <li><a href="cabs_booking/{{ module.id }}"><span class="fas fa-fw fa-taxi"></span> Book course into CABS</a></li>
-                    {% endif %}
-                </ul>
-              </div>
-            </p>
-            <p>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                        <span class="fas fa-fw fa-file-alt"></span> Reports <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="http://square/reports/report/Finance/Financial%20report%20per%20module?code={{ module.code }}" target="_blank"><span class="fas fa-fw fa-pound-sign"></span> Financial statement</a></li>
-                        <li><a href="financial_statement', args=[module.id, 'summary']"><span class="fas fa-fw fa-pound-sign"></span> Financial statement (summary)</a></li>
-                        <li><a href="catering/{{ module.id }}"><span class="fas fa-fw fa-utensils"></span> Catering</a></li>
-                        <li><a href="accommodation/{{ module.id }}"><span class="fas fa-fw fa-hotel"></span> Accommodation</a></li>
-                        <li><a href="module', 'refund_request/{{ module.id }}"><span class="fas fa-fw fa-pound-sign"></span> Refund request (.docx)</a></li>
-                        <li><a href="class_register/{{ module.id }}"><span class="fas fa-fw fa-file-word"></span> Class register (.docx)</a></li>
-                        {# todo: better portfolio logic, relying on tags #}
-                        {% if module.portfolio  in '32, 17' %}
-                        <li><a href="syllabus/{{ module.id }}"><span class="fas fa-fw fa-th-list"></span> Weekly class syllabus</a></li>
-                        {% endif %}
-                        {% if module.portfolio_id == 32 %}
-                        <li><a href="WWW_ADDRESS+'/courses/reading-list-pdf/'+module.code"><span class="fas fa-fw fa-file-word"></span> Reading list for students (.pdf)</a></li>
-                        {% endif %}
-                        <li role="separator" class="divider"></li>
-                        <li><a href="student_list/{{ module.id }}"><span class="fas fa-fw fa-file-excel"></span> Student list (.xlsx)</a></li>
-                        {% if module.portfolio_id == 17 %}
-                        <li><a href="moodle_list/{{ module.id }}"><span class="fas fa-fw fa-file-excel"></span> Moodle student list (.xlsx)</a></li>
-                        {% endif %}
-                        {% if module.code|slice:'-3:' == 'HEC' %}
-                        <li><a href="student','certhe_progress', args=(0,module.id)"><span class="fas fa-fw fa-certificate"></span> CertHE progress report (.docx)</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </p>
-        </div>
-
-        <div class='col-md-8 col-md-pull-4'>
-            <hr class='visible-xs visible-sm'>
-            {% edit_button module.get_edit_url %}
-            <a id='details' class='nav-anchor'></a>
-            <h2>Details</h2>
-
-            <dl class="dl-horizontal">
-                <dt>URL</dt>
-                <dd>{{ module.url }}</dd>
-                <dt>Division</dt>
-                <dd>{{ module.division }}</dd>
-                <dt>Portfolio</dt>
-                <dd>{{ module.portfolio }}</dd>
-                <dt>Format</dt>
-                <dd>{{ module.format | default:'–' }}</dd>
-                <dt>Finance code</dt><dd>{{ module.finance_code | default:'–' }}</dd>
-                <dt>Class size</dt>
-                <dd>{{ module.max_size }}</dd>
-                {% if module.no_meetings %}
-                    <dt># of meetings</dt>
-                    <dd>{{ module.no_meetings }}</dd>
-                {% endif %}
-                {% if module.credit_points %}
-                    <dt>Credit points</dt>
-                    <dd>{{ module.credit_points }}</dd>
-                {% endif %}
-                {% if module.apply_url %}
-                    <dt>Apply URL</dt>
-                    <dd>{{ module.apply_url }}</dd>
-                {% endif %}
-                <dt>Email</dt>
-                <dd>{{ module.email | default:'–' }}</dd>
-                <dt>Phone</dt>
-                <dd>{{ module.phone | default:'–'  }}</dd>
-                {% if module.note %}
-                    <dt>Note</dt>
-                    <dd>{{ module.note }}</dd>
-                {% endif %}
-            </dl>
+        <div class='col-md-4 col-md-push-7'>
             <h4>Dates</h4>
             <dl class="dl-horizontal">
                 <dt>Start date</dt>
@@ -423,10 +86,291 @@
                 <p><span class="text-danger fa fa-exclamation-triangle"></span> <b>This module has no HESA-reporting subjects set</b></p>
             {% endif %}
         </div>
+
+        <div class='col-md-6 col-md-pull-4'>
+            <hr class='visible-xs visible-sm'>
+            {% edit_button module.get_edit_url %}
+            <a id='details' class='nav-anchor'></a>
+            <h2>Details</h2>
+
+            <dl class="dl-horizontal">
+                <dt>URL</dt>
+                <dd>{{ module.url }}</dd>
+                <dt>Division</dt>
+                <dd>{{ module.division }}</dd>
+                <dt>Portfolio</dt>
+                <dd>{{ module.portfolio }}</dd>
+                <dt>Format</dt>
+                <dd>{{ module.format | default:'–' }}</dd>
+                <dt>Finance code</dt><dd>{{ module.finance_code | default:'–' }}</dd>
+                <dt>Class size</dt>
+                <dd>{{ module.max_size }}</dd>
+                {% if module.no_meetings %}
+                    <dt># of meetings</dt>
+                    <dd>{{ module.no_meetings }}</dd>
+                {% endif %}
+                {% if module.credit_points %}
+                    <dt>Credit points</dt>
+                    <dd>{{ module.credit_points }}</dd>
+                {% endif %}
+                {% if module.apply_url %}
+                    <dt>Apply URL</dt>
+                    <dd>{{ module.apply_url }}</dd>
+                {% endif %}
+                <dt>Email</dt>
+                <dd>{{ module.email | default:'–' }}</dd>
+                <dt>Phone</dt>
+                <dd>{{ module.phone | default:'–'  }}</dd>
+                {% if module.note %}
+                    <dt>Note</dt>
+                    <dd>{{ module.note }}</dd>
+                {% endif %}
+            </dl>
+
+        </div>
     </div>
     <br/>
     {% timestamp module %}
 </div>
+
+<div class="section">
+    <div class="row">
+        <div class="col-md-12">
+          <a id='web_publication' class='nav-anchor'></a>
+          <h2>Web publication</h2>
+            {% if module.is_publishable %}
+                <h5>This course can be published</h5>
+            {% else %}
+                <h5>This course cannot be published</h5>
+                <p>
+                    {% for error in module.publish_errors.values %}
+                    <span class="text-danger"><i class="fas fa-fw fa-times"></i>
+                        {{ error }}
+                    </span><br/>
+                    {% endfor %}
+                </p>
+            {% endif %}
+            <!--validation for annual prospectus publication-->
+            {% if module.prospectus_check.included %}
+                {% if module.prospectus_check.success %}
+                    <p>
+                        <span class="text-success">
+                            <i class="fas fa-check text-success"></i>
+                            This course will be included in the {{ module.prospectus_check.year }} prospectus
+                        </span>
+                    </p>
+                {% else %}
+                    <h5>This course is not yet eligible for the {{ module.prospectus_check.year }} prospectus</h5>
+                    {% for error in module.prospectus_check.errors.values %}
+                        <span class="text-danger"><i class="fas fa-fw fa-times"></i>
+                            {{ error }}
+                        </span><br/>
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+        </div> <!-- End of Col-md-12 div-->
+
+      <div class="col-md-4">
+          <p>Publishing Type </p>
+          {% if module.auto_publish %}
+            <div class="btn-group">
+                <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <i class="fas fa-cog"></i>
+                    Automatic
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="/manual_publish/{{ module.id }}">
+                            <span class="fas fa-user"></span> Manual
+                        </a>
+                    </li>
+                </ul>
+            </div>
+          {% else %}
+            <div class="btn-group">
+                <a href="#" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
+                    <i class="fas fa-fw fa-user"></i>
+                    Manual
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="auto-publish/{{ module.id }}">
+                            <div class="context-menu-item" >
+                                <i class="fas fa-fw fa-cog fa-pull-left"></i>
+                                <div class="description">
+                                    <strong>Automatic</strong>
+                                    <span>The course will be published and unpublished on the set dates. Its status
+                                        will be changed according to the open, closed, start, and end dates.
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+          {% endif %}
+
+        {% if module.is_published %}
+            <div class="btn-group">
+                <a href="#" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                    <i class="fas fa-fw fa-play"></i>
+                    Published
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="unpublish/{{ module.id }}">
+                            <i class="fas fa-fw fa-stop"></i> Unpublish
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% else %}
+            <div class="btn-group">
+                <a href="#" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                    <i class="fas fa-fw fa-stop"></i>
+                    Unpublished
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="publish/{{ module.id }}">
+                            <i class="fas fa-fw fa-play"></i> Publish
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+      </div>
+      <div class="col-md-5">
+        <p>Course Status</p>
+        <div class="btn-group" >
+                {# todo: implement locking on auto_publishing or cancelled #}
+                <a href="#" class="btn btn-primary" data-toggle="dropdown">
+                    {{ module.status }}
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    {% for status in statuses %}
+                        <li>
+                            <a href="set-status/{{ module.id }}/{{ status.id }}">
+                                {{ status }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="btn-group">
+                <a href="{{ module.get_website_url }}" target="_blank" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Webpage">
+                    <i class="fas fa-fw fa-globe"></i> Webpage
+                </a>
+            </div>
+      </div>
+      <div class="col-md-3">
+          <p>Reports and Tools</p>
+          <div class="btn-group" role="group">
+                <div class="btn-group" data-toggle="tooltip" data-placement="top" title="Reports">
+                    <a target="_blank" class="btn btn-default" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-fw fa-file-alt"></i>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="http://square/reports/report/Finance/Financial%20report%20per%20module?code={{ module.code }}" target="_blank"><span class="fas fa-fw fa-pound-sign"></span> Financial statement</a></li>
+                        <li><a href="financial_statement', args=[module.id, 'summary']"><span class="fas fa-fw fa-pound-sign"></span> Financial statement (summary)</a></li>
+                        <li><a href="catering/{{ module.id }}"><span class="fas fa-fw fa-utensils"></span> Catering</a></li>
+                        <li><a href="accommodation/{{ module.id }}"><span class="fas fa-fw fa-hotel"></span> Accommodation</a></li>
+                        <li><a href="module', 'refund_request/{{ module.id }}"><span class="fas fa-fw fa-pound-sign"></span> Refund request (.docx)</a></li>
+                        <li><a href="class_register/{{ module.id }}"><span class="fas fa-fw fa-file-word"></span> Class register (.docx)</a></li>
+                        {# todo: better portfolio logic, relying on tags #}
+                        {% if module.portfolio  in '32, 17' %}
+                        <li><a href="syllabus/{{ module.id }}"><span class="fas fa-fw fa-th-list"></span> Weekly class syllabus</a></li>
+                        {% endif %}
+                        {% if module.portfolio_id == 32 %}
+                        <li><a href="WWW_ADDRESS+'/courses/reading-list-pdf/'+module.code"><span class="fas fa-fw fa-file-word"></span> Reading list for students (.pdf)</a></li>
+                        {% endif %}
+                        <li role="separator" class="divider"></li>
+                        <li><a href="student_list/{{ module.id }}"><span class="fas fa-fw fa-file-excel"></span> Student list (.xlsx)</a></li>
+                        {% if module.portfolio_id == 17 %}
+                        <li><a href="moodle_list/{{ module.id }}"><span class="fas fa-fw fa-file-excel"></span> Moodle student list (.xlsx)</a></li>
+                        {% endif %}
+                        {% if module.code|slice:'-3:' == 'HEC' %}
+                        <li><a href="student','certhe_progress', args=(0,module.id)"><span class="fas fa-fw fa-certificate"></span> CertHE progress report (.docx)</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="btn-group" data-toggle="tooltip" data-placement="top" title="More Tools">
+                    <a target="_blank" class="btn btn-default" data-toggle="dropdown" aria-expanded="false">
+                        <i class="glyphicon glyphicon-option-horizontal"></i>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="create-moodle-ids/{{ module.id }}"><span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs</a></li>
+                        <li><a href="award_points/{{ module.id }}"><span class="fas fa-fw fa-graduation-cap"></span> Award CATS points</a></li>
+                        <li><a href="clone/{{ module.id }}"><span class="fas fa-fw fa-clone"></span> Clone this module</a></li>
+                        <li><a href="copy_fields/{{ module.id }}"><span class="fas fa-fw fa-paste"></span> Copy web fields</a></li>
+                        <li><a href="import_from_template/{{ module.id }}"><span class="fas fa-fw fa-upload"></span> Import students from template</a></li>
+                        {% if perms.cabs and module.portfolio == 32 and module.room and module.room_setup %}
+                            {# todo: handle this logic better (elsewhere as can_send_to_cabs or something) #}
+                            <li><a href="cabs_booking/{{ module.id }}"><span class="fas fa-fw fa-taxi"></span> Book course into CABS</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <a href="cancel/{{ module.id }}" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Cancel Module">
+                    <i class="fas fa-fw fa-times"></i>
+                </a>
+          </div> <!-- outer button group ends -->
+      </div> <!-- Col-md-4 ends -->
+
+    </div> <!-- Row ends -->
+    <br>
+
+    <div class="row">
+        <div class="col-md-4">
+            <h5>Automated reminders</h5>
+            {% if module.reminder_sent_on %}
+                <h4>
+                <span class="label label-success">
+                    <i class="fas fa-fw fa-envelope"></i>
+                    Sent on {{ module.reminder_sent_on | date }}
+                </span>
+                </h4>
+            {% elif module.auto_reminder %}
+                <label class="checkbox-inline" id="switch-ar" data-toggle="tooltip" data-placement="top" title="When ON, students will be emailed a reminder about the course, 5 days before it starts.">
+                    <input type="checkbox" checked data-toggle="toggle">
+                </label>
+            {% else %}
+                <label class="checkbox-inline" id="switch-ar" data-toggle="tooltip" data-placement="top" title="When ON, students will be emailed a reminder about the course, 5 days before it starts.">
+                    <input type="checkbox" data-toggle="toggle">
+                </label>
+            {% endif %}
+            <div class="btn-group" id="preview-eye">
+                <a href="precourse-notification/preview/{{ module.id }}" class="btn btn-default" target="_blank" data-toggle="tooltip" data-placement="top" title="Preview">
+                    <i class="glyphicon glyphicon-eye-open"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <h5>Automated feedback</h5>
+            {% if module.auto_feedback %}
+                <label class="checkbox-inline" id="switch-af" data-toggle="tooltip" data-placement="top" title="When ON, Students will be emailed to request feedback the morning after the course ends.">
+                    <input type="checkbox" checked data-toggle="toggle">
+                </label>
+                <div class="btn-group" id="view-eye">
+                    <a href="feedback/results/{{ module.id }}" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="View">
+                        <i class="glyphicon glyphicon-eye-open"></i>
+                    </a>
+                </div>
+            {% else %}
+                <label class="checkbox-inline" id="switch-af" data-toggle="tooltip" data-placement="top" title="When ON, Students will be emailed to request feedback the morning after the course ends.">
+                    <input type="checkbox" data-toggle="toggle">
+                </label>
+            {% endif %}
+        </div>
+    </div><!-- Row ends -->
+</div><!-- Section ends - Web Publications - -->
 
 {% if other_runs %}
 <div class="section">
@@ -764,6 +708,29 @@
     {% endif %}
 </div>
 
+<script>
+    // JavaScript
+        //ajax url call on the backend.
+        $("#switch-ar").click(function() {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'module:toggle-auto-reminder' module.id %}",
+                data: {ar: $(this).val()},
+            });
+        });
+
+        $("#switch-af").click(function() {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'module:toggle-auto-feedback' module.id %}",
+                data: {af: $(this).val()},
+                success: function(data){
+                    window.location.reload();
+                },
+            });
+        });
+
+</script>
 {% comment %}
 
 <script>

@@ -1,9 +1,12 @@
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.functions import Coalesce
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView
 
@@ -90,3 +93,21 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'marketing_types': marketing_types,
             **context
         }
+
+
+@login_required
+@csrf_exempt
+def toggle_auto_reminder(request, pk):
+    obj = Module.objects.get(id=pk)
+    obj.auto_reminder = not obj.auto_reminder
+    obj.save()
+    return HttpResponse()
+
+
+@login_required
+@csrf_exempt
+def toggle_auto_feedback(request, pk):
+    obj = Module.objects.get(id=pk)
+    obj.auto_feedback = not obj.auto_feedback
+    obj.save()
+    return HttpResponse()
