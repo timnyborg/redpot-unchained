@@ -63,7 +63,7 @@ class SearchFilter(filters.FilterSet):
 
 class SearchTable(tables.Table):
     link = ViewLinkColumn('')
-    first_or_nickname = tables.Column('First name')
+    first_or_nickname = tables.Column('First name', order_by='firstname')
 
     class Meta:
         model = Student
