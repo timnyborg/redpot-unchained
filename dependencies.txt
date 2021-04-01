@@ -1,1 +1,1 @@
-unixodbc-dev libsasl2-dev python-dev libldap2-dev libssl-dev
+unixodbc-dev libsasl2-dev python3-dev libldap2-dev

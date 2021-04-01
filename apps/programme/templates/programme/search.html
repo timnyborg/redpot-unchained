@@ -17,7 +17,7 @@
 {% if request.GET %}
 	<div class="section">
 		{% if table.rows %}
-			<h3>Search results ({{ table.rows|length }})</h3>		
+			<h3>Search results ({{ table.rows|length }})</h3>
 			{% render_table table %}
 		{% else %}
 		<div class="empty-state">
@@ -25,7 +25,7 @@
             <h4>No results found</h4>
             <h5>
             Try broadening your query and search again
-            </h5>            
+            </h5>
 		</div>
 		{% endif %}
 	</div>

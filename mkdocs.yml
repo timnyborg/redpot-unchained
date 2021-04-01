@@ -26,15 +26,16 @@ nav:
   - Development:
       - Development principles: development-principles.md
       - Style guide: style-guide.md
+      - Pre-commit hooks: pre-commit-hooks.md
       - App file structure: app-structure.md
       - Gotchas: gotchas.md
 
 markdown_extensions:
   - admonition
-  - pymdownx.tabbed
-  - pymdownx.superfences
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.superfences
+  - pymdownx.tabbed
   - toc:
       permalink: true
