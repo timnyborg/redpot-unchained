@@ -70,7 +70,7 @@ jQuery(function(){
                 }
                 else {
                     badge = ' <span class="badge">' + $(this).data('badge-text') + '</span>';
-                }                
+                }
             }
             linklist.append('<li><a href="#' + this.id + '"><span class="fa fa-chevron-left"></span>' + title + badge + '</a></li>');
         });
@@ -168,4 +168,3 @@ $(function() {
         $(this).trigger('update_counter');
     });
 });
-

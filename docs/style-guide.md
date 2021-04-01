@@ -91,3 +91,8 @@ from .datatables import ModuleSearchTable, WaitlistTable
 To automatically organize your imports, run `isort <filename>`, or run `isort .` to recursively reformat an entire directory (or project).
 
 isort uses default settings in `pyproject.toml`
+
+### pre-commit makes it easier!
+Why run isort by hand, when you can do it automatically?
+
+See [pre-commit hooks](pre-commit-hooks.md) for details

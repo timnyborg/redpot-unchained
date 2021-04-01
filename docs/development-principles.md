@@ -7,7 +7,7 @@ See [https://12factor.net](https://12factor.net)
  * All debian dependencies should go in `dependencies.txt`.  When deploying to a new environment, you shouldn't need to look through pip install errors to figure out what you're missing.
 
 ## Smallish apps
-To separate concerns, and to keep models and views manageable, each app should be concerned with one class of object and its dependencies (e.g. Student, Module, Tutor, Programme, Invoice, Contract).  
+To separate concerns, and to keep models and views manageable, each app should be concerned with one class of object and its dependencies (e.g. Student, Module, Tutor, Programme, Invoice, Contract).
 
 You may wind up with more imports, but it'll be easier to find what you're looking for once there's a form for every model object.
 
@@ -16,7 +16,7 @@ Where you find yourself doing the same thing over and over in different apps gen
 Including:
 
  * Mixins for Classes, Forms, Models, etc.
- * Custom-defined Views, Validators, FieldTypes, FormFields, abstract Models, 
+ * Custom-defined Views, Validators, FieldTypes, FormFields, abstract Models,
  * Templates, sub-templates, template tags, template filters
  * Model Managers for common filters (e.g. queries using is_active)
 
@@ -29,7 +29,7 @@ Including:
 See [https://twitter.com/rombulow/status/990684463007907840](https://twitter.com/rombulow/status/990684463007907840)
 
 A GET request should never change the model's state.  So our endpoints like programme/remove-module/ or module/publish/
-should only respond to POSTs.  
+should only respond to POSTs.
 
-This can be done through confirmation forms (e.g. an UpdateView or DeleteView, maybe in a 
+This can be done through confirmation forms (e.g. an UpdateView or DeleteView, maybe in a
 modal), javascript, or a host of other approaches.

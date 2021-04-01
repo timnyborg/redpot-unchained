@@ -3,7 +3,7 @@ from django.forms import ModelForm
 from .models import Module
 
 
-class ModuleForm(ModelForm):
+class ModuleForm(ModelForm):  # noqa: DJ06
     class Meta:
         model = Module
         exclude = ['payment_plans']

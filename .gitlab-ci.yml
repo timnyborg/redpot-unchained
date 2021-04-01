@@ -28,7 +28,7 @@ build:
 pytest:
   stage: test
   image: $CONTAINER_TEST_IMAGE
-  script: 
+  script:
     # XMLRunner to generate results for gitlab
     - coverage run manage.py test --noinput --testrunner="xmlrunner.extra.djangotestrunner.XMLTestRunner" apps
   after_script:
@@ -65,7 +65,7 @@ release-image:
     - docker pull $CONTAINER_TEST_IMAGE
     - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
     - docker push $CONTAINER_RELEASE_IMAGE
-  only: 
+  only:
     - master
 
 

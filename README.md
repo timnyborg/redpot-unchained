@@ -6,12 +6,12 @@ sudo apt-get install python3-venv
 ```
 
 Navigate to the folder where you want to hold application (example, ~/django)
-```bash 
+```bash
 mkdir ~/django && cd ~/django
 ```
 
 Download the repository, create a virtual environment, install pre-reqs
-```bash 
+```bash
 git clone git@gitlab.conted.ox.ac.uk:django/redpot-unchained.git
 cd redpot-unchained
 sudo apt install $(cat ./dependencies.txt)
@@ -21,7 +21,7 @@ pip3 install -r requirements.txt
 ```
 
 Get a copy of the secrets file, containing dev database login details, etc.
-```bash 
+```bash
 scp <your_username>@deltamap:/home/www-data/django/redpot/secrets.json .
 ```
 
@@ -39,18 +39,18 @@ First, install docker and docker-compose
 * https://docs.docker.com/compose/install/
 
 Navigate to the folder where you want to hold application (example, ~/docker)
-```bash 
+```bash
 mkdir ~/docker && cd ~/docker
 ```
 
 Download the repository
-```bash 
+```bash
 git clone git@gitlab.conted.ox.ac.uk:django/redpot-unchained.git
 cd redpot-unchained
 ```
 
 Get a copy of the secrets file, containing dev database login details, etc.
-```bash 
+```bash
 scp <your_username>@deltamap:/home/www-data/django/redpot/secrets.json .
 ```
 

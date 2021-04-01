@@ -48,9 +48,9 @@ def wpm_ftp_download(filename=None):
         if amount > 0:  # Filter out RCP refunds, which will have already been listed in the ledger
             continue
 
-        payment_date = datetime.strptime(row['date'], '%d/%m/%y %H:%M')
+        payment_date = datetime.strptime(row['date'], '%d/%m/%y %H:%M')  # noqa: F841
         narrative = f"{row['name']}, card: {row['card']}, digits: {row['digits']}, trans: {row['trans_id']}"[:128]
-        invoice = Invoice.objects.get(number=row['invoice_no'])
+        invoice = Invoice.objects.get(number=row['invoice_no'])  # noqa: F841
 
         # todo: implement invoice payment
         # insert_invoice_payment(
