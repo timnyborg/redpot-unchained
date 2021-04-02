@@ -5,7 +5,7 @@ from apps.module.models import Module
 
 def template_options(module: Module) -> List[tuple]:
     """Return a the expense form templates available for a given module
-       Currently a simple binary, but could involve more complicated logic, or even enabled/disabled flags
+    Currently a simple binary, but could involve more complicated logic, or even enabled/disabled flags
     """
     if module.non_credit_bearing:
         return [

@@ -47,7 +47,10 @@ other_runs = Module.objects\
              .exclude(id=self.id)\
              .order_by(F('start_date').desc(nulls_last=True))\
 ```
-The most compact, but arguable the ugliest.  The identation varies wildly, depending on the variable name
+The most compact, but arguable the ugliest.  The indentation varies wildly, depending on the variable name
+
+### Or just use black
+If you configure [pre-commit hooks](pre-commit-hooks.md), `black` will automatically format these long statements according to their length.
 
 ## Organizing imports
 Since more or less every file in Django is a module, many of them will end up filled with imports.

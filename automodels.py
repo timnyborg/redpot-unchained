@@ -416,7 +416,9 @@ class HecosSubject(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
     definition = models.CharField(max_length=255, blank=True, null=True)
-    cost_centre = models.ForeignKey('HesaCostCentre', models.DO_NOTHING, db_column='cost_centre', blank=True, null=True)
+    cost_centre = models.ForeignKey(
+        'HesaCostCentre', models.DO_NOTHING, db_column='cost_centre', blank=True, null=True
+    )
 
     class Meta:
         managed = False
@@ -765,7 +767,9 @@ class PaymentItem(models.Model):
     description = models.TextField(blank=True, null=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
     status = models.TextField(blank=True, null=True)
-    entry_qualification = models.ForeignKey(EntryQualification, models.DO_NOTHING, db_column='entry_qualification', blank=True, null=True)
+    entry_qualification = models.ForeignKey(
+        EntryQualification, models.DO_NOTHING, db_column='entry_qualification', blank=True, null=True
+    )
     fees = models.TextField(blank=True, null=True)
     gender = models.CharField(max_length=1, blank=True, null=True)
     domicile = models.IntegerField(blank=True, null=True)
@@ -962,9 +966,15 @@ class Qa(models.Model):
     created_on = models.DateTimeField(blank=True, null=True)
     modified_by = models.CharField(max_length=16, blank=True, null=True)
     modified_on = models.DateTimeField(blank=True, null=True)
-    study_location = models.ForeignKey('StudyLocation', models.DO_NOTHING, db_column='study_location', blank=True, null=True)
-    entry_qualification = models.ForeignKey(EntryQualification, models.DO_NOTHING, db_column='entry_qualification', blank=True, null=True)
-    reason_for_ending = models.ForeignKey('ReasonForEnding', models.DO_NOTHING, db_column='reason_for_ending', blank=True, null=True)
+    study_location = models.ForeignKey(
+        'StudyLocation', models.DO_NOTHING, db_column='study_location', blank=True, null=True
+    )
+    entry_qualification = models.ForeignKey(
+        EntryQualification, models.DO_NOTHING, db_column='entry_qualification', blank=True, null=True
+    )
+    reason_for_ending = models.ForeignKey(
+        'ReasonForEnding', models.DO_NOTHING, db_column='reason_for_ending', blank=True, null=True
+    )
     dars_upload_date = models.DateField(blank=True, null=True)
     dars_upload_closed = models.BooleanField()
     sits_code = models.CharField(max_length=12, blank=True, null=True)

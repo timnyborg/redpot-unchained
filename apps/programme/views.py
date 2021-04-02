@@ -32,16 +32,14 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
         # Get 100 most recent child modules, with a count of enrolment places taken
         # Subquery to get places_taken per module
         enrolment_count = (
-            Module.objects
-            .filter(id=OuterRef('id'))
+            Module.objects.filter(id=OuterRef('id'))
             .filter(enrolments__status__takes_place=True)
             .annotate(count=Count('enrolments__id'))
             .values('count')
         )
 
         modules = (
-            programme.modules
-            .annotate(enrolment_count=Subquery(enrolment_count))
+            programme.modules.annotate(enrolment_count=Subquery(enrolment_count))
             .select_related('status')
             .order_by('-start_date')[:100]
         )
@@ -56,7 +54,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'modules': modules,
             'students': students,
             'module_count': module_count,
-            'modules_statuses': module_statuses
+            'modules_statuses': module_statuses,
         }
 
 
@@ -68,9 +66,7 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({
-            'user': self.request.user
-        })
+        kwargs.update({'user': self.request.user})
         return kwargs
 
     def form_valid(self, form):
@@ -156,7 +152,7 @@ class RemoveModule(LoginRequiredMixin, PageTitleMixin, DeleteView):
         return get_object_or_404(
             ProgrammeModule,
             programme=self.kwargs['programme_id'],
-            module=self.kwargs['module_id']
+            module=self.kwargs['module_id'],
         )
 
     def get_success_url(self):

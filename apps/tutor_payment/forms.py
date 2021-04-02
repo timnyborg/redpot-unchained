@@ -11,17 +11,18 @@ class ExtrasForm(forms.Form):
     formative_rate = forms.ModelChoiceField(
         TutorFeeRate.objects.filter(type='formative'),
         required=False,
-        to_field_name='amount'
+        to_field_name='amount',
     )
     summative = forms.DecimalField(min_value=0, max_value=100, decimal_places=1, required=False)
     summative_rate = forms.ModelChoiceField(
         TutorFeeRate.objects.filter(type='summative'),
         required=False,
-        to_field_name='amount'
+        to_field_name='amount',
     )
     extra_students = forms.IntegerField(
         label='Extra online students',
-        min_value=0, max_value=100,
+        min_value=0,
+        max_value=100,
         help_text='At £%.2f per extra enrolment',
         required=False,
     )
@@ -81,7 +82,7 @@ class ExtrasForm(forms.Form):
                 approver=approver,
                 hourly_rate=marking_hourly,
                 weeks=1,
-                raised_by=user.username
+                raised_by=user.username,
             )
 
         if summative:
@@ -94,7 +95,7 @@ class ExtrasForm(forms.Form):
                 approver=approver,
                 hourly_rate=marking_hourly,
                 weeks=1,
-                raised_by=user.username
+                raised_by=user.username,
             )
 
         if extra_students:
@@ -107,5 +108,5 @@ class ExtrasForm(forms.Form):
                 approver=approver,
                 hourly_rate=marking_hourly,
                 weeks=1,
-                raised_by=user.username
+                raised_by=user.username,
             )

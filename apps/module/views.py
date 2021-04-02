@@ -14,9 +14,7 @@ from apps.core.utils.views import PageTitleMixin
 from apps.discount.models import Discount
 from apps.tutor.utils import expense_forms
 
-from .datatables import (
-    BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
-)
+from .datatables import BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
 from .forms import ModuleForm
 from .models import Module, ModuleStatus
 
@@ -43,19 +41,15 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        enrolments = (
-            self.object.enrolments
-            .select_related('result', 'status', 'qa__student')
-            .order_by('qa__student__surname', 'qa__student__firstname')
+        enrolments = self.object.enrolments.select_related('result', 'status', 'qa__student').order_by(
+            'qa__student__surname', 'qa__student__firstname'
         )
 
         fees = self.object.fees.order_by('-type__display_order', 'description').select_related('type').all()
         programmes = self.object.programmes.order_by('title').select_related('qualification').all()
 
-        tutors = (
-            self.object.tutor_modules
-            .select_related('tutor__student')
-            .order_by(Coalesce('display_order', 999), 'id')
+        tutors = self.object.tutor_modules.select_related('tutor__student').order_by(
+            Coalesce('display_order', 999), 'id'
         )
 
         expense_form_options = expense_forms.template_options(self.object)
@@ -91,7 +85,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'applications': applications,
             'subjects': subjects,
             'marketing_types': marketing_types,
-            **context
+            **context,
         }
 
 

@@ -27,13 +27,16 @@ class TestViewsWithLogin(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_search_without_filters(self):
-        response = self.client.get(reverse('invoice:search'), {
-            'invoiced_to': '',
-            'minimum': '',
-            'maximum': '',
-            'created_by': '',
-            'created_after': '',
-        })
+        response = self.client.get(
+            reverse('invoice:search'),
+            {
+                'invoiced_to': '',
+                'minimum': '',
+                'maximum': '',
+                'created_by': '',
+                'created_after': '',
+            },
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_view_invoice(self):

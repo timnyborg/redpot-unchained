@@ -25,7 +25,6 @@ from redpot.settings import W2P_REDPOT_URL
 urlpatterns = [
     path('login/', apps.core.views.CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='registration/logout.html'), name='logout'),
-
     path('admin/', admin.site.urls),
     path('', apps.core.views.index, name='home'),
     path('index/', apps.core.views.index),
@@ -37,16 +36,16 @@ urlpatterns = [
     path('tutor-payment/', include('apps.tutor_payment.urls')),
     path('autocomplete/', include('apps.autocomplete.urls')),
     path('user/', include('apps.user.urls')),
-
     # Example of legacy URLs
-    path('student/view/<int:id>',
-         RedirectView.as_view(url=f'{W2P_REDPOT_URL}/student/view/%(id)s'),
-         name='student-view',
-         ),
-    path('student/<str:action>/<int:id>',
-         RedirectView.as_view(url=f'{W2P_REDPOT_URL}/student/%(action)s/%(id)s'),
-         name='student-view',
-         ),
-
-    path('unimplemented', page_not_found, {'exception': 'Haven\'t built it yet'}, name='unimplemented')
+    path(
+        'student/view/<int:id>',
+        RedirectView.as_view(url=f'{W2P_REDPOT_URL}/student/view/%(id)s'),
+        name='student-view',
+    ),
+    path(
+        'student/<str:action>/<int:id>',
+        RedirectView.as_view(url=f'{W2P_REDPOT_URL}/student/%(action)s/%(id)s'),
+        name='student-view',
+    ),
+    path('unimplemented', page_not_found, {'exception': 'Haven\'t built it yet'}, name='unimplemented'),
 ]

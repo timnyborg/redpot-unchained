@@ -13,6 +13,13 @@ The hooks are configured in `.pre-commit-config.yaml`, and include:
 
 isort is configured in `pyproject.toml`
 
+### black
+[black](https://black.readthedocs.io/en/stable/) automatically formats Python code in a consistent way.  It enforces line length, spacing between functions, indentation, and a host of other things.
+
+Occasionally, the reformatted code may be more awkward than the original.  If it causes a problem, lines can be exempted with `# fmt: off` and `# fmt: on`
+
+black is configured in `pyproject.toml`
+
 ### flake8
 [flake8](https://flake8.pycqa.org/en/latest/) is a powerful code-analysis tool, which can identify syntax errors, PEP8 style violations, unused imports and variables, and a host of other problems.
 

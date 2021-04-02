@@ -57,30 +57,36 @@ def bootstrap3modal(
         'confirm_class': confirm_class,
         'confirm_text': confirm_text,
         'cancel_text': cancel_text,
-        'header': header
+        'header': header,
     }
 
 
 @register.simple_tag
 def bootstrap3submit(text='Submit', btn_type='primary', offset=2):
-    return mark_safe(f"""
+    return mark_safe(
+        f"""
         <div class="form-group">
             <div class="col-sm-offset-{offset} col-sm-{12-offset}">
                 <button type="submit" class="btn btn-{btn_type}">{text}</button>
             </div>
         </div>
-    """)
+    """
+    )
 
 
 @register.simple_tag
 def bootstrap3backbutton(text='Back', btn_type='default'):
-    return mark_safe(f"""
+    return mark_safe(
+        f"""
         <a class='btn btn-{btn_type}' href="javascript:history.back()">{text}</a>
-    """)
+    """
+    )
 
 
 @register.simple_tag
 def watermark(text=socket.gethostname()):
-    return mark_safe(f"""
+    return mark_safe(
+        f"""
         <div id='watermark'>{(text + ' ')*150}</div>
-    """)
+    """
+    )

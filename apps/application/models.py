@@ -4,10 +4,21 @@ from apps.core.models import SignatureModel
 
 
 class CourseApplication(SignatureModel):
-    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module',
-                               related_name='applications', related_query_name='application')
-    student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student', null=True,
-                                related_name='applications', related_query_name='application')
+    module = models.ForeignKey(
+        'module.Module',
+        models.DO_NOTHING,
+        db_column='module',
+        related_name='applications',
+        related_query_name='application',
+    )
+    student = models.ForeignKey(
+        'student.Student',
+        models.DO_NOTHING,
+        db_column='student',
+        null=True,
+        related_name='applications',
+        related_query_name='application',
+    )
 
     academic_credit = models.BooleanField(blank=True, null=True)
     title = models.CharField(max_length=20, blank=True, null=True)

@@ -25,7 +25,7 @@ class TestViewsWithLogin(TestCase):
         cls.user = get_user_model().objects.create_user(username='testuser')
         cls.object = Module.objects.create(
             title='Test module',
-            start_date=date(2000, 1, 1)
+            start_date=date(2000, 1, 1),
         )
 
     def setUp(self):
@@ -56,32 +56,24 @@ class TestViewsWithLogin(TestCase):
 
     def test_toggle_autoreminder(self):
         """Test that auto_reminder is toggled from True -> False, then False -> True"""
-        response = self.client.post(
-            reverse('module:toggle-auto-reminder', args=[self.object.pk])
-        )
+        response = self.client.post(reverse('module:toggle-auto-reminder', args=[self.object.pk]))
         self.assertEqual(response.status_code, 200)
         self.object.refresh_from_db()
         self.assertEqual(self.object.auto_reminder, False)
 
-        response = self.client.post(
-            reverse('module:toggle-auto-reminder', args=[self.object.pk])
-        )
+        response = self.client.post(reverse('module:toggle-auto-reminder', args=[self.object.pk]))
         self.assertEqual(response.status_code, 200)
         self.object.refresh_from_db()
         self.assertEqual(self.object.auto_reminder, True)
 
     def test_toggle_autofeedback(self):
         """Test that auto_feedback is toggled from True -> False, then False -> True"""
-        response = self.client.post(
-            reverse('module:toggle-auto-feedback', args=[self.object.pk])
-        )
+        response = self.client.post(reverse('module:toggle-auto-feedback', args=[self.object.pk]))
         self.assertEqual(response.status_code, 200)
         self.object.refresh_from_db()
         self.assertEqual(self.object.auto_feedback, False)
 
-        response = self.client.post(
-            reverse('module:toggle-auto-feedback', args=[self.object.pk])
-        )
+        response = self.client.post(reverse('module:toggle-auto-feedback', args=[self.object.pk]))
         self.assertEqual(response.status_code, 200)
         self.object.refresh_from_db()
         self.assertEqual(self.object.auto_feedback, True)

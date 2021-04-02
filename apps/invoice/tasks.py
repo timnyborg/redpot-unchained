@@ -14,8 +14,8 @@ from .models import Invoice
 @shared_task(name="wpm_ftp_download")
 def wpm_ftp_download(filename=None):
     """
-        Gets today's rcp payment data from WPM via ftp and creates invoice payments
-        Can be overridden to download a particular file (e.g. a past date) via `filename`
+    Gets today's rcp payment data from WPM via ftp and creates invoice payments
+    Can be overridden to download a particular file (e.g. a past date) via `filename`
     """
     # Log into wpm ftp
     ftp = ftplib.FTP_TLS(CONFIG['HOST'])

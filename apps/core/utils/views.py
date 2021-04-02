@@ -4,14 +4,15 @@ from django.views.generic.edit import CreateView, UpdateView
 
 class PageTitleMixin:
     """
-        View mixin which can automatically generate a title and subtitle for use in the template - both head and body.
-        By default:
-            Title = str(model.__name__)
-            Subtitle is derived from the view's class (e.g. UpdateView => Edit)
-            subtitle_object is derived from the object's canonical name (e.g. Programme(6) => Short Courses...)
+    View mixin which can automatically generate a title and subtitle for use in the template - both head and body.
+    By default:
+        Title = str(model.__name__)
+        Subtitle is derived from the view's class (e.g. UpdateView => Edit)
+        subtitle_object is derived from the object's canonical name (e.g. Programme(6) => Short Courses...)
 
-        All can be overridden by setting variables, or overriding the methods
+    All can be overridden by setting variables, or overriding the methods
     """
+
     title = None
     subtitle = None
     subtitle_object = True
@@ -45,8 +46,10 @@ class PageTitleMixin:
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
-        kwargs.update({
-            'title': self.get_title(),
-            'subtitle': self.get_subtitle(),
-        })
+        kwargs.update(
+            {
+                'title': self.get_title(),
+                'subtitle': self.get_subtitle(),
+            }
+        )
         return kwargs

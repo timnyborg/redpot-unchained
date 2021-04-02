@@ -19,5 +19,5 @@ def payment_status_icon(payment: TutorFee):
     return {
         'icon_class': icon_class,
         'text_class': text_class,
-        'status': str(payment.status)
+        'status': str(payment.status),
     }

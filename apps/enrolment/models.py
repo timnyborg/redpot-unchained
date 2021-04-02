@@ -11,9 +11,11 @@ class Enrolment(SignatureModel):
     module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', related_name='enrolments')
     status = models.ForeignKey('EnrolmentStatus', models.DO_NOTHING, db_column='status')
     result = models.ForeignKey(
-        'EnrolmentResult', models.DO_NOTHING, db_column='result',
+        'EnrolmentResult',
+        models.DO_NOTHING,
+        db_column='result',
         limit_choices_to={'is_active': True},
-        default=NOT_CODED_RESULT
+        default=NOT_CODED_RESULT,
     )
     points_awarded = models.IntegerField(blank=True, null=True)
     mark = models.IntegerField(blank=True, null=True)
@@ -32,10 +34,11 @@ class Enrolment(SignatureModel):
 
 class EnrolmentResult(SignatureModel):
     """
-        `id` is a terrifying bit of backwards compatibility.
-        The PK used to be HESA's 1-9 + A-C, but then values like '2.1' were added for special cases
-        It should all be replaced with integers, but that will require a survey of its use in reporting
+    `id` is a terrifying bit of backwards compatibility.
+    The PK used to be HESA's 1-9 + A-C, but then values like '2.1' were added for special cases
+    It should all be replaced with integers, but that will require a survey of its use in reporting
     """
+
     id = models.CharField(primary_key=True, max_length=4)
     description = models.CharField(max_length=128, blank=True, null=True)
     is_active = models.BooleanField(default=True)

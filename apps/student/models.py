@@ -82,16 +82,9 @@ class Address(SignatureModel):
         MANAGER = 510, 'Work - Line Manager'
 
     student = models.ForeignKey(
-        'Student', models.DO_NOTHING,
-        db_column='student',
-        related_name='addresses',
-        related_query_name='address'
+        'Student', models.DO_NOTHING, db_column='student', related_name='addresses', related_query_name='address'
     )
-    type = models.IntegerField(
-        db_column='type',
-        choices=TypeChoices.choices,
-        default=TypeChoices.PERMANENT
-    )
+    type = models.IntegerField(db_column='type', choices=TypeChoices.choices, default=TypeChoices.PERMANENT)
     line1 = models.CharField(max_length=128)
     line2 = models.CharField(max_length=128, blank=True, null=True)
     line3 = models.CharField(max_length=128, blank=True, null=True)
@@ -125,11 +118,7 @@ class Address(SignatureModel):
 
 class Email(models.Model):
     student = models.ForeignKey(
-        'Student',
-        models.DO_NOTHING,
-        db_column='student',
-        related_name='emails',
-        related_query_name='email'
+        'Student', models.DO_NOTHING, db_column='student', related_name='emails', related_query_name='email'
     )
     email = models.CharField(max_length=64)
     note = models.CharField(max_length=128, blank=True, null=True)
