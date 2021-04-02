@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+{% block title %} Redpot {% endblock %}
+{% block subtitle %} Not found {% endblock %}
+
+{% block center %}
+<div class="section">
+    <div class="not-found-message">
+        <h1>404</h1>
+        <h2>Sorry, there's nothing here</h2>
+    </div>
+</div>
+<style>
+    .not-found-message {
+        text-align: center;
+    }
+    .not-found-message h1 {
+        font-size: 100px;
+    }
+    .not-found-message h2 {
+        font-size: 30px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
