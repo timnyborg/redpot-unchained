@@ -16,8 +16,6 @@ class TestEditForm(TestCase):
                 "portfolio": 1,
                 "qualification": 1,
             },
-            user=FakeUser()
+            user=FakeUser(),
         )
-        self.assertFalse(
-            form.errors
-        )
+        self.assertFalse(form.errors)

@@ -10,7 +10,7 @@ class TestModuleValidators(TestCase):
     def setUp(self):
         self.module = Module(
             title='Test module',
-            code='T12T123TTT'
+            code='T12T123TTT',
         )
 
     def test_finance_code_success(self):

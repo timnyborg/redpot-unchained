@@ -13,7 +13,7 @@ class ProgrammeSearchFilter(django_filters.FilterSet):
         label='Show inactive programmes',
         method='show_inactive',
         widget=forms.CheckboxInput,
-        initial=False
+        initial=False,
     )
 
     class Meta:
@@ -39,5 +39,10 @@ class ProgrammeSearchTable(tables.Table):
     class Meta:
         model = Programme
         template_name = "django_tables2/bootstrap.html"
-        fields = ("title", "division", "portfolio", "qualification",)
+        fields = (
+            "title",
+            "division",
+            "portfolio",
+            "qualification",
+        )
         per_page = 10

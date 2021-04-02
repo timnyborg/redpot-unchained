@@ -19,26 +19,27 @@ class PhoneField(models.CharField):
 
 
 class SignatureModel(models.Model):
-    """ Common definition of our signature fields, for easy inclusion
-        The _on fields are populated when the record is created, and modified_on must be managed manually on updates
-        The _by fields must be managed manually on inserts & updates
+    """Common definition of our signature fields, for easy inclusion
+    The _on fields are populated when the record is created, and modified_on must be managed manually on updates
+    The _by fields must be managed manually on inserts & updates
 
-        This can be done in the view's form_valid():
-        UpdateView:
-            def form_valid(self, form):
-                form.instance.modified_on = datetime.now()
-                form.instance.modified_by = self.request.user.username
-                return super().form_valid(form)
+    This can be done in the view's form_valid():
+    UpdateView:
+        def form_valid(self, form):
+            form.instance.modified_on = datetime.now()
+            form.instance.modified_by = self.request.user.username
+            return super().form_valid(form)
 
-        CreateView:
-            def form_valid(self, form):
-                form.instance.created_by = self.request.user.username # Only for CreateViews
-                form.instance.modified_on = datetime.now()
-                form.instance.modified_by = self.request.user.username
-                return super().form_valid(form)
+    CreateView:
+        def form_valid(self, form):
+            form.instance.created_by = self.request.user.username # Only for CreateViews
+            form.instance.modified_on = datetime.now()
+            form.instance.modified_by = self.request.user.username
+            return super().form_valid(form)
 
-        We could turn that into a form mixin, which does one of the behaviours based on class
+    We could turn that into a form mixin, which does one of the behaviours based on class
     """
+
     created_by = models.CharField(max_length=8, blank=True, null=True, editable=False)
     created_on = models.DateTimeField(blank=True, null=True, auto_now_add=True, editable=False)
     modified_by = models.CharField(max_length=8, blank=True, null=True, editable=False)
@@ -68,6 +69,7 @@ rename_profile_image = PathAndRename('images/staff_profile/')
 
 class User(SignatureModel, AbstractUser):
     """Extends the standard django user model with additional fields"""
+
     default_approver = models.CharField(max_length=32, blank=True, null=True)
     role = models.CharField(max_length=512, blank=True, null=True)
     image = ResizedImageField(upload_to=rename_profile_image, null=True, blank=True)
@@ -79,8 +81,9 @@ class User(SignatureModel, AbstractUser):
 @models.CharField.register_lookup
 class UnAccent(models.Transform):
     """A transform that allows us to do accent-insensitive text searching in MSSQL
-       Allows filters like Modelname.objects.filter(title__unaccent__startswith='Joao')
+    Allows filters like Modelname.objects.filter(title__unaccent__startswith='Joao')
     """
+
     lookup_name = 'unaccent'
 
     def as_sql(self, compiler, connection):
@@ -91,6 +94,7 @@ class UnAccent(models.Transform):
 @models.CharField.register_lookup
 class Like(models.Lookup):
     """Allows us to do lookups with MSSQL's LIKE wildcards, like Modelname.objects.filter(code__like='O18%p%')"""
+
     lookup_name = 'like'
 
     def as_sql(self, compiler, connection):

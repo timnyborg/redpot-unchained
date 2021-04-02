@@ -8,6 +8,7 @@ from apps.core.utils.views import PageTitleMixin
 
 class EditProfile(PageTitleMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     """View allowing a member of staff to edit their own profile / preferences"""
+
     model = User
     fields = ('first_name', 'last_name', 'role', 'phone', 'room', 'image')
     template_name = 'user/edit.html'

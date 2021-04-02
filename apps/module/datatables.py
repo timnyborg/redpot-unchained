@@ -6,9 +6,7 @@ from dateutil.relativedelta import relativedelta
 
 import django.forms as forms
 
-from apps.core.utils.datatables import (
-    DeleteLinkColumn, EditLinkColumn, LinkColumn, ViewLinkColumn
-)
+from apps.core.utils.datatables import DeleteLinkColumn, EditLinkColumn, LinkColumn, ViewLinkColumn
 
 from .models import Book, Module, ModuleWaitlist
 
@@ -24,14 +22,14 @@ class ModuleSearchFilter(django_filters.FilterSet):
         label='Limit to last three years',
         method='limit_years_filter',
         initial=True,
-        widget=forms.CheckboxInput
+        widget=forms.CheckboxInput,
     )
 
     # Override the label while maintaining order.  Awkward.  Might as well do a custom order in the template
     title__unaccent__icontains = django_filters.Filter(
         field_name='title',
         lookup_expr='unaccent__icontains',
-        label='Title'
+        label='Title',
     )
 
     class Meta:
@@ -53,16 +51,13 @@ class ModuleSearchTable(tables.Table):
     class Meta:
         model = Module
         template_name = "django_tables2/bootstrap.html"
-        fields = ('code', "title", "start_date", "end_date", "division", "portfolio",)
+        fields = ('code', "title", "start_date", "end_date", "division", "portfolio")
         per_page = 10
         order_by = ('-start_date',)
 
 
 class WaitlistTable(tables.Table):
-    id = tables.CheckBoxColumn(
-        accessor='id',
-        orderable=False
-    )
+    id = tables.CheckBoxColumn(accessor='id', orderable=False)
 
     email = LinkColumn('', icon='envelope', title='Email student', linkify=lambda record: f'email-one/{record.id}')
     delete = DeleteLinkColumn('', title='Remove from waiting list')

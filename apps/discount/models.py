@@ -11,14 +11,12 @@ from apps.module.models import Module
 class DiscountQuerySet(models.QuerySet):
     def matching_module(self, module: Module):
         # Limit the set to unexpired discounts which apply to a module
-        return self.annotate(
-            search_module_code=Value(module.code, output_field=models.CharField())
-        ).filter(
+        return self.annotate(search_module_code=Value(module.code, output_field=models.CharField()),).filter(
             # Get unexpired discounts, limited to this portfolio if required
             Q(expires_on=None) | Q(expires_on__gt=datetime.now()),
             Q(portfolio=module.portfolio_id) | Q(portfolio=None),
             # We currently allow use of * in place of %
-            search_module_code__like=Replace('module_mask', Value('*'), Value('%'))
+            search_module_code__like=Replace('module_mask', Value('*'), Value('%')),
         )
 
     def with_eligibility(self):
@@ -27,10 +25,8 @@ class DiscountQuerySet(models.QuerySet):
             # 0 indicates all students
             Min('student__student'),
             all_eligible=Case(
-                When(student__student__min=0, then=True),
-                default=False,
-                output_field=models.BooleanField()
-            )
+                When(student__student__min=0, then=True), default=False, output_field=models.BooleanField()
+            ),
         )
 
 
@@ -42,9 +38,7 @@ class Discount(SignatureModel):
     expires_on = models.DateField(blank=True, null=True)
     module_mask = models.CharField(max_length=20)
     portfolio = models.ForeignKey(
-        'programme.Portfolio', models.DO_NOTHING,
-        db_column='portfolio',
-        blank=True, null=True
+        'programme.Portfolio', models.DO_NOTHING, db_column='portfolio', blank=True, null=True
     )
 
     objects = DiscountQuerySet.as_manager()
@@ -59,8 +53,7 @@ class Discount(SignatureModel):
 
 class DiscountStudent(models.Model):
     discount = models.ForeignKey(
-        Discount, models.DO_NOTHING, db_column='discount',
-        related_name='students', related_query_name='student'
+        Discount, models.DO_NOTHING, db_column='discount', related_name='students', related_query_name='student'
     )
     student = models.IntegerField()
     redeemed = models.BooleanField(blank=True, null=True)

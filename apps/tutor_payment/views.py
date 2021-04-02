@@ -27,6 +27,6 @@ class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, FormView):
     def form_valid(self, form):
         form.create_record(
             tutor_module=self.object,
-            user=self.request.user
+            user=self.request.user,
         )
         return super().form_valid(form)

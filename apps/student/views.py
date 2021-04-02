@@ -22,10 +22,7 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     queryset = Student.objects.annotate(
         # Creates a left join with a condition.  The resulting relation can be used in annotations or
         # django-filter filters, e.g. django_filter.Column(..., field_name='default_address__postcode', ...)
-        default_address=models.FilteredRelation(
-            'address',
-            condition=models.Q(address__is_default=True)
-        )
+        default_address=models.FilteredRelation('address', condition=models.Q(address__is_default=True))
     ).annotate(
         # And we want two fields available to the table in the end
         postcode=models.F('default_address__postcode'),

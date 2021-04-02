@@ -7,7 +7,7 @@ from django.shortcuts import render
 class CustomAuthForm(AuthenticationForm):
     error_messages = {
         'invalid_login': "Please enter your departmental %(username)s and password",
-        'inactive': "This account is inactive."
+        'inactive': "This account is inactive.",
     }
 
 

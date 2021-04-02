@@ -31,7 +31,7 @@ class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, DetailView):
         return {
             'payments': payments,
             'add_buttons': add_buttons,
-            **context
+            **context,
         }
 
 
@@ -136,8 +136,10 @@ class ExpenseFormView(MailMergeView):
         if self.kwargs['mode'] == 'module':
             return '%s_expense_forms.docx' % record.module.code
         elif self.kwargs['mode'] == 'single':
-            return f'{record.tutor.student.firstname}_{record.tutor.student.surname}' \
-                   f'_{record.module.code}_expense_form.docx'.replace(' ', '_')
+            return (
+                f'{record.tutor.student.firstname}_{record.tutor.student.surname}'
+                f'_{record.module.code}_expense_form.docx'.replace(' ', '_')
+            )
         else:
             return 'batch_expense_form.docx'
 
@@ -145,7 +147,7 @@ class ExpenseFormView(MailMergeView):
         return os.path.join(
             pathlib.Path(__file__).parent.absolute(),
             'templates/tutor_expense_forms',
-            self.kwargs['template'] + '.docx'
+            self.kwargs['template'] + '.docx',
         )
 
     def get_queryset(self):
@@ -167,7 +169,6 @@ class ExpenseFormView(MailMergeView):
                     record.tutor.student.birthdate.strftime('%d %B %y') if record.tutor.student.birthdate else ''
                 ),
                 gender=record.tutor.student.gender,
-
                 line1='record.address.line1',
                 line2='record.address.line2',
                 line3='record.address.line3',
@@ -175,7 +176,6 @@ class ExpenseFormView(MailMergeView):
                 county_state='record.address.countystate',
                 country='record.address.country',
                 postcode='record.address.postcode',
-
                 bankname=record.tutor.bankname,
                 branchaddress=record.tutor.branchaddress,
                 sortcode=record.tutor.sortcode,
@@ -183,11 +183,9 @@ class ExpenseFormView(MailMergeView):
                 accountname=record.tutor.accountname,
                 iban=record.tutor.iban,
                 swift=record.tutor.swift,
-
                 nino=record.tutor.nino or "record.nationality.name",
                 appointment_id=record.tutor.appointment_id,
                 employee_no=record.tutor.employee_no,
-
                 title=record.module.title,
                 code=record.module.code,
                 start_date=record.module.start_date.strftime('%d %B %y') if record.module.start_date else '',
@@ -196,5 +194,6 @@ class ExpenseFormView(MailMergeView):
                 cost_centre=record.module.cost_centre,
                 activity=record.module.activity_code,
                 source_of_funds=record.module.source_of_funds,
-            ) for record in self.queryset.all()[:2]
+            )
+            for record in self.queryset.all()[:2]
         ]

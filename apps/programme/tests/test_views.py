@@ -23,11 +23,11 @@ class TestViewsWithLogin(TestCase):
             title='Test programme',
             division_id=1,
             portfolio_id=1,
-            qualification_id=1
+            qualification_id=1,
         )
         cls.module = Module.objects.create(
             code='O12T123TTT',
-            title='Test module'
+            title='Test module',
         )
 
     def setUp(self):
@@ -42,12 +42,15 @@ class TestViewsWithLogin(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_search_without_inactive_filter(self):
-        response = self.client.get(reverse('programme:search'), {
-            'title__icontains': 'on',
-            'division': '',
-            'portfolio': '',
-            'qualification': '',
-        })
+        response = self.client.get(
+            reverse('programme:search'),
+            {
+                'title__icontains': 'on',
+                'division': '',
+                'portfolio': '',
+                'qualification': '',
+            },
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_view_page(self):
@@ -74,7 +77,7 @@ class TestViewsWithLogin(TestCase):
                 'qualification': 1,
                 'division': 1,
                 'sits_code': 'TE_ST',
-                'portfolio': 1
+                'portfolio': 1,
             },
         )
         # Redirects on success

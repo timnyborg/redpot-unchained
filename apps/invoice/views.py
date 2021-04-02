@@ -26,7 +26,7 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FormMixin, Fi
 
 def lookup(request):
     """Redirects to an invoice matching `number` with or without EQ prefix.
-       When not found, sends the user back to /search
+    When not found, sends the user back to /search
     """
     invnum = request.POST['number']
     if not invnum.isdigit():
@@ -67,5 +67,5 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'fee_table': fee_table,
             'payment_table': payment_table,
             'plan': plan,
-            'schedule_table': schedule_table
+            'schedule_table': schedule_table,
         }

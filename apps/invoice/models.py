@@ -12,9 +12,9 @@ class InvoiceQuerySet(models.QuerySet):
         # The performance may get worse as the number of invoices increases, in which case, it may be faster if the
         #   subquery uses an outer reference, rather than being a big 'IN' check
         outstanding = models.Subquery(
-            Invoice.objects.annotate(
-                balance=models.Sum('allocated_ledger_items__amount')
-            ).filter(balance__gt=0).values('id')
+            Invoice.objects.annotate(balance=models.Sum('allocated_ledger_items__amount'))
+            .filter(balance__gt=0)
+            .values('id')
         )
 
         # Apply a filter to the queryset, limiting it to those outstanding invoices, plus check they're overdue
@@ -54,9 +54,7 @@ class Invoice(SignatureModel):
     formatted_addressee = models.TextField(blank=True, null=True)
     vat_no = models.CharField(max_length=64, blank=True, null=True)
 
-    ledger_items = models.ManyToManyField(
-        'Ledger', through='InvoiceLedger', through_fields=('invoice', 'ledger')
-    )
+    ledger_items = models.ManyToManyField('Ledger', through='InvoiceLedger', through_fields=('invoice', 'ledger'))
 
     # Artificial many-to-many to support our obsolete credit note allocation nonsense
     allocated_ledger_items = models.ManyToManyField(
@@ -92,10 +90,11 @@ class InvoiceLedger(models.Model):
     invoice = models.ForeignKey(Invoice, models.DO_NOTHING, db_column='invoice', related_name='invoice_ledger')
     # Awful backwards-compatibility. Allocation was used some items on some invoices ("credit notes") paid off others?!
     allocation = models.ForeignKey(
-        Invoice, models.DO_NOTHING,
+        Invoice,
+        models.DO_NOTHING,
         db_column='allocation',
         to_field='number',
-        related_name='invoice_ledger_allocations'
+        related_name='invoice_ledger_allocations',
     )
     item_no = models.IntegerField(blank=True, null=True)
     # type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
@@ -129,9 +128,7 @@ class Ledger(models.Model):
     type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type')
     # account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
     enrolment = models.ForeignKey(
-        'enrolment.Enrolment', models.DO_NOTHING,
-        db_column='enrolment',
-        blank=True, null=True
+        'enrolment.Enrolment', models.DO_NOTHING, db_column='enrolment', blank=True, null=True
     )
 
     allocation = models.IntegerField()
@@ -152,7 +149,8 @@ class PaymentPlan(SignatureModel):
     status = models.ForeignKey('PaymentPlanStatus', models.DO_NOTHING, db_column='status')
     # This hasn't strictly been a 1-to-1 relationship, but we've treated it as one for years
     invoice = models.OneToOneField(
-        'Invoice', models.DO_NOTHING,
+        'Invoice',
+        models.DO_NOTHING,
         related_name='payment_plan',
         db_column='invoice',
     )

@@ -15,8 +15,18 @@ ensure_newline_before_comments = true
 line-length = 119
 target-version = ['py37']
 skip-string-normalization = true
-extend-exclude = '''
+# exclude can be replaced with a cut-down extend-exclude once a new black version is released (>20.8.1)
+exclude = '''
 /(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
   | migrations
 )/
 '''

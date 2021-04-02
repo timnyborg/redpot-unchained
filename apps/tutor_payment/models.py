@@ -5,15 +5,18 @@ from dateutil.relativedelta import relativedelta
 
 from django.db import models, transaction
 
-HOLIDAY_RATE = Decimal(.1207 / 1.1207)
+HOLIDAY_RATE = Decimal(0.1207 / 1.1207)
 # Constants used as defaults.  If used more extensively, we may need to use enums
 RAISED_STATUS = 1
 
 
 class TutorFee(models.Model):
     tutor_module = models.ForeignKey(
-        'tutor.TutorModule', models.DO_NOTHING, db_column='tutor_module',
-        related_name='payments', related_query_name='payment'
+        'tutor.TutorModule',
+        models.DO_NOTHING,
+        db_column='tutor_module',
+        related_name='payments',
+        related_query_name='payment',
     )
     amount = models.DecimalField(max_digits=19, decimal_places=4)
     type = models.ForeignKey('TutorFeeType', models.DO_NOTHING, db_column='type', limit_choices_to={'is_active': True})
@@ -41,20 +44,28 @@ class TutorFee(models.Model):
     @transaction.atomic()
     def create_with_holiday(
         cls,
-        tutor_module, amount, fee_type_id,
-        details, hourly_rate, weeks, approver, raised_by,
-        pay_date: date = None, holiday_date: date = None,
+        tutor_module,
+        amount,
+        fee_type_id,
+        details,
+        hourly_rate,
+        weeks,
+        approver,
+        raised_by,
+        pay_date: date = None,
+        holiday_date: date = None,
     ):
         """
-            Raises a fee while separating out the holiday portion to a selected month
-            The holiday payment date can be specified.  If not, it gets the last day of the module's end month.
+        Raises a fee while separating out the holiday portion to a selected month
+        The holiday payment date can be specified.  If not, it gets the last day of the module's end month.
         """
         if not holiday_date:
             # Get the last day of the last month of the module
-            holiday_date = date(
-                tutor_module.module.start_date.year,
-                tutor_module.module.end_date.month, 1
-            ) + relativedelta(months=1) - relativedelta(days=1)
+            holiday_date = (
+                date(tutor_module.module.start_date.year, tutor_module.module.end_date.month, 1)
+                + relativedelta(months=1)
+                - relativedelta(days=1)
+            )
 
         holiday_amount = HOLIDAY_RATE * amount
         net_amount = amount - holiday_amount
@@ -66,11 +77,10 @@ class TutorFee(models.Model):
             pay_after=pay_date,
             details=details,
             approver=approver,
-
             hourly_rate=hourly_rate,
             hours_worked=net_amount / hourly_rate,
             weeks=weeks,
-            raised_by=raised_by
+            raised_by=raised_by,
         )
 
         # Holiday pay - last month
@@ -81,18 +91,17 @@ class TutorFee(models.Model):
             pay_after=holiday_date,  # Last payment date
             details=f'{details} (holiday)',
             approver=approver,
-
             hourly_rate=hourly_rate,
             hours_worked=holiday_amount / hourly_rate,
             weeks=1,  # Not split across the month
-            raised_by=raised_by
+            raised_by=raised_by,
         )
 
 
 class TutorFeeRateQuerySet(models.QuerySet):
     def lookup(self, tag) -> Decimal:
         """Concise way of getting a fee_rate from a tag
-           e.g. `marking_rate = TutorFeeRate.objects.lookup('marking')
+        e.g. `marking_rate = TutorFeeRate.objects.lookup('marking')
         """
         return self.filter(tag=tag).first().amount
 

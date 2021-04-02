@@ -14,7 +14,7 @@ class TestTemplateTags(TestCase):
     def test_timestamp(self):
         obj = SimpleNamespace(
             created_by='testuser',
-            created_on=datetime(2020, 1, 1, 12)
+            created_on=datetime(2020, 1, 1, 12),
         )
 
         rendered = self.render_template(
@@ -22,6 +22,6 @@ class TestTemplateTags(TestCase):
                 {% load redpot_tags %}
                 {% timestamp object %}
             """,
-            {'object': obj}
+            {'object': obj},
         )
         self.assertInHTML('1 Jan 2020 12:00', rendered)

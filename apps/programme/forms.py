@@ -9,10 +9,22 @@ from apps.programme.models import Programme, ProgrammeModule
 class ProgrammeEditForm(forms.ModelForm):
     class Meta:
         model = Programme
-        fields = ['title', 'division', 'portfolio', 'qualification', 'email', 'phone',
-                  'student_load', 'funding_level', 'funding_source', 'study_mode',
-                  'study_location', 'is_active', 'contact_list_display', 'sits_code'
-                  ]
+        fields = [
+            'title',
+            'division',
+            'portfolio',
+            'qualification',
+            'email',
+            'phone',
+            'student_load',
+            'funding_level',
+            'funding_source',
+            'study_mode',
+            'study_location',
+            'is_active',
+            'contact_list_display',
+            'sits_code',
+        ]
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -42,10 +54,5 @@ class AttachModuleForm(forms.ModelForm):
         model = ProgrammeModule
         fields = ['module']
         widgets = {
-            'module': autocomplete.ModelSelect2(
-                url='autocomplete:module',
-                attrs={
-                    'data-minimum-input-length': 3
-                }
-            )
+            'module': autocomplete.ModelSelect2(url='autocomplete:module', attrs={'data-minimum-input-length': 3})
         }

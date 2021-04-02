@@ -11,13 +11,13 @@ class TestModuleModel(TestCase):
         cls.object = Module.objects.create(
             title='Test module',
             url='test-module',
-            start_date=date(2020, 1, 1)
+            start_date=date(2020, 1, 1),
         )
         cls.next_run = Module.objects.create(
             title='Test module',
             url='test-module',
             is_published=True,
-            start_date=date(2021, 1, 1)
+            start_date=date(2021, 1, 1),
         )
 
     def test_module_finance_code(self):

@@ -65,24 +65,21 @@ if not DEBUG:
         integrations=[DjangoIntegration()],
         # You may wish to set the sample_rate to 1.0 in dev, but it should be scaled much lower in production
         traces_sample_rate=get_secret("SENTRY_SAMPLE_RATE", 0.01),
-
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
-        send_default_pii=True
+        send_default_pii=True,
     )
 
 # Application definition
 PREREQ_APPS = [
     'dal',  # django-autocomplete-light
     'dal_select2',  # django-autocomplete-light
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     # 'django.contrib.sessions', # disabled until migrated
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     # 3rd party apps
     'menu',  # django-simple-menu
     'django_tables2',
@@ -117,8 +114,8 @@ if get_secret('REDIS_HOST', ''):
             "LOCATION": 'redis://%s:%s' % (get_secret('REDIS_HOST'), get_secret('REDIS_PORT', 6379)),
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
-                "PASSWORD": get_secret('REDIS_PASSWORD', '')
-            }
+                "PASSWORD": get_secret('REDIS_PASSWORD', ''),
+            },
         }
     }
 
@@ -171,7 +168,7 @@ DATABASES = {
         'PASSWORD': get_secret('DB_PASSWORD', 'Test@only'),
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
-        }
+        },
     }
 }
 
@@ -186,7 +183,7 @@ if get_secret('DB_MIRROR_HOST', ''):
         'PASSWORD': get_secret('DB_PASSWORD', 'Test@only'),
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
-        }
+        },
     }
     DATABASE_ROUTERS = ["redpot.router.MSSQLMirroringRouter"]
 
@@ -203,9 +200,7 @@ AUTHENTICATION_BACKENDS = [
 AUTH_LDAP_SERVER_URI = get_secret('LDAP_HOST', '')
 AUTH_LDAP_BIND_DN = get_secret('LDAP_BIND_DN', '%s') % get_secret('LDAP_USER', '')
 AUTH_LDAP_BIND_PASSWORD = get_secret('LDAP_PASSWORD', '')
-AUTH_LDAP_USER_SEARCH = LDAPSearch(
-    get_secret('LDAP_BASE_DN', ''), ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)"
-)
+AUTH_LDAP_USER_SEARCH = LDAPSearch(get_secret('LDAP_BASE_DN', ''), ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)")
 
 AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
 AUTH_LDAP_ALWAYS_UPDATE_USER = False  # Only populate fields on the first login
@@ -238,7 +233,6 @@ LOGGING = {
         "django_auth_ldap": {"level": "DEBUG", "handlers": ["console"]},
         'django.db.backends': {"level": "DEBUG", "handlers": ["console"]},
     },
-
 }
 
 
@@ -287,7 +281,7 @@ CELERY_BROKER_URL = "redis://"
 CELERY_BROKER_HOST = get_secret('REDIS_HOST', 'redis')  # Maps to redis host.
 CELERY_BROKER_PORT = get_secret('REDIS_PORT', 6379)  # Maps to redis port.
 CELERY_BROKER_PASSWORD = get_secret('REDIS_PASSWORD', '')
-CELERY_BROKER_VHOST = "0"         # Maps to database number.
+CELERY_BROKER_VHOST = "0"  # Maps to database number.
 
 CELERY_RESULT_BACKEND = 'django-db'
 
@@ -307,9 +301,12 @@ TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
 TEST_OUTPUT_FILE_NAME = 'test_results.xml'
 
 # WPM Credentials
-WPM_FTP = get_secret('WPM_FTP', {
-    'HOST': '',
-    'USER': '',
-    'PASSWORD': '',
-    'DIRECTORY': '',
-})
+WPM_FTP = get_secret(
+    'WPM_FTP',
+    {
+        'HOST': '',
+        'USER': '',
+        'PASSWORD': '',
+        'DIRECTORY': '',
+    },
+)

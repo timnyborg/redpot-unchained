@@ -2,8 +2,17 @@ from typing import Optional
 
 from django.db import models
 from django.db.models import (
-    DO_NOTHING, BooleanField, CharField, DateField, DecimalField, EmailField,
-    ForeignKey, IntegerField, ManyToManyField, Model, Q
+    DO_NOTHING,
+    BooleanField,
+    CharField,
+    DateField,
+    DecimalField,
+    EmailField,
+    ForeignKey,
+    IntegerField,
+    ManyToManyField,
+    Model,
+    Q,
 )
 from django.urls import reverse
 
@@ -117,16 +126,12 @@ class Programme(SignatureModel):
     start_date = DateField(blank=True, null=True)
     end_date = DateField(blank=True, null=True)
     division = ForeignKey(
-        Division, DO_NOTHING,
-        db_column='division',
-        limit_choices_to=Q(id__gt=8) | Q(id__lt=5),
-        default=1
+        Division, DO_NOTHING, db_column='division', limit_choices_to=Q(id__gt=8) | Q(id__lt=5), default=1
     )
     portfolio = ForeignKey(Portfolio, DO_NOTHING, db_column='portfolio', default=1)
     qualification = ForeignKey('Qualification', DO_NOTHING, db_column='qualification', default=1)
     student_load = DecimalField(
-        max_digits=10, decimal_places=4, blank=True, null=True,
-        help_text='Percent of full-time, eg. 50'
+        max_digits=10, decimal_places=4, blank=True, null=True, help_text='Percent of full-time, eg. 50'
     )
     funding_level = IntegerField(blank=True, null=True, choices=FUNDING_LEVELS)
     funding_source = IntegerField(blank=True, null=True, choices=FUNDING_SOURCES)
@@ -146,8 +151,11 @@ class Programme(SignatureModel):
         # managed = False
         db_table = 'programme'
         permissions = [
-            ('edit_registry_fields', 'Can edit programme fields like Study Location or Student Load '
-                                     '(should just be one programme.edit permission'),
+            (
+                'edit_registry_fields',
+                'Can edit programme fields like Study Location or Student Load '
+                '(should just be one programme.edit permission',
+            ),
             ('edit_restricted_fields', 'Can edit dev-restricted fields (is_active, contact_list_display, sits_id'),
         ]
 

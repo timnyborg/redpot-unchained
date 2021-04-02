@@ -31,6 +31,7 @@ class Statuses(IntEnum):
 
 class ModuleManager(models.Manager):
     """A manager which defers html blob fields by default"""
+
     use_for_related_fields = True
     defer_fields = [
         'overview',
@@ -68,8 +69,13 @@ class Module(SignatureModel, models.Model):
     michaelmas_end = models.DateField(blank=True, null=True)
     hilary_start = models.DateField(blank=True, null=True)
 
-    division = models.ForeignKey('programme.Division', models.DO_NOTHING, db_column='division',
-                                 limit_choices_to=models.Q(id__gt=8) | models.Q(id__lt=5), default=1)
+    division = models.ForeignKey(
+        'programme.Division',
+        models.DO_NOTHING,
+        db_column='division',
+        limit_choices_to=models.Q(id__gt=8) | models.Q(id__lt=5),
+        default=1,
+    )
     portfolio = models.ForeignKey('programme.Portfolio', models.DO_NOTHING, db_column='portfolio', default=1)
 
     status = models.ForeignKey('ModuleStatus', models.DO_NOTHING, db_column='status', default=10)
@@ -151,12 +157,16 @@ class Module(SignatureModel, models.Model):
     notification = models.CharField(max_length=512, blank=True, null=True)
     cost_centre = models.CharField(max_length=6, blank=True, null=True)
     activity_code = models.CharField(
-        max_length=2, blank=True, null=True,
+        max_length=2,
+        blank=True,
+        null=True,
         validators=[RegexValidator(r'^\d{2}$', message='Invalid code')],
         help_text='e.g. 00',
     )
     source_of_funds = models.CharField(
-        max_length=5, blank=True, null=True,
+        max_length=5,
+        blank=True,
+        null=True,
         validators=[RegexValidator(r'^\w{5}$', message='Invalid code')],
         help_text='e.g. XA100',
     )
@@ -192,8 +202,8 @@ class Module(SignatureModel, models.Model):
         if not self.url:
             self.url = slugify(self.title)
         # if self.status == 33: # cancelled
-            # self.is_cancelled = True
-            # self.auto_publish = False
+        # self.is_cancelled = True
+        # self.auto_publish = False
         # self.update_status()  # Date changes may alter auto-status.
 
         super().save(*args, **kwargs)
@@ -229,8 +239,7 @@ class Module(SignatureModel, models.Model):
         # Provides a list of other module runs, if url is set
         if self.url:
             return (
-                Module.objects
-                .filter(url=self.url, division=self.division)
+                Module.objects.filter(url=self.url, division=self.division)
                 .exclude(id=self.id)
                 .order_by(F('start_date').desc(nulls_last=True))
             )
@@ -238,10 +247,12 @@ class Module(SignatureModel, models.Model):
 
     def next_run(self) -> Optional[Module]:
         if self.start_date:
-            return self.other_runs().filter(
-                is_published=True,
-                start_date__gte=self.start_date
-            ).order_by('-start_date').first()
+            return (
+                self.other_runs()
+                .filter(is_published=True, start_date__gte=self.start_date)
+                .order_by('-start_date')
+                .first()
+            )
 
     @cached_property
     def _publish_check(self) -> dict:
@@ -259,9 +270,7 @@ class Module(SignatureModel, models.Model):
             errors['marketing_type'] = 'Missing a marketing type'
         if not self.subjects.exists():
             errors['subject'] = 'Missing a marketing subject'
-        if not self.custom_fee and not self.fees.filter(
-            is_visible=True, type__is_tuition=True, eu_fee=False
-        ).exists():
+        if not self.custom_fee and not self.fees.filter(is_visible=True, type__is_tuition=True, eu_fee=False).exists():
             errors['fee'] = 'Published non-EU programme fee required'
         if not self.location_id:
             errors['location'] = 'Location required'
@@ -274,7 +283,7 @@ class Module(SignatureModel, models.Model):
 
         return {
             'success': not errors,
-            'errors': errors
+            'errors': errors,
         }
 
     @property
@@ -292,11 +301,7 @@ class Module(SignatureModel, models.Model):
             prospectus_year = academic_year() + 1
 
         # We only include one academic year, hiding any cancelled or non-searchable courses
-        in_scope = (
-            academic_year(self.start_date) == prospectus_year
-            and not self.is_cancelled
-            and not self.no_search
-        )
+        in_scope = academic_year(self.start_date) == prospectus_year and not self.is_cancelled and not self.no_search
 
         errors = {}
         if in_scope:
@@ -304,19 +309,15 @@ class Module(SignatureModel, models.Model):
                 errors['format'] = 'Format required'
             if not self.snippet:
                 errors['snippet'] = 'Snippet required'
-            if not self.custom_fee and not self.fees.filter(
-                is_visible=True, type__is_tuition=True, eu_fee=False
-            ).exists():
+            if (
+                not self.custom_fee
+                and not self.fees.filter(is_visible=True, type__is_tuition=True, eu_fee=False).exists()
+            ):
                 errors['fee'] = 'Published non-EU programme fee required'
             if not self.subjects.exists():
                 errors['subject'] = 'Missing a marketing subject'
 
-        return {
-            'success': in_scope and not errors,
-            'errors': errors,
-            'year': prospectus_year,
-            'included': in_scope
-        }
+        return {'success': in_scope and not errors, 'errors': errors, 'year': prospectus_year, 'included': in_scope}
 
     def _get_auto_status(self):
         now = datetime.now()
@@ -398,32 +399,43 @@ class Module(SignatureModel, models.Model):
     def clean(self):
         # Check both term start/end date fields are filled, or neither
         if bool(self.hilary_start) != bool(self.michaelmas_end):
-            raise ValidationError({
-                'hilary_start': 'You must provide both term dates',
-                'michaelmas_end': 'You must provide both term dates',
-            })
+            raise ValidationError(
+                {
+                    'hilary_start': 'You must provide both term dates',
+                    'michaelmas_end': 'You must provide both term dates',
+                }
+            )
 
         # Check end_date is equal or later to start_date
         if self.end_date and not self.start_date:
-            raise ValidationError({
-                'start_date': 'Please set a start date',
-            })
+            raise ValidationError(
+                {
+                    'start_date': 'Please set a start date',
+                }
+            )
         elif self.start_date and self.end_date and self.end_date < self.start_date:
-            raise ValidationError({
-                'end_date': 'End date cannot be earlier than start date',
-            })
+            raise ValidationError(
+                {
+                    'end_date': 'End date cannot be earlier than start date',
+                }
+            )
 
         # Check if all components that make up the finance code are supplied, or none
         finance_components = [self.cost_centre, self.activity_code, self.source_of_funds]
         if any(finance_components) and not all(finance_components):
-            raise ValidationError({
-                'cost_centre': 'Please provide all of cost centre, activity code and source of funds, or none',
-            })
+            raise ValidationError(
+                {
+                    'cost_centre': 'Please provide all of cost centre, activity code and source of funds, or none',
+                }
+            )
 
         if not all(finance_components) and self.enrol_online:
-            raise ValidationError({
-                'enrol_online': 'Online enrolment disallowed without cost centre, activity code and source of funds',
-            })
+            raise ValidationError(
+                {
+                    'enrol_online': 'Online enrolment disallowed without cost centre, '
+                    'activity code and source of funds',
+                }
+            )
 
 
 class ModuleStatus(models.Model):

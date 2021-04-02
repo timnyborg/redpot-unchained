@@ -34,7 +34,7 @@ class InvoiceSearchFilter(django_filters.FilterSet):
     address = django_filters.CharFilter(
         label='Address',
         method='filter_address',
-        help_text="E.g. 'OX1 2JA', 'Sacramento', or 'Mexico'"
+        help_text="E.g. 'OX1 2JA', 'Sacramento', or 'Mexico'",
     )
 
     def overdue_only(self, queryset, field_name, value):
@@ -45,7 +45,7 @@ class InvoiceSearchFilter(django_filters.FilterSet):
     overdue = django_filters.BooleanFilter(
         label='Overdue only?',
         method='overdue_only',
-        widget=forms.CheckboxInput
+        widget=forms.CheckboxInput,
     )
 
     def outstanding_only(self, queryset, field_name, value):
@@ -56,13 +56,20 @@ class InvoiceSearchFilter(django_filters.FilterSet):
     outstanding = django_filters.BooleanFilter(
         label='Outstanding only?',
         method='outstanding_only',
-        widget=forms.CheckboxInput
+        widget=forms.CheckboxInput,
     )
 
     class Meta:
         model = Invoice
         fields = [
-            'invoiced_to', 'address', 'minimum', 'maximum', 'created_by', 'created_after', 'overdue', 'outstanding'
+            'invoiced_to',
+            'address',
+            'minimum',
+            'maximum',
+            'created_by',
+            'created_after',
+            'overdue',
+            'outstanding',
         ]
 
 
@@ -80,7 +87,7 @@ class InvoiceSearchTable(tables.Table):
         template_name = "django_tables2/bootstrap.html"
         fields = ('number', 'invoiced_to', 'date', 'created_by', 'amount', 'balance')
         per_page = 10
-        order_by = ('-date', '-created_on',)
+        order_by = ('-date', '-created_on')
 
 
 class InvoiceFeesTable(tables.Table):
