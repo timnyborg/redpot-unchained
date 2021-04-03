@@ -40,7 +40,7 @@ class TestExtras(TestCase):
             self.url,
             data={
                 'formative': 5,
-                'formative_rate': self.formative_rate.amount,
+                'formative_rate': self.formative_rate.pk,
                 'approver': 'test',
             },
         )
