@@ -11,13 +11,11 @@ class ExtrasForm(forms.Form):
     formative_rate = forms.ModelChoiceField(
         TutorFeeRate.objects.filter(type='formative'),
         required=False,
-        to_field_name='amount',
     )
     summative = forms.DecimalField(min_value=0, max_value=100, decimal_places=1, required=False)
     summative_rate = forms.ModelChoiceField(
         TutorFeeRate.objects.filter(type='summative'),
         required=False,
-        to_field_name='amount',
     )
     extra_students = forms.IntegerField(
         label='Extra online students',
@@ -39,14 +37,19 @@ class ExtrasForm(forms.Form):
         data = self.cleaned_data
         errors = {}
 
+        summative = self.cleaned_data.get('summative')
+        summative_rate = self.cleaned_data.get('summative_rate')
+        formative = self.cleaned_data.get('formative')
+        formative_rate = self.cleaned_data.get('formative_rate')
+
         # Ensure a rate is chosen if a summative # is provided, and vice versa
-        if data['summative'] and not data['summative_rate']:
+        if summative and not summative_rate:
             errors['summative_rate'] = 'Required'
-        if not data['summative'] and data['summative_rate']:
+        if not summative and summative_rate:
             errors['summative'] = 'Required'
-        if data['formative'] and not data['formative_rate']:
+        if formative and not formative_rate:
             errors['formative_rate'] = 'Required'
-        if not data['formative'] and data['formative_rate']:
+        if not formative and formative_rate:
             errors['formative'] = 'Required'
         if not any(val for key, val in data.items() if key != 'approver'):
             # non-field error, rendered at the top

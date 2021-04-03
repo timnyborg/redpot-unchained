@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import FormView
 from django.views.generic.detail import SingleObjectMixin
@@ -8,7 +9,7 @@ from apps.tutor.models import TutorModule
 from . import forms
 
 
-class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, FormView):
+class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequiredMixin, FormView):
     template_name = 'tutor_payment/extras.html'
     form_class = forms.ExtrasForm
     model = TutorModule
