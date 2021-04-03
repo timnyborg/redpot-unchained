@@ -324,8 +324,8 @@ class Module(SignatureModel, models.Model):
         today = now.date()
 
         # Automatic date logic
-        if self.publish_date > today:
-            # Todo: determine if this has any value
+        if self.publish_date > today or today >= self.unpublish_date:
+            # Todo: determine if the Unpublished status has any value
             return Statuses.UNPUBLISHED
         elif self.is_cancelled:
             return Statuses.CANCELLED
@@ -365,7 +365,7 @@ class Module(SignatureModel, models.Model):
                     # If undefined, default our closing to midnight the day the course starts
                     self.closed_date = datetime.combine(self.start_date, datetime.min.time())
 
-                self.status = self._get_auto_status()
+                self.status_id = self._get_auto_status()
 
                 # Full courses overrides current statuses
                 if self.status_id in (Statuses.CLOSED, Statuses.OPEN, Statuses.RUNNING_AND_OPEN) and self.is_full():
