@@ -106,8 +106,8 @@ class ExtrasForm(forms.Form):
             TutorFee.create_with_holiday(
                 tutor_module=tutor_module,
                 amount=amount,
-                type_id=2,  # Teaching,  todo: use a choices object
-                details='Extra students payment (%s)' % extra_students,
+                fee_type_id=2,  # Teaching,  todo: use a choices object
+                details=f'Extra students payment ({extra_students})',
                 approver=approver,
                 hourly_rate=marking_hourly,
                 weeks=1,
