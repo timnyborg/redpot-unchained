@@ -1,0 +1,20 @@
+- model: tutor_payment.tutorfeestatus
+  pk: 1
+  fields:
+    description: Raised
+    paid: false
+- model: tutor_payment.tutorfeestatus
+  pk: 2
+  fields:
+    description: Approved
+    paid: false
+- model: tutor_payment.tutorfeestatus
+  pk: 3
+  fields:
+    description: Transferred
+    paid: true
+- model: tutor_payment.tutorfeestatus
+  pk: 4
+  fields:
+    description: Cancelled
+    paid: false
