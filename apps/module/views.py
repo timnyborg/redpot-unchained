@@ -7,23 +7,36 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import UpdateView
+from django.views.generic import CreateView, DetailView, UpdateView
 
-from apps.core.utils.views import PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.discount.models import Discount
 from apps.tutor.utils import expense_forms
 
 from .datatables import BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
-from .forms import ModuleForm
+from .forms import CreateForm, EditForm
 from .models import Module, ModuleStatus
 
 
-class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
+class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, UpdateView):
     model = Module
-    form_class = ModuleForm
+    form_class = EditForm
     template_name = 'module/edit.html'
     success_message = 'Details updated.'
+
+
+class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, CreateView):
+    form_class = CreateForm
+    template_name = 'module/new.html'
+    model = Module
+    subtitle_object = False
+    success_message = 'Module created'
+
+    def form_valid(self, form):
+        # Default to the portfolio's email and phone
+        form.instance.email = form.instance.portfolio.email
+        form.instance.phone = form.instance.portfolio.phone
+        return super().form_valid(form)
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
@@ -37,6 +50,9 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
 class View(LoginRequiredMixin, PageTitleMixin, DetailView):
     queryset = Module.objects.defer(None)  # Get all fields
     template_name = 'module/view.html'
+
+    def get_subtitle(self):
+        return f'View – {self.object.title} ({self.object.code})'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

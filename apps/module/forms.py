@@ -3,10 +3,13 @@ from django.forms import ModelForm
 from .models import Module
 
 
-class ModuleForm(ModelForm):  # noqa: DJ06
+class EditForm(ModelForm):  # noqa: DJ06
     class Meta:
         model = Module
         exclude = ['payment_plans']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+
+class CreateForm(ModelForm):
+    class Meta:
+        model = Module
+        fields = ('code', 'title', 'division', 'portfolio', 'non_credit_bearing')

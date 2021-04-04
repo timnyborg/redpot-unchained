@@ -6,7 +6,18 @@ Menu.add_item("main", MenuItem("Apps", reverse("programme:search")))
 
 Menu.add_item("main", MenuItem("Students", reverse("student:search")))
 
-Menu.add_item("main", MenuItem("Modules", reverse("module:search")))
+module_children = (
+    MenuItem("Search", reverse("module:search"), icon="search"),
+    MenuItem(
+        "New",
+        reverse("module:new"),
+        icon="plus",
+        separator=True,
+        check=lambda request: request.user.has_perm('module.new'),
+    ),
+)
+
+Menu.add_item("main", MenuItem("Modules", '#', children=module_children))
 
 programme_children = (
     MenuItem("Search", reverse("programme:search"), icon="search"),
