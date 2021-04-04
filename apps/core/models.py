@@ -3,19 +3,10 @@ import os
 from django_resized import ResizedImageField
 
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
 from django.db import models
-from django.forms.widgets import TextInput
 from django.utils.deconstruct import deconstructible
 
-
-class PhoneInput(TextInput):
-    input_type = 'tel'
-
-
-class PhoneField(models.CharField):
-    default_validators = [RegexValidator(regex='^[-0-9 +()]+$', message='Invalid phone number')]
-    widget = PhoneInput
+from .utils.models import PhoneField
 
 
 class SignatureModel(models.Model):

@@ -1,5 +1,18 @@
+from datetime import datetime
+
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
+
+
+class AutoTimestampMixin:
+    """Automatically updates modified_by, modified_on, and created_by (if a CreateView)"""
+
+    def form_valid(self, form):
+        form.instance.modified_on = datetime.now()
+        form.instance.modified_by = self.request.user.username
+        if isinstance(self, CreateView):
+            form.instance.created_by = self.request.user.username
+        return super().form_valid(form)
 
 
 class PageTitleMixin:
@@ -41,7 +54,7 @@ class PageTitleMixin:
             return ''
 
         if self.subtitle_object and hasattr(self, 'object'):
-            return f'{stem} - {self.object}'
+            return f'{stem} – {self.object}'
         return stem
 
     def get_context_data(self, **kwargs):

@@ -14,6 +14,7 @@ from django.utils.functional import cached_property
 
 from apps.core.models import SignatureModel
 from apps.core.utils.dates import academic_year
+from apps.core.utils.models import UpperCaseCharField
 from redpot.settings import PUBLIC_WEBSITE_URL
 
 
@@ -59,7 +60,12 @@ class ModuleManager(models.Manager):
 
 
 class Module(SignatureModel, models.Model):
-    code = models.CharField(max_length=12, help_text='For details on codes, see <link>')
+    code = UpperCaseCharField(
+        max_length=12,
+        help_text='For details on codes, see <link>',
+        validators=[RegexValidator(r'^[A-Z]\d{2}[A-Z]\d{3}[A-Z]\w[A-Z]$', message='Must be in the form A12B345CDE')],
+        unique=True,
+    )
     title = models.CharField(max_length=80)
     url = models.SlugField(max_length=256, blank=True, null=True)
 

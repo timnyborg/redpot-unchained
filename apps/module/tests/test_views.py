@@ -77,3 +77,16 @@ class TestViewsWithLogin(TestCase):
         self.assertEqual(response.status_code, 200)
         self.object.refresh_from_db()
         self.assertEqual(self.object.auto_feedback, True)
+
+    def test_new_page_get(self):
+        response = self.client.get(reverse('module:new'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_new_page_post(self):
+        response = self.client.post(
+            reverse('module:new'),
+            data={'code': 'T12T123TTT', 'title': 'Test', 'division': 1, 'portfolio': 1, 'non_credit_bearing': True},
+        )
+        # Check that we've been forwarded, and the new module was created
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Module.objects.last().code, 'T12T123TTT')

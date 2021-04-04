@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+
+{% block center %}
+    <div class='section'>
+        <h2>Clone an existing module</h2>
+        Clone lookup goes here, posts to /clone/
+        <div class="horizontal-divider"><span>OR</span></div>
+
+        <h2>Start from scratch</h2>
+        <div class='row'>
+            <div class='col-xs-8'>
+                <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
+                    {% csrf_token %}
+                    {% bootstrap3form form True %}
+                    {% bootstrap3submit %}
+
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
