@@ -172,21 +172,6 @@ DATABASES = {
     }
 }
 
-# Enable mirroring router if 2nd host is defined
-# This can be deprecated once mirroring is replaced by AlwaysOn
-if get_secret('DB_MIRROR_HOST', ''):
-    DATABASES['mirror'] = {
-        'NAME': get_secret('DB_NAME', 'redpot'),
-        'ENGINE': 'mssql',
-        'HOST': get_secret('DB_MIRROR_HOST', 'mssql'),
-        'USER': get_secret('DB_USER', 'sa'),
-        'PASSWORD': get_secret('DB_PASSWORD', 'Test@only'),
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        },
-    }
-    DATABASE_ROUTERS = ["redpot.router.MSSQLMirroringRouter"]
-
 MESSAGE_TAGS = {
     # Overriding the error tag to match bootstrap 3
     messages.ERROR: 'danger'

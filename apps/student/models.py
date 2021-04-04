@@ -93,8 +93,8 @@ class Address(SignatureModel):
     country = models.CharField(max_length=64, blank=True, null=True)
     postcode = models.CharField(max_length=32, blank=True, null=True)
     formatted = models.CharField(max_length=1024, blank=True, null=True)
-    is_default = models.BooleanField()
-    is_billing = models.BooleanField(blank=True, null=True)
+    is_default = models.BooleanField(default=True)  # todo: figure out default and billing logic.  db or save()?
+    is_billing = models.BooleanField(default=False)
     sits_type = models.CharField(max_length=1, blank=True, null=True, editable=False)
 
     objects = AddressQuerySet.as_manager()
