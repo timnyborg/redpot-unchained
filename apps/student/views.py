@@ -2,11 +2,14 @@ from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db import models
+from django.shortcuts import get_object_or_404
+from django.views import generic
 
 from apps.core.utils.views import PageTitleMixin
 
-from . import datatables
+from . import datatables, forms
 from .models import Student
 
 
@@ -36,3 +39,16 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
         if not self.request.GET.get('email'):
             exclude.append('email_address')
         return {'exclude': exclude}
+
+
+class CreateEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+    form_class = forms.CreateEmailForm
+    success_message = "Email address added: %(email)s"
+    template_name = 'core/form.html'
+    title = 'Email'
+
+    def get_initial(self):
+        return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
+
+    def get_success_url(self):
+        return self.object.student.get_absolute_url() + '#email'
