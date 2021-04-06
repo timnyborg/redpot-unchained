@@ -49,3 +49,39 @@ class TestSearch(TestCase):
         self.assertEqual(len(response.context['table'].rows), 1)
         response = self.client.get(self.url, data={'postcode': 'TE1 1ST'})
         self.assertEqual(len(response.context['table'].rows), 0)
+
+
+class TestCreateEmail(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.student = Student.objects.create(
+            firstname='Stephen',
+            surname='Smith',
+            nickname='Steve',
+        )
+        cls.url = reverse('student:email-create', kwargs={'student_id': cls.student.pk})
+        cls.invalid_url = reverse('student:email-create', kwargs={'student_id': 0})
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_creates_email(self):
+        response = self.client.post(
+            self.url,
+            data={
+                'student': self.student.pk,
+                'email': 'test@test.net',
+                'note': 'An email address!',
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.student.emails.first().email, 'test@test.net')
+
+    def test_invalid_student_returns_404(self):
+        response = self.client.get(self.invalid_url)
+        self.assertEqual(response.status_code, 404)
