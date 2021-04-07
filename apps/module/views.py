@@ -41,7 +41,7 @@ class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestamp
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     template_name = 'module/search.html'
-    model = Module
+    queryset = Module.objects.select_related('division', 'portfolio')
     table_class = ModuleSearchTable
     filterset_class = ModuleSearchFilter
     subtitle = 'Search'
