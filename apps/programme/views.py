@@ -90,7 +90,7 @@ class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, CreateView):
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     template_name = 'programme/search.html'
-    model = Programme
+    queryset = Programme.objects.select_related('portfolio', 'division', 'qualification')
     table_class = ProgrammeSearchTable
     filterset_class = ProgrammeSearchFilter
     subtitle = 'Search'
