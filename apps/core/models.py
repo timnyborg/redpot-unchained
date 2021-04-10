@@ -28,7 +28,8 @@ class SignatureModel(models.Model):
             form.instance.modified_by = self.request.user.username
             return super().form_valid(form)
 
-    We could turn that into a form mixin, which does one of the behaviours based on class
+    This work is done by utils.views.AutoTimestampMixin
+    We could also turn it into a Form mixin.  Not sure which is preferable
     """
 
     created_by = models.CharField(max_length=8, blank=True, null=True, editable=False)
