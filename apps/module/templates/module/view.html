@@ -700,7 +700,7 @@
             </button>
             <ul class="dropdown-menu" role="menu">
                 <li class="dropdown-header">Format</li>
-                {% for key, title in expense_form_options %}
+                {% for key, title in expense_form_options.items %}
                     <li><a href="{% url 'tutor:expense-form-module' module.id key %}">{{ title }}</a></li>
                 {% endfor %}
             </ul>

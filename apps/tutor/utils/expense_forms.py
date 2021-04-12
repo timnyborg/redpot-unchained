@@ -4,7 +4,7 @@ from apps.module.models import Module
 
 
 def template_options(module: Module) -> Dict:
-    """Return a the expense form templates available for a given module
+    """Return the expense form templates available for a given module
     Currently a simple binary, but could involve more complicated logic, or even enabled/disabled flags
     """
     if module.non_credit_bearing:

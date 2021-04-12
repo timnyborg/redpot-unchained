@@ -10,17 +10,29 @@
 
     {% block head %}{% endblock %}
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-    <link href="{% static 'css/redpot.css' %}" rel="stylesheet" type="text/css" />
+    <!-- Bootstrap 4 CDN: -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!-- End of BS4 -->
+
+    <!-- Bootstrap 3 CDN: -->
+{#    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"#}
+{#          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">#}
+{#    <script src="{% static 'js/jquery.min.js' %}" type="text/javascript"></script>#}
+    <!-- End of BS3 -->
+
     <link href="{% static 'css/bootstrap-submenu.css' %}" rel="stylesheet" type="text/css" />
 
-    <script src="{% static 'js/jquery.min.js' %}" type="text/javascript"></script>
+    <link href="{% static 'css/redpot.css' %}" rel="stylesheet" type="text/css" />
     <script src="{% static 'js/tools.js' %}" type="text/javascript"></script>
 
     <script src="{% static 'js/fontawesome5/all.js' %}" type="text/javascript"></script>
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
 </head>
 
 <body>
@@ -31,32 +43,111 @@
 
 <!-- Navbar ================================================== -->
 
-<nav class="navbar navbar navbar-fixed-top" role="navigation">
-    <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="brand navbar-brand redpotbrand" href="/">
-                <img src="{% static 'images/redpot.svg' %}">redpot
-            </a>
-        </div>
+{#<nav class="navbar navbar-fixed-top" role="navigation">#}
+{#    <div class="container">#}
+{#        <!-- Brand and toggle get grouped for better mobile display -->#}
+{#        <div class="navbar-header">#}
+{#            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">#}
+{#                <span class="sr-only">Toggle navigation</span>#}
+{#                <span class="icon-bar"></span>#}
+{#                <span class="icon-bar"></span>#}
+{#                <span class="icon-bar"></span>#}
+{#            </button>#}
+{#            <a class="brand navbar-brand redpotbrand" href="/">#}
+{#                <img src="{% static 'images/redpot.svg' %}">redpot#}
+{#            </a>#}
+{#        </div>#}
+{##}
+{#        <!-- Collect the nav links, forms, and other content for toggling -->#}
+{#        <div class="collapse navbar-collapse" id="app-navbar-collapse">#}
+{#            {% generate_menu %}#}
+{#            {% with menu=menus.main %}#}
+{#                {% include 'menu/bootstrap3_menu.html' %}#}
+{#            {% endwith %}#}
+{#            <!-- Login (nav right) -->#}
+{#            {% with menu=menus.user %}#}
+{#                {% include 'menu/bootstrap3_menu.html' with side='right' %}#}
+{#            {% endwith %}#}
+{#        </div>#}
+{#    </div>#}
+{#</nav>#}
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="app-navbar-collapse">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="col-lg-10">
+          <a class="navbar-brand" href="/">
+              <img src="{% static 'images/redpot.svg' %}">redpot
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Dropdown
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="#">Action</a>
+                  <a class="dropdown-item" href="#">Another action</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link disabled" href="#">Disabled</a>
+              </li>
+            </ul>
+
+            <div class="collapse navbar-collapse" id="app-navbar-collapse">
+                <form class="form-inline my-5 my-lg-0">
+                  <button class="btn btn-outline-success my-4 my-sm-0" type="submit">Search</button>
+                </form>
+            </div>
+          </div>
+      </div>
+    </nav>
+
+{#Original#}
+<nav class="navbar navbar-light navbar-expand-md bg-faded justify-content-center navbar-dark bg-dark fixed-top">
+    <a href="/" class="navbar-brand d-flex w-50 mr-auto">
+        <img src="{% static 'images/redpot.svg' %}"> redpot
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar3">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+{#        <ul class="navbar-nav w-100 justify-content-center">#}
+{#            <li class="nav-item active">#}
+{#                <a class="nav-link" href="#">Link</a>#}
+{#            </li>#}
+{#            <li class="nav-item">#}
+{#                <a class="nav-link" href="//codeply.com">Codeply</a>#}
+{#            </li>#}
+{#            <li class="nav-item">#}
+{#                <a class="nav-link" href="#">Link</a>#}
+{#            </li>#}
+{#        </ul>#}
             {% generate_menu %}
             {% with menu=menus.main %}
                 {% include 'menu/bootstrap3_menu.html' %}
             {% endwith %}
             <!-- Login (nav right) -->
             {% with menu=menus.user %}
-                {% include 'menu/bootstrap3_menu.html' with side='right' %}
+                {% include 'menu/bootstrap3_menu.html' with side='-end' %}
             {% endwith %}
-        </div>
+{#        <ul class="nav navbar-nav ml-auto w-100 justify-content-end">#}
+{#            <li class="nav-item">#}
+{#                <a class="nav-link" href="#">Welcome Lokesh</a>#}
+{#            </li>#}
+{#        </ul>#}
     </div>
 </nav>
 
