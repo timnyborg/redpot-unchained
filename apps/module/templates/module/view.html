@@ -307,7 +307,7 @@
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="create-moodle-ids/{{ module.id }}"><span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs</a></li>
                         <li><a href="award_points/{{ module.id }}"><span class="fas fa-fw fa-graduation-cap"></span> Award CATS points</a></li>
-                        <li><a href="clone/{{ module.id }}"><span class="fas fa-fw fa-clone"></span> Clone this module</a></li>
+                        <li><a href="{% url 'module:clone' module.id %}"><span class="fas fa-fw fa-clone"></span> Clone this module</a></li>
                         <li><a href="copy_fields/{{ module.id }}"><span class="fas fa-fw fa-paste"></span> Copy web fields</a></li>
                         <li><a href="import_from_template/{{ module.id }}"><span class="fas fa-fw fa-upload"></span> Import students from template</a></li>
                         {% if perms.cabs and module.portfolio == 32 and module.room and module.room_setup %}
@@ -700,7 +700,7 @@
             </button>
             <ul class="dropdown-menu" role="menu">
                 <li class="dropdown-header">Format</li>
-                {% for key, title in expense_form_options %}
+                {% for key, title in expense_form_options.items %}
                     <li><a href="{% url 'tutor:expense-form-module' module.id key %}">{{ title }}</a></li>
                 {% endfor %}
             </ul>

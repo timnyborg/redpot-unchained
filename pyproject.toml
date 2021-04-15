@@ -16,7 +16,7 @@ line-length = 119
 target-version = ['py37']
 skip-string-normalization = true
 # exclude can be replaced with a cut-down extend-exclude once a new black version is released (>20.8.1)
-exclude = '''
+force-exclude = '''
 /(
     \.git
   | \.hg

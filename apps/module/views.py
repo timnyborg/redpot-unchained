@@ -4,18 +4,73 @@ from django_tables2.views import SingleTableMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db import transaction
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView, DetailView, UpdateView
 
+from apps.core.utils.dates import academic_year
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.discount.models import Discount
 from apps.tutor.utils import expense_forms
 
 from .datatables import BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
-from .forms import CreateForm, EditForm
+from .forms import CloneForm, CreateForm, EditForm
 from .models import Module, ModuleStatus
+from .services import clone_fields, copy_books, copy_children, copy_fees
+
+
+class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, CreateView):
+    form_class = CloneForm
+    template_name = 'module/clone.html'
+    success_message = 'Module cloned'
+    title = 'Module'
+    subtitle = 'Clone'
+
+    def get_form_kwargs(self):
+        # Set the source module, and use it to determine which form fields to remove
+        self.src_module = get_object_or_404(Module, pk=self.kwargs['pk'])
+        remove_fields = []
+        if self.src_module.portfolio_id != 32:  # todo: consider what to do with this logic
+            remove_fields.append('is_repeat')
+        if not self.src_module.books.exists():
+            remove_fields.append('copy_books')
+
+        kwargs = super().get_form_kwargs()
+        return {'remove_fields': remove_fields, **kwargs}
+
+    def get_initial(self):
+        initial = super().get_initial()
+        # Increment the default ID to the next academic year
+        new_code = self.src_module.code[:1] + str(academic_year() + 1)[2:] + self.src_module.code[3:]
+        return {
+            **initial,
+            'source_module': self.src_module.long_form,
+            'title': self.src_module.title,
+            'code': new_code,
+            'is_repeat': False,
+        }
+
+    @transaction.atomic
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        form.instance.source_module_code = self.src_module.code
+        clone_fields(
+            source=self.src_module,
+            target=form.instance,
+            copy_url=form.cleaned_data['keep_url'],
+            copy_dates=form.cleaned_data['copy_dates'],
+        )
+        form.instance.save()
+        # Which child records are copied are (partly) down to the form selections
+        copy_children(source=self.src_module, target=form.instance, user=self.request.user)
+        if form.cleaned_data.get('copy_fees'):
+            copy_fees(source=self.src_module, target=form.instance, user=self.request.user)
+        if form.cleaned_data.get('copy_books'):
+            copy_books(source=self.src_module, target=form.instance)
+        return response
 
 
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, UpdateView):
