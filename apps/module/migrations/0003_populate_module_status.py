@@ -8,6 +8,7 @@ def load_fixture(apps, schema_editor):
     call_command('loaddata', 'module_status.yaml', verbosity=2)
     call_command('loaddata', 'division.yaml', verbosity=2)
     call_command('loaddata', 'portfolio.yaml', verbosity=2)
+    call_command('loaddata', 'fee_type.yaml', verbosity=2)
 
 
 class Migration(migrations.Migration):

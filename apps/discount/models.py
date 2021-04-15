@@ -11,7 +11,7 @@ from apps.module.models import Module
 class DiscountQuerySet(models.QuerySet):
     def matching_module(self, module: Module):
         # Limit the set to unexpired discounts which apply to a module
-        return self.annotate(search_module_code=Value(module.code, output_field=models.CharField()),).filter(
+        return self.annotate(search_module_code=Value(module.code, output_field=models.CharField())).filter(
             # Get unexpired discounts, limited to this portfolio if required
             Q(expires_on=None) | Q(expires_on__gt=datetime.now()),
             Q(portfolio=module.portfolio_id) | Q(portfolio=None),
@@ -25,7 +25,9 @@ class DiscountQuerySet(models.QuerySet):
             # 0 indicates all students
             Min('student__student'),
             all_eligible=Case(
-                When(student__student__min=0, then=True), default=False, output_field=models.BooleanField()
+                When(student__student__min=0, then=True),
+                default=False,
+                output_field=models.BooleanField(),
             ),
         )
 
