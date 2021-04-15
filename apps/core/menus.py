@@ -55,6 +55,12 @@ def dev_children(request):
             icon="server",
             target='_blank',
         ),
+        MenuItem(
+            "sentry.io",
+            "https://sentry.io/organizations/university-of-oxford-conted/projects/redpot-unchained/",
+            icon="bug",
+            target="_blank",
+        ),
     ]
 
 
