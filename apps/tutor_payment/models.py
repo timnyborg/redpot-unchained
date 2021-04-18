@@ -4,6 +4,7 @@ from decimal import Decimal
 from dateutil.relativedelta import relativedelta
 
 from django.db import models, transaction
+from django.utils.functional import cached_property
 
 HOLIDAY_RATE = Decimal(0.1207 / 1.1207)
 # Constants used as defaults.  If used more extensively, we may need to use enums
@@ -39,6 +40,9 @@ class TutorFee(models.Model):
     class Meta:
         # managed = False
         db_table = 'tutor_fee'
+
+    def get_edit_url(self):
+        return '#'
 
     @classmethod
     @transaction.atomic()
@@ -96,6 +100,37 @@ class TutorFee(models.Model):
             weeks=1,  # Not split across the month
             raised_by=raised_by,
         )
+
+    @cached_property
+    def _approvable(self) -> dict:
+        errors = []
+
+        module = self.tutor_module.module
+        tutor = self.tutor_module.tutor
+
+        if not module.finance_code:
+            errors.append('Module missing a finance code.')
+        if not tutor.appointment_id:
+            errors.append('Tutor missing an appointment ID.')
+        if not tutor.employee_no:
+            errors.append('Tutor missing an employee number.')
+        # todo: enable when rtw_type implemented
+        # if not tutor.rtw_type:
+        #     errors.append('Tutor missing Right to Work data.')
+
+        # Result and error messages
+        return {
+            'approvable': not errors,
+            'errors': errors,
+        }
+
+    def approvable(self) -> bool:
+        """Check that a payment and its associated records are complete"""
+        return self._approvable['approvable']
+
+    def approval_errors(self) -> list:
+        """Return a list of error messages if a payment cannot be approved"""
+        return self._approvable['errors']
 
 
 class TutorFeeRateQuerySet(models.QuerySet):
