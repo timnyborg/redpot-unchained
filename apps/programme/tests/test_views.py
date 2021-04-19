@@ -2,9 +2,9 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.module.models import Module
+from apps.module.tests.factories import ModuleFactory
 
-from ..models import Programme
+from .factories import ProgrammeFactory
 
 
 class TestViewsWithoutLogin(TestCase):
@@ -19,16 +19,8 @@ class TestViewsWithLogin(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.object = Programme.objects.create(
-            title='Test programme',
-            division_id=1,
-            portfolio_id=1,
-            qualification_id=1,
-        )
-        cls.module = Module.objects.create(
-            code='O12T123TTT',
-            title='Test module',
-        )
+        cls.object = ProgrammeFactory()
+        cls.module = ModuleFactory()
 
     def setUp(self):
         self.client.force_login(self.user)

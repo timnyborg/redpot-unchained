@@ -5,22 +5,19 @@ from parameterized import parameterized
 
 from django.test import TestCase
 
-from ..models import Module, Statuses
+from ..models import Statuses
+from . import factories
 
 
 class TestModuleModel(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.object = Module.objects.create(
-            title='Test module',
-            url='test-module',
-            code='O15101ABC',
+        cls.object = factories.ModuleFactory.create(
+            url='shared-url',
             start_date=date(2020, 1, 1),
         )
-        cls.next_run = Module.objects.create(
-            title='Test module',
-            url='test-module',
-            code='O17I101ABC',
+        cls.next_run = factories.ModuleFactory.create(
+            url='shared-url',
             is_published=True,
             start_date=date(2021, 1, 1),
         )
@@ -28,12 +25,12 @@ class TestModuleModel(TestCase):
     def test_module_finance_code(self):
         # Check None is returned if lacking pieces
         self.object.cost_centre = 'XA1234'
-        self.object.save()
+        self.object.activity_code = None
+        self.object.source_of_funds = None
         self.assertIsNone(self.object.finance_code)
 
         self.object.activity_code = '00'
         self.object.source_of_funds = '12345'
-        self.object.save()
 
         # Check the full string is returned when all parts are set
         self.assertEqual(self.object.finance_code, 'XA1234 00 12345')
@@ -48,9 +45,7 @@ class TestModuleModel(TestCase):
 class TestUpdateModuleStatus(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.object = Module.objects.create(
-            title='Test module',
-            url='test-module',
+        cls.object = factories.ModuleFactory(
             auto_publish=True,
             publish_date=date(2020, 2, 1),
             open_date=date(2020, 3, 1),
