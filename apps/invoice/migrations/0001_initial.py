@@ -25,7 +25,6 @@ class Migration(migrations.Migration):
                 ('modified_on', models.DateTimeField(auto_now_add=True, null=True)),
                 ('number', models.IntegerField(unique=True)),
                 ('prefix', models.CharField(blank=True, max_length=32, null=True)),
-                ('type', models.IntegerField(blank=True, null=True)),
                 ('date', models.DateField(blank=True, null=True)),
                 ('fao', models.CharField(blank=True, max_length=128, null=True)),
                 ('invoiced_to', models.CharField(blank=True, max_length=128, null=True)),
