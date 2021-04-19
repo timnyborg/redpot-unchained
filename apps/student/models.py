@@ -34,7 +34,7 @@ class Student(SignatureModel):
     dars_optout = models.BooleanField(default=True)
     termtime_accommodation = models.IntegerField(blank=True, null=True)
     sits_id = models.IntegerField(blank=True, null=True)
-    full_name = models.CharField(max_length=82, blank=True, null=True)
+    # full_name = models.CharField(max_length=82, blank=True, null=True)  # todo: figure out what to do (calculated)
     highest_qualification = models.CharField(max_length=128, blank=True, null=True)
     mail_optin = models.BooleanField(default=False)
     mail_optin_on = models.DateTimeField(blank=True, null=True)
