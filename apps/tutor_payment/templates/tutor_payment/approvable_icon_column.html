@@ -1,0 +1,19 @@
+{% if record.approvable %}
+    <div
+        style="display: inline;"
+        data-toggle="tooltip"
+        data-placement="top"
+        data-title="Approvable"
+    >
+        <i class="fas fa-check-circle text-success"></i>
+    </div>
+{% else %}
+    <div
+        style="display: inline;"
+        data-toggle="tooltip"
+        data-placement="top"
+        data-title="{% for error in record.approval_errors %}{{ error }}{% endfor %}"
+    >
+        <i class="fas fa-exclamation-triangle text-danger"></i>
+    </div>
+{% endif %}

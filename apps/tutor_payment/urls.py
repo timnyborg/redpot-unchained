@@ -13,4 +13,5 @@ quick_payments_patterns = (
 
 urlpatterns = [
     path('quick/', include(quick_payments_patterns)),
+    path('search/', views.Search.as_view(), name='search'),
 ]

@@ -32,9 +32,13 @@ programme_children = (
 
 Menu.add_item("main", MenuItem("Programmes", '#', children=programme_children))
 
-Menu.add_item("main", MenuItem("Tutors", reverse("programme:search")))
+tutor_children = (MenuItem("Payment search", reverse("tutor-payment:search"), icon="search"),)
 
-finance_children = (MenuItem("Invoices", reverse("invoice:search"), icon="search"),)
+Menu.add_item("main", MenuItem("Tutors", '#', children=tutor_children))
+
+finance_children = [
+    MenuItem("Invoices", reverse("invoice:search"), icon="search"),
+]
 
 Menu.add_item("main", MenuItem("Finance", '#', children=finance_children))
 
