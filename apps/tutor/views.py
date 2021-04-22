@@ -6,7 +6,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import DetailView, UpdateView
 
-from apps.core.utils.views import PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 
 from .forms import TutorModuleEditForm
 from .models import TutorModule
@@ -35,7 +35,7 @@ class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, DetailView):
         }
 
 
-class TutorOnModuleEdit(PageTitleMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+class TutorOnModuleEdit(PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, LoginRequiredMixin, UpdateView):
     model = TutorModule
     form_class = TutorModuleEditForm
     template_name = 'tutor_module/edit.html'

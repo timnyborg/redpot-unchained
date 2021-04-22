@@ -147,6 +147,7 @@ class Module(SignatureModel, models.Model):
     is_cancelled = models.BooleanField(default=False)
     default_non_credit = models.BooleanField(blank=True, null=True)
     note = models.CharField(max_length=512, blank=True, null=True)
+    terms_and_conditions = models.IntegerField(default=1)  # placeholder
     # terms_and_conditions = models.ForeignKey(
     #     'TermsAndConditions',
     #     models.DO_NOTHING,
@@ -480,14 +481,13 @@ class Fee(SignatureModel):
     description = models.CharField(max_length=64)
     finance_code = models.CharField(max_length=64, blank=True, null=True)
     account = models.CharField(max_length=64)
-    eu_fee = models.BooleanField(db_column='eufee')
-    is_visible = models.BooleanField()
-    is_payable = models.BooleanField()
-    is_compulsory = models.BooleanField()
-    is_catering = models.BooleanField(blank=True, null=True)
-    is_single_accom = models.BooleanField(blank=True, null=True)
-    is_twin_accom = models.BooleanField(blank=True, null=True)
-    credit_fee = models.BooleanField()
+    eu_fee = models.BooleanField(db_column='eufee', default=False)
+    is_visible = models.BooleanField(default=True)
+    is_payable = models.BooleanField(default=True)
+    is_catering = models.BooleanField(default=False)
+    is_single_accom = models.BooleanField(default=False)
+    is_twin_accom = models.BooleanField(default=False)
+    credit_fee = models.BooleanField(default=False)
     end_date = models.DateField(blank=True, null=True)
     limit = models.IntegerField(blank=True, null=True)
     allocation = models.IntegerField(blank=True, null=True)
@@ -505,7 +505,7 @@ class Fee(SignatureModel):
         db_table = 'fee'
 
     def __str__(self):
-        return self.description
+        return str(self.description)
 
 
 class ModuleFormat(models.Model):

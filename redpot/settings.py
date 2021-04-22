@@ -59,16 +59,16 @@ else:
     ALLOWED_HOSTS = get_secret('ALLOWED_HOSTS')
 
 # Sentry integration
-if not DEBUG:
-    sentry_sdk.init(
-        dsn=get_secret("SENTRY_DSN", ''),
-        integrations=[DjangoIntegration()],
-        # You may wish to set the sample_rate to 1.0 in dev, but it should be scaled much lower in production
-        traces_sample_rate=get_secret("SENTRY_SAMPLE_RATE", 0.01),
-        # If you wish to associate users to errors (assuming you are using
-        # django.contrib.auth) you may enable sending PII data.
-        send_default_pii=True,
-    )
+sentry_sdk.init(
+    dsn=get_secret("SENTRY_DSN", ''),
+    integrations=[DjangoIntegration()],
+    environment='dev' if DEBUG else 'prod',
+    # You may wish to set the sample_rate to 1.0 in dev, but it should be scaled much lower in production
+    traces_sample_rate=get_secret("SENTRY_SAMPLE_RATE", 1),
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True,
+)
 
 # Application definition
 PREREQ_APPS = [

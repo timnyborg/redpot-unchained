@@ -58,8 +58,16 @@ class Tutor(SignatureModel):
 
 
 class TutorModule(SignatureModel):
-    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', related_name='tutor_modules')
-    tutor = models.ForeignKey('Tutor', models.DO_NOTHING, db_column='tutor', related_name='tutor_modules')
+    module = models.ForeignKey(
+        'module.Module',
+        models.DO_NOTHING,
+        db_column='module',
+        related_name='tutor_modules',
+        related_query_name='tutor_module',
+    )
+    tutor = models.ForeignKey(
+        'Tutor', models.DO_NOTHING, db_column='tutor', related_name='tutor_modules', related_query_name='tutor_module'
+    )
     role = models.CharField(max_length=64, blank=True)
     biography = models.TextField(blank=True, null=True)
     is_published = models.BooleanField(default=False)

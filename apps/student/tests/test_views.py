@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from ..models import Student
+from .factories import StudentFactory
 
 
 class TestViewsWithoutLogin(TestCase):
@@ -17,9 +17,8 @@ class TestSearch(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.student = Student.objects.create(
+        cls.student = StudentFactory(
             firstname='Stephen',
-            surname='Smith',
             nickname='Steve',
         )
         cls.student.emails.create(email='steve@smith.net')
@@ -55,11 +54,7 @@ class TestCreateEmail(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.student = Student.objects.create(
-            firstname='Stephen',
-            surname='Smith',
-            nickname='Steve',
-        )
+        cls.student = StudentFactory()
         cls.url = reverse('student:email-create', kwargs={'student_id': cls.student.pk})
         cls.invalid_url = reverse('student:email-create', kwargs={'student_id': 0})
 

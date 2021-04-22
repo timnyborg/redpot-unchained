@@ -27,8 +27,7 @@ class InvoiceQuerySet(models.QuerySet):
 
 class Invoice(SignatureModel):
     number = models.IntegerField(unique=True)
-    prefix = models.CharField(max_length=32, blank=True, null=True)
-    type = models.IntegerField(blank=True, null=True)
+    prefix = models.CharField(max_length=32, default='XG')
     date = models.DateField(blank=True, null=True)
     fao = models.CharField(max_length=128, blank=True, null=True)
     invoiced_to = models.CharField(max_length=128, blank=True, null=True)

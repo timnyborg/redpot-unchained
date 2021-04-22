@@ -1,3 +1,6 @@
+from django_filters.views import FilterView
+from django_tables2.views import SingleTableMixin
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import FormView
@@ -6,7 +9,7 @@ from django.views.generic.detail import SingleObjectMixin
 from apps.core.utils.views import PageTitleMixin
 from apps.tutor.models import TutorModule
 
-from . import forms
+from . import datatables, forms
 
 
 class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequiredMixin, FormView):
@@ -31,3 +34,12 @@ class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequir
             user=self.request.user,
         )
         return super().form_valid(form)
+
+
+class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
+    title = 'Tutor payment'
+    subtitle = 'Search'
+    template_name = 'student/search.html'
+
+    table_class = datatables.SearchTable
+    filterset_class = datatables.SearchFilter

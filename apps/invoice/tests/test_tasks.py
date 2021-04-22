@@ -2,7 +2,7 @@ from unittest.mock import ANY, patch
 
 from django.test import TestCase
 
-from ..tasks import wpm_ftp_download
+from ..tasks import repeating_card_payment_download
 
 
 class TestWPMDownload(TestCase):
@@ -14,9 +14,9 @@ class TestWPMDownload(TestCase):
         mock_ftp_obj = mock_class()
         mock_ftp_obj.nlst.return_value = [filename]
 
-        wpm_ftp_download(filename)
+        repeating_card_payment_download(filename)
         # Check that RETR was called
-        mock_ftp_obj.retrlines.assert_called_with(f"RETR {filename}", ANY)
+        mock_ftp_obj.retrbinary.assert_called_with(f"RETR {filename}", ANY)
 
     @patch('ftplib.FTP_TLS', autospec=True)
     def test_missing_file_error(self, mock_class):
@@ -25,6 +25,6 @@ class TestWPMDownload(TestCase):
         mock_ftp_obj.nlst.return_value = ['other.csv']
 
         with self.assertRaises(FileNotFoundError):
-            wpm_ftp_download('missing.csv')
+            repeating_card_payment_download('missing.csv')
 
     # todo: test parsing and db methods
