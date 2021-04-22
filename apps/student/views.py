@@ -6,11 +6,13 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.views import generic
+from django.shortcuts import render
 
 from apps.core.utils.views import PageTitleMixin
 
 from . import datatables, forms
 from .models import Student
+from .forms import StudentSearchForm
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
@@ -52,3 +54,10 @@ class CreateEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, gener
 
     def get_success_url(self):
         return self.object.student.get_absolute_url() + '#email'
+
+
+def searchStudent(request):
+    form = StudentSearchForm()
+    students = Student.objects.all()
+    return render(request, "student/search.html",
+                  {"form": form, "students": students})

@@ -1,43 +1,21 @@
 {# See https://github.com/jazzband/django-simple-menu/tree/master/menu/templates for BS4 and a submodel #}
-<ul class='navbar-nav w-100 mr-auto justify-content{{ side | default:'-center' }}'>
-{% for item in menu %}
-    {% if item.visible %}
-        {% if item.separator %}
-            <div class="dropdown-divider"></div>
-        {% endif %}
-{#        reference li #}
-{#        <li class="nav-item dropdown">#}
-{#            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
-{#              Dropdown#}
-{#            </a>#}
-{#            <div class="dropdown-menu" aria-labelledby="navbarDropdown">#}
-{#              <a class="dropdown-item" href="#">Action</a>#}
-{#              <a class="dropdown-item" href="#">Another action</a>#}
-{#              <div class="dropdown-divider"></div>#}
-{#              <a class="dropdown-item" href="#">Something else here</a>#}
-{#            </div>#}
-{#        </li>#}
-{#        end of reference li #}
 
-{#        <i class="fas fa-caret-down"></i>#}
 
-        <li class="nav-item {% if item.selected %} active{% endif %}{% if item.children %} dropdown{% endif %}">
-            <a href="{{ item.url }}" class="nav-link {% if item.children %}dropdown-toggle{% endif %}" {% if item.children %} id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% endif %}>
-                {% if item.icon %}
-                    <i class="fas fa-{{ item.icon }}"></i>&nbsp;
-                {% endif %}
-                <span class="display: inline">{{ item.title }}</span>
-            </a>
-            {% if item.children %}
-                {% include 'menu/bootstrap3_submenu.html' with items=item.children %}
-{#                <div class="dropdown-menu" aria-labelledby="navbarDropdown">#}
-{#                  <a class="dropdown-item" href="#">Action</a>#}
-{#                  <a class="dropdown-item" href="#">Another action</a>#}
-{#                  <div class="dropdown-divider"></div>#}
-{#                  <a class="dropdown-item" href="#">Something else here</a>#}
-{#                </div>#}
+<ul class='navbar-nav justify-content-{{ side | default:'center' }} {% if side == 'center' %} mr-auto{% endif %} {% if side == 'end' %} ml-auto{% endif %}'>
+    {% for item in menu %}
+        {% if item.visible %}
+            {% if item.separator %}
+                <div class="dropdown-divider"></div>
             {% endif %}
-        </li>
-    {% endif %}
-{% endfor %}
+
+            <li class="nav-item {% if item.selected %}active{% endif %}{% if item.children %} dropdown{% endif %}">
+                <a href="{{ item.url }}" class="nav-link {% if item.children %}dropdown-toggle{% endif %}" {% if item.children %} id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {% endif %}>
+                    {% if item.icon %}<i class="fas fa-{{ item.icon }}"></i>{% endif %}{{item.title}}
+                </a>
+                {% if item.children %}
+                    {% include 'menu/bootstrap3_submenu.html' with items=item.children %}
+                {% endif %}
+            </li>
+        {% endif %}
+    {% endfor %}
 </ul>

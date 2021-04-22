@@ -87,7 +87,9 @@ PREREQ_APPS = [
     'widget_tweaks',  # django-widget-tweaks
     'django_celery_beat',
     'django_celery_results',
+    'crispy_forms',
 ]
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 PROJECT_APPS = [
     'apps.core',
