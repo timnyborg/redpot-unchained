@@ -19,8 +19,7 @@
 
     <div class="section">
         <form method="get">
-            {% csrf_token %}
-            {{ form|crispy }}
+            {{ filter.form|crispy }}
             <button type="submit" class="btn btn-success">Search</button>
         </form>
     </div>

@@ -63,6 +63,6 @@ class SearchTable(tables.Table):
 
     class Meta:
         model = Student
-        template_name = "django_tables2/bootstrap.html"
+        template_name = "django_tables2/bootstrap4.html"
         fields = ("first_or_nickname", "surname", "line1", "postcode", 'email_address', 'husid')
         per_page = 10

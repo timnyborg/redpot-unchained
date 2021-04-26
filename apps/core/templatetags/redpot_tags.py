@@ -41,12 +41,12 @@ def user_name(username):
     return cache.get_or_set(f'user_name_{username}', lambda: _get_name(username))
 
 
-@register.inclusion_tag('utility/bootstrap3_form.html')
+@register.inclusion_tag('utility/bootstrap4_form.html')
 def bootstrap3form(form, status_classes=True):
     return {'form': form, 'status_classes': status_classes}
 
 
-@register.inclusion_tag('utility/bootstrap3_modal.html')
+@register.inclusion_tag('utility/bootstrap4_modal.html')
 def bootstrap3modal(
     modal_id, body, confirm_class='primary', confirm_text='Submit', cancel_text='Close', header='Confirm'
 ):
