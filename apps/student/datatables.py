@@ -66,3 +66,13 @@ class SearchTable(tables.Table):
         template_name = "django_tables2/bootstrap.html"
         fields = ("first_or_nickname", "surname", "line1", "postcode", 'email_address', 'husid')
         per_page = 10
+
+
+class CreateMatchTable(tables.Table):
+    # Todo view link
+    class Meta:
+        model = Student
+        fields = ['surname', 'firstname', 'birthdate', 'email_address', 'postcode']
+        template_name = "django_tables2/bootstrap.html"
+        per_page = 30
+        orderable = False
