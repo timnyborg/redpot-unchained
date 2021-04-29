@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from ..models import Student
 from .factories import StudentFactory
 
 
@@ -48,6 +49,41 @@ class TestSearch(TestCase):
         self.assertEqual(len(response.context['table'].rows), 1)
         response = self.client.get(self.url, data={'postcode': 'TE1 1ST'})
         self.assertEqual(len(response.context['table'].rows), 0)
+
+
+class TestCreateStudent(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.student = StudentFactory()
+        cls.url = reverse('student:new')
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_student(self):
+        # Do the search, loading the session
+        response = self.client.post(
+            self.url,
+            data={
+                'surname': 'smith',
+                'firstname': 'steve',
+                'email': 'test@test.net',
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(
+            self.url,
+            data={'action': 'create'},
+        )
+        self.assertEqual(response.status_code, 302)
+        newest_student = Student.objects.last()
+        self.assertEqual(newest_student.surname, 'smith')
+        self.assertEqual(newest_student.emails.first().email, 'test@test.net')
 
 
 class TestCreateEmail(TestCase):

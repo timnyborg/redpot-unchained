@@ -24,10 +24,6 @@ class Student(SignatureModel):
     no_publicity = models.BooleanField(blank=True, null=True)
     is_flagged = models.BooleanField(default=False)
     is_eu = models.BooleanField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
     deceased = models.BooleanField(db_column='Deceased', blank=True, null=True)  # Field name made lowercase.
     disability_detail = models.CharField(max_length=2048, blank=True, null=True)
     disability_action = models.CharField(max_length=256, blank=True, null=True)
@@ -116,7 +112,7 @@ class Address(SignatureModel):
 #         return self.description
 
 
-class Email(models.Model):
+class Email(SignatureModel):
     student = models.ForeignKey(
         'Student', models.DO_NOTHING, db_column='student', related_name='emails', related_query_name='email'
     )
