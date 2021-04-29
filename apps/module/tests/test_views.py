@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from ..models import Module
+from .factories import ModuleFactory
 
 
 class TestViewsWithoutLogin(TestCase):
@@ -90,3 +91,36 @@ class TestViewsWithLogin(TestCase):
         # Check that we've been forwarded, and the new module was created
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Module.objects.last().code, 'T12T123TTT')
+
+
+class TestCloneView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.object = ModuleFactory()
+        cls.url = reverse('module:clone', args=[cls.object.pk])
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_clone(self):
+        response = self.client.post(
+            self.url,
+            data={
+                'title': 'New title',
+                'code': 'T99T123TTT',
+                'keep_url': True,
+                'copy_fees': True,
+                'copy_dates': False,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        new_module = Module.objects.last()
+
+        self.assertEqual(new_module.url, self.object.url)
+        self.assertEqual(new_module.title, 'New title')
+        self.assertIsNone(new_module.start_date)
