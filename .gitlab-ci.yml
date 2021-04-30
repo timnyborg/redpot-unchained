@@ -30,12 +30,12 @@ pytest:
   image: $CONTAINER_TEST_IMAGE
   script:
     # XMLRunner to generate results for gitlab
-    - coverage run manage.py test --noinput --testrunner="xmlrunner.extra.djangotestrunner.XMLTestRunner" apps
+    - coverage run manage.py test --noinput
   after_script:
     # must be in the after section to be run even if tests fail
     - coverage xml
     # text output to capture the total
-    - coverage report --precision=2
+    - coverage report
   artifacts:
     when: always
     reports:
