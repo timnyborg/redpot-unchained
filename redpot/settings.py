@@ -123,7 +123,8 @@ if get_secret('REDIS_HOST', ''):
     SESSION_CACHE_ALIAS = "default"
 
 else:
-    SESSION_ENGINE = 'django.contrib.sessions.backends.file'  # while DB-sessions disabled
+    # Use file-based sessions for CI/CD testing.  We may want to add a redis service to the pipelines in future
+    SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
