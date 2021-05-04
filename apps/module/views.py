@@ -16,14 +16,14 @@ from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.discount.models import Discount
 from apps.tutor.utils import expense_forms
 
+from . import forms
 from .datatables import BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
-from .forms import CloneForm, CreateForm, EditForm
-from .models import Module, ModuleStatus
+from .models import Fee, Module, ModuleStatus
 from .services import clone_fields, copy_books, copy_children, copy_fees
 
 
 class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, CreateView):
-    form_class = CloneForm
+    form_class = forms.CloneForm
     template_name = 'module/clone.html'
     success_message = 'Module cloned'
     title = 'Module'
@@ -75,13 +75,13 @@ class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimesta
 
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, UpdateView):
     model = Module
-    form_class = EditForm
+    form_class = forms.EditForm
     template_name = 'module/edit.html'
     success_message = 'Details updated.'
 
 
 class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, CreateView):
-    form_class = CreateForm
+    form_class = forms.CreateForm
     template_name = 'module/new.html'
     model = Module
     subtitle_object = False
@@ -176,3 +176,31 @@ def toggle_auto_feedback(request, pk):
     obj.auto_feedback = not obj.auto_feedback
     obj.save()
     return HttpResponse()
+
+
+class CreateFee(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, CreateView):
+    template_name = 'core/form.html'
+    model = Fee
+    form_class = forms.FeeForm
+    success_message = 'Fee created: %(description)s (£%(amount).2f)'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.module = get_object_or_404(Module, pk=kwargs['module_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.module = self.module
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.module.get_absolute_url() + '#fees'
+
+
+class EditFee(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, UpdateView):
+    template_name = 'core/form.html'
+    model = Fee
+    form_class = forms.FeeForm
+    success_message = 'Fee updated: %(description)s (£%(amount).2f)'
+
+    def get_success_url(self):
+        return self.object.module.get_absolute_url() + '#fees'

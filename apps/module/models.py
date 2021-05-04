@@ -17,6 +17,8 @@ from apps.core.utils.dates import academic_year
 from apps.core.utils.models import UpperCaseCharField
 from redpot.settings import PUBLIC_WEBSITE_URL
 
+PROGRAMME_FEE_TYPE = 7
+
 
 class Statuses(IntEnum):
     UNPUBLISHED = 10
@@ -458,7 +460,7 @@ class ModuleStatus(models.Model):
         ordering = ['id']
 
     def __str__(self):
-        return self.description
+        return str(self.description)
 
 
 class FeeType(models.Model):
@@ -472,25 +474,47 @@ class FeeType(models.Model):
     class Meta:
         # managed = False
         db_table = 'fee_type'
+        ordering = ('display_order',)
+
+    def __str__(self):
+        return f'{self.narrative}'
+        # return f'{self.narrative} ({self.account})'
 
 
 class Fee(SignatureModel):
     module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module', related_name='fees')
     amount = models.DecimalField(max_digits=19, decimal_places=4)
-    type = models.ForeignKey('FeeType', models.DO_NOTHING, db_column='type')
+    type = models.ForeignKey(
+        'FeeType',
+        models.DO_NOTHING,
+        db_column='type',
+        default=PROGRAMME_FEE_TYPE,
+        limit_choices_to={'is_active': True},
+    )
     description = models.CharField(max_length=64)
     finance_code = models.CharField(max_length=64, blank=True, null=True)
-    account = models.CharField(max_length=64)
-    eu_fee = models.BooleanField(db_column='eufee', default=False)
-    is_visible = models.BooleanField(default=True)
-    is_payable = models.BooleanField(default=True)
-    is_catering = models.BooleanField(default=False)
-    is_single_accom = models.BooleanField(default=False)
-    is_twin_accom = models.BooleanField(default=False)
-    credit_fee = models.BooleanField(default=False)
-    end_date = models.DateField(blank=True, null=True)
-    limit = models.IntegerField(blank=True, null=True)
-    allocation = models.IntegerField(blank=True, null=True)
+    eu_fee = models.BooleanField(
+        db_column='eufee', default=False, verbose_name='Home/EU', help_text='Only payable by Home/EU students?'
+    )
+    is_visible = models.BooleanField(
+        default=True, verbose_name='Visible', help_text='Make this fee visible on the website'
+    )
+    is_payable = models.BooleanField(
+        default=True, verbose_name='Payable', help_text='Make this fee payable on the website'
+    )
+    is_catering = models.BooleanField(default=False, verbose_name='Catering', help_text='Includes catering')
+    is_single_accom = models.BooleanField(
+        default=False, verbose_name='Single accommodation', help_text='Includes a single accommodation'
+    )
+    is_twin_accom = models.BooleanField(
+        default=False, verbose_name='Double accommodation', help_text='Includes a double accommodation'
+    )
+    credit_fee = models.BooleanField(default=False, help_text='Additional fee to take a weekly class for credit')
+    end_date = models.DateField(
+        blank=True, null=True, help_text='Optional: day on which to remove the fee from the website'
+    )
+    limit = models.IntegerField(blank=True, null=True, help_text='Todo: Manage limits link')
+    allocation = models.IntegerField(blank=True, null=True, default=0)
 
     catering_bookings = models.ManyToManyField(
         'enrolment.Enrolment',
@@ -506,6 +530,8 @@ class Fee(SignatureModel):
 
     def __str__(self):
         return str(self.description)
+
+    # Todo: set catering = True on catering FeeType, once an enum's in place
 
 
 class ModuleFormat(models.Model):
