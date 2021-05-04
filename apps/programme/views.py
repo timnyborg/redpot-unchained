@@ -8,7 +8,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count, OuterRef, Subquery
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -117,7 +116,7 @@ class AddModule(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, CreateV
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('programme:view', args=[self.object.programme_id])
+        return self.programme.get_absolute_url()
 
 
 # @login_required
