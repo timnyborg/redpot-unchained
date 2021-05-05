@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import IntEnum
 from typing import Optional
 
 from django.core.exceptions import ValidationError
@@ -17,10 +16,16 @@ from apps.core.utils.dates import academic_year
 from apps.core.utils.models import UpperCaseCharField
 from redpot.settings import PUBLIC_WEBSITE_URL
 
-PROGRAMME_FEE_TYPE = 7
+
+class FeeTypes(models.IntegerChoices):
+    PROGRAMME = 7
+    ACCOMMODATION = 3
+    CATERING = 4
+    COLLEGE = 11
+    MISC = 2
 
 
-class Statuses(IntEnum):
+class Statuses(models.IntegerChoices):
     UNPUBLISHED = 10
     NOT_YET_OPEN = 11
     CLOSED = 30
@@ -488,7 +493,7 @@ class Fee(SignatureModel):
         'FeeType',
         models.DO_NOTHING,
         db_column='type',
-        default=PROGRAMME_FEE_TYPE,
+        default=FeeTypes.PROGRAMME,
         limit_choices_to={'is_active': True},
     )
     description = models.CharField(max_length=64)
@@ -531,7 +536,11 @@ class Fee(SignatureModel):
     def __str__(self):
         return str(self.description)
 
-    # Todo: set catering = True on catering FeeType, once an enum's in place
+    def save(self, **kwargs):
+        # Catering fees should always have their flag set (common user-error)
+        if self.type_id == FeeTypes.CATERING:
+            self.is_catering = True
+        super().save(**kwargs)
 
 
 class ModuleFormat(models.Model):

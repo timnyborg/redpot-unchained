@@ -22,7 +22,7 @@ Including:
 
 ## Testing at all levels
  * Write unit tests for validators, tags, etc.
- * Write isolated integration tests for models, views, forms, etc., using fixtures instead of depending on previous tests
+ * Write unit tests or simple integration tests for models, views, forms, etc., using model factories instead of depending on previous tests
  * Use Selenium where required (e.g. javascript, UI/UX-testing).
 
 ## GET requests should be read-only
