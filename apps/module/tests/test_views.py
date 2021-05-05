@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from ..models import PROGRAMME_FEE_TYPE, Fee, Module
+from ..models import Fee, FeeTypes, Module
 from . import factories
 
 
@@ -148,7 +148,7 @@ class TestFeeViews(TestCase):
             data={
                 'description': 'Test fee',
                 'amount': 200.00,
-                'type': PROGRAMME_FEE_TYPE,
+                'type': FeeTypes.PROGRAMME,
             },
         )
         self.assertEqual(response.status_code, 302)

@@ -49,7 +49,7 @@ Contains:
   payments.  The names should begin with `test_` and indicate which sort of
   tests they're used for, _e.g._ `test_tutor_payments.yaml`.
 
-    **Note:** it's probably better to use factory_boy than test fixtures, where possible
+    **Note:** it's best to use factory_boy instead of test fixtures.  It's quicker, less verbose, and less fragile to changes.
 
 ## forms.py
 Contains:

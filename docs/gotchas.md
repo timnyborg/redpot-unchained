@@ -27,6 +27,21 @@ Imagine you want to check if the module has a particular portfolio.
 object, and it does not implicitly cast itself into an int when used in
 comparisons.  Instead, you can use `if module.portfolio_id == 32`
 
+### Testing views
+This can be slightly confusing when testing posting data to a `ModelForm`.  The foreign key will not have `_id` at the end, but takes an integer:
+
+```python
+def test_add_tutor(self):
+    response = self.client.post(
+        path='/module/tutor/add',
+        data={
+            'module': 12345,
+            'tutor': 6789,
+        }
+    )
+```
+
+
 ## QuerySet.get() throws an error if no record found
 In web2py, a lookup like `idb.student(id=5)` will return a single record if found, or `None` if there are no matches.
 
