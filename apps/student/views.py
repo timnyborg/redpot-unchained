@@ -51,8 +51,8 @@ class Create(LoginRequiredMixin, generic.View):
         )
 
     def get(self, request):
-        form = forms.CreatePersonSearchForm()
-        return render(request, 'student/new.html', {'form': form})
+        search_form = forms.CreatePersonSearchForm()
+        return render(request, 'student/new.html', {'search_form': search_form})
 
     def post(self, request):
         table = None
