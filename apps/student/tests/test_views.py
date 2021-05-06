@@ -1,3 +1,5 @@
+import pytest
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -6,10 +8,10 @@ from ..models import Student
 from .factories import StudentFactory
 
 
-class TestViewsWithoutLogin(TestCase):
-    def test_views_require_login(self):
-        response = self.client.get(reverse('student:search'))
-        self.assertEqual(response.status_code, 302)
+@pytest.mark.django_db
+def test_views_require_login(client):
+    response = client.get(reverse('student:search'))
+    assert response.status_code == 302
 
 
 class TestSearch(TestCase):

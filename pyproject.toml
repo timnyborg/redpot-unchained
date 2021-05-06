@@ -16,3 +16,6 @@ line-length = 119
 target-version = ['py37']
 skip-string-normalization = true
 extend-exclude = 'migrations'
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = 'redpot.settings'
