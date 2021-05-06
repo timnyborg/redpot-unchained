@@ -123,3 +123,14 @@ class Email(SignatureModel):
     class Meta:
         # managed = False
         db_table = 'email'
+
+
+class NextHUSID(models.Model):
+    """Tracks how many HUSIDs have been allocated in a given year, acting as a seed for their generation"""
+
+    year = models.IntegerField(primary_key=True)
+    next = models.IntegerField(default=0)
+
+    class Meta:
+        # managed = False
+        db_table = 'next_husid'

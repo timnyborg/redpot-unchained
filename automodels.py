@@ -628,15 +628,6 @@ class Nationality(models.Model):
         db_table = 'nationality'
 
 
-class NextHusid(models.Model):
-    year = models.IntegerField(blank=True, null=True)
-    next = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'next_husid'
-
-
 class OtherId(models.Model):
     id = models.AutoField()
     student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student', blank=True, null=True)
