@@ -1,6 +1,6 @@
 from django.forms import ModelForm, fields
 
-from .models import Fee, Module
+from .models import Module
 
 
 class EditForm(ModelForm):  # noqa: DJ06
@@ -51,23 +51,3 @@ class CreateForm(ModelForm):
     class Meta:
         model = Module
         fields = ('code', 'title', 'division', 'portfolio', 'non_credit_bearing')
-
-
-class FeeForm(ModelForm):
-    class Meta:
-        model = Fee
-        fields = (
-            'amount',
-            'type',
-            'description',
-            'allocation',
-            'eu_fee',
-            'is_visible',
-            'is_payable',
-            'is_catering',
-            'is_single_accom',
-            'is_twin_accom',
-            'credit_fee',
-            'end_date',
-            'limit',
-        )

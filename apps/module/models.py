@@ -17,14 +17,6 @@ from apps.core.utils.models import UpperCaseCharField
 from redpot.settings import PUBLIC_WEBSITE_URL
 
 
-class FeeTypes(models.IntegerChoices):
-    PROGRAMME = 7
-    ACCOMMODATION = 3
-    CATERING = 4
-    COLLEGE = 11
-    MISC = 2
-
-
 class Statuses(models.IntegerChoices):
     UNPUBLISHED = 10
     NOT_YET_OPEN = 11
@@ -466,81 +458,6 @@ class ModuleStatus(models.Model):
 
     def __str__(self):
         return str(self.description)
-
-
-class FeeType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    narrative = models.CharField(max_length=64, blank=True, null=True)
-    # account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
-    display_order = models.IntegerField(blank=True, null=True)
-    is_tuition = models.BooleanField()
-    is_active = models.IntegerField()
-
-    class Meta:
-        # managed = False
-        db_table = 'fee_type'
-        ordering = ('display_order',)
-
-    def __str__(self):
-        return f'{self.narrative}'
-        # return f'{self.narrative} ({self.account})'
-
-
-class Fee(SignatureModel):
-    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module', related_name='fees')
-    amount = models.DecimalField(max_digits=19, decimal_places=4)
-    type = models.ForeignKey(
-        'FeeType',
-        models.DO_NOTHING,
-        db_column='type',
-        default=FeeTypes.PROGRAMME,
-        limit_choices_to={'is_active': True},
-    )
-    description = models.CharField(max_length=64)
-    finance_code = models.CharField(max_length=64, blank=True, null=True)
-    eu_fee = models.BooleanField(
-        db_column='eufee', default=False, verbose_name='Home/EU', help_text='Only payable by Home/EU students?'
-    )
-    is_visible = models.BooleanField(
-        default=True, verbose_name='Visible', help_text='Make this fee visible on the website'
-    )
-    is_payable = models.BooleanField(
-        default=True, verbose_name='Payable', help_text='Make this fee payable on the website'
-    )
-    is_catering = models.BooleanField(default=False, verbose_name='Catering', help_text='Includes catering')
-    is_single_accom = models.BooleanField(
-        default=False, verbose_name='Single accommodation', help_text='Includes a single accommodation'
-    )
-    is_twin_accom = models.BooleanField(
-        default=False, verbose_name='Double accommodation', help_text='Includes a double accommodation'
-    )
-    credit_fee = models.BooleanField(default=False, help_text='Additional fee to take a weekly class for credit')
-    end_date = models.DateField(
-        blank=True, null=True, help_text='Optional: day on which to remove the fee from the website'
-    )
-    limit = models.IntegerField(blank=True, null=True, help_text='Todo: Manage limits link')
-    allocation = models.IntegerField(blank=True, null=True, default=0)
-
-    catering_bookings = models.ManyToManyField(
-        'enrolment.Enrolment',
-        through='enrolment.Catering',
-    )
-
-    def catering_booking_count(self):
-        return self.catering_bookings.filter(status__takes_place=True).count()
-
-    class Meta:
-        # managed = False
-        db_table = 'fee'
-
-    def __str__(self):
-        return str(self.description)
-
-    def save(self, **kwargs):
-        # Catering fees should always have their flag set (common user-error)
-        if self.type_id == FeeTypes.CATERING:
-            self.is_catering = True
-        super().save(**kwargs)
 
 
 class ModuleFormat(models.Model):

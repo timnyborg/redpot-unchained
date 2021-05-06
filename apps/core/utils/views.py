@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views import generic
 
 
 class AutoTimestampMixin:
@@ -10,7 +9,7 @@ class AutoTimestampMixin:
     def form_valid(self, form):
         form.instance.modified_on = datetime.now()
         form.instance.modified_by = self.request.user.username
-        if isinstance(self, CreateView):
+        if isinstance(self, generic.CreateView):
             form.instance.created_by = self.request.user.username
         return super().form_valid(form)
 
@@ -44,12 +43,14 @@ class PageTitleMixin:
     def get_subtitle(self):
         if self.subtitle:
             stem = self.subtitle
-        elif isinstance(self, UpdateView):
+        elif isinstance(self, generic.UpdateView):
             stem = 'Edit'
-        elif isinstance(self, CreateView):
+        elif isinstance(self, generic.CreateView):
             stem = 'New'
-        elif isinstance(self, DetailView):
+        elif isinstance(self, generic.DetailView):
             stem = 'View'
+        elif isinstance(self, generic.DeleteView):
+            stem = 'Delete'
         else:
             return ''
 

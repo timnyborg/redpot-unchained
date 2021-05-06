@@ -3,6 +3,8 @@ from unittest.mock import MagicMock
 
 from django.test import SimpleTestCase, TestCase
 
+from apps.fee.tests.factories import FeeFactory
+
 from .. import models, services
 
 
@@ -42,10 +44,9 @@ class TestCopyFees(TestCase):
             title='Target title',
             code='T01T000TTT',
         )
-        models.Fee.objects.create(
+        FeeFactory(
             module=cls.source,
             amount=100,
-            type_id=1,
         )
 
     def test_copy(self):

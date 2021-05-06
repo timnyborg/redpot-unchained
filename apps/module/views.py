@@ -18,7 +18,7 @@ from apps.tutor.utils import expense_forms
 
 from . import forms
 from .datatables import BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
-from .models import Fee, Module, ModuleStatus
+from .models import Module, ModuleStatus
 from .services import clone_fields, copy_books, copy_children, copy_fees
 
 
@@ -176,31 +176,3 @@ def toggle_auto_feedback(request, pk):
     obj.auto_feedback = not obj.auto_feedback
     obj.save()
     return HttpResponse()
-
-
-class CreateFee(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, CreateView):
-    template_name = 'core/form.html'
-    model = Fee
-    form_class = forms.FeeForm
-    success_message = 'Fee created: %(description)s (£%(amount).2f)'
-
-    def dispatch(self, request, *args, **kwargs):
-        self.module = get_object_or_404(Module, pk=kwargs['module_id'])
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        form.instance.module = self.module
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return self.module.get_absolute_url() + '#fees'
-
-
-class EditFee(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, UpdateView):
-    template_name = 'core/form.html'
-    model = Fee
-    form_class = forms.FeeForm
-    success_message = 'Fee updated: %(description)s (£%(amount).2f)'
-
-    def get_success_url(self):
-        return self.object.module.get_absolute_url() + '#fees'

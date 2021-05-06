@@ -8,21 +8,6 @@
 from django.db import models
 
 
-class Accommodation(models.Model):
-    enrolment = models.ForeignKey('Enrolment', models.DO_NOTHING, db_column='enrolment')
-    type = models.IntegerField(blank=True, null=True)
-    note = models.CharField(max_length=256, blank=True, null=True)
-    created_by = models.CharField(max_length=64, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=64, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    limit = models.ForeignKey('Limit', models.DO_NOTHING, db_column='limit', blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'accommodation'
-
-
 class AcornPostcodes(models.Model):
     postcode = models.CharField(max_length=16)
     no_spaces = models.CharField(max_length=16)
@@ -532,20 +517,6 @@ class LedgerAccount(models.Model):
         managed = False
         db_table = 'ledger_account'
         unique_together = (('code', 'is_hidden'),)
-
-
-class Limit(models.Model):
-    description = models.CharField(max_length=128, blank=True, null=True)
-    places = models.IntegerField(blank=True, null=True)
-    www_buffer = models.IntegerField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'limit'
 
 
 class Login(models.Model):
