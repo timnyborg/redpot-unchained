@@ -1,81 +1,81 @@
-- model: module.feetype
+- model: fee.feetype
   pk: 0
   fields:
     narrative: Tuition Non EU
     display_order: 12
     is_tuition: true
     is_active: 0
-- model: module.feetype
+- model: fee.feetype
   pk: 1
   fields:
     narrative: Tuition EU
     display_order: 11
     is_tuition: true
     is_active: 0
-- model: module.feetype
+- model: fee.feetype
   pk: 2
   fields:
     narrative: Miscellaneous - field trips, etc
     display_order: 7
     is_tuition: false
     is_active: 1
-- model: module.feetype
+- model: fee.feetype
   pk: 3
   fields:
     narrative: Accommodation
     display_order: 4
     is_tuition: false
     is_active: 1
-- model: module.feetype
+- model: fee.feetype
   pk: 4
   fields:
     narrative: Catering
     display_order: 5
     is_tuition: false
     is_active: 1
-- model: module.feetype
+- model: fee.feetype
   pk: 5
   fields:
     narrative: Sales and Services
     display_order: 6
     is_tuition: false
     is_active: 0
-- model: module.feetype
+- model: fee.feetype
   pk: 6
   fields:
     narrative: Obsolete - College Charge
     display_order: 9
     is_tuition: false
     is_active: 0
-- model: module.feetype
+- model: fee.feetype
   pk: 7
   fields:
     narrative: Programme fee
     display_order: 1
     is_tuition: true
     is_active: 1
-- model: module.feetype
+- model: fee.feetype
   pk: 8
   fields:
     narrative: Foreign Exchange Profit/Loss
     display_order: 10
     is_tuition: true
     is_active: 0
-- model: module.feetype
+- model: fee.feetype
   pk: 9
   fields:
     narrative: Supplemental programme fee (Non-EU)
     display_order: 3
     is_tuition: false
     is_active: 0
-- model: module.feetype
+- model: fee.feetype
   pk: 10
   fields:
     narrative: Deposit - Programme Fee
     display_order: 2
     is_tuition: false
     is_active: 0
-- model: module.feetype
+- model: fee.feetype
   pk: 11
   fields:
     narrative: College fee

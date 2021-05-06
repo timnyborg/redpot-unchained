@@ -28,6 +28,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', apps.core.views.index, name='home'),
     path('index/', apps.core.views.index),
+    path('fee/', include('apps.fee.urls')),
     path('invoice/', include('apps.invoice.urls')),
     path('programme/', include('apps.programme.urls')),
     path('module/', include('apps.module.urls')),

@@ -91,16 +91,17 @@ PREREQ_APPS = [
 
 PROJECT_APPS = [
     'apps.core',
-    'apps.student',
-    'apps.programme',
-    'apps.module',
+    'apps.application',
+    'apps.discount',
     'apps.enrolment',
+    'apps.fee',
     'apps.invoice',
+    'apps.module',
+    'apps.programme',
+    'apps.student',
     'apps.tutor',
     'apps.tutor_payment',
     'apps.user',
-    'apps.discount',
-    'apps.application',
 ]
 
 INSTALLED_APPS = PREREQ_APPS + PROJECT_APPS

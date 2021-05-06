@@ -5,7 +5,7 @@ from parameterized import parameterized
 
 from django.test import TestCase
 
-from ..models import FeeTypes, Statuses
+from ..models import Statuses
 from . import factories
 
 
@@ -72,11 +72,3 @@ class TestUpdateModuleStatus(TestCase):
         with freeze_time(now):
             self.object.update_status()
             self.assertEqual(self.object.status_id, expected)
-
-
-class TestFeeModel(TestCase):
-    def test_catering_set_automatically(self):
-        """Check that is_catering is set to True when using the catering type"""
-        fee = factories.FeeFactory(type_id=FeeTypes.CATERING, is_catering=False)
-        fee.save()
-        self.assertTrue(fee.is_catering)

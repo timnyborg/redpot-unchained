@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+{% block center %}
+
+<div class='section'>
+    <div class='row'>
+        <div class='col-xs-8'>
+            <h4>Are you sure you wish to delete this record?</h4>
+            <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
+                {% csrf_token %}
+                {% bootstrap3form form %}
+                {% bootstrap3submit text='Delete' btn_type='danger' offset=0 %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
