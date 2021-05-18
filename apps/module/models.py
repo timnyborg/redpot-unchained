@@ -58,7 +58,7 @@ class ModuleManager(models.Manager):
         return super().get_queryset(*args, **kwargs).defer(*self.defer_fields)
 
 
-class Module(SignatureModel, models.Model):
+class Module(SignatureModel):
     code = UpperCaseCharField(
         max_length=12,
         help_text='For details on codes, see <link>',
@@ -222,6 +222,20 @@ class Module(SignatureModel, models.Model):
 
     def get_website_url(self):
         return f'{PUBLIC_WEBSITE_URL}/courses/{self.url}?code={self.code}'
+
+    @property
+    def full_time_equivalent(self) -> float:
+        """Calculate FTE, depending on level
+        PG courses 100: FTE = 180 credit points
+        UG courses 100: FTE = 120 credit points
+        """
+
+        # Todo: replace hard-coding, ensuring reliant routines do a select_related
+        if self.points_level in [6, 7]:  # PG
+            return round(100 * self.credit_points / 180.0)
+        elif self.points_level in [1, 2]:  # UG
+            return round(100 * self.credit_points / 120.0)
+        return 0.0
 
     @property
     def long_form(self):

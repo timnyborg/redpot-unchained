@@ -85,6 +85,7 @@ PREREQ_APPS = [
     'django_tables2',
     'django_filters',
     'widget_tweaks',  # django-widget-tweaks
+    'celery_progress',
     'django_celery_beat',
     'django_celery_results',
 ]
@@ -95,6 +96,7 @@ PROJECT_APPS = [
     'apps.discount',
     'apps.enrolment',
     'apps.fee',
+    'apps.hesa',
     'apps.invoice',
     'apps.module',
     'apps.programme',
@@ -264,11 +266,10 @@ EMAIL_HOST = get_secret('EMAIL_HOST', '')
 DEFAULT_FROM_EMAIL = get_secret('DEFAULT_FROM_EMAIL', '')
 
 # Celery task queue - TODO: get this using the same settings as the cache
-CELERY_BROKER_URL = "redis://"
-CELERY_BROKER_HOST = get_secret('REDIS_HOST', 'redis')  # Maps to redis host.
-CELERY_BROKER_PORT = get_secret('REDIS_PORT', 6379)  # Maps to redis port.
-CELERY_BROKER_PASSWORD = get_secret('REDIS_PASSWORD', '')
-CELERY_BROKER_VHOST = "0"  # Maps to database number.
+redis_host = get_secret('REDIS_HOST', 'redis')  # Maps to redis host.
+redis_port = get_secret('REDIS_PORT', 6379)  # Maps to redis port.
+redis_password = get_secret('REDIS_PASSWORD', '')
+CELERY_BROKER_URL = f"redis://:{redis_password}@{redis_host}:{redis_port}/1"
 
 CELERY_RESULT_BACKEND = 'django-db'
 

@@ -1,3 +1,8 @@
+from datetime import datetime
+from typing import Iterator
+
+from django.db.models import Max
+
 from . import models
 
 
@@ -30,3 +35,16 @@ def _generate_husid(*, academic_year: int, seed: int) -> int:
     husid = head + str(checkdigit)
 
     return int(husid)
+
+
+def next_moodle_id() -> Iterator[int]:
+    """Generator which looks up the next ID to be assigned, and provides sequential numbers"""
+    # Get largest assigned ID
+    previous = models.MoodleID.objects.aggregate(Max('moodle_id'))['moodle_id__max'] or 0
+    # We increment the numbers each year, with a year prefix, so it forms a minimum
+    minimum = datetime.now().year % 100 * 100000
+
+    val = max(previous + 1, minimum)
+    while True:
+        yield val
+        val += 1

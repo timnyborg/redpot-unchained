@@ -19,6 +19,8 @@ from django.urls import reverse
 from apps.core.models import PhoneField, SignatureModel
 from apps.core.utils.dates import academic_year
 
+NOT_KNOWN_ENTRY_QUALIFICATION = 'X06'
+
 
 class Portfolio(Model):
     name = CharField(max_length=128, blank=True, null=True)
@@ -137,6 +139,7 @@ class Programme(SignatureModel):
     funding_source = IntegerField(blank=True, null=True, choices=FUNDING_SOURCES)
     study_mode = IntegerField(blank=True, null=True, choices=STUDY_MODES)
     study_location = ForeignKey(StudyLocation, DO_NOTHING, db_column='study_location', blank=True, null=True)
+    reporting_year_type = IntegerField(blank=True, null=True)
 
     is_active = BooleanField(default=True)
     sits_code = CharField(max_length=32, blank=True, null=True)
@@ -204,6 +207,10 @@ class QA(models.Model):
     title = models.CharField(max_length=96, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
+    study_location = ForeignKey(StudyLocation, DO_NOTHING, db_column='study_location', blank=True, null=True)
+    entry_qualification = ForeignKey(
+        'EntryQualification', DO_NOTHING, db_column='entry_qualification', default=NOT_KNOWN_ENTRY_QUALIFICATION
+    )
 
     class Meta:
         # managed = False
@@ -213,3 +220,16 @@ class QA(models.Model):
     def academic_year(self) -> Optional[int]:
         if self.start_date:
             return academic_year(self.start_date)
+
+
+class EntryQualification(models.Model):
+    id = models.CharField(primary_key=True, max_length=3)
+    description = models.CharField(max_length=128, blank=True, null=True)
+    custom_description = models.CharField(max_length=128, blank=True, null=True)
+    elq_rank = models.IntegerField(blank=True, null=True)
+    web_publish = models.BooleanField(db_column='web_Publish', blank=True, null=True)  # Field name made lowercase.
+    display_order = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'entry_qualification'

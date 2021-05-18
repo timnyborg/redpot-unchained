@@ -1,0 +1,548 @@
+import re
+from datetime import date
+from decimal import Decimal
+from time import time
+from typing import Optional
+
+from celery_progress.backend import ProgressRecorder
+
+from django.db.models import F, FilteredRelation, Prefetch, Q, Subquery
+
+from apps.enrolment.models import Enrolment
+from apps.invoice.models import Ledger
+from apps.module.models import Module
+from apps.programme.models import QA, Programme
+from apps.student.models import Student
+
+from . import models
+
+EMPTY_ELEMENT = '<EMPTY>'
+
+OVERSEAS_STUDY_LOCATION = 9
+SSN_OTHER_ID = 9
+UNKNOWN_DOMICILE = 181
+PASS_RESULT = '1'
+FAIL_RESULT = '2'
+INCOMPLETE_RESULT = '4'
+UNKNOWN_RESULT = '6'
+COMPLETE_PENDING_RESULT = 'C'
+
+FEE_TRANSACTION_TYPE = 1
+
+DEBTOR_ACCOUNT = 'Z300'
+
+
+# todo: determine if we need both the task and services
+def create_return(academic_year, created_by, *, recorder: Optional[ProgressRecorder] = None, run_xml=False):
+    start = time()
+    """The schedulable routine which call the magic below"""
+
+    hesa = HESAReturn(academic_year, created_by, recorder=recorder)
+    batch = hesa.create()
+    if run_xml:
+        print(f'Generating XML ({(time()-start)[:5]} seconds)')
+        # generate_xml(batch)
+    return batch
+
+
+class HESAReturn:
+    def __init__(self, academic_year: int, created_by: str, *, recorder: Optional[ProgressRecorder] = None) -> None:
+        self.batch = None
+        self.created_by = created_by
+        self.academic_year = academic_year
+        self.recorder = recorder
+
+        # Universal base query
+        # could potentially use other Models, but it sits nicely as the m2m between QA and Module
+        self.base_query = Enrolment.objects.filter(
+            module__start_date__gte=date(academic_year, 8, 1),  # This year
+            module__start_date__lt=date(academic_year + 1, 7, 30),
+            module__credit_points__gt=0,  # Exclude Cert HE dummy module, etc
+            qa__programme__qualification__on_hesa_return=True,  # Valid programme
+            status__on_hesa_return=True,  # Confirmed (etc) student
+        ).exclude(
+            # Exclude students lacking both a domicile and gender (a shorthand for incomplete registrations)
+            Q(qa__student__domicile=UNKNOWN_DOMICILE) | Q(qa__student__gender__isnull=True),
+            qa__study_location_id=OVERSEAS_STUDY_LOCATION,  # We exclude distance learners
+            module__is_cancelled=True,  # No cancelled courses, obviously
+        )
+
+    def _set_progress(self, current: int, total: int, description: str = '') -> None:
+        if self.recorder:
+            self.recorder.set_progress(current=current, total=total, description=description)
+
+    def create(self) -> models.Batch:
+        """Populate the tables in order, updating the status after each"""
+        steps = 11
+        self.batch = self._batch()
+        self._set_progress(1, steps, 'Institution')
+        self._institution()
+        self._set_progress(2, steps, 'Student')
+        self._student()
+        self._set_progress(3, steps, 'Courses')
+        self._course()
+        self._set_progress(4, steps, 'Course subjects')
+        self._course_subject()
+        self._set_progress(5, steps, 'Modules')
+        self._module()
+        self._set_progress(6, steps, 'Module subjects')
+        self._module_subject()
+        self._set_progress(7, steps, 'Instances')
+        self._instance()
+        self._set_progress(8, steps, 'Entry profiles')
+        self._entry_profile()
+        self._set_progress(9, steps, 'Qualifications awarded')
+        self._qualification_awarded()
+        self._set_progress(10, steps, 'Students on modules')
+        self._student_on_module()
+        self._set_progress(11, steps, 'Post-processing business rules')
+        self._post_processing()
+
+        return self.batch
+
+    def _institution(self):
+        models.Institution.objects.create(
+            batch=self.batch,
+            recid=f'{self.academic_year % 100}051',
+        )
+
+    def _batch(self) -> models.Batch:
+        return models.Batch.objects.create(academic_year=self.academic_year, created_by=self.created_by)
+
+    def _instance_id(self, qa_id: int) -> str:
+        # Encode the academic year and QA id to make an instance id (unique each year)
+        return f'{qa_id}-{self.academic_year}'
+
+    def _student(self) -> None:
+        in_query = self.base_query.values('qa__student__id')
+
+        results = (
+            Student.objects.filter(id__in=Subquery(in_query))
+            .select_related('nationality')
+            .annotate(
+                default_address=FilteredRelation('address', condition=Q(address__is_default=True)),
+                postcode=F('default_address__postcode'),
+                ssn_row=FilteredRelation('other_id', condition=Q(other_id__id=SSN_OTHER_ID)),
+                ssn=F('ssn_row__id'),
+            )
+            .order_by('id')
+            .distinct()
+        )
+
+        for row in results:
+            models.Student.objects.create(
+                batch=self.batch,
+                student=row.id,
+                husid=str(row.husid).zfill(13),
+                ownstu=row.sits_id or row.id,  # If a student's on SITS, we use that id, to allow amalgamation to work
+                birthdte=row.birthdate,
+                surname=row.surname.upper(),
+                fnames=row.firstname.upper() + (' ' + row.middlename.upper() if row.middlename else ''),
+                sexid=row.sex,
+                nation=row.nationality.hesa_code,
+                ethnic=str(row.ethnicity).zfill(2),
+                disable=str(row.disability or 0).zfill(2),  # todo: default 0 for disability in the table itself?
+                ttaccom=row.termtime_accommodation,
+                ttpcode=_correct_postcode(row.termtime_postcode or row.postcode or ''),
+                ssn=row.ssn,
+                relblf=str(row.religion_or_belief).zfill(2),
+            )
+
+    def _instance(self) -> None:
+        in_query = self.base_query.values('qa__id')
+
+        results = (
+            QA.objects.filter(id__in=Subquery(in_query))
+            .select_related(
+                'programme__qualification',
+                'entry_qualification',
+                'study_location',
+                'programme',
+                'student',
+            )
+            .prefetch_related(
+                # Get the year's enrolments, with related models, in order to calculate things like stuload
+                Prefetch(
+                    'enrolments',
+                    to_attr='returned_enrolments',
+                    queryset=Enrolment.objects.filter(id__in=self.base_query.values('id'))
+                    .select_related('module', 'result')
+                    .prefetch_related(
+                        # And get each enrolment's fees, to calculate grossfee and netfee
+                        # todo: consider annotating these instead, to simplify the logic
+                        Prefetch(
+                            'ledger_set',
+                            to_attr='fee_ledger_items',
+                            queryset=Ledger.objects.filter(type__id=FEE_TRANSACTION_TYPE, account=DEBTOR_ACCOUNT),
+                        ),
+                    ),
+                ),
+            )
+            .order_by('id')
+            .distinct()
+        )
+
+        for row in results:
+            models.Instance.objects.create(
+                batch=self.batch,
+                qa=row.id,
+                instanceid=self._instance_id(row.id),
+                ownstu_fk=row.student.sits_id or row.student.id,
+                numhus=self._instance_id(row.id),
+                courseid_id=row.programme.id,
+                comdate=min(enrolment.module.start_date for enrolment in row.returned_enrolments),
+                mode=row.programme.study_mode,
+                stuload=sum(enrolment.module.full_time_equivalent for enrolment in row.returned_enrolments),
+                # our short courses don't really have an end date, so it's set to be the end of the academic year
+                enddate=date(self.academic_year + 1, 7, 31),
+                rsnend=_reason_for_ending(enrolments=row.returned_enrolments),
+                feeelig=1 if row.student.is_eu else 2,  # feeelig and fundcode get modified in post-processing
+                fundcode=1 if row.student.is_eu else 2,
+                mstufee='01',  # str(row.qa.tuition_fee_source or '').zfill(2), # only varies on award courses
+                fundlev=row.programme.funding_level,
+                fundcomp=_completion(enrolments=row.returned_enrolments),
+                typeyr=row.programme.reporting_year_type,
+                locsdy=row.study_location.hesa_code,
+                disall=5 if row.student.disability != 0 else None,
+                grossfee=_grossfee(enrolments=row.returned_enrolments),
+                netfee=_netfee(enrolments=row.returned_enrolments),
+                elq=_elq(qa=row),
+                rcstdnt=99
+                if row.programme.qualification.hesa_code[0] in ('E', 'M')
+                else None,  # Required field for our Master's level courses, but we have no research council students
+            )
+
+    def _entry_profile(self) -> None:
+        in_query = self.base_query.values('qa__id')
+
+        results = (
+            QA.objects.filter(id__in=Subquery(in_query))
+            .annotate(
+                # nested relation in FilteredRelation supported in 3.2
+                # default_address=FilteredRelation('student__address', condition=Q(student__address__is_default=True)),
+                # postcode=F('default_address__postcode'),
+            )
+            .select_related(
+                'student__domicile',
+                'student',
+            )
+            .order_by('id')
+            .distinct()
+        )
+
+        for row in results:
+            models.EntryProfile.objects.create(
+                batch=self.batch,
+                instanceid_fk=self._instance_id(row.id),
+                domicile=row.student.domicile.hesa_code,
+                qualent3=row.entry_qualification_id,
+                # todo: enable when on django 3.2
+                # postcode=_correct_postcode(row.qa.student.termtime_postcode or row.postcode or '')
+                # if row.student.domicile.hesa_code in ('XF', 'XG', 'XH', 'XI', 'XK', 'XL', 'GG', 'JE', 'IM') else None
+            )
+
+    def _qualification_awarded(self) -> None:
+        in_query = self.base_query.values('qa__id')
+
+        results = (
+            QA.objects.filter(id__in=Subquery(in_query))
+            .select_related(
+                'programme__qualification',
+            )
+            .order_by('id')
+            .distinct()
+        )
+
+        for row in results:
+            models.QualificationsAwarded.objects.create(
+                batch=self.batch, instanceid_fk=self._instance_id(row.id), qual=row.programme.qualification.hesa_code
+            )
+
+    def _module(self) -> None:
+        in_query = self.base_query.values('module__id')
+
+        results = Module.objects.filter(id__in=Subquery(in_query)).order_by('code').distinct()
+
+        for row in results:
+            models.Module.objects.create(
+                batch=self.batch,
+                module=row.id,
+                modid=row.code,
+                # en-dash to regular hyphen, remove the rare half-moon used in arabic names like ʿattar.
+                mtitle=row.title.replace('–', '-').replace('ʿ', ''),  # todo: regex/normalization method?
+                fte=row.full_time_equivalent,
+                # pcolab=row.percent_collaborative,
+                # crdtscm=row.credit_scheme,  # now handled by a default=1
+                crdtpts=str(row.credit_points).zfill(3),
+                levlpts=row.points_level,
+                # tinst=row.collaborating_institution
+            )
+
+    def _student_on_module(self) -> None:
+        results = self.base_query.select_related('module', 'result')
+
+        for row in results:
+            models.StudentOnModule.objects.create(
+                batch=self.batch,
+                enrolment=row.id,
+                instanceid_fk=self._instance_id(row.qa_id),
+                modid=row.module.code,
+                modout=row.result.hesa_code,
+            )
+
+    def _module_subject(self) -> None:
+        in_query = self.base_query.values('module__id')
+        results = (
+            models.ModuleHECoSSubject.objects.filter(module__in=Subquery(in_query))
+            .select_related('hecos_subject', 'module')
+            .order_by('module__code')
+            .distinct()
+        )
+
+        for row in results:
+            models.ModuleSubject.objects.create(
+                batch=self.batch,
+                modid_fk=row.module.code,
+                modsbj=row.hecos_subject.id,
+                modsbjp=row.percentage,
+                costcn=row.hecos_subject.cost_centre_id,
+            )
+
+    def _course(self) -> None:
+        in_query = self.base_query.values('qa__programme__id')
+
+        results = (
+            Programme.objects.filter(id__in=Subquery(in_query))
+            .select_related('qualification')
+            .order_by('id')
+            .distinct()
+        )
+
+        for row in results:
+            models.Course.objects.create(
+                batch=self.batch,
+                programme=row.id,
+                courseid=row.id,
+                owncourseid=row.id,
+                courseaim=row.qualification.hesa_code,
+                ctitle=row.title,
+                msfund=str(row.funding_source or '').zfill(2),
+            )
+
+    def _course_subject(self):
+        in_query = self.base_query.values('qa__programme__id')
+
+        results = (
+            models.ProgrammeHecosSubject.objects.filter(programme__in=Subquery(in_query))
+            .select_related('hecos_subject')
+            .order_by('programme')
+            .distinct()
+        )
+
+        for row in results:
+            models.CourseSubject.objects.create(
+                batch=self.batch,
+                courseid_fk=row.programme_id,
+                sbjca=row.hecos_subject.id,
+                sbjpcnt=row.percentage,
+            )
+
+    def _post_processing(self) -> None:
+        """A series of tasks to shape the records to match HESA's XML expectations
+        (mostly by removing data from fields where explicitly not required)
+
+        Ensure every routine added here has a condition matching self.batch"""
+
+        # Validation hacks while we have incomplete data:
+        # todo: determine what to do with this.  Could just sit in the actual routines, if to be kept
+        models.Instance.objects.filter(batch=self.batch, rsnend='00').update(rsnend='03')
+        models.Instance.objects.filter(batch=self.batch, fundcomp=0).update(fundcomp=3)
+
+        # Actual post-processing
+        # todo: move into routines, or maybe .save()?
+
+        # No ELQ where FEELIG is 2 or 3
+        models.Instance.objects.filter(batch=self.batch, feeelig__in=(2, 3)).update(elq=None)
+
+        # ELQ are not fundable
+        models.Instance.objects.filter(batch=self.batch, elq__in=('01', '09'), fundcode=1,).update(
+            fundcode=2  # Not fundable
+        )
+
+        # QR.C19051.Instance.FUNDCODE.8
+        # FUNDCODE cannot be 1 where FUNDLEV = 20 (PGT) where QUALENT3 is Dphil/Masters
+
+        # Subquery to find entry profiles with such QUALENT3s
+        masters_and_dphil = (
+            models.EntryProfile.objects.filter(
+                batch=self.batch,
+                qualent3__like='[MD]%',
+            )
+            .exclude(
+                qualent3__in=('M44', 'M41', 'M71'),
+            )
+            .values('instanceid_fk')
+        )
+
+        # Query to update instances connected to those entry profiles
+        models.Instance.objects.filter(
+            batch=self.batch,
+            fundlev=20,
+            fundcode=1,
+            instanceid__in=Subquery(masters_and_dphil),
+        ).update(fundcode=2)
+
+        # No FEEREGIME where Feeelig = 2
+        models.Instance.objects.filter(
+            batch=self.batch,
+            feeelig=2,
+        ).update(feeregime=None)
+
+        # No Grossfee and Netfee where no fee regime, or fee regime 10
+        models.Instance.objects.filter(
+            Q(feeregime__isnull=True) | Q(feeregime=10),
+            batch=self.batch,
+        ).update(grossfee=None, netfee=None)
+
+        # No Careleaver where Fundcode in 2, 3, 5 or Postgrad (M90, E90)
+        instances = (
+            models.Instance.objects.filter(
+                batch=self.batch,
+                courseid__batch=self.batch,
+            )
+            .filter(Q(fundcode__in=(2, 3, 5)) | Q(courseid__courseaim__in=('M90', 'E90')))
+            .values('instanceid')
+        )
+
+        models.EntryProfile.objects.filter(batch=self.batch, instanceid_fk__in=Subquery(instances)).update(
+            careleaver=None
+        )
+
+
+#
+# def generate_xml(batch):
+#     def generate_nodes(tablename, children, key_value=None):
+#         table = idb['hesa_%s' % tablename]
+#
+#         # Get all the records from this table
+#         query = table.batch == batch
+#         if key_value:
+#             query &= table._extra['foreign_key'] == key_value
+#
+#         records = idb(query).select()
+#         for record in records:
+#             # Attach to the parent
+#             node = etree.Element(
+#                 tablename.title().replace('_', '')
+#             )  # the table elements must be in the format StudentOnModule
+#             # Fill with elements
+#             for column in table._extra['fields']:
+#                 value = record[column]
+#                 if value is not None:
+#                     # <EMPTY> lets us handle conditionally-returned elements, e.g. postcode and ttpcode: they
+#                     # must not exist for overseas, but can exist and be empty for UK
+#                     etree.SubElement(node, column).text = str(value).replace(EMPTY_ELEMENT, '')
+#                 elif 'required' in table._extra and column in table._extra['required']:
+#                     # Empty element for a null
+#                     etree.SubElement(node, column)
+#
+#             # Create subnodes if any exist
+#             for child in children:
+#                 for child_node in generate_nodes(*child, key_value=record[table._extra['key']]):
+#                     node.append(child_node)
+#
+#             yield node
+#
+#     response.generic_patterns = ['*']
+#     structure = (
+#         'institution',
+#         [
+#             ('course', [('course_subject', [])]),
+#             ('module', [('module_subject', [])]),
+#             (
+#                 'student',
+#                 [
+#                     (
+#                         'instance',
+#                         [
+#                             ('entry_profile', []),
+#                             ('qualifications_awarded', []),
+#                             ('student_on_module', []),
+#                         ],
+#                     )
+#                 ],
+#             ),
+#         ],
+#     )
+#
+#     root = etree.Element('StudentRecord')
+#
+#     for child in generate_nodes(*structure):
+#         root.append(child)
+#
+#     filename = 'conted_batch_%s.xml' % batch
+#     filepath = os.path.join(request.folder, 'xml/', filename)
+#     with open(filepath, 'w') as f:
+#         f.write(etree.tostring(root, pretty_print=True).decode('utf8'))
+#
+#     idb.hesa_batch(batch).update_record(filename=filename)
+#     idb.commit()
+#
+#     # We'll send them back to the /view/batch
+#     return batch
+
+
+def _correct_postcode(postcode: str) -> str:
+    """Format UK postcodes while filtering out non-UK"""
+    # UK govt regex from https://stackoverflow.com/questions/164979/regex-for-matching-uk-postcodes
+    POSTCODE_REGEX = (
+        r'^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})'
+        r'|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})$'
+    )
+    postcode = postcode.replace(' ', '')
+    if re.match(POSTCODE_REGEX, postcode):
+        # Insert the space
+        postcode = postcode[:-3] + ' ' + postcode[-3:]
+        return postcode.upper()
+    # Invalid or foreign postcode
+    return EMPTY_ELEMENT
+
+
+def _reason_for_ending(*, enrolments) -> str:
+    if any(enrolment.result.hesa_code == PASS_RESULT for enrolment in enrolments):
+        return '01'  # completion
+    if all(enrolment.result.hesa_code == FAIL_RESULT for enrolment in enrolments):
+        return '02'  # academic failure
+    return '01'  # todo: reconsider fallback value
+
+
+def _completion(*, enrolments) -> int:
+    """Generates FUNDCOMP based on a set of enrolments"""
+    result_set = {enrolment.result.hesa_code for enrolment in enrolments}
+    if INCOMPLETE_RESULT in result_set:
+        return 2  # did not complete
+    if UNKNOWN_RESULT in result_set:
+        return 3  # not yet complete
+    if {PASS_RESULT, FAIL_RESULT, COMPLETE_PENDING_RESULT} & result_set:
+        return 1  # complete
+    return 0  # Invalid value # todo: reconsider how this operates
+
+
+def _elq(*, qa: QA) -> str:
+    if qa.programme.qualification.elq_rank > qa.entry_qualification.elq_rank:
+        return '03'
+    return '01'
+
+
+def _grossfee(*, enrolments) -> Decimal:
+    def enrolment_sum(enrolment):
+        return sum(line.amount for line in enrolment.fee_ledger_items)
+
+    return sum(enrolment_sum(enrolment) for enrolment in enrolments)
+
+
+def _netfee(*, enrolments) -> Decimal:
+    def enrolment_sum(enrolment):
+        return sum(line.amount for line in enrolment.fee_ledger_items if line.amount > 0)
+
+    return sum(enrolment_sum(enrolment) for enrolment in enrolments)
