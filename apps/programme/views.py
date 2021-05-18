@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
@@ -9,10 +7,9 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count, OuterRef, Subquery
 from django.shortcuts import get_object_or_404
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views import generic
 
-from apps.core.utils.views import PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.module.models import Module, ModuleStatus
 
 from .datatables import ProgrammeSearchFilter, ProgrammeSearchTable
@@ -20,7 +17,7 @@ from .forms import AttachModuleForm, ProgrammeEditForm, ProgrammeNewForm
 from .models import Programme, ProgrammeModule
 
 
-class View(LoginRequiredMixin, PageTitleMixin, DetailView):
+class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
     model = Programme
     template_name = 'programme/view.html'
 
@@ -32,8 +29,8 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
         # Subquery to get places_taken per module
         enrolment_count = (
             Module.objects.filter(id=OuterRef('id'))
-            .filter(enrolments__status__takes_place=True)
-            .annotate(count=Count('enrolments__id'))
+            .filter(enrolment__status__takes_place=True)
+            .annotate(count=Count('enrolment__id'))
             .values('count')
         )
 
@@ -57,7 +54,7 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
         }
 
 
-class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
+class Edit(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
     model = Programme
     form_class = ProgrammeEditForm
     template_name = 'programme/edit.html'
@@ -68,23 +65,12 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
         kwargs.update({'user': self.request.user})
         return kwargs
 
-    def form_valid(self, form):
-        form.instance.modified_on = datetime.now()
-        form.instance.modified_by = self.request.user.username
-        return super().form_valid(form)
 
-
-class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, CreateView):
+class New(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.CreateView):
     model = Programme
     form_class = ProgrammeNewForm
     template_name = 'programme/edit.html'
     success_message = 'Details updated.'
-
-    def form_valid(self, form):
-        # No need to handle created_on or modified_on as they use auto_now_add=True
-        form.instance.modified_by = self.request.user.username
-        form.instance.created_by = self.request.user.username
-        return super().form_valid(form)
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
@@ -95,7 +81,7 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     subtitle = 'Search'
 
 
-class AddModule(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, CreateView):
+class AddModule(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.CreateView):
     template_name = 'programme/add_module.html'
     model = ProgrammeModule
     form_class = AttachModuleForm
@@ -138,7 +124,7 @@ class AddModule(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, CreateV
 #     return redirect(module)
 
 
-class RemoveModule(LoginRequiredMixin, PageTitleMixin, DeleteView):
+class RemoveModule(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
     model = ProgrammeModule
     template_name = 'programme/remove_module.html'
     subtitle = 'Remove'

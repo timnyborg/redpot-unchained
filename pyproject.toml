@@ -15,4 +15,4 @@ ensure_newline_before_comments = true
 line-length = 119
 target-version = ['py37']
 skip-string-normalization = true
-extend-exclude = 'migrations'
+force-exclude = 'migrations'  # ensures migrations ignored even during pre-commit hooks

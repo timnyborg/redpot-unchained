@@ -1,0 +1,2259 @@
+- model: student.domicile
+  pk: 1
+  fields:
+    name: Yemen Arab Republic
+    fullname: Yemen Arab Republic
+    is_in_eu: false
+    hesa_code: YE
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 2
+  fields:
+    name: Kyrgz Republic
+    fullname: Kyrgyz Republic
+    is_in_eu: false
+    hesa_code: KG
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 3
+  fields:
+    name: Djibouti
+    fullname: Djibouti. Also Afars and Issas Territory, Somaliland (French)
+    is_in_eu: false
+    hesa_code: DJ
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 4
+  fields:
+    name: Macedonia
+    fullname: Macedonia, The Former Yugoslavia Republic of
+    is_in_eu: false
+    hesa_code: MK
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 5
+  fields:
+    name: Yemen
+    fullname: Yemen
+    is_in_eu: false
+    hesa_code: YE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 6
+  fields:
+    name: Afghanistan
+    fullname: Afghanistan
+    is_in_eu: false
+    hesa_code: AF
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 7
+  fields:
+    name: Albania
+    fullname: Albania
+    is_in_eu: false
+    hesa_code: AL
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 8
+  fields:
+    name: Algeria
+    fullname: Algeria
+    is_in_eu: false
+    hesa_code: DZ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 9
+  fields:
+    name: Andorra
+    fullname: Andorra
+    is_in_eu: false
+    hesa_code: AD
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 10
+  fields:
+    name: Angola
+    fullname: Angola
+    is_in_eu: false
+    hesa_code: AO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 11
+  fields:
+    name: Antigua and Barbuda
+    fullname: Antigua and Barbuda
+    is_in_eu: false
+    hesa_code: AG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 12
+  fields:
+    name: Argentina
+    fullname: Argentina
+    is_in_eu: false
+    hesa_code: AR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 13
+  fields:
+    name: Australia
+    fullname: Australia
+    is_in_eu: false
+    hesa_code: AU
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 14
+  fields:
+    name: Austria
+    fullname: Austria
+    is_in_eu: true
+    hesa_code: AT
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 15
+  fields:
+    name: Bahamas
+    fullname: Bahamas
+    is_in_eu: false
+    hesa_code: BS
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 16
+  fields:
+    name: Bahrain
+    fullname: Bahrain
+    is_in_eu: false
+    hesa_code: BH
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 17
+  fields:
+    name: Barbados
+    fullname: Barbados
+    is_in_eu: false
+    hesa_code: BB
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 18
+  fields:
+    name: Belgium
+    fullname: Belgium
+    is_in_eu: true
+    hesa_code: BE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 19
+  fields:
+    name: Bermuda
+    fullname: Bermuda
+    is_in_eu: false
+    hesa_code: BM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 20
+  fields:
+    name: Bhutan
+    fullname: Bhutan
+    is_in_eu: false
+    hesa_code: BT
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 21
+  fields:
+    name: Bolivia
+    fullname: Bolivia
+    is_in_eu: false
+    hesa_code: BO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 22
+  fields:
+    name: Botswana
+    fullname: Botswana. Also Bechuanaland
+    is_in_eu: false
+    hesa_code: BW
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 23
+  fields:
+    name: Brazil
+    fullname: Brazil
+    is_in_eu: false
+    hesa_code: BR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 24
+  fields:
+    name: Brunei
+    fullname: Brunei
+    is_in_eu: false
+    hesa_code: BN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 25
+  fields:
+    name: Bulgaria
+    fullname: Bulgaria
+    is_in_eu: true
+    hesa_code: BG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 26
+  fields:
+    name: Burma
+    fullname: Burma. Also Myanmar
+    is_in_eu: false
+    hesa_code: MM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 27
+  fields:
+    name: Burundi
+    fullname: Burundi
+    is_in_eu: false
+    hesa_code: BI
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 28
+  fields:
+    name: Cambodia
+    fullname: Cambodia
+    is_in_eu: false
+    hesa_code: KH
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 29
+  fields:
+    name: Cameroon
+    fullname: Cameroon
+    is_in_eu: false
+    hesa_code: CM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 30
+  fields:
+    name: Canada
+    fullname: Canada
+    is_in_eu: false
+    hesa_code: CA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 31
+  fields:
+    name: Central African Republic
+    fullname: Central African Republic
+    is_in_eu: false
+    hesa_code: CF
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 32
+  fields:
+    name: Sri Lanka
+    fullname: Sri Lanka
+    is_in_eu: false
+    hesa_code: LK
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 33
+  fields:
+    name: Chad
+    fullname: Chad
+    is_in_eu: false
+    hesa_code: TD
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 34
+  fields:
+    name: Chile
+    fullname: Chile
+    is_in_eu: false
+    hesa_code: CL
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 35
+  fields:
+    name: China
+    fullname: China (People's Republic of)
+    is_in_eu: false
+    hesa_code: CN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 37
+  fields:
+    name: Colombia
+    fullname: Colombia
+    is_in_eu: false
+    hesa_code: CO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 38
+  fields:
+    name: Congo (Democratic Republic)
+    fullname: Congo (Democratic Republic)
+    is_in_eu: false
+    hesa_code: CD
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 39
+  fields:
+    name: Zaire
+    fullname: Zaire
+    is_in_eu: false
+    hesa_code: CD
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 40
+  fields:
+    name: 'Congo '
+    fullname: 'Congo '
+    is_in_eu: false
+    hesa_code: CG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 41
+  fields:
+    name: Costa Rica
+    fullname: Costa Rica
+    is_in_eu: false
+    hesa_code: CR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 42
+  fields:
+    name: Cuba
+    fullname: Cuba
+    is_in_eu: false
+    hesa_code: CU
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 43
+  fields:
+    name: Netherlands Antilles
+    fullname: Netherlands Antilles
+    is_in_eu: true
+    hesa_code: AN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 44
+  fields:
+    name: Cyprus (EU)
+    fullname: Cyprus (EU)
+    is_in_eu: true
+    hesa_code: XA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 45
+  fields:
+    name: Czech Republic
+    fullname: Czech Republic
+    is_in_eu: true
+    hesa_code: CZ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 46
+  fields:
+    name: Czechoslovakia
+    fullname: Czechoslovakia
+    is_in_eu: true
+    hesa_code: CZ
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 48
+  fields:
+    name: Denmark
+    fullname: Denmark
+    is_in_eu: true
+    hesa_code: DK
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 49
+  fields:
+    name: Dominica
+    fullname: Dominica
+    is_in_eu: false
+    hesa_code: DM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 50
+  fields:
+    name: Dominican Republic
+    fullname: Dominican Republic
+    is_in_eu: false
+    hesa_code: DO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 51
+  fields:
+    name: Ecuador
+    fullname: Ecuador
+    is_in_eu: false
+    hesa_code: EC
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 52
+  fields:
+    name: El Salvador
+    fullname: El Salvador
+    is_in_eu: false
+    hesa_code: SV
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 53
+  fields:
+    name: Tuvalu
+    fullname: Tuvalu
+    is_in_eu: false
+    hesa_code: TV
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 54
+  fields:
+    name: Ethiopia
+    fullname: Ethiopia
+    is_in_eu: false
+    hesa_code: ET
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 55
+  fields:
+    name: Falkland Islands
+    fullname: Falkland Islands
+    is_in_eu: false
+    hesa_code: FK
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 56
+  fields:
+    name: Fiji
+    fullname: Fiji
+    is_in_eu: false
+    hesa_code: FJ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 57
+  fields:
+    name: Finland
+    fullname: Finland
+    is_in_eu: true
+    hesa_code: FI
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 58
+  fields:
+    name: Taiwan
+    fullname: China (Taiwan)
+    is_in_eu: false
+    hesa_code: TW
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 59
+  fields:
+    name: Taiwan
+    fullname: Taiwan. Also China (Taiwan), Formosa
+    is_in_eu: false
+    hesa_code: TW
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 60
+  fields:
+    name: France
+    fullname: France
+    is_in_eu: true
+    hesa_code: FR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 61
+  fields:
+    name: Gabon
+    fullname: Gabon
+    is_in_eu: false
+    hesa_code: GA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 62
+  fields:
+    name: Gambia
+    fullname: Gambia
+    is_in_eu: false
+    hesa_code: GM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 63
+  fields:
+    name: Germany
+    fullname: Germany
+    is_in_eu: true
+    hesa_code: DE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 64
+  fields:
+    name: Germany (East)
+    fullname: Germany (East)
+    is_in_eu: true
+    hesa_code: DE
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 65
+  fields:
+    name: Ghana
+    fullname: Ghana
+    is_in_eu: false
+    hesa_code: GH
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 66
+  fields:
+    name: Gibraltar
+    fullname: Gibraltar
+    is_in_eu: true
+    hesa_code: GI
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 67
+  fields:
+    name: Kiribati
+    fullname: Kiribati
+    is_in_eu: false
+    hesa_code: KI
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 68
+  fields:
+    name: Greece
+    fullname: Greece
+    is_in_eu: true
+    hesa_code: GR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 69
+  fields:
+    name: Grenada
+    fullname: Grenada
+    is_in_eu: false
+    hesa_code: GD
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 70
+  fields:
+    name: Guatemala
+    fullname: Guatemala
+    is_in_eu: false
+    hesa_code: GT
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 71
+  fields:
+    name: Guinea
+    fullname: Guinea (French)
+    is_in_eu: false
+    hesa_code: GN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 72
+  fields:
+    name: Guyana
+    fullname: Guyana
+    is_in_eu: false
+    hesa_code: GY
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 73
+  fields:
+    name: Haiti
+    fullname: Haiti
+    is_in_eu: false
+    hesa_code: HT
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 74
+  fields:
+    name: Honduras
+    fullname: Honduras
+    is_in_eu: false
+    hesa_code: HN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 75
+  fields:
+    name: Belize
+    fullname: Belize
+    is_in_eu: false
+    hesa_code: BZ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 76
+  fields:
+    name: Hong Kong
+    fullname: Hong Kong
+    is_in_eu: false
+    hesa_code: HK
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 77
+  fields:
+    name: Hungary
+    fullname: Hungary
+    is_in_eu: true
+    hesa_code: HU
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 78
+  fields:
+    name: Iceland
+    fullname: Iceland
+    is_in_eu: false
+    hesa_code: IS
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 79
+  fields:
+    name: India
+    fullname: India
+    is_in_eu: false
+    hesa_code: IN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 80
+  fields:
+    name: Indonesia
+    fullname: Indonesia
+    is_in_eu: false
+    hesa_code: ID
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 81
+  fields:
+    name: Iran
+    fullname: Iran
+    is_in_eu: false
+    hesa_code: IR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 82
+  fields:
+    name: Iraq
+    fullname: Iraq
+    is_in_eu: false
+    hesa_code: IQ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 83
+  fields:
+    name: Ireland
+    fullname: Ireland (Republic of)
+    is_in_eu: true
+    hesa_code: IE
+    sort_order: 1
+    is_active: true
+- model: student.domicile
+  pk: 84
+  fields:
+    name: Israel
+    fullname: Israel
+    is_in_eu: false
+    hesa_code: IL
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 85
+  fields:
+    name: Italy
+    fullname: Italy
+    is_in_eu: true
+    hesa_code: IT
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 86
+  fields:
+    name: Vatican City
+    fullname: Vatican City
+    is_in_eu: false
+    hesa_code: VA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 87
+  fields:
+    name: Cote d'lvore
+    fullname: Cote d'lvore (Ivory Coast)
+    is_in_eu: false
+    hesa_code: CI
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 88
+  fields:
+    name: Jamaica
+    fullname: Jamaica
+    is_in_eu: false
+    hesa_code: JM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 89
+  fields:
+    name: Japan
+    fullname: Japan
+    is_in_eu: false
+    hesa_code: JP
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 90
+  fields:
+    name: Jordan
+    fullname: Jordan
+    is_in_eu: false
+    hesa_code: JO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 91
+  fields:
+    name: Kenya
+    fullname: Kenya
+    is_in_eu: false
+    hesa_code: KE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 92
+  fields:
+    name: South Korea
+    fullname: South Korea
+    is_in_eu: false
+    hesa_code: KR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 93
+  fields:
+    name: North Korea
+    fullname: North Korea
+    is_in_eu: false
+    hesa_code: KP
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 94
+  fields:
+    name: Laos
+    fullname: Laos. Also Lao People's Democratic Republic
+    is_in_eu: false
+    hesa_code: LA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 95
+  fields:
+    name: Lebanon
+    fullname: Lebanon
+    is_in_eu: false
+    hesa_code: LB
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 97
+  fields:
+    name: Lesotho
+    fullname: Lesotho
+    is_in_eu: false
+    hesa_code: LS
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 98
+  fields:
+    name: Liberia
+    fullname: Liberia
+    is_in_eu: false
+    hesa_code: LR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 99
+  fields:
+    name: Libya
+    fullname: Libya. Also Libyan Arab Jamahiriya
+    is_in_eu: false
+    hesa_code: LY
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 100
+  fields:
+    name: Luxembourg
+    fullname: Luxembourg
+    is_in_eu: true
+    hesa_code: LU
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 101
+  fields:
+    name: Macao
+    fullname: Macao
+    is_in_eu: false
+    hesa_code: MO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 102
+  fields:
+    name: Madagascar
+    fullname: Madagascar
+    is_in_eu: false
+    hesa_code: MG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 103
+  fields:
+    name: Malawi
+    fullname: Malawi
+    is_in_eu: false
+    hesa_code: MW
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 104
+  fields:
+    name: Malaysia
+    fullname: Malaysia
+    is_in_eu: false
+    hesa_code: MY
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 105
+  fields:
+    name: Mali
+    fullname: Mali
+    is_in_eu: false
+    hesa_code: ML
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 106
+  fields:
+    name: Malta
+    fullname: Malta
+    is_in_eu: true
+    hesa_code: MT
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 107
+  fields:
+    name: Mauritania
+    fullname: Mauritania
+    is_in_eu: false
+    hesa_code: MR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 108
+  fields:
+    name: Mauritius
+    fullname: Mauritius
+    is_in_eu: false
+    hesa_code: MU
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 109
+  fields:
+    name: Mexico
+    fullname: Mexico
+    is_in_eu: false
+    hesa_code: MX
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 110
+  fields:
+    name: Mongolia
+    fullname: Mongolia
+    is_in_eu: false
+    hesa_code: MN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 111
+  fields:
+    name: Monserrat
+    fullname: Monserrat
+    is_in_eu: false
+    hesa_code: MS
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 112
+  fields:
+    name: Morocco
+    fullname: Morocco
+    is_in_eu: false
+    hesa_code: MA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 113
+  fields:
+    name: Mozambique
+    fullname: Mozambique
+    is_in_eu: false
+    hesa_code: MZ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 114
+  fields:
+    name: Oman
+    fullname: Oman
+    is_in_eu: false
+    hesa_code: OM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 115
+  fields:
+    name: Nepal
+    fullname: Nepal
+    is_in_eu: false
+    hesa_code: NP
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 117
+  fields:
+    name: Netherlands
+    fullname: Netherlands
+    is_in_eu: true
+    hesa_code: NL
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 118
+  fields:
+    name: Vanuatu
+    fullname: Vanuatu
+    is_in_eu: false
+    hesa_code: VU
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 119
+  fields:
+    name: New Zealand
+    fullname: New Zealand
+    is_in_eu: false
+    hesa_code: NZ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 120
+  fields:
+    name: Nicaragua
+    fullname: Nicaragua
+    is_in_eu: false
+    hesa_code: NI
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 121
+  fields:
+    name: Niger
+    fullname: Niger
+    is_in_eu: false
+    hesa_code: NE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 122
+  fields:
+    name: Nigeria
+    fullname: Nigeria
+    is_in_eu: false
+    hesa_code: NG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 123
+  fields:
+    name: Norway
+    fullname: Norway
+    is_in_eu: false
+    hesa_code: 'NO'
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 124
+  fields:
+    name: Pakistan
+    fullname: Pakistan
+    is_in_eu: false
+    hesa_code: PK
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 125
+  fields:
+    name: Panama
+    fullname: Panama
+    is_in_eu: false
+    hesa_code: PA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 126
+  fields:
+    name: Papua New Guinea
+    fullname: Papua New Guinea
+    is_in_eu: false
+    hesa_code: PG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 127
+  fields:
+    name: Paraguay
+    fullname: Paraguay
+    is_in_eu: false
+    hesa_code: PY
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 128
+  fields:
+    name: Peru
+    fullname: Peru
+    is_in_eu: false
+    hesa_code: PE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 129
+  fields:
+    name: Philippines
+    fullname: Philippines
+    is_in_eu: false
+    hesa_code: PH
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 130
+  fields:
+    name: Poland
+    fullname: Poland
+    is_in_eu: true
+    hesa_code: PL
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 131
+  fields:
+    name: Portugal
+    fullname: Portugal
+    is_in_eu: true
+    hesa_code: PT
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 132
+  fields:
+    name: Puerto Rico
+    fullname: Puerto Rico
+    is_in_eu: false
+    hesa_code: PR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 133
+  fields:
+    name: Qatar
+    fullname: Qatar
+    is_in_eu: false
+    hesa_code: QA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 134
+  fields:
+    name: Zimbabwe
+    fullname: Zimbabwe
+    is_in_eu: false
+    hesa_code: ZW
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 135
+  fields:
+    name: Romania
+    fullname: Romania
+    is_in_eu: true
+    hesa_code: RO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 136
+  fields:
+    name: Rwanda
+    fullname: Rwanda
+    is_in_eu: false
+    hesa_code: RW
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 137
+  fields:
+    name: St Helena
+    fullname: St Helena Dependencies. Also Ascension, Tristan de Cunha
+    is_in_eu: false
+    hesa_code: SH
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 138
+  fields:
+    name: St Helena
+    fullname: St Helena (incl deps)
+    is_in_eu: false
+    hesa_code: SH
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 140
+  fields:
+    name: St Kitts and Nevis
+    fullname: St Kitts and Nevis
+    is_in_eu: false
+    hesa_code: KN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 141
+  fields:
+    name: St Lucia
+    fullname: St Lucia
+    is_in_eu: false
+    hesa_code: LC
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 142
+  fields:
+    name: St Vincent & the Grenadines
+    fullname: St Vincent & the Grenadines
+    is_in_eu: false
+    hesa_code: VC
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 144
+  fields:
+    name: Western Samoa
+    fullname: Western Samoa
+    is_in_eu: false
+    hesa_code: WS
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 145
+  fields:
+    name: Saudi Arabia
+    fullname: Saudi Arabia
+    is_in_eu: false
+    hesa_code: SA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 146
+  fields:
+    name: Seychelles
+    fullname: Seychelles
+    is_in_eu: false
+    hesa_code: SC
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 147
+  fields:
+    name: Sierra Leone
+    fullname: Sierra Leone
+    is_in_eu: false
+    hesa_code: SL
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 148
+  fields:
+    name: Singapore
+    fullname: Singapore
+    is_in_eu: false
+    hesa_code: SG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 149
+  fields:
+    name: Solomon Islands
+    fullname: Solomon Islands
+    is_in_eu: false
+    hesa_code: SB
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 150
+  fields:
+    name: Somalia
+    fullname: Somalia
+    is_in_eu: false
+    hesa_code: SO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 151
+  fields:
+    name: Djibouti
+    fullname: Djibouti
+    is_in_eu: false
+    hesa_code: DJ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 152
+  fields:
+    name: South Africa
+    fullname: South Africa
+    is_in_eu: false
+    hesa_code: ZA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 153
+  fields:
+    name: Spain
+    fullname: Spain
+    is_in_eu: true
+    hesa_code: ES
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 154
+  fields:
+    name: Sudan
+    fullname: Sudan
+    is_in_eu: false
+    hesa_code: SD
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 155
+  fields:
+    name: Surinam
+    fullname: Surinam. Also Guiana (Dutch)
+    is_in_eu: false
+    hesa_code: SR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 156
+  fields:
+    name: Swaziland
+    fullname: Swaziland
+    is_in_eu: false
+    hesa_code: SZ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 157
+  fields:
+    name: Sweden
+    fullname: Sweden
+    is_in_eu: true
+    hesa_code: SE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 158
+  fields:
+    name: Switzerland
+    fullname: Switzerland
+    is_in_eu: false
+    hesa_code: CH
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 159
+  fields:
+    name: Syria
+    fullname: Syria
+    is_in_eu: false
+    hesa_code: SY
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 160
+  fields:
+    name: Tanzania
+    fullname: Tanzania
+    is_in_eu: false
+    hesa_code: TZ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 161
+  fields:
+    name: Thailand
+    fullname: Thailand
+    is_in_eu: false
+    hesa_code: TH
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 162
+  fields:
+    name: Togo
+    fullname: Togo
+    is_in_eu: false
+    hesa_code: TG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 163
+  fields:
+    name: Trinidad & Tobago
+    fullname: Trinidad & Tobago
+    is_in_eu: false
+    hesa_code: TT
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 164
+  fields:
+    name: United Arab Emirates
+    fullname: United Arab Emirates
+    is_in_eu: false
+    hesa_code: AE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 165
+  fields:
+    name: Tunisia
+    fullname: Tunisia
+    is_in_eu: false
+    hesa_code: TN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 166
+  fields:
+    name: Turkey
+    fullname: Turkey
+    is_in_eu: false
+    hesa_code: TR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 167
+  fields:
+    name: Uganda
+    fullname: Uganda
+    is_in_eu: false
+    hesa_code: UG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 168
+  fields:
+    name: Egypt
+    fullname: Egypt
+    is_in_eu: false
+    hesa_code: EG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 169
+  fields:
+    name: Burkina Faso
+    fullname: Burkina Faso
+    is_in_eu: false
+    hesa_code: BF
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 170
+  fields:
+    name: Uruguay
+    fullname: Uruguay
+    is_in_eu: false
+    hesa_code: UY
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 171
+  fields:
+    name: United States
+    fullname: United States
+    is_in_eu: false
+    hesa_code: US
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 172
+  fields:
+    name: USSR/CIS
+    fullname: USSR/CIS
+    is_in_eu: false
+    hesa_code: RU
+    sort_order: 0
+    is_active: true
+- model: student.domicile
+  pk: 173
+  fields:
+    name: Venezuela
+    fullname: Venezuela
+    is_in_eu: false
+    hesa_code: VE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 174
+  fields:
+    name: Vietnam
+    fullname: Vietnam
+    is_in_eu: false
+    hesa_code: VN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 175
+  fields:
+    name: British Virgin Islands
+    fullname: British Virgin Islands
+    is_in_eu: true
+    hesa_code: VG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 179
+  fields:
+    name: Serbia and Montenegro
+    fullname: Serbia and Montenegro
+    is_in_eu: false
+    hesa_code: CS
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 180
+  fields:
+    name: Zambia
+    fullname: Zambia
+    is_in_eu: false
+    hesa_code: ZM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 181
+  fields:
+    name: Not known
+    fullname: Not known
+    is_in_eu: false
+    hesa_code: ZZ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 182
+  fields:
+    name: Stateless
+    fullname: Stateless
+    is_in_eu: false
+    hesa_code: ZZ
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 183
+  fields:
+    name: Tonga
+    fullname: Tonga
+    is_in_eu: false
+    hesa_code: TO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 184
+  fields:
+    name: Senegal
+    fullname: Senegal
+    is_in_eu: false
+    hesa_code: SN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 185
+  fields:
+    name: Bangladesh
+    fullname: Bangladesh
+    is_in_eu: false
+    hesa_code: BD
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 186
+  fields:
+    name: Cayman Islands
+    fullname: Cayman Islands
+    is_in_eu: false
+    hesa_code: KY
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 187
+  fields:
+    name: Equatorial Guinea
+    fullname: Equatorial Guinea
+    is_in_eu: false
+    hesa_code: GQ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 188
+  fields:
+    name: Maldives
+    fullname: Maldives
+    is_in_eu: false
+    hesa_code: MV
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 189
+  fields:
+    name: Pacific Territories US
+    fullname: Pacific Territories US
+    is_in_eu: false
+    hesa_code: UM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 190
+  fields:
+    name: Namibia
+    fullname: Namibia
+    is_in_eu: false
+    hesa_code: NA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 191
+  fields:
+    name: Turks & Caicos Islands
+    fullname: Turks & Caicos Islands
+    is_in_eu: false
+    hesa_code: TC
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 194
+  fields:
+    name: Guinea-Bissau
+    fullname: Guinea-Bissau
+    is_in_eu: false
+    hesa_code: GW
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 195
+  fields:
+    name: Sao Tome & Principe
+    fullname: Sao Tome & Principe
+    is_in_eu: false
+    hesa_code: ST
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 196
+  fields:
+    name: Comoros
+    fullname: Comoros
+    is_in_eu: false
+    hesa_code: KM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 197
+  fields:
+    name: Nauru
+    fullname: Nauru
+    is_in_eu: false
+    hesa_code: NR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 199
+  fields:
+    name: New Caledonia
+    fullname: New Caledonia
+    is_in_eu: false
+    hesa_code: NC
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 202
+  fields:
+    name: Wallis & Futuna
+    fullname: Wallis & Futuna
+    is_in_eu: false
+    hesa_code: WF
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 203
+  fields:
+    name: Pitcairn Islands
+    fullname: Pitcairn Islands
+    is_in_eu: false
+    hesa_code: PN
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 204
+  fields:
+    name: Anguilla
+    fullname: Anguilla
+    is_in_eu: false
+    hesa_code: AI
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 205
+  fields:
+    name: Monaco
+    fullname: Monaco
+    is_in_eu: false
+    hesa_code: MC
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 206
+  fields:
+    name: San Marino
+    fullname: San Marino
+    is_in_eu: false
+    hesa_code: SM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 207
+  fields:
+    name: Liechtenstein
+    fullname: Liechtenstein
+    is_in_eu: false
+    hesa_code: LI
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 208
+  fields:
+    name: Faroe Islands
+    fullname: Faroe Islands
+    is_in_eu: false
+    hesa_code: FO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 209
+  fields:
+    name: Greenland
+    fullname: Greenland
+    is_in_eu: false
+    hesa_code: GL
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 210
+  fields:
+    name: British Indian Ocean Territory
+    fullname: British Indian Ocean Territory
+    is_in_eu: false
+    hesa_code: IO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 211
+  fields:
+    name: South Georgia & the Sandwich Islands
+    fullname: South Georgia & the Sandwich Islands
+    is_in_eu: false
+    hesa_code: GS
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 212
+  fields:
+    name: Estonia
+    fullname: Estonia
+    is_in_eu: true
+    hesa_code: EE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 213
+  fields:
+    name: Latvia
+    fullname: Latvia
+    is_in_eu: true
+    hesa_code: LV
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 214
+  fields:
+    name: Lithuania
+    fullname: Lithuania
+    is_in_eu: true
+    hesa_code: LT
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 215
+  fields:
+    name: Croatia
+    fullname: Croatia
+    is_in_eu: true
+    hesa_code: HR
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 216
+  fields:
+    name: Slovenia
+    fullname: Slovenia
+    is_in_eu: true
+    hesa_code: SI
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 217
+  fields:
+    name: Armenia
+    fullname: Armenia
+    is_in_eu: false
+    hesa_code: AM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 218
+  fields:
+    name: Azerbaijan
+    fullname: Azerbaijan
+    is_in_eu: false
+    hesa_code: AZ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 219
+  fields:
+    name: Belarus
+    fullname: Belarus
+    is_in_eu: false
+    hesa_code: BY
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 220
+  fields:
+    name: Kazakhstan
+    fullname: Kazakhstan
+    is_in_eu: false
+    hesa_code: KZ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 221
+  fields:
+    name: Kyrgyzstan
+    fullname: Kyrgyzstan (Also Kirgizia)
+    is_in_eu: false
+    hesa_code: KG
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 222
+  fields:
+    name: Kyrgyzstan
+    fullname: Kyrgyzstan
+    is_in_eu: false
+    hesa_code: KG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 224
+  fields:
+    name: Moldova
+    fullname: Moldova. Also Moldavia
+    is_in_eu: false
+    hesa_code: MD
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 225
+  fields:
+    name: Russia
+    fullname: Russia
+    is_in_eu: false
+    hesa_code: RU
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 226
+  fields:
+    name: Tajikistan
+    fullname: Tajikistan
+    is_in_eu: false
+    hesa_code: TJ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 227
+  fields:
+    name: Turkmenistan
+    fullname: Turkmenistan
+    is_in_eu: false
+    hesa_code: TM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 228
+  fields:
+    name: Ukraine
+    fullname: Ukraine
+    is_in_eu: false
+    hesa_code: UA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 229
+  fields:
+    name: Uzbekistan
+    fullname: Uzbekistan
+    is_in_eu: false
+    hesa_code: UZ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 230
+  fields:
+    name: Georgia
+    fullname: Georgia
+    is_in_eu: false
+    hesa_code: GE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 231
+  fields:
+    name: Slovakia
+    fullname: Slovakia
+    is_in_eu: true
+    hesa_code: SK
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 232
+  fields:
+    name: Macedonia
+    fullname: Macedonia (Skopje)
+    is_in_eu: false
+    hesa_code: MK
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 233
+  fields:
+    name: Bosnia and Herzegovina
+    fullname: Bosnia and Herzegovina
+    is_in_eu: false
+    hesa_code: BA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 234
+  fields:
+    name: Eritrea
+    fullname: Eritrea
+    is_in_eu: false
+    hesa_code: ER
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 235
+  fields:
+    name: Marshall Islands
+    fullname: Marshall Islands
+    is_in_eu: false
+    hesa_code: MH
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 236
+  fields:
+    name: Micronesia
+    fullname: Micronesia
+    is_in_eu: false
+    hesa_code: FM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 237
+  fields:
+    name: United Kingdom
+    fullname: United Kingdom (exc. Channel Is & Isle of Man)
+    is_in_eu: true
+    hesa_code: GB
+    sort_order: 0
+    is_active: true
+- model: student.domicile
+  pk: 238
+  fields:
+    name: Channel Islands
+    fullname: Channel Islands (The)
+    is_in_eu: false
+    hesa_code: XK
+    sort_order: 2
+    is_active: false
+- model: student.domicile
+  pk: 239
+  fields:
+    name: Isle of Man
+    fullname: Isle of Man
+    is_in_eu: true
+    hesa_code: IM
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 240
+  fields:
+    name: United Kingdom (England)
+    fullname: England
+    is_in_eu: true
+    hesa_code: XF
+    sort_order: 1
+    is_active: true
+- model: student.domicile
+  pk: 241
+  fields:
+    name: United Kingdom (Wales)
+    fullname: Wales
+    is_in_eu: true
+    hesa_code: XI
+    sort_order: 1
+    is_active: true
+- model: student.domicile
+  pk: 242
+  fields:
+    name: United Kingdom (Scotland)
+    fullname: Scotland
+    is_in_eu: true
+    hesa_code: XH
+    sort_order: 1
+    is_active: true
+- model: student.domicile
+  pk: 243
+  fields:
+    name: United Kingdom (Northern Ireland)
+    fullname: Northern Ireland
+    is_in_eu: true
+    hesa_code: XG
+    sort_order: 1
+    is_active: true
+- model: student.domicile
+  pk: 244
+  fields:
+    name: Botswana
+    fullname: Botswana
+    is_in_eu: false
+    hesa_code: BW
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 245
+  fields:
+    name: Benin
+    fullname: Benin
+    is_in_eu: false
+    hesa_code: BJ
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 246
+  fields:
+    name: Cape Verde
+    fullname: Cape Verde
+    is_in_eu: false
+    hesa_code: CV
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 248
+  fields:
+    name: St Helena
+    fullname: St Helena
+    is_in_eu: false
+    hesa_code: SH
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 249
+  fields:
+    name: Kuwait
+    fullname: Kuwait
+    is_in_eu: false
+    hesa_code: KW
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 255
+  fields:
+    name: Palestine
+    fullname: West Bank (inc. East Jerusalem) Gaza Strip-Palestinian Territory
+    is_in_eu: false
+    hesa_code: PS
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 256
+  fields:
+    name: Western Sahara
+    fullname: Western Sahara
+    is_in_eu: false
+    hesa_code: EH
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 257
+  fields:
+    name: Yugoslavia not otherwise specified
+    fullname: Yugoslavia not otherwise specified
+    is_in_eu: false
+    hesa_code: XO
+    sort_order: 0
+    is_active: true
+- model: student.domicile
+  pk: 258
+  fields:
+    name: Cyprus (Non-EU)
+    fullname: Cyprus (Non-EU)
+    is_in_eu: false
+    hesa_code: XB
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 259
+  fields:
+    name: Serbia
+    fullname: Serbia
+    is_in_eu: false
+    hesa_code: RS
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 260
+  fields:
+    name: South Sudan
+    fullname: South Sudan
+    is_in_eu: false
+    hesa_code: SS
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 261
+  fields:
+    name: Kosovo
+    fullname: Kosovo
+    is_in_eu: false
+    hesa_code: QO
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 262
+  fields:
+    name: Montenegro
+    fullname: Montenegro
+    is_in_eu: false
+    hesa_code: ME
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 263
+  fields:
+    name: Palau
+    fullname: Palau
+    is_in_eu: false
+    hesa_code: PW
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 264
+  fields:
+    name: East Timor
+    fullname: East Timor
+    is_in_eu: false
+    hesa_code: TL
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 265
+  fields:
+    name: Stateless
+    fullname: Stateless
+    is_in_eu: false
+    hesa_code: AA
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 266
+  fields:
+    name: Jersey
+    fullname: Jersey
+    is_in_eu: true
+    hesa_code: JE
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 267
+  fields:
+    name: Guernsey
+    fullname: Guernsey
+    is_in_eu: true
+    hesa_code: GG
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 268
+  fields:
+    name: Guam
+    fullname: Guam
+    is_in_eu: false
+    hesa_code: GU
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 269
+  fields:
+    name: Northern Mariana Islands
+    fullname: Northern Mariana Islands
+    is_in_eu: false
+    hesa_code: MP
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 270
+  fields:
+    name: American Samoa
+    fullname: American Samoa
+    is_in_eu: false
+    hesa_code: AS
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 271
+  fields:
+    name: French Guiana
+    fullname: French Guiana
+    is_in_eu: false
+    hesa_code: GF
+    sort_order: 2
+    is_active: true
+- model: student.domicile
+  pk: 272
+  fields:
+    name: Aruba
+    fullname: Aruba
+    is_in_eu: false
+    hesa_code: AW
+    sort_order: 2
+    is_active: true

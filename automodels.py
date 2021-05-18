@@ -281,19 +281,6 @@ class Division(models.Model):
         db_table = 'division'
 
 
-class Domicile(models.Model):
-    name = models.CharField(max_length=64, blank=True, null=True)
-    fullname = models.CharField(max_length=64, blank=True, null=True)
-    is_in_eu = models.BooleanField(blank=True, null=True)
-    hesa_code = models.CharField(max_length=8, blank=True, null=True)
-    sort_order = models.IntegerField(blank=True, null=True)
-    is_active = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'domicile'
-
-
 class EmergencyContact(models.Model):
     student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student', blank=True, null=True)
     name = models.CharField(max_length=128, blank=True, null=True)
@@ -322,19 +309,6 @@ class Enquiry(models.Model):
     class Meta:
         managed = False
         db_table = 'enquiry'
-
-
-class EntryQualification(models.Model):
-    id = models.CharField(primary_key=True, max_length=10)
-    description = models.CharField(max_length=128, blank=True, null=True)
-    custom_description = models.CharField(max_length=128, blank=True, null=True)
-    elq_rank = models.IntegerField(blank=True, null=True)
-    web_publish = models.BooleanField(db_column='web_Publish', blank=True, null=True)  # Field name made lowercase.
-    display_order = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'entry_qualification'
 
 
 class Equipment(models.Model):
@@ -395,29 +369,6 @@ class FeedbackAdmin(models.Model):
     class Meta:
         managed = False
         db_table = 'feedback_admin'
-
-
-class HecosSubject(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=50)
-    definition = models.CharField(max_length=255, blank=True, null=True)
-    cost_centre = models.ForeignKey(
-        'HesaCostCentre', models.DO_NOTHING, db_column='cost_centre', blank=True, null=True
-    )
-
-    class Meta:
-        managed = False
-        db_table = 'hecos_subject'
-
-
-class HesaCostCentre(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
-    price_group = models.CharField(max_length=2, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'hesa_cost_centre'
 
 
 class Invoice(models.Model):
@@ -565,20 +516,6 @@ class ModuleEquipment(models.Model):
         db_table = 'module_equipment'
 
 
-class ModuleHecosSubject(models.Model):
-    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
-    hecos_subject = models.ForeignKey(HecosSubject, models.DO_NOTHING, db_column='hecos_subject')
-    percentage = models.IntegerField()
-    created_by = models.CharField(max_length=50, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=50, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'module_hecos_subject'
-
-
 class ModuleStatus(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.CharField(max_length=64, blank=True, null=True)
@@ -597,22 +534,6 @@ class ModuleType(models.Model):
     class Meta:
         managed = False
         db_table = 'module_type'
-
-
-class MoodleId(models.Model):
-    id = models.AutoField()
-    moodle_id = models.IntegerField(blank=True, null=True)
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
-    first_module_code = models.CharField(max_length=12, blank=True, null=True)
-    created_by = models.CharField(max_length=64, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=64, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'moodle_id'
-        unique_together = (('moodle_id', 'student'),)
 
 
 class Nationality(models.Model):
@@ -794,16 +715,6 @@ class Portfolio(models.Model):
     class Meta:
         managed = False
         db_table = 'portfolio'
-
-
-class ProgrammeHecosSubject(models.Model):
-    programme = models.ForeignKey(Programme, models.DO_NOTHING, db_column='programme')
-    hecos_subject = models.ForeignKey(HecosSubject, models.DO_NOTHING, db_column='hecos_subject')
-    percentage = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'programme_hecos_subject'
 
 
 class ProgrammeStaff(models.Model):

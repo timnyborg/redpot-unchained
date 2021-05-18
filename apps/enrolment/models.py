@@ -7,8 +7,16 @@ NOT_CODED_RESULT = 7
 
 
 class Enrolment(SignatureModel):
-    qa = models.ForeignKey('programme.QA', models.DO_NOTHING, db_column='qa', blank=True, null=True)
-    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', related_name='enrolments')
+    qa = models.ForeignKey(
+        'programme.QA', models.DO_NOTHING, db_column='qa', related_name='enrolments', related_query_name='enrolment'
+    )
+    module = models.ForeignKey(
+        'module.Module',
+        models.DO_NOTHING,
+        db_column='module',
+        related_name='enrolments',
+        related_query_name='enrolment',
+    )
     status = models.ForeignKey('EnrolmentStatus', models.DO_NOTHING, db_column='status')
     result = models.ForeignKey(
         'EnrolmentResult',

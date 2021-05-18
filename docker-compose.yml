@@ -16,6 +16,14 @@ services:
       replicas: 2
     restart: always
 
+  worker:
+    image: redpot:latest
+    secrets:
+      - source: app_config
+        target: /code/secrets.json
+    restart: always
+    command: celery -A redpot worker -n redpot-worker
+
   redis:
     image: redis:6.0
     restart: always

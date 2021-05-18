@@ -1,7 +1,12 @@
+from typing import Optional
+
 from django.db import models
 from django.urls import reverse
 
 from apps.core.models import SignatureModel
+
+NOT_KNOWN_DOMICILE = 181
+NOT_KNOWN_NATIONALITY = 181
 
 
 class Student(SignatureModel):
@@ -13,8 +18,10 @@ class Student(SignatureModel):
     nickname = models.CharField(max_length=64, blank=True, null=True)
     birthdate = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, blank=True, null=True)
-    domicile = models.IntegerField(blank=True, null=True)
-    nationality = models.IntegerField(blank=True, null=True)
+    domicile = models.ForeignKey('Domicile', models.DO_NOTHING, db_column='domicile', default=NOT_KNOWN_DOMICILE)
+    nationality = models.ForeignKey(
+        'Nationality', models.DO_NOTHING, db_column='nationality', default=NOT_KNOWN_NATIONALITY
+    )
     ethnicity = models.IntegerField(blank=True, null=True)
     religion_or_belief = models.IntegerField(default=99)
     disability = models.IntegerField(blank=True, null=True)
@@ -51,6 +58,16 @@ class Student(SignatureModel):
         if self.nickname:
             return f'{self.nickname} ({self.firstname})'
         return self.firstname
+
+    @property
+    def sex(self) -> Optional[int]:
+        """Get HESA coding for sex based on gender"""
+        gender_to_sex_map = {
+            'M': 1,
+            'F': 2,
+            'I': 3,
+        }
+        return gender_to_sex_map.get(self.gender)
 
     def get_absolute_url(self):
         return reverse('student-view', args=[self.id])
@@ -134,3 +151,63 @@ class NextHUSID(models.Model):
     class Meta:
         # managed = False
         db_table = 'next_husid'
+
+
+class MoodleID(SignatureModel):
+    moodle_id = models.IntegerField(unique=True)
+    student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student', related_name='moodle_id')
+    first_module_code = models.CharField(max_length=12)
+
+    class Meta:
+        # managed = False
+        db_table = 'moodle_id'
+
+
+class OtherID(SignatureModel):
+    class Types(models.IntegerChoices):
+        SSO = 7
+        OSS = 8
+        SSN = 9
+
+    student = models.ForeignKey(
+        'Student',
+        models.DO_NOTHING,
+        db_column='student',
+        related_name='other_ids',
+        related_query_name='other_id',
+    )
+    number = models.CharField(max_length=64, blank=True, null=True)
+    type = models.IntegerField(choices=Types.choices)
+    note = models.CharField(max_length=64, blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'other_id'
+
+
+class Nationality(models.Model):
+    name = models.CharField(max_length=64)
+    fullname = models.CharField(max_length=64, blank=True, null=True)
+    is_in_eu = models.BooleanField()
+    hesa_code = models.CharField(max_length=8)
+    sort_order = models.IntegerField()
+    is_active = models.BooleanField()
+
+    class Meta:
+        # managed = False
+        db_table = 'nationality'
+
+
+class Domicile(models.Model):
+    name = models.CharField(max_length=64)
+    fullname = models.CharField(max_length=64, blank=True, null=True)
+    is_in_eu = models.BooleanField()
+    hesa_code = models.CharField(max_length=8)
+    sort_order = models.IntegerField()
+    is_active = models.BooleanField()
+
+    class Meta:
+        # managed = False
+        db_table = 'domicile'
