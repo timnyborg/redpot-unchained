@@ -20,6 +20,7 @@ from apps.core.models import PhoneField, SignatureModel
 from apps.core.utils.dates import academic_year
 
 NOT_KNOWN_ENTRY_QUALIFICATION = 'X06'
+AT_PROVIDER_STUDY_LOCATION = 1
 
 
 class Portfolio(Model):
@@ -138,7 +139,9 @@ class Programme(SignatureModel):
     funding_level = IntegerField(blank=True, null=True, choices=FUNDING_LEVELS)
     funding_source = IntegerField(blank=True, null=True, choices=FUNDING_SOURCES)
     study_mode = IntegerField(blank=True, null=True, choices=STUDY_MODES)
-    study_location = ForeignKey(StudyLocation, DO_NOTHING, db_column='study_location', blank=True, null=True)
+    study_location = ForeignKey(
+        StudyLocation, DO_NOTHING, db_column='study_location', default=AT_PROVIDER_STUDY_LOCATION
+    )
     reporting_year_type = IntegerField(blank=True, null=True)
 
     is_active = BooleanField(default=True)
@@ -207,7 +210,9 @@ class QA(models.Model):
     title = models.CharField(max_length=96, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
-    study_location = ForeignKey(StudyLocation, DO_NOTHING, db_column='study_location', blank=True, null=True)
+    study_location = ForeignKey(
+        StudyLocation, DO_NOTHING, db_column='study_location', default=AT_PROVIDER_STUDY_LOCATION
+    )
     entry_qualification = ForeignKey(
         'EntryQualification', DO_NOTHING, db_column='entry_qualification', default=NOT_KNOWN_ENTRY_QUALIFICATION
     )

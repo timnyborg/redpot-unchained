@@ -6,7 +6,7 @@ from typing import Optional
 
 from celery_progress.backend import ProgressRecorder
 
-from django.db.models import F, FilteredRelation, Prefetch, Q, Subquery
+from django.db.models import F, FilteredRelation, OuterRef, Prefetch, Q, Subquery
 
 from apps.enrolment.models import Enrolment
 from apps.invoice.models import Ledger
@@ -189,7 +189,7 @@ class HESAReturn:
                 instanceid=self._instance_id(row.id),
                 ownstu_fk=row.student.sits_id or row.student.id,
                 numhus=self._instance_id(row.id),
-                courseid_id=row.programme.id,
+                courseid=row.programme.id,
                 comdate=min(enrolment.module.start_date for enrolment in row.returned_enrolments),
                 mode=row.programme.study_mode,
                 stuload=sum(enrolment.module.full_time_equivalent for enrolment in row.returned_enrolments),
@@ -408,9 +408,17 @@ class HESAReturn:
         instances = (
             models.Instance.objects.filter(
                 batch=self.batch,
-                courseid__batch=self.batch,
             )
-            .filter(Q(fundcode__in=(2, 3, 5)) | Q(courseid__courseaim__in=('M90', 'E90')))
+            .annotate(
+                # get the courseaim of the matching course in the same batch
+                courseaim=Subquery(
+                    models.Course.objects.filter(
+                        courseid=OuterRef('courseid'),
+                        batch=self.batch,
+                    ).values('courseaim')
+                )
+            )
+            .filter(Q(fundcode__in=(2, 3, 5)) | Q(courseaim=('M90', 'E90')))
             .values('instanceid')
         )
 
@@ -509,9 +517,10 @@ def _correct_postcode(postcode: str) -> str:
 
 
 def _reason_for_ending(*, enrolments) -> str:
-    if any(enrolment.result.hesa_code == PASS_RESULT for enrolment in enrolments):
+    results = {enrolment.result.hesa_code for enrolment in enrolments}
+    if PASS_RESULT in results:
         return '01'  # completion
-    if all(enrolment.result.hesa_code == FAIL_RESULT for enrolment in enrolments):
+    if FAIL_RESULT in results:
         return '02'  # academic failure
     return '01'  # todo: reconsider fallback value
 

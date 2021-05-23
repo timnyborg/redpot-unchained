@@ -1,0 +1,36 @@
+- model: programme.studylocation
+  pk: 1
+  fields:
+    description: At provider or a partner for the whole year
+    hesa_code: Z
+    is_active: true
+- model: programme.studylocation
+  pk: 2
+  fields:
+    description: Abroad for the whole year
+    hesa_code: T
+    is_active: false
+- model: programme.studylocation
+  pk: 3
+  fields:
+    description: Abroad for a proportion of the year
+    hesa_code: U
+    is_active: false
+- model: programme.studylocation
+  pk: 6
+  fields:
+    description: Distance learning - UK based
+    hesa_code: '6'
+    is_active: true
+- model: programme.studylocation
+  pk: 8
+  fields:
+    description: On industrial (or other) placement for the year as a whole
+    hesa_code: D
+    is_active: false
+- model: programme.studylocation
+  pk: 9
+  fields:
+    description: Distance learning - non-UK based
+    hesa_code: '9'
+    is_active: true
