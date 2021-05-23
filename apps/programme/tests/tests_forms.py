@@ -15,6 +15,7 @@ class TestEditForm(TestCase):
                 "division": 1,
                 "portfolio": 1,
                 "qualification": 1,
+                "study_location": 1,
             },
             user=FakeUser(),
         )

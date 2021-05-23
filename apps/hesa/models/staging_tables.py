@@ -10,8 +10,7 @@ class Batch(models.Model):
     filename = models.CharField(max_length=512, blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[hesa].[batch]'
+        db_table = 'hesa_batch'
 
 
 class Course(models.Model):
@@ -34,8 +33,7 @@ class Course(models.Model):
     awardbod = models.IntegerField(db_column='AWARDBOD', default=INSTITUTION_CODE)
 
     class Meta:
-        managed = False
-        db_table = '[hesa].[course]'
+        db_table = 'hesa_course'
         unique_together = (('batch', 'courseid'),)
 
 
@@ -46,8 +44,7 @@ class CourseSubject(models.Model):
     sbjpcnt = models.IntegerField(db_column='SBJPCNT', blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[hesa].[course_subject]'
+        db_table = 'hesa_course_subject'
 
 
 class EntryProfile(models.Model):
@@ -59,8 +56,7 @@ class EntryProfile(models.Model):
     careleaver = models.IntegerField(db_column='CARELEAVER', blank=True, null=True, default=99)
 
     class Meta:
-        managed = False
-        db_table = '[hesa].[entry_profile]'
+        db_table = 'hesa_entry_profile'
 
 
 class Instance(models.Model):
@@ -70,7 +66,7 @@ class Instance(models.Model):
     ownstu_fk = models.IntegerField(db_column='OWNSTU_FK', blank=True, null=True)
     numhus = models.CharField(db_column='NUMHUS', max_length=16, blank=True, null=True)
     reducedi = models.CharField(db_column='REDUCEDI', max_length=2, default='00')
-    courseid = models.ForeignKey('Course', models.DO_NOTHING, db_column='COURSEID', max_length=8)
+    courseid = models.CharField(db_column='COURSEID', max_length=8)
     campid = models.CharField(db_column='CAMPID', max_length=1, default='A')  # We only have one campus
     comdate = models.DateField(db_column='COMDATE', blank=True, null=True)
     mode = models.IntegerField(db_column='MODE', blank=True, null=True)
@@ -101,8 +97,7 @@ class Instance(models.Model):
     mcdate = models.DateField(db_column='MCDATE', blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[hesa].[instance]'
+        db_table = 'hesa_instance'
 
 
 class Institution(models.Model):
@@ -112,8 +107,7 @@ class Institution(models.Model):
     ukprn = models.IntegerField(db_column='UKPRN', default=INSTITUTION_CODE)
 
     class Meta:
-        managed = False
-        db_table = '[hesa].[institution]'
+        db_table = 'hesa_institution'
 
 
 class Module(models.Model):
@@ -130,8 +124,7 @@ class Module(models.Model):
     tinst = models.IntegerField(db_column='TINST', blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[hesa].[module]'
+        db_table = 'hesa_module'
 
 
 class ModuleSubject(models.Model):
@@ -142,8 +135,7 @@ class ModuleSubject(models.Model):
     modsbj = models.CharField(db_column='MODSBJ', max_length=6)
 
     class Meta:
-        managed = False
-        db_table = '[hesa].[module_subject]'
+        db_table = 'hesa_module_subject'
 
 
 class QualificationsAwarded(models.Model):
@@ -152,8 +144,7 @@ class QualificationsAwarded(models.Model):
     qual = models.CharField(db_column='QUAL', max_length=3, blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[hesa].[qualifications_awarded]'
+        db_table = 'hesa_qualifications_awarded'
 
 
 class Student(models.Model):
@@ -176,8 +167,7 @@ class Student(models.Model):
     relblf = models.CharField(db_column='RELBLF', max_length=2, blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[hesa].[student]'
+        db_table = 'hesa_student'
 
 
 class StudentOnModule(models.Model):
@@ -189,5 +179,4 @@ class StudentOnModule(models.Model):
     modout = models.CharField(db_column='MODOUT', max_length=3, blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = '[hesa].[student_on_module]'
+        db_table = 'hesa_student_on_module'
