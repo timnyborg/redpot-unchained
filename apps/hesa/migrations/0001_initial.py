@@ -113,6 +113,7 @@ class Migration(migrations.Migration):
                 ('enrolment', models.IntegerField(blank=True, null=True)),
                 ('instanceid_fk', models.CharField(blank=True, db_column='INSTANCEID_FK', max_length=16, null=True)),
                 ('modid', models.CharField(blank=True, db_column='MODID', max_length=16, null=True)),
+                ('modstat', models.IntegerField(db_column='MODSTAT', default=2)),
                 ('modout', models.CharField(blank=True, db_column='MODOUT', max_length=3, null=True)),
                 ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.DO_NOTHING,
                                             to='hesa.Batch')),

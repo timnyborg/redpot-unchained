@@ -1,9 +1,26 @@
+from __future__ import annotations
+
 from django.db import models
 
 INSTITUTION_CODE = 10007774
 
 
-class Batch(models.Model):
+class XMLStagingModel:
+    xml_fields = ()
+    xml_required = ()
+
+    @property
+    def element_name(self) -> str:
+        """The element produced when generating an XML node from the model.  Defaults to the class name, but
+        Can be overridden"""
+        return self.__class__.__name__
+
+    def children(self) -> list[models.Queryset]:
+        """Returns a list of querysets, which will be iterated over in sequence to create child nodes"""
+        return []
+
+
+class Batch(XMLStagingModel, models.Model):
     academic_year = models.IntegerField()
     created_on = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=32, blank=True, null=True)
@@ -13,7 +30,21 @@ class Batch(models.Model):
         db_table = 'hesa_batch'
 
 
-class Course(models.Model):
+class Course(XMLStagingModel, models.Model):
+    parent_key = 'ukprn_fk'
+    xml_fields = [
+        'courseid',
+        'owncourseid',
+        'awardbod',
+        'clsdcrs',
+        'collorg',
+        'courseaim',
+        'ctitle',
+        'msfund',
+        'reducedc',
+        'ttcid',
+    ]
+
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch', blank=True, null=True)
     programme = models.IntegerField(blank=True, null=True)
     ukprn_fk = models.IntegerField(db_column='UKPRN_FK', default=INSTITUTION_CODE)
@@ -36,8 +67,13 @@ class Course(models.Model):
         db_table = 'hesa_course'
         unique_together = (('batch', 'courseid'),)
 
+    def children(self) -> list[models.Queryset]:
+        return [CourseSubject.objects.filter(batch=self.batch, courseid_fk=self.courseid)]
 
-class CourseSubject(models.Model):
+
+class CourseSubject(XMLStagingModel, models.Model):
+    xml_fields = ['sbjca', 'sbjpcnt']
+
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     courseid_fk = models.CharField(db_column='COURSEID_FK', max_length=8, blank=True, null=True)
     sbjca = models.CharField(db_column='SBJCA', max_length=6, blank=True, null=True)
@@ -47,7 +83,9 @@ class CourseSubject(models.Model):
         db_table = 'hesa_course_subject'
 
 
-class EntryProfile(models.Model):
+class EntryProfile(XMLStagingModel, models.Model):
+    xml_fields = ['careleaver', 'domicile', 'postcode', 'qualent3']
+
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     instanceid_fk = models.CharField(db_column='INSTANCEID_FK', max_length=16, blank=True, null=True)
     domicile = models.CharField(db_column='DOMICILE', max_length=2, blank=True, null=True)
@@ -59,7 +97,42 @@ class EntryProfile(models.Model):
         db_table = 'hesa_entry_profile'
 
 
-class Instance(models.Model):
+class Instance(XMLStagingModel, models.Model):
+    xml_fields = [
+        'numhus',
+        'courseid',
+        'bridge',
+        'campid',
+        'comdate',
+        'disall',
+        'elq',
+        'enddate',
+        'exchange',
+        'feeelig',
+        'feeregime',
+        'festumk',
+        'fundcode',
+        'fundcomp',
+        'fundlev',
+        'grossfee',
+        'locsdy',
+        'mcdate',
+        'mode',
+        'mstufee',
+        'netfee',
+        'rcstdnt',
+        'reducedi',
+        'rsnend',
+        'specfee',
+        'splength',
+        'stuload',
+        'typeyr',
+        'unitlgth',
+        'yearprg',
+        'yearstu',
+    ]
+    xml_required = ['splength', 'mcdate', 'enddate']
+
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     qa = models.IntegerField(blank=True, null=True)
     instanceid = models.CharField(db_column='INSTANCEID', max_length=16, blank=True, null=True)
@@ -99,8 +172,17 @@ class Instance(models.Model):
     class Meta:
         db_table = 'hesa_instance'
 
+    def children(self) -> list[models.Queryset]:
+        return [
+            EntryProfile.objects.filter(batch=self.batch, instanceid_fk=self.instanceid),
+            QualificationsAwarded.objects.filter(batch=self.batch, instanceid_fk=self.instanceid),
+            StudentOnModule.objects.filter(batch=self.batch, instanceid_fk=self.instanceid),
+        ]
 
-class Institution(models.Model):
+
+class Institution(XMLStagingModel, models.Model):
+    xml_fields = ['instapp', 'recid', 'ukprn']
+
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     instapp = models.IntegerField(db_column='INSTAPP', default=0)
     recid = models.IntegerField(db_column='RECID')
@@ -109,8 +191,17 @@ class Institution(models.Model):
     class Meta:
         db_table = 'hesa_institution'
 
+    def children(self) -> list[models.Queryset]:
+        return [
+            Course.objects.filter(batch=self.batch),
+            Module.objects.filter(batch=self.batch),
+            Student.objects.filter(batch=self.batch),
+        ]
 
-class Module(models.Model):
+
+class Module(XMLStagingModel, models.Model):
+    xml_fields = ['modid', 'crdtpts', 'crdtscm', 'fte', 'levlpts', 'mtitle', 'pcolab', 'tinst']
+
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     module = models.IntegerField(blank=True, null=True)
     ukprn_fk = models.IntegerField(db_column='UKPRN_FK', default=INSTITUTION_CODE)
@@ -126,8 +217,13 @@ class Module(models.Model):
     class Meta:
         db_table = 'hesa_module'
 
+    def children(self) -> list[models.Queryset]:
+        return [ModuleSubject.objects.filter(batch=self.batch, modid_fk=self.modid)]
 
-class ModuleSubject(models.Model):
+
+class ModuleSubject(XMLStagingModel, models.Model):
+    xml_fields = ['costcn', 'modsbj', 'modsbjp']
+
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     modid_fk = models.CharField(db_column='MODID_FK', max_length=32)
     costcn = models.IntegerField(db_column='COSTCN', blank=True, null=True)
@@ -138,7 +234,9 @@ class ModuleSubject(models.Model):
         db_table = 'hesa_module_subject'
 
 
-class QualificationsAwarded(models.Model):
+class QualificationsAwarded(XMLStagingModel, models.Model):
+    xml_fields = ['qual']
+
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     instanceid_fk = models.CharField(db_column='INSTANCEID_FK', max_length=16, blank=True, null=True)
     qual = models.CharField(db_column='QUAL', max_length=3, blank=True, null=True)
@@ -147,7 +245,25 @@ class QualificationsAwarded(models.Model):
         db_table = 'hesa_qualifications_awarded'
 
 
-class Student(models.Model):
+class Student(XMLStagingModel, models.Model):
+    xml_fields = [
+        'husid',
+        'ownstu',
+        'birthdte',
+        'disable',
+        'ethnic',
+        'fnames',
+        'nation',
+        'relblf',
+        'scn',
+        'sexid',
+        'ssn',
+        'surname',
+        'ttaccom',
+        'ttpcode',
+    ]
+    xml_required = ['BIRTHDTE', 'SCN', 'TTPCODE']
+
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     student = models.IntegerField()
     ukprn_fk = models.IntegerField(db_column='UKPRN_FK', default=INSTITUTION_CODE)
@@ -169,13 +285,18 @@ class Student(models.Model):
     class Meta:
         db_table = 'hesa_student'
 
+    def children(self) -> list[models.Queryset]:
+        return [Instance.objects.filter(batch=self.batch, ownstu_fk=self.ownstu)]
 
-class StudentOnModule(models.Model):
+
+class StudentOnModule(XMLStagingModel, models.Model):
+    xml_fields = ['modid', 'modout', 'modstat']
+
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     enrolment = models.IntegerField(blank=True, null=True)
     instanceid_fk = models.CharField(db_column='INSTANCEID_FK', max_length=16, blank=True, null=True)
     modid = models.CharField(db_column='MODID', max_length=16, blank=True, null=True)
-    modstat = (models.IntegerField(db_column='MODSTAT', default=2),)  # Module contained within academic year
+    modstat = models.IntegerField(db_column='MODSTAT', default=2)  # Module contained within academic year
     modout = models.CharField(db_column='MODOUT', max_length=3, blank=True, null=True)
 
     class Meta:

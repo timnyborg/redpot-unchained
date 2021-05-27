@@ -1,3 +1,5 @@
+import itertools
+import os
 import re
 from datetime import date
 from decimal import Decimal
@@ -5,6 +7,7 @@ from time import time
 from typing import Optional
 
 from celery_progress.backend import ProgressRecorder
+from lxml import etree
 
 from django.db.models import F, FilteredRelation, OuterRef, Prefetch, Q, Subquery
 
@@ -15,6 +18,7 @@ from apps.programme.models import QA, Programme
 from apps.student.models import Student
 
 from . import models
+from .models.staging_tables import XMLStagingModel
 
 EMPTY_ELEMENT = '<EMPTY>'
 
@@ -427,79 +431,6 @@ class HESAReturn:
         )
 
 
-#
-# def generate_xml(batch):
-#     def generate_nodes(tablename, children, key_value=None):
-#         table = idb['hesa_%s' % tablename]
-#
-#         # Get all the records from this table
-#         query = table.batch == batch
-#         if key_value:
-#             query &= table._extra['foreign_key'] == key_value
-#
-#         records = idb(query).select()
-#         for record in records:
-#             # Attach to the parent
-#             node = etree.Element(
-#                 tablename.title().replace('_', '')
-#             )  # the table elements must be in the format StudentOnModule
-#             # Fill with elements
-#             for column in table._extra['fields']:
-#                 value = record[column]
-#                 if value is not None:
-#                     # <EMPTY> lets us handle conditionally-returned elements, e.g. postcode and ttpcode: they
-#                     # must not exist for overseas, but can exist and be empty for UK
-#                     etree.SubElement(node, column).text = str(value).replace(EMPTY_ELEMENT, '')
-#                 elif 'required' in table._extra and column in table._extra['required']:
-#                     # Empty element for a null
-#                     etree.SubElement(node, column)
-#
-#             # Create subnodes if any exist
-#             for child in children:
-#                 for child_node in generate_nodes(*child, key_value=record[table._extra['key']]):
-#                     node.append(child_node)
-#
-#             yield node
-#
-#     response.generic_patterns = ['*']
-#     structure = (
-#         'institution',
-#         [
-#             ('course', [('course_subject', [])]),
-#             ('module', [('module_subject', [])]),
-#             (
-#                 'student',
-#                 [
-#                     (
-#                         'instance',
-#                         [
-#                             ('entry_profile', []),
-#                             ('qualifications_awarded', []),
-#                             ('student_on_module', []),
-#                         ],
-#                     )
-#                 ],
-#             ),
-#         ],
-#     )
-#
-#     root = etree.Element('StudentRecord')
-#
-#     for child in generate_nodes(*structure):
-#         root.append(child)
-#
-#     filename = 'conted_batch_%s.xml' % batch
-#     filepath = os.path.join(request.folder, 'xml/', filename)
-#     with open(filepath, 'w') as f:
-#         f.write(etree.tostring(root, pretty_print=True).decode('utf8'))
-#
-#     idb.hesa_batch(batch).update_record(filename=filename)
-#     idb.commit()
-#
-#     # We'll send them back to the /view/batch
-#     return batch
-
-
 def _correct_postcode(postcode: str) -> str:
     """Format UK postcodes while filtering out non-UK"""
     # UK govt regex from https://stackoverflow.com/questions/164979/regex-for-matching-uk-postcodes
@@ -555,3 +486,43 @@ def _netfee(*, enrolments) -> Decimal:
         return sum(line.amount for line in enrolment.fee_ledger_items if line.amount > 0)
 
     return sum(enrolment_sum(enrolment) for enrolment in enrolments)
+
+
+def _model_to_node(model: XMLStagingModel) -> etree.Element:
+    node = etree.Element(model.element_name)
+    # Fill with elements
+    for column in model.xml_fields:
+        value = getattr(model, column)
+        if value is not None:
+            # EMPTY_ELEMENT lets us handle conditionally-returned elements, e.g. postcode and ttpcode: they
+            # must not exist for overseas, but can exist and be empty for UK
+            etree.SubElement(node, column.upper()).text = str(value).replace(EMPTY_ELEMENT, '')
+        elif column in model.xml_required:
+            # Empty element for a null
+            etree.SubElement(node, column.upper())
+
+    # Create subnodes if any exist
+    for child in itertools.chain.from_iterable(model.children()):
+        node.append(_model_to_node(child))
+
+    return node
+
+
+def _generate_tree(batch: int) -> str:
+    root = etree.Element('StudentRecord')
+    institution = models.Institution.objects.get(batch=batch)
+    root.append(_model_to_node(institution))
+
+    return etree.tostring(root, pretty_print=True).decode('utf8')
+
+
+def save_xml(batch_id: int, path: str) -> None:
+    batch = models.Batch.objects.get(id=batch_id)
+
+    filename = f'conted_batch_{batch.id}.xml'
+    filepath = os.path.join(path, filename)
+    with open(filepath, 'w') as f:
+        xml_string = _generate_tree(batch.id)
+        f.write(xml_string)
+    batch.filename = filename
+    batch.save()
