@@ -116,4 +116,23 @@ class TestReturnProduction(test.TestCase):
             self.module.code,
         )
 
+    def test_xml_contains_all_datatypes(self):
+        self.maxDiff = None
+        # todo: add in course & module subjects
+        hesa_return = services.HESAReturn(2020, 'test')
+        batch = hesa_return.create()
+
+        xml = services._generate_tree(batch.id)
+        # todo: add subjects once implemented
+        for element in [
+            '<Course>',
+            '<Module>',
+            '<EntryProfile>',
+            '<Student>',
+            '<StudentOnModule>',
+            '<Instance>',
+            '<QualificationsAwarded>',
+        ]:
+            self.assertIn(element, xml)
+
     # todo: add no-result test cases, etc.
