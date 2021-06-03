@@ -84,7 +84,7 @@ class CourseSubject(XMLStagingModel, models.Model):
 
 
 class EntryProfile(XMLStagingModel, models.Model):
-    xml_fields = ['careleaver', 'domicile', 'postcode', 'qualent3']
+    xml_fields = ['careleaver', 'domicile', 'pared', 'postcode', 'qualent3']
 
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     instanceid_fk = models.CharField(db_column='INSTANCEID_FK', max_length=16, blank=True, null=True)
@@ -92,6 +92,7 @@ class EntryProfile(XMLStagingModel, models.Model):
     qualent3 = models.CharField(db_column='QUALENT3', max_length=3, blank=True, null=True)
     postcode = models.CharField(db_column='POSTCODE', max_length=32, blank=True, null=True)
     careleaver = models.IntegerField(db_column='CARELEAVER', blank=True, null=True, default=99)
+    pared = models.IntegerField(db_column='PARED', blank=True, null=True, default=7)  # Not given
 
     class Meta:
         db_table = 'hesa_entry_profile'
@@ -109,7 +110,6 @@ class Instance(XMLStagingModel, models.Model):
         'enddate',
         'exchange',
         'feeelig',
-        'feeregime',
         'festumk',
         'fundcode',
         'fundcomp',
@@ -162,7 +162,6 @@ class Instance(XMLStagingModel, models.Model):
     disall = models.IntegerField(db_column='DISALL', blank=True, null=True)
     festumk = models.IntegerField(db_column='FESTUMK', default=2)
     grossfee = models.IntegerField(db_column='GROSSFEE', blank=True, null=True)
-    feeregime = models.IntegerField(db_column='FEEREGIME', blank=True, null=True, default=20)
     netfee = models.IntegerField(db_column='NETFEE', blank=True, null=True)
     bridge = models.IntegerField(db_column='BRIDGE', default=0)  # No foundation courses
     elq = models.CharField(db_column='ELQ', max_length=2, blank=True, null=True)
@@ -253,10 +252,12 @@ class Student(XMLStagingModel, models.Model):
         'disable',
         'ethnic',
         'fnames',
+        'genderid',
         'nation',
         'relblf',
         'scn',
         'sexid',
+        'sexort',
         'ssn',
         'surname',
         'ttaccom',
@@ -272,7 +273,9 @@ class Student(XMLStagingModel, models.Model):
     birthdte = models.DateField(db_column='BIRTHDTE', blank=True, null=True)
     surname = models.CharField(db_column='SURNAME', max_length=64, blank=True, null=True)
     fnames = models.CharField(db_column='FNAMES', max_length=64, blank=True, null=True)
+    genderid = models.CharField(db_column='GENDERID', max_length=2, blank=True, null=True)
     sexid = models.IntegerField(db_column='SEXID', blank=True, null=True)
+    sexort = models.CharField(db_column='SEXORT', max_length=2, blank=True, null=True)
     nation = models.CharField(db_column='NATION', max_length=2, blank=True, null=True)
     ethnic = models.IntegerField(db_column='ETHNIC', blank=True, null=True)
     disable = models.CharField(db_column='DISABLE', max_length=2, blank=True, null=True)

@@ -396,18 +396,6 @@ class HESAReturn:
             instanceid__in=Subquery(masters_and_dphil),
         ).update(fundcode=2)
 
-        # No FEEREGIME where Feeelig = 2
-        models.Instance.objects.filter(
-            batch=self.batch,
-            feeelig=2,
-        ).update(feeregime=None)
-
-        # No Grossfee and Netfee where no fee regime, or fee regime 10
-        models.Instance.objects.filter(
-            Q(feeregime__isnull=True) | Q(feeregime=10),
-            batch=self.batch,
-        ).update(grossfee=None, netfee=None)
-
         # No Careleaver where Fundcode in 2, 3, 5 or Postgrad (M90, E90)
         instances = (
             models.Instance.objects.filter(
