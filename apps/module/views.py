@@ -8,8 +8,9 @@ from django.db import transaction
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views import generic
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import CreateView, DetailView, UpdateView
 
 from apps.core.utils.dates import academic_year
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
@@ -22,7 +23,7 @@ from .models import Module, ModuleStatus
 from .services import clone_fields, copy_books, copy_children, copy_fees
 
 
-class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, CreateView):
+class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.CreateView):
     form_class = forms.CloneForm
     template_name = 'module/clone.html'
     success_message = 'Module cloned'
@@ -73,14 +74,14 @@ class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimesta
         return response
 
 
-class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, UpdateView):
+class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
     model = Module
     form_class = forms.EditForm
     template_name = 'module/edit.html'
     success_message = 'Details updated.'
 
 
-class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, CreateView):
+class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.CreateView):
     form_class = forms.CreateForm
     template_name = 'module/new.html'
     model = Module
@@ -102,7 +103,7 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     subtitle = 'Search'
 
 
-class View(LoginRequiredMixin, PageTitleMixin, DetailView):
+class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
     queryset = Module.objects.defer(None)  # Get all fields
     template_name = 'module/view.html'
 
@@ -158,6 +159,27 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'marketing_types': marketing_types,
             **context,
         }
+
+
+class AddProgramme(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.CreateView):
+    template_name = 'core/form.html'
+    form_class = forms.AddProgrammeForm
+    success_message = 'Module attached'
+    title = 'Module'
+    subtitle = 'Attach to programme'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.module = get_object_or_404(Module, pk=kwargs['module_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.module = self.module
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
+            return self.request.GET.get('next')
+        return self.module.get_absolute_url()
 
 
 @login_required

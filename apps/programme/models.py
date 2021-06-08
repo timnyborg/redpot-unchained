@@ -173,7 +173,13 @@ class Programme(SignatureModel):
 
 
 class ProgrammeModule(Model):
-    programme = ForeignKey(Programme, DO_NOTHING, db_column='programme', related_name='programme_modules')
+    programme = ForeignKey(
+        Programme,
+        DO_NOTHING,
+        db_column='programme',
+        related_name='programme_modules',
+        limit_choices_to={'is_active': True},
+    )
     module = ForeignKey('module.Module', DO_NOTHING, db_column='module', related_name='programme_modules')
 
     class Meta:

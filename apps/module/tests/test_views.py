@@ -1,8 +1,9 @@
-from datetime import date
-
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+
+from apps.programme.models import ProgrammeModule
+from apps.programme.tests.factories import ProgrammeFactory
 
 from ..models import Module
 from . import factories
@@ -24,10 +25,7 @@ class TestViewsWithLogin(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.object = Module.objects.create(
-            title='Test module',
-            start_date=date(2000, 1, 1),
-        )
+        cls.object = factories.ModuleFactory()
 
     def setUp(self):
         self.client.force_login(self.user)
@@ -124,3 +122,30 @@ class TestCloneView(TestCase):
         self.assertEqual(new_module.url, self.object.url)
         self.assertEqual(new_module.title, 'New title')
         self.assertIsNone(new_module.start_date)
+
+
+class TestAddProgrammeView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.module = factories.ModuleFactory()
+        cls.programme = ProgrammeFactory()
+        cls.url = reverse('module:add-programme', args=[cls.module.pk])
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_programme(self):
+        response = self.client.post(
+            self.url,
+            data={
+                'module': self.module.pk,
+                'programme': self.programme.pk,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ProgrammeModule.objects.last().module_id, self.module.pk)
