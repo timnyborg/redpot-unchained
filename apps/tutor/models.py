@@ -56,6 +56,12 @@ class Tutor(SignatureModel):
         db_table = 'tutor'
         # unique_together = (('id', 'student'),)
 
+    def __str__(self):
+        return str(self.student)
+
+    def get_absolute_url(self):
+        return self.student.get_absolute_url()
+
 
 class TutorModule(SignatureModel):
     module = models.ForeignKey(
@@ -68,9 +74,11 @@ class TutorModule(SignatureModel):
     tutor = models.ForeignKey(
         'Tutor', models.DO_NOTHING, db_column='tutor', related_name='tutor_modules', related_query_name='tutor_module'
     )
-    role = models.CharField(max_length=64, blank=True)
-    biography = models.TextField(blank=True, null=True)
-    is_published = models.BooleanField(default=False)
+    role = models.CharField(max_length=64, blank=True, help_text="e.g. 'Tutor' or 'Speaker'")
+    biography = models.TextField(
+        blank=True, null=True, help_text='When filled, this overrides the default tutor biography for this module only'
+    )
+    is_published = models.BooleanField(default=False, help_text="Display on the website?")
     display_order = models.IntegerField(blank=True, null=True)
     is_teaching = models.BooleanField(
         default=True,
