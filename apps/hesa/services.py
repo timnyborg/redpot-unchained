@@ -200,9 +200,10 @@ class HESAReturn:
                 # our short courses don't really have an end date, so it's set to be the end of the academic year
                 enddate=date(self.academic_year + 1, 7, 31),
                 rsnend=_reason_for_ending(enrolments=row.returned_enrolments),
-                feeelig=1 if row.student.is_eu else 2,  # feeelig and fundcode get modified in post-processing
+                # feeelig and fundcode get modified in post-processing
+                feeelig=1 if row.student.is_eu else 2,
                 fundcode=1 if row.student.is_eu else 2,
-                mstufee='01',  # str(row.qa.tuition_fee_source or '').zfill(2), # only varies on award courses
+                mstufee='01',  # only varies on award courses
                 fundlev=row.programme.funding_level,
                 fundcomp=_completion(enrolments=row.returned_enrolments),
                 typeyr=row.programme.reporting_year_type,
@@ -211,9 +212,8 @@ class HESAReturn:
                 grossfee=_grossfee(enrolments=row.returned_enrolments),
                 netfee=_netfee(enrolments=row.returned_enrolments),
                 elq=_elq(qa=row),
-                rcstdnt=99
-                if row.programme.qualification.hesa_code[0] in ('E', 'M')
-                else None,  # Required field for our Master's level courses, but we have no research council students
+                # Required field for our Master's level courses, but we have no research council students
+                rcstdnt=99 if row.programme.qualification.hesa_code[0] in ('E', 'M') else None,
             )
 
     def _entry_profile(self) -> None:
@@ -275,11 +275,8 @@ class HESAReturn:
                 # en-dash to regular hyphen, remove the rare half-moon used in arabic names like ʿattar.
                 mtitle=row.title.replace('–', '-').replace('ʿ', ''),  # todo: regex/normalization method?
                 fte=row.full_time_equivalent,
-                # pcolab=row.percent_collaborative,
-                # crdtscm=row.credit_scheme,  # now handled by a default=1
                 crdtpts=str(row.credit_points).zfill(3),
                 levlpts=row.points_level,
-                # tinst=row.collaborating_institution
             )
 
     def _student_on_module(self) -> None:

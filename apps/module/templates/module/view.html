@@ -657,7 +657,7 @@
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="/tutor_module/new/{{ module.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add tutor</a>
+        <a href="{% url 'tutor:module:new' %}?module={{ module.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add tutor</a>
     </div>
     <a id='tutor-modules' class='nav-anchor' data-badge-text='{{ tutors | length }}'></a>
 

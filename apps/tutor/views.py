@@ -3,17 +3,20 @@ import pathlib
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.views.generic import DetailView, UpdateView
+from django.views import generic
 
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
+from apps.module.models import Module
 
-from .forms import TutorModuleEditForm
-from .models import TutorModule
+from . import forms
+from .models import Tutor, TutorModule
 from .utils.mail_merge import MailMergeView
 
 
-class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, DetailView):
+class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, generic.DetailView):
     model = TutorModule
     template_name = 'tutor_module/view.html'
 
@@ -35,9 +38,11 @@ class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, DetailView):
         }
 
 
-class TutorOnModuleEdit(PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, LoginRequiredMixin, UpdateView):
+class TutorOnModuleEdit(
+    PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, LoginRequiredMixin, generic.UpdateView
+):
     model = TutorModule
-    form_class = TutorModuleEditForm
+    form_class = forms.TutorModuleEditForm
     template_name = 'tutor_module/edit.html'
     success_message = 'Tutor-on-module record updated'
 
@@ -45,6 +50,31 @@ class TutorOnModuleEdit(PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin,
         if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
             return self.request.GET.get('next')
         return self.object.get_absolute_url()
+
+
+class TutorOnModuleCreate(
+    PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, LoginRequiredMixin, generic.CreateView
+):
+    model = TutorModule
+    form_class = forms.TutorModuleCreateForm
+    template_name = 'core/form.html'
+    success_message = 'Tutor added'
+
+    def get_initial(self):
+        module_id = self.request.GET.get('module')
+        tutor_id = self.request.GET.get('tutor')
+        if module_id:
+            self.module = get_object_or_404(Module, pk=module_id)
+            return {'module': self.module}
+        elif tutor_id:
+            self.tutor = get_object_or_404(Tutor, pk=tutor_id)
+            return {'tutor': self.tutor}
+        raise Http404('Requires a module or tutor')
+
+    def get_success_url(self):
+        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
+            return self.request.GET.get('next')
+        return self.object.module.get_absolute_url() + '#tutor-modules'
 
 
 """
