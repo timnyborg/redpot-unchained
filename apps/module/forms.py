@@ -1,5 +1,7 @@
 from django.forms import ModelForm, fields
 
+from apps.programme.models import ProgrammeModule
+
 from .models import Module
 
 
@@ -51,3 +53,9 @@ class CreateForm(ModelForm):
     class Meta:
         model = Module
         fields = ('code', 'title', 'division', 'portfolio', 'non_credit_bearing')
+
+
+class AddProgrammeForm(ModelForm):
+    class Meta:
+        model = ProgrammeModule
+        fields = ('programme',)

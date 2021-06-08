@@ -627,7 +627,7 @@
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="add_programme/{{ module.id }}?next={{ request.get_full_path }}#programmes" class="btn btn-success btn-xs">
+        <a href="{% url 'module:add-programme' module.id %}?next={{ request.get_full_path }}#programmes" class="btn btn-success btn-xs">
             <span class="fa fa-plus"></span> Add Programme
         </a>
     </div>
@@ -646,7 +646,7 @@
                             <i class="fas fa-exclamation-circle"></i>
                         </span>
                     {% endif %}
-                    <a href="/programme/view/{{ programme.id }}"> {{ programme }}</a>
+                    <a href="{{ programme.get_absolute_url }}"> {{ programme }}</a>
                 </td>
                 <td><a href="#"><i class="fas fa-times"></i></a></td>
             </tr>
