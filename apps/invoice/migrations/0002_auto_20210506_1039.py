@@ -9,8 +9,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('core', '0001_initial'),
         ('module', '0001_initial'),
-        ('programme', '0001_initial'),
         ('invoice', '0001_initial'),
         ('enrolment', '0002_auto_20210506_1039'),
     ]
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 db_column='division',
                 null=True,
                 on_delete=django.db.models.deletion.DO_NOTHING,
-                to='programme.Division',
+                to='core.Division',
             ),
         ),
         migrations.AddField(

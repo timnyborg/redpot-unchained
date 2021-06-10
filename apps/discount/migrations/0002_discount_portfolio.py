@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('programme', '0001_initial'),
+        ('core', '0001_initial'),
         ('discount', '0001_initial'),
     ]
 
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 db_column='portfolio',
                 null=True,
                 on_delete=django.db.models.deletion.DO_NOTHING,
-                to='programme.Portfolio',
+                to='core.Portfolio',
             ),
         ),
     ]
