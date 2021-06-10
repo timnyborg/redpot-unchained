@@ -23,37 +23,6 @@ NOT_KNOWN_ENTRY_QUALIFICATION = 'X06'
 AT_PROVIDER_STUDY_LOCATION = 1
 
 
-class Portfolio(Model):
-    name = CharField(max_length=128, blank=True, null=True)
-    division = ForeignKey('Division', DO_NOTHING, db_column='division', blank=True, null=True)
-    email = EmailField(max_length=256, blank=True, null=True)
-    phone = CharField(max_length=256, blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'portfolio'
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-
-class Division(Model):
-    name = CharField(max_length=64, blank=True, null=True)
-    shortname = CharField(max_length=8, blank=True, null=True)
-    email = EmailField(max_length=256, blank=True, null=True)
-    finance_prefix = CharField(max_length=2, blank=True, null=True)
-    # manager = ForeignKey(AuthUser, DO_NOTHING, db_column='manager', blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'division'
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-
 class StudyLocation(SignatureModel):
     id = IntegerField(primary_key=True)
     description = CharField(max_length=64, blank=True, null=True)
@@ -128,11 +97,12 @@ class Programme(SignatureModel):
     title = CharField(max_length=96, null=True)
     start_date = DateField(blank=True, null=True)
     end_date = DateField(blank=True, null=True)
+    # todo: replace with is_active
     division = ForeignKey(
-        Division, DO_NOTHING, db_column='division', limit_choices_to=Q(id__gt=8) | Q(id__lt=5), default=1
+        'core.Division', DO_NOTHING, db_column='division', limit_choices_to=Q(id__gt=8) | Q(id__lt=5)
     )
-    portfolio = ForeignKey(Portfolio, DO_NOTHING, db_column='portfolio', default=1)
-    qualification = ForeignKey('Qualification', DO_NOTHING, db_column='qualification', default=1)
+    portfolio = ForeignKey('core.Portfolio', DO_NOTHING, db_column='portfolio')
+    qualification = ForeignKey('Qualification', DO_NOTHING, db_column='qualification')
     student_load = DecimalField(
         max_digits=10, decimal_places=4, blank=True, null=True, help_text='Percent of full-time, eg. 50'
     )
@@ -210,7 +180,7 @@ class Qualification(SignatureModel):
         return f'{self.name} ({self.hesa_code})'
 
 
-class QA(models.Model):
+class QA(SignatureModel):
     student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
     programme = models.ForeignKey('Programme', models.DO_NOTHING, db_column='programme', related_name='qas')
     title = models.CharField(max_length=96, blank=True, null=True)
@@ -226,6 +196,7 @@ class QA(models.Model):
     class Meta:
         # managed = False
         db_table = 'qa'
+        verbose_name = 'Qualification aim'
 
     @property
     def academic_year(self) -> Optional[int]:

@@ -3,8 +3,8 @@ import django_tables2
 
 from django.db.models import Q
 
+from apps.core.models import Division, Portfolio
 from apps.core.utils.datatables import EditLinkColumn, PoundsColumn
-from apps.programme.models import Division, Portfolio
 
 from .models import TutorFee
 

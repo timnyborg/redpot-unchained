@@ -1,4 +1,4 @@
-- model: programme.portfolio
+- model: core.portfolio
   pk: 1
   fields:
     name: Continuing Education

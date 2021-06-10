@@ -75,13 +75,13 @@ class Module(SignatureModel):
     hilary_start = models.DateField(blank=True, null=True)
 
     division = models.ForeignKey(
-        'programme.Division',
+        'core.Division',
         models.DO_NOTHING,
         db_column='division',
         limit_choices_to=models.Q(id__gt=8) | models.Q(id__lt=5),
         default=1,
     )
-    portfolio = models.ForeignKey('programme.Portfolio', models.DO_NOTHING, db_column='portfolio', default=1)
+    portfolio = models.ForeignKey('core.Portfolio', models.DO_NOTHING, db_column='portfolio', default=1)
 
     status = models.ForeignKey('ModuleStatus', models.DO_NOTHING, db_column='status', default=10)
     max_size = models.IntegerField(blank=True, null=True)

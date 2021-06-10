@@ -72,6 +72,35 @@ class User(SignatureModel, AbstractUser):
     on_facewall = models.BooleanField(default=True)
 
 
+class Portfolio(models.Model):
+    name = models.CharField(max_length=128)
+    division = models.ForeignKey('Division', models.DO_NOTHING, db_column='division')
+    email = models.EmailField(max_length=256, blank=True, null=True)
+    phone = models.CharField(max_length=256, blank=True, null=True)
+
+    class Meta:
+        db_table = 'portfolio'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class Division(models.Model):
+    name = models.CharField(max_length=64)
+    shortname = models.CharField(max_length=8, blank=True, null=True)
+    email = models.EmailField(max_length=256, blank=True, null=True)
+    finance_prefix = models.CharField(max_length=2, blank=True, null=True)
+    manager = models.ForeignKey('core.User', models.DO_NOTHING, db_column='manager', blank=True, null=True)
+
+    class Meta:
+        db_table = 'division'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
 @models.CharField.register_lookup
 class UnAccent(models.Transform):
     """A transform that allows us to do accent-insensitive text searching in MSSQL

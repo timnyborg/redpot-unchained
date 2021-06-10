@@ -123,7 +123,7 @@ class Ledger(models.Model):
     finance_code = models.CharField(max_length=64, blank=True, null=True)
     narrative = models.CharField(max_length=128)
     # todo: investigate if this (division) has value
-    division = models.ForeignKey('programme.Division', models.DO_NOTHING, db_column='division', blank=True, null=True)
+    division = models.ForeignKey('core.Division', models.DO_NOTHING, db_column='division', blank=True, null=True)
     type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type')
     # account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
     account = models.CharField(max_length=4, db_column='account')

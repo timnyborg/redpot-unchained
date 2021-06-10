@@ -1,4 +1,4 @@
-- model: programme.division
+- model: core.division
   pk: 1
   fields:
     name: Central

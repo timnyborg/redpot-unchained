@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('invoice', '0002_auto_20210506_1039'),
+        ('core', '0001_initial'),
         ('programme', '0001_initial'),
         ('module', '0001_initial'),
     ]
@@ -23,7 +24,7 @@ class Migration(migrations.Migration):
                 default=1,
                 limit_choices_to=models.Q(('id__gt', 8), ('id__lt', 5), _connector='OR'),
                 on_delete=django.db.models.deletion.DO_NOTHING,
-                to='programme.Division',
+                to='core.Division',
             ),
         ),
         migrations.AddField(
@@ -65,7 +66,7 @@ class Migration(migrations.Migration):
                 db_column='portfolio',
                 default=1,
                 on_delete=django.db.models.deletion.DO_NOTHING,
-                to='programme.Portfolio',
+                to='core.Portfolio',
             ),
         ),
         migrations.AddField(
