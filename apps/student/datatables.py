@@ -2,6 +2,7 @@ import django_filters as filters
 import django_tables2 as tables
 
 from django.db import models
+from django.db.models.functions import Replace
 
 from apps.core.utils.datatables import ViewLinkColumn
 
@@ -29,10 +30,17 @@ class SearchFilter(filters.FilterSet):
 
     birthdate = filters.DateFilter(label='Birthdate', field_name='birthdate')
 
+    def filter_postcode(self, queryset, field_name, value):
+        """Finds postcodes starting the same way, while removing spaces from the search and target"""
+        return queryset.annotate(
+            trimmed_postcode=Replace('default_address__postcode', models.Value(' '), models.Value(''))
+        ).filter(
+            trimmed_postcode__startswith=value.replace(' ', ''),
+        )
+
     postcode = filters.CharFilter(
         label='Postcode',
-        field_name='default_address__postcode',
-        lookup_expr='startswith',
+        method='filter_postcode',
     )
 
     def filter_email(self, queryset, field_name, value):
