@@ -3,12 +3,20 @@ from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
 
+from django.core.exceptions import ValidationError
 from django.db import models, transaction
+from django.shortcuts import reverse
 from django.utils.functional import cached_property
 
 HOLIDAY_RATE = Decimal(0.1207 / 1.1207)
 # Constants used as defaults.  If used more extensively, we may need to use enums
-RAISED_STATUS = 1
+
+
+class Statuses(models.IntegerChoices):
+    RAISED = (1, 'Raised')
+    APPROVED = (2, 'Approved')
+    TRANSFERRED = (3, 'Transferred')
+    FAILED = (4, 'Failed')
 
 
 class TutorFee(models.Model):
@@ -22,9 +30,9 @@ class TutorFee(models.Model):
     amount = models.DecimalField(max_digits=19, decimal_places=4)
     type = models.ForeignKey('TutorFeeType', models.DO_NOTHING, db_column='type', limit_choices_to={'is_active': True})
     pay_after = models.DateField(blank=True, null=True)
-    status = models.ForeignKey('TutorFeeStatus', models.DO_NOTHING, db_column='status', default=RAISED_STATUS)
-    details = models.CharField(max_length=500, blank=True, null=True)
-    batch = models.PositiveIntegerField(blank=True, null=True)
+    status = models.ForeignKey('TutorFeeStatus', models.DO_NOTHING, db_column='status', default=Statuses.RAISED)
+    details = models.TextField(max_length=500, blank=True, null=True)
+    batch = models.PositiveIntegerField(blank=True, null=True, editable=False)
     hourly_rate = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
     hours_worked = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
     weeks = models.IntegerField(blank=True, null=True)
@@ -40,9 +48,17 @@ class TutorFee(models.Model):
     class Meta:
         # managed = False
         db_table = 'tutor_fee'
+        permissions = [
+            ('raise', 'Can raise tutor payments'),
+            ('approve', 'Can approve tutor payments'),
+            ('transfer', 'Can transfer tutor payments to central finance'),
+        ]
+
+    def get_absolute_url(self):
+        return '#'
 
     def get_edit_url(self):
-        return '#'
+        return reverse('tutor-payment:edit', args=[self.pk])
 
     @classmethod
     @transaction.atomic()
@@ -131,6 +147,42 @@ class TutorFee(models.Model):
     def approval_errors(self) -> list:
         """Return a list of error messages if a payment cannot be approved"""
         return self._approvable['errors']
+
+    def clean(self):
+        # Check that the total amount math works out.
+        errors = {}
+        if self.type_id and self.type.is_hourly:
+            if not self.hours_worked:
+                errors['hours_worked'] = 'Required'
+            if not self.hourly_rate:
+                errors['hourly_rate'] = 'Required'
+            if not self.weeks:
+                errors['weeks'] = 'Required'
+
+            if (
+                self.hours_worked
+                and self.hourly_rate
+                and abs(Decimal(self.amount) - self.hours_worked * self.hourly_rate) > Decimal('.01')
+            ):
+                # Check the math, while allowing for sub-penny rounding errors.
+                # This could rely on the Decimal quantize() function instead, and getcontext().prec = 2.
+                errors['amount'] = 'Total amount does not match hours worked * hourly rate (£%s)' % (
+                    self.hours_worked * self.hourly_rate
+                )
+        else:
+            # Non hourly, so strip unneeded vars, set the weeks to 1
+            self.hours_worked = None
+            self.hourly_rate = None
+            self.weeks = 1
+
+        if self.status_id < Statuses.TRANSFERRED:
+            # Reverting a transferred record wipes related fields
+            self.batch = None
+            self.transferred_by = None
+            self.transferred_on = None
+
+        if errors:
+            raise ValidationError(errors)
 
 
 class TutorFeeRateQuerySet(models.QuerySet):

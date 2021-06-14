@@ -3,6 +3,7 @@
 {% if record %}
 <div class="section-footer">
     <div class="timestamp">
+        {% if record.created_by %}
         Created by {{ record.created_by | user_name }}
         <span class="timeago"
             data-placement="bottom"
@@ -12,16 +13,41 @@
         >
             {{ record.created_on }}
         </span>
-        <span class="separator">&bull;</span>
-        Edited by {{ record.modified_by | user_name }}
+        {% elif record.raised_by %}
+        Raised by {{ record.raised_by | user_name }}
         <span class="timeago"
             data-placement="bottom"
-            data-title="{{ record.modified_on | date:'DATETIME_FORMAT' }}"
+            data-title="{{ record.raised_on | date:'DATETIME_FORMAT' }}"
             data-toggle="tooltip"
-            datetime="{{ record.modified_on | date:'DATETIME_FORMAT' }}"
+            datetime="{{ record.raised_on | date:'DATETIME_FORMAT' }}"
         >
-            {{ record.modified_on }}
+            {{ record.raised_on }}
         </span>
+        {% endif %}
+        {% if record.modified_by %}
+            <span class="separator">&bull;</span>
+            Edited by {{ record.modified_by | user_name }}
+            <span class="timeago"
+                data-placement="bottom"
+                data-title="{{ record.modified_on | date:'DATETIME_FORMAT' }}"
+                data-toggle="tooltip"
+                datetime="{{ record.modified_on | date:'DATETIME_FORMAT' }}"
+            >
+                {{ record.modified_on }}
+            </span>
+        {% endif %}
+        {% if record.approved_by %}
+            <span class="separator">&bull;</span>
+            Approved by {{ record.approved_by | user_name }}
+            <span class="timeago"
+                data-placement="bottom"
+                data-title="{{ record.approved_on | date:'DATETIME_FORMAT' }}"
+                data-toggle="tooltip"
+                datetime="{{ record.approved_on | date:'DATETIME_FORMAT' }}"
+            >
+                {{ record.approved_on }}
+            </span>
+        {% endif %}
     </div>
 </div>
 {% endif %}

@@ -3,7 +3,7 @@
 {% load tutor_payment_tags %}
 {% block center %}
 
-{% url 'tutor:payment:new' object.id as add_url %}
+{% url 'tutor-payment:new' object.id as add_url %}
 
 <div class="section">
     {% edit_button object.get_edit_url %}
@@ -34,9 +34,9 @@
 <div class="section">
     {% if payments %}
         <div class="pull-right top-right-button">
-            <a href="{{ add_url }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add fee</a>
+            <a href="{{ add_url }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add payment</a>
         </div>
-        <h2 id="fees">Fees</h2>
+        <h2 id="payments">Payments</h2>
         {% if not object.tutor.employee_no %}
             <div class="alert alert-danger" role="alert">
                 <span class="fa fa-exclamation-triangle"></span>
@@ -80,7 +80,7 @@
                 <td>{{ payment.pay_after | default:'–' }}</td>
                 <td>{{ payment.transferred_on | default:'–' }}</td>
                 <td>
-                    <a href="tutor-fee/edit/{{ payment.id }}?next=HERE">
+                    <a href="{{ payment.get_edit_url }}?next={{ request.get_full_path }}">
                         <i class="fas fa-fw fa-pencil-alt"></i>
                     </a>
                 </td>
@@ -97,7 +97,7 @@
             </h5>
             {% if perms.tutor.payment_create %}
                 <a class="btn btn-success" href="{{ add_url }}">
-                    <i class="fas fa-fw fa-plus"></i> Add a new fee
+                    <i class="fas fa-fw fa-plus"></i> Add a new payment
                 </a>
             {% endif %}
         </div>

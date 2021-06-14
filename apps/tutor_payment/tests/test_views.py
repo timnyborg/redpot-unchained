@@ -1,14 +1,82 @@
 from datetime import date
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.test import TestCase
 from django.urls import reverse
 
 from apps.module.models import Module
 from apps.student.models import Student
 from apps.tutor.models import Tutor, TutorModule
+from apps.tutor.tests.factories import TutorModuleFactory
 
 from ..models import TutorFee, TutorFeeRate
+from . import factories
+
+
+class TestCreatePayment(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        permission = Permission.objects.get(codename='raise')
+        cls.user.user_permissions.add(permission)
+        cls.tutor_on_module = TutorModuleFactory()
+        cls.url = reverse('tutor-payment:new', args=[cls.tutor_on_module.pk])
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_create(self):
+        response = self.client.post(
+            self.url,
+            data={
+                'hourly_rate': 5,
+                'hours_worked': 5,
+                'amount': 25,
+                'weeks': 4,
+                'type': 1,  # todo: choices/enum
+                'approver': 'abc',  # todo: actual user
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+
+
+class TestEditPayment(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        permission = Permission.objects.get(codename='raise')
+        cls.user.user_permissions.add(permission)
+        cls.payment = factories.TutorFeeFactory(raised_by=cls.user.username, amount=50)
+        cls.url = reverse('tutor-payment:edit', args=[cls.payment.pk])
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post(
+            self.url,
+            data={
+                'hourly_rate': 5,
+                'hours_worked': 5,
+                'amount': 25,
+                'weeks': 4,
+                'type': 1,  # todo: choices/enum
+                'approver': 'abc',  # todo: actual user
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.payment.refresh_from_db()
+        self.assertEqual(self.payment.amount, 25)
 
 
 class TestExtras(TestCase):
