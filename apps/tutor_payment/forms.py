@@ -6,6 +6,41 @@ from django.forms.models import fields_for_model
 from .models import TutorFee, TutorFeeRate
 
 
+class CreateForm(forms.ModelForm):
+    class Meta:
+        model = TutorFee
+        fields = (
+            'type',
+            'hourly_rate',
+            'hours_worked',
+            'amount',
+            'weeks',
+            'details',
+            'approver',
+            'pay_after',
+        )
+
+
+class EditForm(forms.ModelForm):
+    class Meta:
+        model = TutorFee
+        fields = (
+            'type',
+            'hourly_rate',
+            'hours_worked',
+            'amount',
+            'weeks',
+            'status',
+            'details',
+            'approver',
+            'pay_after',
+        )
+
+    def __init__(self, editable_status, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['status'].disabled = not editable_status
+
+
 class ExtrasForm(forms.Form):
     formative = forms.DecimalField(min_value=0, max_value=100, decimal_places=1, required=False)
     formative_rate = forms.ModelChoiceField(
