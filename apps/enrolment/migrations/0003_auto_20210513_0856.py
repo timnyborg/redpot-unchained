@@ -18,9 +18,4 @@ class Migration(migrations.Migration):
             name='module',
             field=models.ForeignKey(db_column='module', on_delete=django.db.models.deletion.DO_NOTHING, related_name='enrolments', related_query_name='enrolment', to='module.Module'),
         ),
-        migrations.AlterField(
-            model_name='enrolment',
-            name='qa',
-            field=models.ForeignKey(db_column='qa', on_delete=django.db.models.deletion.DO_NOTHING, related_name='enrolments', related_query_name='enrolment', to='programme.QA'),
-        ),
     ]

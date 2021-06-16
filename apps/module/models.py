@@ -232,10 +232,12 @@ class Module(SignatureModel):
 
         # Todo: replace hard-coding, ensuring reliant routines do a select_related
         if self.points_level in [6, 7]:  # PG
-            return round(100 * self.credit_points / 180.0)
+            denominator = 180.0
         elif self.points_level in [1, 2]:  # UG
-            return round(100 * self.credit_points / 120.0)
-        return 0.0
+            denominator = 120.0
+        else:
+            return 0.0
+        return round(100 * self.credit_points / denominator)
 
     @property
     def long_form(self):
@@ -273,6 +275,7 @@ class Module(SignatureModel):
                 .order_by('-start_date')
                 .first()
             )
+        return None
 
     @cached_property
     def _publish_check(self) -> dict:

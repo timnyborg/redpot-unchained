@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.shortcuts import reverse
+from django.urls import reverse
 from django.utils.functional import cached_property
 
 HOLIDAY_RATE = Decimal(0.1207 / 1.1207)
@@ -190,7 +190,7 @@ class TutorFeeRateQuerySet(models.QuerySet):
         """Concise way of getting a fee_rate from a tag
         e.g. `marking_rate = TutorFeeRate.objects.lookup('marking')
         """
-        return self.filter(tag=tag).first().amount
+        return self.get(tag=tag).amount
 
 
 class TutorFeeRate(models.Model):

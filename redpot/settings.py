@@ -100,6 +100,7 @@ PROJECT_APPS = [
     'apps.invoice',
     'apps.module',
     'apps.programme',
+    'apps.qualification_aim',
     'apps.student',
     'apps.tutor',
     'apps.tutor_payment',

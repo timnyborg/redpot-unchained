@@ -4,7 +4,8 @@ from django import test
 
 from apps.enrolment.tests.factories import EnrolmentFactory
 from apps.module.tests.factories import ModuleFactory
-from apps.programme.tests.factories import ProgrammeFactory, QAFactory
+from apps.programme.tests.factories import ProgrammeFactory
+from apps.qualification_aim.tests.factories import QualificationAimFactory
 from apps.student.tests.factories import StudentFactory
 
 from .. import models, services
@@ -94,7 +95,7 @@ class TestReturnProduction(test.TestCase):
         """Create a hesa-returnable student record"""
         cls.programme = ProgrammeFactory(qualification_id=INSTITUTIONAL_CREDIT_QUALIFICATION)
         cls.student = StudentFactory(domicile_id=ENGLAND_DOMICILE, ethnicity=1)  # todo: convert once model implemented
-        cls.qa = QAFactory(
+        cls.qa = QualificationAimFactory(
             student=cls.student,
             programme=cls.programme,
         )

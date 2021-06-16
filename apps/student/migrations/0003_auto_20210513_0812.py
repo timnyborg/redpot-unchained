@@ -16,7 +16,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=64)),
-                ('fullname', models.CharField(blank=True, max_length=64, null=True)),
                 ('is_in_eu', models.BooleanField()),
                 ('hesa_code', models.CharField(max_length=8)),
                 ('sort_order', models.IntegerField()),
@@ -31,7 +30,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=64)),
-                ('fullname', models.CharField(blank=True, max_length=64, null=True)),
                 ('is_in_eu', models.BooleanField()),
                 ('hesa_code', models.CharField(max_length=8)),
                 ('sort_order', models.IntegerField()),

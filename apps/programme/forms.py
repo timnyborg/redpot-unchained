@@ -2,13 +2,13 @@ from dal import autocomplete
 
 from django import forms
 
-from apps.programme.models import Programme, ProgrammeModule
+from . import models
 
 
 # Create the form class.
 class ProgrammeEditForm(forms.ModelForm):
     class Meta:
-        model = Programme
+        model = models.Programme
         fields = [
             'title',
             'division',
@@ -45,13 +45,13 @@ class ProgrammeEditForm(forms.ModelForm):
 
 class ProgrammeNewForm(forms.ModelForm):
     class Meta:
-        model = Programme
+        model = models.Programme
         fields = ['title', 'qualification', 'division', 'portfolio', 'sits_code']
 
 
 class AttachModuleForm(forms.ModelForm):
     class Meta:
-        model = ProgrammeModule
+        model = models.ProgrammeModule
         fields = ['module']
         widgets = {
             'module': autocomplete.ModelSelect2(url='autocomplete:module', attrs={'data-minimum-input-length': 3})

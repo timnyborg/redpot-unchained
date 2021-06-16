@@ -2,7 +2,6 @@ import itertools
 import os
 import re
 from datetime import date
-from decimal import Decimal
 from time import time
 from typing import Optional
 
@@ -14,7 +13,8 @@ from django.db.models import F, FilteredRelation, OuterRef, Prefetch, Q, Subquer
 from apps.enrolment.models import Enrolment
 from apps.invoice.models import Ledger
 from apps.module.models import Module
-from apps.programme.models import QA, Programme
+from apps.programme.models import Programme
+from apps.qualification_aim.models import QualificationAim
 from apps.student.models import Student
 
 from . import models
@@ -44,16 +44,15 @@ def create_return(academic_year, created_by, *, recorder: Optional[ProgressRecor
     hesa = HESAReturn(academic_year, created_by, recorder=recorder)
     batch = hesa.create()
     if run_xml:
-        print(f'Generating XML ({(time()-start)[:5]} seconds)')
+        print(f'Generating XML ({str(time()-start)[:5]} seconds)')
         # generate_xml(batch)
     return batch
 
 
 class HESAReturn:
     def __init__(self, academic_year: int, created_by: str, *, recorder: Optional[ProgressRecorder] = None) -> None:
-        self.batch = None
-        self.created_by = created_by
         self.academic_year = academic_year
+        self.batch = models.Batch.objects.create(academic_year=self.academic_year, created_by=created_by)
         self.recorder = recorder
 
         # Universal base query
@@ -78,7 +77,6 @@ class HESAReturn:
     def create(self) -> models.Batch:
         """Populate the tables in order, updating the status after each"""
         steps = 11
-        self.batch = self._batch()
         self._set_progress(1, steps, 'Institution')
         self._institution()
         self._set_progress(2, steps, 'Student')
@@ -109,9 +107,6 @@ class HESAReturn:
             batch=self.batch,
             recid=f'{self.academic_year % 100}051',
         )
-
-    def _batch(self) -> models.Batch:
-        return models.Batch.objects.create(academic_year=self.academic_year, created_by=self.created_by)
 
     def _instance_id(self, qa_id: int) -> str:
         # Encode the academic year and QA id to make an instance id (unique each year)
@@ -156,7 +151,7 @@ class HESAReturn:
         in_query = self.base_query.values('qa__id')
 
         results = (
-            QA.objects.filter(id__in=Subquery(in_query))
+            QualificationAim.objects.filter(id__in=Subquery(in_query))
             .select_related(
                 'programme__qualification',
                 'entry_qualification',
@@ -220,7 +215,7 @@ class HESAReturn:
         in_query = self.base_query.values('qa__id')
 
         results = (
-            QA.objects.filter(id__in=Subquery(in_query))
+            QualificationAim.objects.filter(id__in=Subquery(in_query))
             .annotate(
                 # nested relation in FilteredRelation supported in 3.2
                 # default_address=FilteredRelation('student__address', condition=Q(student__address__is_default=True)),
@@ -249,7 +244,7 @@ class HESAReturn:
         in_query = self.base_query.values('qa__id')
 
         results = (
-            QA.objects.filter(id__in=Subquery(in_query))
+            QualificationAim.objects.filter(id__in=Subquery(in_query))
             .select_related(
                 'programme__qualification',
             )
@@ -453,24 +448,24 @@ def _completion(*, enrolments) -> int:
     return 0  # Invalid value # todo: reconsider how this operates
 
 
-def _elq(*, qa: QA) -> str:
+def _elq(*, qa: QualificationAim) -> str:
     if qa.programme.qualification.elq_rank > qa.entry_qualification.elq_rank:
         return '03'
     return '01'
 
 
-def _grossfee(*, enrolments) -> Decimal:
+def _grossfee(*, enrolments) -> int:
     def enrolment_sum(enrolment):
         return sum(line.amount for line in enrolment.fee_ledger_items)
 
-    return sum(enrolment_sum(enrolment) for enrolment in enrolments)
+    return round(sum(enrolment_sum(enrolment) for enrolment in enrolments))
 
 
-def _netfee(*, enrolments) -> Decimal:
+def _netfee(*, enrolments) -> int:
     def enrolment_sum(enrolment):
         return sum(line.amount for line in enrolment.fee_ledger_items if line.amount > 0)
 
-    return sum(enrolment_sum(enrolment) for enrolment in enrolments)
+    return round(sum(enrolment_sum(enrolment) for enrolment in enrolments))
 
 
 def _model_to_node(model: XMLStagingModel) -> etree.Element:

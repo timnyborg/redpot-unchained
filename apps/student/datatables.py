@@ -62,7 +62,7 @@ class SearchFilter(filters.FilterSet):
 
     class Meta:
         model = Student
-        fields = {}  # All defined above
+        fields = ('firstname', 'surname', 'birthdate', 'postcode', 'email')
 
 
 class SearchTable(tables.Table):

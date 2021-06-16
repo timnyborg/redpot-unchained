@@ -193,31 +193,6 @@ class Banner(models.Model):
         db_table = 'banner'
 
 
-class CertHEMarks(models.Model):
-    qa = models.ForeignKey('Qa', models.DO_NOTHING, db_column='qa')
-    courses_transferred_in = models.TextField(blank=True, null=True)
-    credits_transferred_in = models.IntegerField(blank=True, null=True)
-    subject = models.CharField(max_length=8, blank=True, null=True)
-    assignment1_date = models.DateField(blank=True, null=True)
-    assignment1_grade = models.IntegerField(blank=True, null=True)
-    assignment2_date = models.DateField(blank=True, null=True)
-    assignment2_grade = models.IntegerField(blank=True, null=True)
-    assignment3_date = models.DateField(blank=True, null=True)
-    assignment3_grade = models.IntegerField(blank=True, null=True)
-    journal1_date = models.DateField(blank=True, null=True)
-    journal2_date = models.DateField(blank=True, null=True)
-    journal_cats_points = models.IntegerField(blank=True, null=True)
-    is_introductory_course = models.BooleanField(blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    created_by = models.CharField(max_length=64, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'certhe_marks'
-
-
 class CourseApplicationAttachment(models.Model):
     application_id = models.IntegerField(blank=True, null=True)
     filename = models.CharField(max_length=50, blank=True, null=True)

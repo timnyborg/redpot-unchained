@@ -1,0 +1,112 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+
+{% block center %}
+
+<div class="section">
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            {% edit_button object.get_absolute_url  %}
+            <h2>Details</h2>
+            <dl class="dl-horizontal">
+                <dt>Student</dt>
+                <dd>
+                    <a href="{{ object.student.get_absolute_url }}">{{ object.student }}</a>
+                </dd>
+                <dt>Programme</dt>
+                <dd>{{ object.programme }}</dd>
+                <dt>Title</dt>
+                <dd>{{ object.title }}</dd>
+                <dt>Start date</dt>
+                <dd>{{ object.start_date | default:'–' }}</dd>
+                <dt>End date</dt>
+                <dd>{{ object.end_date | default:'–' }}</dd>
+                <dt>Entry qualification</dt>
+                <dd>{{ object.entry_qualification | default:'–' }}</dd>
+                <dt>Reason for ending</dt>
+                <dd>{{ object.reason_for_ending | default:'–' }}</dd>
+                <dt>SITS code</dt>
+                <dd>{{ object.sits_code | default:'–' }}</dd>
+            </dl>
+        </div>
+
+        <div class="col-xs-12 col-md-4">
+            {% if object.is_certhe %}
+                <hr class="hidden-md hidden-lg">
+                {% edit_button 'edit-certhe-marks' %}
+                <h2>Cert. HE marks</h2>
+
+                {% if object.certhe_marks %}
+                    <dl class="dl-horizontal">
+                        <dt>Courses transferred in</dt>
+                        <dd>{{ object.certhe_marks.courses_transferred_in | default:'–' }}</dd>
+                        <dt>Credits transferred in</dt>
+                        <dd>{{ object.certhe_marks.credits_transferred_in | default:'–' }}</dd>
+                        <dt>Cert HE subject</dt>
+                        <dd>{{ object.certhe_marks.subject | default:'–' }}</dd>
+                        <dt>Assignment 1 date</dt>
+                        <dd>{{ object.certhe_marks.assignment1_date | default:'–' }}</dd>
+                        <dt>Assignment 1 grade</dt>
+                        <dd>{{ object.certhe_marks.assignment1_grade | default:'–' }}</dd>
+                        <dt>Assignment 2 date</dt>
+                        <dd>{{ object.certhe_marks.assignment2_date | default:'–' }}</dd>
+                        <dt>Assignment 2 grade</dt>
+                        <dd>{{ object.certhe_marks.assignment2_grade | default:'–' }}</dd>
+                        <dt>Assignment 3 date</dt>
+                        <dd>{{ object.certhe_marks.assignment3_date | default:'–' }}</dd>
+                        <dt>Assignment 3 grade</dt>
+                        <dd>{{ object.certhe_marks.assignment3_grade | default:'–' }}</dd>
+                        <dt>Journal 1 date</dt>
+                        <dd>{{ object.certhe_marks.journal1_date | default:'–' }}</dd>
+                        <dt>Journal 2 date</dt>
+                        <dd>{{ object.certhe_marks.journal2_date | default:'–' }}</dd>
+                        <dt>Journal CATS points</dt>
+                        <dd>{{ object.certhe_marks.journal_cats_points | default:'–' }}</dd>
+                        <dt>Introductory course</dt>
+                        <dd>{{ object.certhe_marks.is_introductory_course | yesno | title }}</dd>
+                    </dl>
+                {% else %}
+                    None
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    {% timestamp object %}
+</div>
+
+<div class="section">
+    <a id='enrolments' class='nav-anchor'></a>
+    <h2>Enrolments ({{ enrolments|length }})</h2>
+    <table class="table table-condensed table-striped table-hover hide-rows" data-display=5>
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Result</th>
+                <th>Points</th>
+                <th>Start date</th>
+                <th></th>
+            </tr>
+        </thead>
+        {% for row in enrolments %}
+            <tr>
+                <td class="col-xs-1">
+                    <a href="{{ row.module.get_edit_url }}">{{ row.module.code }}</a>
+                </td>
+                <td>{{ row.module.title }}</td>
+                <td class="col-xs-2">{{ row.status }}</td>
+                <td class="col-xs-2">{{ row.result }}</td>
+                <td class="col-xs-1">{{ row.points_awarded | default:'–' }}</td>
+                <td class="col-xs-2">{{ row.module.start_date }}</td>
+                <td class="col-xs-1">
+                    <a href="{{ row.get_edit_url }}">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}
