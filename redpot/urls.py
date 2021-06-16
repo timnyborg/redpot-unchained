@@ -33,6 +33,7 @@ urlpatterns = [
     path('invoice/', include('apps.invoice.urls')),
     path('programme/', include('apps.programme.urls')),
     path('module/', include('apps.module.urls')),
+    path('qa/', include('apps.qualification_aim.urls')),
     path('student/', include('apps.student.urls')),
     path('tutor/', include('apps.tutor.urls')),
     path('tutor-payment/', include('apps.tutor_payment.urls')),

@@ -1,4 +1,4 @@
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: C20
   fields:
     description: Certificate of Higher Education (CertHE)
@@ -6,7 +6,7 @@
     elq_rank: 40
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: C30
   fields:
     description: Higher National Certificate (HNC)
@@ -14,7 +14,7 @@
     elq_rank: 40
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: C44
   fields:
     description: Higher Apprenticeship (level 4)
@@ -22,7 +22,7 @@
     elq_rank: 40
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: C80
   fields:
     description: Other qualification at level C
@@ -30,7 +30,7 @@
     elq_rank: 40
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: C90
   fields:
     description: Undergraduate credits
@@ -38,7 +38,7 @@
     elq_rank: 40
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: D80
   fields:
     description: Other qualification at level D
@@ -46,7 +46,7 @@
     elq_rank: 80
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: DUK
   fields:
     description: UK doctorate degree
@@ -54,7 +54,7 @@
     elq_rank: 80
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: DZZ
   fields:
     description: Non-UK doctorate degree
@@ -62,7 +62,7 @@
     elq_rank: 80
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: H11
   fields:
     description: First degree with honours leading to Qualified Teacher Status (QTS)/registration
@@ -71,7 +71,7 @@
     elq_rank: 63
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: H71
   fields:
     description: Professional Graduate Certificate in Education
@@ -79,7 +79,7 @@
     elq_rank: 70
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: H80
   fields:
     description: Other qualification at level H
@@ -87,7 +87,7 @@
     elq_rank: 61
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: HUK
   fields:
     description: UK first degree with honours
@@ -95,7 +95,7 @@
     elq_rank: 63
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: HZZ
   fields:
     description: Non-UK first degree
@@ -103,7 +103,7 @@
     elq_rank: 63
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: J10
   fields:
     description: Foundation degree
@@ -111,7 +111,7 @@
     elq_rank: 50
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: J20
   fields:
     description: Diploma of Higher Education (DipHE)
@@ -119,7 +119,7 @@
     elq_rank: 50
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: J30
   fields:
     description: Higher National Diploma (HND)
@@ -127,7 +127,7 @@
     elq_rank: 50
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: J48
   fields:
     description: Certificate in Education (CertEd) or Diploma in Education (DipEd)
@@ -136,7 +136,7 @@
     elq_rank: 50
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: J49
   fields:
     description: Foundation course at level J
@@ -144,7 +144,7 @@
     elq_rank: 50
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: J80
   fields:
     description: Other qualification at level J
@@ -152,7 +152,7 @@
     elq_rank: 50
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: JUK
   fields:
     description: UK ordinary (non-honours) first degree
@@ -160,7 +160,7 @@
     elq_rank: 50
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: M2X
   fields:
     description: Integrated undergraduate/postgraduate taught masters degree on the
@@ -169,7 +169,7 @@
     elq_rank: 73
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: M41
   fields:
     description: Diploma at level M
@@ -177,7 +177,7 @@
     elq_rank: 72
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: M44
   fields:
     description: Certificate at level M
@@ -185,7 +185,7 @@
     elq_rank: 71
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: M71
   fields:
     description: Postgraduate Certificate in Education or Professional Graduate Diploma
@@ -194,7 +194,7 @@
     elq_rank: 71
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: M80
   fields:
     description: Other taught qualification at level M
@@ -202,7 +202,7 @@
     elq_rank: 70
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: M90
   fields:
     description: Taught work at level M for institutional credit
@@ -210,7 +210,7 @@
     elq_rank: 70
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: MUK
   fields:
     description: UK masters degree
@@ -218,7 +218,7 @@
     elq_rank: 73
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: MZZ
   fields:
     description: Non-UK masters degree
@@ -226,7 +226,7 @@
     elq_rank: 73
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P41
   fields:
     description: Diploma at level 3
@@ -234,7 +234,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P42
   fields:
     description: Certificate at level 3
@@ -242,7 +242,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P46
   fields:
     description: Award at level 3
@@ -250,7 +250,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P47
   fields:
     description: AQA Baccalaureate (Bacc)
@@ -258,7 +258,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P50
   fields:
     description: A/AS level
@@ -266,7 +266,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P51
   fields:
     description: 14-19 Advanced Diploma (level 3)
@@ -274,7 +274,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P53
   fields:
     description: Scottish Baccalaureate
@@ -282,7 +282,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P62
   fields:
     description: International Baccalaureate (IB) Diploma
@@ -290,7 +290,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P63
   fields:
     description: International Baccalaureate (IB) Certificate
@@ -298,7 +298,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P64
   fields:
     description: Cambridge Pre-U Diploma
@@ -306,7 +306,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P65
   fields:
     description: Cambridge Pre-U Certificate
@@ -314,7 +314,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P68
   fields:
     description: Welsh Baccalaureate Advanced Diploma (level 3)
@@ -322,7 +322,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P80
   fields:
     description: Other qualification at level 3
@@ -330,7 +330,7 @@
     elq_rank: 30
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P91
   fields:
     description: Level 3 qualifications of which some or all are subject to UCAS Tariff
@@ -338,7 +338,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P92
   fields:
     description: Level 3 qualifications of which none are subject to UCAS Tariff
@@ -346,7 +346,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P93
   fields:
     description: Level 3 qualifications of which all are subject to UCAS Tariff
@@ -354,7 +354,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: P94
   fields:
     description: Level 3 qualifications of which some are subject to UCAS Tariff
@@ -362,7 +362,7 @@
     elq_rank: 30
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: Q51
   fields:
     description: 14-19 Higher Diploma (level 2)
@@ -370,7 +370,7 @@
     elq_rank: 20
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: Q52
   fields:
     description: Welsh Baccalaureate Intermediate Diploma (level 2)
@@ -378,7 +378,7 @@
     elq_rank: 20
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: Q80
   fields:
     description: Other qualification at level 2
@@ -386,7 +386,7 @@
     elq_rank: 20
     web_publish: true
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: R51
   fields:
     description: 14-19 Foundation Diploma (level 1)
@@ -394,7 +394,7 @@
     elq_rank: 10
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: R52
   fields:
     description: Welsh Baccalaureate Foundation Diploma (level 1)
@@ -402,7 +402,7 @@
     elq_rank: 10
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: R80
   fields:
     description: Other qualification at level 1
@@ -410,7 +410,7 @@
     elq_rank: 10
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: X00
   fields:
     description: Higher education (HE) access course, Quality Assurance Agency (QAA)
@@ -419,7 +419,7 @@
     elq_rank: 0
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: X01
   fields:
     description: Higher education (HE) access course, not Quality Assurance Agency
@@ -428,7 +428,7 @@
     elq_rank: 0
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: X02
   fields:
     description: Mature student admitted on basis of previous experience and/or admissions
@@ -437,7 +437,7 @@
     elq_rank: 0
     web_publish: false
     display_order: 1
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: X04
   fields:
     description: Other qualification level not known
@@ -445,7 +445,7 @@
     elq_rank: 0
     web_publish: true
     display_order: 2
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: X05
   fields:
     description: Student has no formal qualification
@@ -453,7 +453,7 @@
     elq_rank: 0
     web_publish: true
     display_order: 0
-- model: programme.entryqualification
+- model: qualification_aim.entryqualification
   pk: X06
   fields:
     description: Not known

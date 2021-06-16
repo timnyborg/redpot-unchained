@@ -41,7 +41,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         )
 
         module_count = programme.modules.count()
-        students = programme.qas.select_related('student').order_by('-start_date')[:200]
+        students = programme.qualification_aims.select_related('student').order_by('-start_date')[:200]
 
         module_statuses = ModuleStatus.objects.all()
 

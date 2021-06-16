@@ -25,8 +25,8 @@ class PageTitleMixin:
     All can be overridden by setting variables, or overriding the methods
     """
 
-    title = None
-    subtitle = None
+    title = ""
+    subtitle = ""
     subtitle_object = True
 
     def get_title(self):

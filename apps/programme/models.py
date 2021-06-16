@@ -1,40 +1,9 @@
-from typing import Optional
-
 from django.db import models
-from django.db.models import (
-    DO_NOTHING,
-    BooleanField,
-    CharField,
-    DateField,
-    DecimalField,
-    EmailField,
-    ForeignKey,
-    IntegerField,
-    ManyToManyField,
-    Model,
-    Q,
-)
 from django.urls import reverse
 
 from apps.core.models import PhoneField, SignatureModel
-from apps.core.utils.dates import academic_year
 
-NOT_KNOWN_ENTRY_QUALIFICATION = 'X06'
 AT_PROVIDER_STUDY_LOCATION = 1
-
-
-class StudyLocation(SignatureModel):
-    id = IntegerField(primary_key=True)
-    description = CharField(max_length=64, blank=True, null=True)
-    hesa_code = CharField(max_length=8, blank=True, null=True)
-    is_active = BooleanField()
-
-    class Meta:
-        # managed = False
-        db_table = 'study_location'
-
-    def __str__(self):
-        return self.description
 
 
 class Programme(SignatureModel):
@@ -94,38 +63,46 @@ class Programme(SignatureModel):
         (64, 'Dormant- previously part-time'),
     ]
 
-    title = CharField(max_length=96, null=True)
-    start_date = DateField(blank=True, null=True)
-    end_date = DateField(blank=True, null=True)
+    title = models.CharField(max_length=96, null=True)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
     # todo: replace with is_active
-    division = ForeignKey(
-        'core.Division', DO_NOTHING, db_column='division', limit_choices_to=Q(id__gt=8) | Q(id__lt=5)
+    division = models.ForeignKey(
+        'core.Division',
+        models.DO_NOTHING,
+        db_column='division',
+        limit_choices_to=models.Q(id__gt=8) | models.Q(id__lt=5),
     )
-    portfolio = ForeignKey('core.Portfolio', DO_NOTHING, db_column='portfolio')
-    qualification = ForeignKey('Qualification', DO_NOTHING, db_column='qualification')
-    student_load = DecimalField(
+    portfolio = models.ForeignKey('core.Portfolio', models.DO_NOTHING, db_column='portfolio')
+    qualification = models.ForeignKey('Qualification', models.DO_NOTHING, db_column='qualification')
+    student_load = models.DecimalField(
         max_digits=10, decimal_places=4, blank=True, null=True, help_text='Percent of full-time, eg. 50'
     )
-    funding_level = IntegerField(blank=True, null=True, choices=FUNDING_LEVELS)
-    funding_source = IntegerField(blank=True, null=True, choices=FUNDING_SOURCES)
-    study_mode = IntegerField(blank=True, null=True, choices=STUDY_MODES)
-    study_location = ForeignKey(
-        StudyLocation, DO_NOTHING, db_column='study_location', default=AT_PROVIDER_STUDY_LOCATION
+    funding_level = models.IntegerField(blank=True, null=True, choices=FUNDING_LEVELS)
+    funding_source = models.IntegerField(blank=True, null=True, choices=FUNDING_SOURCES)
+    study_mode = models.IntegerField(blank=True, null=True, choices=STUDY_MODES)
+    study_location = models.ForeignKey(
+        'StudyLocation',
+        models.DO_NOTHING,
+        db_column='study_location',
+        default=AT_PROVIDER_STUDY_LOCATION,
+        limit_choices_to={'is_active': True},
     )
-    reporting_year_type = IntegerField(blank=True, null=True)
+    reporting_year_type = models.IntegerField(blank=True, null=True)
 
-    is_active = BooleanField(default=True)
-    sits_code = CharField(max_length=32, blank=True, null=True)
-    contact_list_display = BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
+    sits_code = models.CharField(max_length=32, blank=True, null=True)
+    contact_list_display = models.BooleanField(default=True)
 
-    email = EmailField(max_length=64, blank=True, null=True)
+    email = models.EmailField(max_length=64, blank=True, null=True)
     phone = PhoneField(max_length=64, blank=True, null=True)
 
-    modules = ManyToManyField('module.Module', through='ProgrammeModule', related_name='programmes')
+    modules = models.ManyToManyField('module.Module', through='ProgrammeModule', related_name='programmes')
 
     class Meta:
         # managed = False
         db_table = 'programme'
+        ordering = ('title',)
         permissions = [
             (
                 'edit_registry_fields',
@@ -142,15 +119,17 @@ class Programme(SignatureModel):
         return reverse('programme:view', args=[self.id])
 
 
-class ProgrammeModule(Model):
-    programme = ForeignKey(
+class ProgrammeModule(models.Model):
+    programme = models.ForeignKey(
         Programme,
-        DO_NOTHING,
+        models.DO_NOTHING,
         db_column='programme',
         related_name='programme_modules',
         limit_choices_to={'is_active': True},
     )
-    module = ForeignKey('module.Module', DO_NOTHING, db_column='module', related_name='programme_modules')
+    module = models.ForeignKey(
+        'module.Module', models.DO_NOTHING, db_column='module', related_name='programme_modules'
+    )
 
     class Meta:
         # managed = False
@@ -159,14 +138,14 @@ class ProgrammeModule(Model):
 
 
 class Qualification(SignatureModel):
-    id = IntegerField(primary_key=True)
-    name = CharField(max_length=64, blank=True, null=True)
-    is_award = BooleanField(blank=True, null=True)
-    is_postgraduate = BooleanField()
-    on_hesa_return = BooleanField(blank=True, null=True)
-    hesa_code = CharField(max_length=8, blank=True, null=True)
-    elq_rank = IntegerField(blank=True, null=True)
-    is_matriculated = BooleanField()
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=64)
+    is_award = models.BooleanField()
+    is_postgraduate = models.BooleanField()
+    on_hesa_return = models.BooleanField()
+    hesa_code = models.CharField(max_length=8)
+    elq_rank = models.IntegerField()
+    is_matriculated = models.BooleanField()
 
     class Meta:
         # managed = False
@@ -174,44 +153,21 @@ class Qualification(SignatureModel):
         ordering = ['elq_rank']
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     def name_with_code(self):
         return f'{self.name} ({self.hesa_code})'
 
 
-class QA(SignatureModel):
-    student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
-    programme = models.ForeignKey('Programme', models.DO_NOTHING, db_column='programme', related_name='qas')
-    title = models.CharField(max_length=96, blank=True, null=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
-    study_location = ForeignKey(
-        StudyLocation, DO_NOTHING, db_column='study_location', default=AT_PROVIDER_STUDY_LOCATION
-    )
-    entry_qualification = ForeignKey(
-        'EntryQualification', DO_NOTHING, db_column='entry_qualification', default=NOT_KNOWN_ENTRY_QUALIFICATION
-    )
+class StudyLocation(SignatureModel):
+    id = models.IntegerField(primary_key=True)
+    description = models.CharField(max_length=64, blank=True, null=True)
+    hesa_code = models.CharField(max_length=8, blank=True, null=True)
+    is_active = models.BooleanField()
 
     class Meta:
         # managed = False
-        db_table = 'qa'
-        verbose_name = 'Qualification aim'
+        db_table = 'study_location'
 
-    @property
-    def academic_year(self) -> Optional[int]:
-        if self.start_date:
-            return academic_year(self.start_date)
-
-
-class EntryQualification(models.Model):
-    id = models.CharField(primary_key=True, max_length=3)
-    description = models.CharField(max_length=128, blank=True, null=True)
-    custom_description = models.CharField(max_length=128, blank=True, null=True)
-    elq_rank = models.IntegerField(blank=True, null=True)
-    web_publish = models.BooleanField(db_column='web_Publish', blank=True, null=True)  # Field name made lowercase.
-    display_order = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'entry_qualification'
+    def __str__(self):
+        return str(self.description)

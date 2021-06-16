@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('programme', '0003_auto_20210523_1120'),
+        ('programme', '0002_auto_20210513_0856'),
     ]
 
     operations = [
@@ -15,11 +15,5 @@ class Migration(migrations.Migration):
             model_name='programme',
             name='study_location',
             field=models.ForeignKey(db_column='study_location', default=1, on_delete=django.db.models.deletion.DO_NOTHING, to='programme.StudyLocation'),
-        ),
-        migrations.AlterField(
-            model_name='qa',
-            name='study_location',
-            field=models.ForeignKey(db_column='study_location', default=1,
-                                    on_delete=django.db.models.deletion.DO_NOTHING, to='programme.StudyLocation'),
         ),
     ]

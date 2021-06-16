@@ -149,12 +149,12 @@ class Migration(migrations.Migration):
                 ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
                 ('modified_on', models.DateTimeField(auto_now_add=True, null=True)),
                 ('id', models.IntegerField(primary_key=True, serialize=False)),
-                ('name', models.CharField(blank=True, max_length=64, null=True)),
-                ('is_award', models.BooleanField(blank=True, null=True)),
+                ('name', models.CharField(max_length=64)),
+                ('is_award', models.BooleanField()),
                 ('is_postgraduate', models.BooleanField()),
-                ('on_hesa_return', models.BooleanField(blank=True, null=True)),
-                ('hesa_code', models.CharField(blank=True, max_length=8, null=True)),
-                ('elq_rank', models.IntegerField(blank=True, null=True)),
+                ('on_hesa_return', models.BooleanField()),
+                ('hesa_code', models.CharField(max_length=8)),
+                ('elq_rank', models.IntegerField()),
                 ('is_matriculated', models.BooleanField()),
             ],
             options={
@@ -176,38 +176,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'study_location',
-            },
-        ),
-        migrations.CreateModel(
-            name='QA',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(blank=True, max_length=96, null=True)),
-                ('start_date', models.DateField(blank=True, null=True)),
-                ('end_date', models.DateField(blank=True, null=True)),
-                (
-                    'programme',
-                    models.ForeignKey(
-                        db_column='programme',
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='qas',
-                        to='programme.Programme',
-                    ),
-                ),
-                (
-                    'student',
-                    models.ForeignKey(
-                        db_column='student', on_delete=django.db.models.deletion.DO_NOTHING, to='student.Student'
-                    ),
-                ),
-                ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
-                ('created_on', models.DateTimeField(auto_now_add=True, null=True)),
-                ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
-                ('modified_on', models.DateTimeField(auto_now_add=True, null=True)),
-            ],
-            options={
-                'db_table': 'qa',
-                'verbose_name': 'Qualification aim',
             },
         ),
         migrations.CreateModel(

@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import reverse
 from django.test import TestCase
+from django.urls import reverse
 
 from ..models import Fee, FeeTypes
 from . import factories

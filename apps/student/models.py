@@ -37,8 +37,14 @@ class Student(SignatureModel):
     dars_optout = models.BooleanField(default=True)
     termtime_accommodation = models.IntegerField(blank=True, null=True)
     sits_id = models.IntegerField(blank=True, null=True)
-    # full_name = models.CharField(max_length=82, blank=True, null=True)  # todo: figure out what to do (calculated)
-    highest_qualification = models.CharField(max_length=128, blank=True, null=True)
+    highest_qualification = models.ForeignKey(
+        'qualification_aim.EntryQualification',
+        models.DO_NOTHING,
+        db_column='highest_qualification',
+        limit_choices_to={'web_publish': True},
+        blank=True,
+        null=True,
+    )
     mail_optin = models.BooleanField(default=False)
     mail_optin_on = models.DateTimeField(blank=True, null=True)
     mail_optin_method = models.CharField(max_length=64, blank=True, null=True)
@@ -189,7 +195,6 @@ class OtherID(SignatureModel):
 
 class Nationality(models.Model):
     name = models.CharField(max_length=64)
-    fullname = models.CharField(max_length=64, blank=True, null=True)
     is_in_eu = models.BooleanField()
     hesa_code = models.CharField(max_length=8)
     sort_order = models.IntegerField()
@@ -202,7 +207,6 @@ class Nationality(models.Model):
 
 class Domicile(models.Model):
     name = models.CharField(max_length=64)
-    fullname = models.CharField(max_length=64, blank=True, null=True)
     is_in_eu = models.BooleanField()
     hesa_code = models.CharField(max_length=8)
     sort_order = models.IntegerField()
@@ -211,3 +215,8 @@ class Domicile(models.Model):
     class Meta:
         # managed = False
         db_table = 'domicile'
+
+    @property
+    def is_uk(self) -> bool:
+        # Todo: make a UK column
+        return self.pk in [240, 241, 242, 243]

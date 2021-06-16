@@ -8,7 +8,11 @@ NOT_CODED_RESULT = 7
 
 class Enrolment(SignatureModel):
     qa = models.ForeignKey(
-        'programme.QA', models.DO_NOTHING, db_column='qa', related_name='enrolments', related_query_name='enrolment'
+        'qualification_aim.QualificationAim',
+        models.DO_NOTHING,
+        db_column='qa',
+        related_name='enrolments',
+        related_query_name='enrolment',
     )
     module = models.ForeignKey(
         'module.Module',
@@ -58,6 +62,9 @@ class EnrolmentResult(SignatureModel):
         # managed = False
         db_table = 'enrolment_result'
 
+    def __str__(self):
+        return str(self.description)
+
 
 class EnrolmentStatus(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -69,3 +76,6 @@ class EnrolmentStatus(models.Model):
     class Meta:
         # managed = False
         db_table = 'enrolment_status'
+
+    def __str__(self):
+        return str(self.description)

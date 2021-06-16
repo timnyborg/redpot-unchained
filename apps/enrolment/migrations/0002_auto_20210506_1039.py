@@ -27,17 +27,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='enrolment',
-            name='qa',
-            field=models.ForeignKey(
-                blank=True,
-                db_column='qa',
-                null=True,
-                on_delete=django.db.models.deletion.DO_NOTHING,
-                to='programme.QA',
-            ),
-        ),
-        migrations.AddField(
-            model_name='enrolment',
             name='result',
             field=models.ForeignKey(
                 db_column='result',

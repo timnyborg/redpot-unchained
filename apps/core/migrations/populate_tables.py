@@ -29,6 +29,7 @@ class Migration(migrations.Migration):
         ('enrolment', '0001_initial'),
         ('fee', '0001_initial'),
         ('invoice', '0001_initial'),
+        ('qualification_aim', '0001_initial'),
         ('student', '0003_auto_20210513_0812'),
     ]
 

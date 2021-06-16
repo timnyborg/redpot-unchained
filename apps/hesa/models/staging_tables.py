@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+from typing import Iterable
+
 from django.db import models
 
 INSTITUTION_CODE = 10007774
 
 
 class XMLStagingModel:
-    xml_fields = ()
-    xml_required = ()
+    xml_fields: Iterable[str] = ()
+    xml_required: Iterable[str] = ()
 
     @property
     def element_name(self) -> str:
@@ -15,7 +17,7 @@ class XMLStagingModel:
         Can be overridden"""
         return self.__class__.__name__
 
-    def children(self) -> list[models.Queryset]:
+    def children(self) -> list[models.QuerySet]:
         """Returns a list of querysets, which will be iterated over in sequence to create child nodes"""
         return []
 
@@ -67,7 +69,7 @@ class Course(XMLStagingModel, models.Model):
         db_table = 'hesa_course'
         unique_together = (('batch', 'courseid'),)
 
-    def children(self) -> list[models.Queryset]:
+    def children(self) -> list[models.QuerySet]:
         return [CourseSubject.objects.filter(batch=self.batch, courseid_fk=self.courseid)]
 
 
@@ -171,7 +173,7 @@ class Instance(XMLStagingModel, models.Model):
     class Meta:
         db_table = 'hesa_instance'
 
-    def children(self) -> list[models.Queryset]:
+    def children(self) -> list[models.QuerySet]:
         return [
             EntryProfile.objects.filter(batch=self.batch, instanceid_fk=self.instanceid),
             QualificationsAwarded.objects.filter(batch=self.batch, instanceid_fk=self.instanceid),
@@ -190,7 +192,7 @@ class Institution(XMLStagingModel, models.Model):
     class Meta:
         db_table = 'hesa_institution'
 
-    def children(self) -> list[models.Queryset]:
+    def children(self) -> list[models.QuerySet]:
         return [
             Course.objects.filter(batch=self.batch),
             Module.objects.filter(batch=self.batch),
@@ -216,7 +218,7 @@ class Module(XMLStagingModel, models.Model):
     class Meta:
         db_table = 'hesa_module'
 
-    def children(self) -> list[models.Queryset]:
+    def children(self) -> list[models.QuerySet]:
         return [ModuleSubject.objects.filter(batch=self.batch, modid_fk=self.modid)]
 
 
@@ -288,7 +290,7 @@ class Student(XMLStagingModel, models.Model):
     class Meta:
         db_table = 'hesa_student'
 
-    def children(self) -> list[models.Queryset]:
+    def children(self) -> list[models.QuerySet]:
         return [Instance.objects.filter(batch=self.batch, ownstu_fk=self.ownstu)]
 
 

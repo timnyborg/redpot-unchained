@@ -3,7 +3,7 @@ import django_tables2 as tables
 
 from django import forms
 from django.db.models import Q
-from django.utils.html import mark_safe
+from django.utils.safestring import mark_safe
 
 from apps.core.utils.datatables import PoundsColumn, ViewLinkColumn
 

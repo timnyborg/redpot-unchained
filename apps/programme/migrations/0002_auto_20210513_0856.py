@@ -11,35 +11,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='EntryQualification',
-            fields=[
-                ('id', models.CharField(max_length=3, primary_key=True, serialize=False)),
-                ('description', models.CharField(blank=True, max_length=128, null=True)),
-                ('custom_description', models.CharField(blank=True, max_length=128, null=True)),
-                ('elq_rank', models.IntegerField(blank=True, null=True)),
-                ('web_publish', models.BooleanField(blank=True, db_column='web_Publish', null=True)),
-                ('display_order', models.IntegerField(blank=True, null=True)),
-            ],
-            options={
-                'db_table': 'entry_qualification',
-            },
-        ),
         migrations.AddField(
             model_name='programme',
             name='reporting_year_type',
             field=models.IntegerField(blank=True, null=True),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name='qa',
-            name='study_location',
-            field=models.ForeignKey(blank=True, db_column='study_location', null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='programme.StudyLocation'),
-        ),
-        migrations.AddField(
-            model_name='qa',
-            name='entry_qualification',
-            field=models.ForeignKey(db_column='entry_qualification', on_delete=django.db.models.deletion.DO_NOTHING, to='programme.EntryQualification', default='X06'),
             preserve_default=False,
         ),
     ]

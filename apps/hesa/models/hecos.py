@@ -15,6 +15,9 @@ class HECoSSubject(models.Model):
         # managed = False
         db_table = 'hecos_subject'
 
+    def __str__(self) -> str:
+        return str(self.name)
+
 
 class ModuleHECoSSubject(SignatureModel):
     module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module')

@@ -1,7 +1,6 @@
 import factory
 
 from apps.module.tests.factories import ModuleFactory
-from apps.student.tests.factories import StudentFactory
 
 from .. import models
 
@@ -24,11 +23,3 @@ class ProgrammeModuleFactory(factory.django.DjangoModelFactory):
 
     programme = factory.SubFactory(ProgrammeFactory)
     module = factory.SubFactory(ModuleFactory)
-
-
-class QAFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = models.QA
-
-    student = factory.SubFactory(StudentFactory)
-    programme = factory.SubFactory(ProgrammeFactory)

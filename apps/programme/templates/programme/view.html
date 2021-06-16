@@ -129,7 +129,7 @@
             <td><a href='{{ qa.student.get_absolute_url }}'>{{ qa.student }} </a></td>
             <td>{{ qa.start_date | date  }}</td>
             <td>{{ qa.end_date | date | default:'—' }}</td>
-            <td><a href='#'><span class='fas fa-search'></span></a></td>
+            <td><a href='{{ qa.get_absolute_url }}'><span class='fas fa-search'></span></a></td>
         </tr>
 	{% endfor %}
     </table>
