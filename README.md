@@ -49,16 +49,45 @@ git clone git@gitlab.conted.ox.ac.uk:django/redpot-unchained.git
 cd redpot-unchained
 ```
 
+### Option 1: connecting to existing services (database, redis, etc.)
 Get a copy of the secrets file, containing dev database login details, etc.
 ```bash
 scp <your_username>@deltamap:/home/www-data/django/redpot/secrets.json .
 ```
 
-Build and start the container(s)
+Build and start the container
+```bash
+sudo docker-compose up --build -d django
+```
+
+### Option 2: a standalone dev stack (running mssql, redis, etc. as containers)
+Create a basic secrets file (we'll create a default soon enough)
+```bash
+echo '{"REDIS_HOST": "redis"}' > secrets.json
+```
+
+Build and start the containers
 ```bash
 sudo docker-compose up --build -d
 ```
 
-View the application in browser at `http://<your_server>:8001` or `localhost:8001`
+Create the empty database
+```bash
+sudo docker compose exec mssql /opt/mssql-tools/bin/sqlcmd -U sa -P Test@only -Q "CREATE DATABASE redpot;"
+```
 
-You're now running two copies in parallel, on ports 8001 and 8002 (because why not!)
+Create the database structure
+```bash
+sudo docker compose exec django python manage.py migrate
+```
+
+Create a superuser
+```bash
+sudo docker compose exec django python manage.py createsuperuser
+```
+Choose username, email, and password when prompted.  Now you can login!
+
+### Installation complete
+View the application in browser at `http://<your_server>:8000` or `localhost:8000`
+
+You're now running redpot!

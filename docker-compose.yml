@@ -10,10 +10,7 @@ services:
       - source: app_config
         target: /code/secrets.json
     ports:
-      - "8001-8002:8000"
-    deploy:
-      mode: replicated
-      replicas: 2
+      - "8000:8000"
     restart: always
 
   worker:
@@ -27,6 +24,12 @@ services:
   redis:
     image: redis:6.0
     restart: always
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+     - MSSQL_SA_PASSWORD=Test@only
+     - ACCEPT_EULA=Y
 
 secrets:
   app_config:

@@ -22,3 +22,6 @@ indent_size = 2
 [*.md]
 # auto-soft-wrap in PyCharm, et
 ij_any_wrap_long_lines = true
+
+[dependencies.txt]
+insert_final_newline = false

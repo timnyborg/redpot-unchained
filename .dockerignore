@@ -9,3 +9,5 @@ static/
 Pipfile*
 secrets.*
 *.env
+.venv
+venv
