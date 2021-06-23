@@ -91,7 +91,7 @@ class Programme(SignatureModel):
     reporting_year_type = models.IntegerField(blank=True, null=True)
 
     is_active = models.BooleanField(default=True)
-    sits_code = models.CharField(max_length=32, blank=True, null=True)
+    sits_code = models.CharField(max_length=32, blank=True, null=True, verbose_name='SITS code')
     contact_list_display = models.BooleanField(default=True)
 
     email = models.EmailField(max_length=64, blank=True, null=True)
