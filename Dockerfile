@@ -1,5 +1,29 @@
 # Adapted from https://www.caktusgroup.com/blog/2017/03/14/production-ready-dockerfile-your-python-django-app/
-FROM python:3.7-slim
+FROM python:3.7-slim AS build-image
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV PIP_NO_CACHE_DIR=1
+
+# Python packages
+COPY requirements.txt /requirements.txt
+COPY dependencies.txt /dependencies.txt
+
+ENV VIRTUAL_ENV=/venv
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Install build deps, install python packages, then remove build deps in a single step - key for keeping size down
+RUN BUILD_DEPS=" \
+    build-essential \
+    libpcre3-dev \
+    $(cat /dependencies.txt) \
+    " \
+    && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
+    && pip install -r /requirements.txt \
+    && pip install uwsgi
+
+
+FROM python:3.7-slim AS app-image
 
 # Create a group and user to run our app
 ARG APP_USER=appuser
@@ -13,30 +37,19 @@ RUN apt-get update && apt-get install -y curl gnupg \
 # Install packages needed to run your application (not build deps):
 ENV ACCEPT_EULA=Y
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      # uwsgi static serving
-      libpcre3 \
-      mime-support \
-      # odbc drivers
-      msodbcsql17 \
+    # uwsgi static serving
+    libpcre3 \
+    mime-support \
+    # odbc drivers
+    msodbcsql17 \
+    # pyldap and pyodbc depdencies
+    libldap-2.4-2 \
+    libodbc1 \
+    # cleanup
     && rm -rf /var/lib/apt/lists/*
 
-# Python packages
-COPY requirements.txt /requirements.txt
-COPY dependencies.txt /dependencies.txt
-
-# Install build deps, install python packages, then remove build deps in a single step - key for keeping size down
-RUN BUILD_DEPS=" \
-    build-essential \
-    libpcre3-dev \
-    libpq-dev \
-    $(cat /dependencies.txt) \
-    " \
-    && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
-    && pip install --no-cache-dir -r /requirements.txt \
-    && pip install --no-cache-dir uwsgi \
-    \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $BUILD_DEPS \
-    && rm -rf /var/lib/apt/lists/*
+COPY --from=build-image /venv /venv
+ENV PATH="/venv/bin:$PATH"
 
 # Application code
 RUN mkdir /code/ \
@@ -47,18 +60,15 @@ ADD --chown=${APP_USER}:${APP_USER} . /code/
 # uWSGI will listen on this port
 EXPOSE 8000
 
-# Call collectstatic
 RUN python manage.py collectstatic --noinput \
-# build the mkdocs
-  && mkdocs build
+    # build the mkdocs
+    && mkdocs build
 
 # Tell uWSGI where to find your wsgi file
 ENV UWSGI_WSGI_FILE=redpot/wsgi.py
 
 # Base uWSGI configuration
 ENV UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_HTTP_AUTO_CHUNKED=1 UWSGI_HTTP_KEEPALIVE=1 UWSGI_LAZY_APPS=1 UWSGI_WSGI_ENV_BEHAVIOR=holy
-
-# Number of uWSGI workers and threads per worker
 ENV UWSGI_WORKERS=2 UWSGI_THREADS=4
 
 # uWSGI static file serving configuration
