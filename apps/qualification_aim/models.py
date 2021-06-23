@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from django.db import models
@@ -37,6 +39,10 @@ class QualificationAim(SignatureModel):
         blank=True,
         limit_choices_to=models.Q(web_publish=True) | models.Q(id__in=['X00', 'X06']),  # Todo: should be a column
     )
+    reason_for_ending = models.ForeignKey(
+        'ReasonForEnding', models.DO_NOTHING, db_column='reason_for_ending', blank=True, null=True
+    )
+    sits_code = models.CharField(max_length=12, blank=True, null=True, verbose_name='SITS code')
 
     class Meta:
         # managed = False
@@ -62,6 +68,9 @@ class QualificationAim(SignatureModel):
     def get_absolute_url(self):
         return reverse('qualification_aim:view', args=[self.pk])
 
+    def get_edit_url(self):
+        return reverse('qualification_aim:edit', args=[self.pk])
+
     @property
     def academic_year(self) -> Optional[int]:
         if self.start_date:
@@ -74,6 +83,13 @@ class QualificationAim(SignatureModel):
     def is_certhe(self) -> bool:
         # Todo: There must be a way to this without hardcoding statuses (old and new certhe)
         return self.programme_id in (5, 270)
+
+    @property
+    def locked_fields(self) -> list[str]:
+        """Determine whether the object is managed by SITS, and thus has fields locked for editing"""
+        if self.created_by == 'SITS' or self.modified_by == 'SITS' or self.sits_code:
+            return ['start_date', 'end_date', 'reason_for_ending', 'title', 'programme']
+        return []
 
 
 class EntryQualification(models.Model):
@@ -91,6 +107,13 @@ class EntryQualification(models.Model):
 
     def __str__(self):
         return f'{self.custom_description or self.description} ({self.id})'
+
+
+class ReasonForEnding(SignatureModel):
+    description = models.CharField(max_length=64, blank=True, null=True)
+
+    class Meta:
+        db_table = 'reason_for_ending'
 
 
 class CertHEMarks(SignatureModel):

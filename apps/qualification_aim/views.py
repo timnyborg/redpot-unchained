@@ -42,3 +42,10 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
             'student': self.object.student,
             'enrolments': enrolments,
         }
+
+
+class Edit(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
+    model = models.QualificationAim
+    form_class = forms.EditForm
+    template_name = 'core/form.html'
+    success_message = 'Qualification aim updated'

@@ -51,3 +51,30 @@ class TestCreateView(TestCase):
         self.assertEqual(response.status_code, 302)
         qa = models.QualificationAim.objects.last()
         self.assertEqual(qa.student_id, self.student.pk)
+
+
+class TestEditView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.qa = factories.QualificationAimFactory()
+        cls.url = cls.qa.get_edit_url()
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_create(self):
+        response = self.client.post(
+            self.url,
+            data={
+                'title': 'Test title',
+                'study_location': models.AT_PROVIDER_STUDY_LOCATION,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.qa.refresh_from_db()
+        self.assertEqual(self.qa.title, 'Test title')

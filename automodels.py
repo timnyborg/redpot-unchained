@@ -803,36 +803,6 @@ class ProposalStatus(models.Model):
         db_table = 'proposal_status'
 
 
-class Qa(models.Model):
-    number = models.IntegerField(blank=True, null=True)
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
-    programme = models.IntegerField()
-    title = models.CharField(max_length=96, blank=True, null=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    study_location = models.ForeignKey(
-        'StudyLocation', models.DO_NOTHING, db_column='study_location', blank=True, null=True
-    )
-    entry_qualification = models.ForeignKey(
-        EntryQualification, models.DO_NOTHING, db_column='entry_qualification', blank=True, null=True
-    )
-    reason_for_ending = models.ForeignKey(
-        'ReasonForEnding', models.DO_NOTHING, db_column='reason_for_ending', blank=True, null=True
-    )
-    dars_upload_date = models.DateField(blank=True, null=True)
-    dars_upload_closed = models.BooleanField()
-    sits_code = models.CharField(max_length=12, blank=True, null=True)
-    candidate_number = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'qa'
-
-
 class Qualification(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=64, blank=True, null=True)
@@ -850,19 +820,6 @@ class Qualification(models.Model):
     class Meta:
         managed = False
         db_table = 'qualification'
-
-
-class ReasonForEnding(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'reason_for_ending'
 
 
 class ReligionOrBelief(models.Model):

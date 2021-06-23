@@ -1,7 +1,9 @@
 import socket
+from typing import Union
 
 from django import template
 from django.core.cache import cache
+from django.db.models import Model
 from django.utils.safestring import mark_safe
 
 from ..models import User
@@ -10,8 +12,14 @@ register = template.Library()
 
 
 @register.simple_tag
-def edit_button(url, icon='pencil-alt', target='', tooltip='Edit details'):
-    """Produces a standard edit button"""
+def edit_button(url: Union[str, Model], icon: str = 'pencil-alt', target: str = '', tooltip: str = 'Edit details'):
+    """Produces a standard edit button.  Can take a string url, or a Model that implements get_edit_url()"""
+    if isinstance(url, Model):
+        if hasattr(url, 'get_edit_url'):
+            url = url.get_edit_url()
+        else:
+            raise AttributeError(f'The model {url._meta.object_name} needs to define get_edit_url()')
+
     b = f"""
         <a href="{url}"
            class="btn btn-default btn-lg pull-right"
