@@ -270,7 +270,10 @@ DATE_INPUT_FORMATS = [
 
 # Email settings
 EMAIL_HOST = get_secret('EMAIL_HOST', '')
-DEFAULT_FROM_EMAIL = get_secret('DEFAULT_FROM_EMAIL', '')
+DEFAULT_FROM_EMAIL = get_secret('DEFAULT_FROM_EMAIL', 'redpot-support@conted.ox.ac.uk')
+SUPPORT_EMAIL = get_secret('SUPPORT_EMAIL', 'redpot-support@conted.ox.ac.uk')  # custom setting
+# custom setting - the hostname used in automated emails sent by celery tasks
+CANONICAL_URL = get_secret('CANONICAL_URL', 'https://redpot-unchained.conted.ox.ac.uk')
 
 # Celery task queue - TODO: get this using the same settings as the cache
 redis_host = get_secret('REDIS_HOST', 'redis')  # Maps to redis host.

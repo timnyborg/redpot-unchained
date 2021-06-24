@@ -4,14 +4,13 @@ import io
 from datetime import date, datetime
 from decimal import Decimal
 
-from celery import shared_task
-
+from redpot.celery import app
 from redpot.settings import WPM_FTP as CONFIG
 
 from .models import Invoice
 
 
-@shared_task(name="repeating_card_payment_download")
+@app.task(name="repeating_card_payment_download")
 def repeating_card_payment_download(filename: str = None) -> str:
     """
     Gets today's rcp payment data from WPM via ftp and creates invoice payments
