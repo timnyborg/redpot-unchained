@@ -49,3 +49,11 @@ class Edit(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitl
     form_class = forms.EditForm
     template_name = 'core/form.html'
     success_message = 'Qualification aim updated'
+
+
+class Delete(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, generic.DeleteView):
+    model = models.QualificationAim
+    template_name = 'core/delete_form.html'
+
+    def get_success_url(self):
+        return self.object.student.get_absolute_url()

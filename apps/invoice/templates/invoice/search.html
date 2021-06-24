@@ -20,12 +20,16 @@
 <div class="section">
 	<div class="row">
 		<div class="col-xs-12 col-md-8">
-			<form action="" class='form-horizontal'>
-				{% bootstrap3form filter.form False %}
-				{% bootstrap3submit 'Search' %}
-			</form>
-		</div>
-	</div>
+            <form action="" class='form-horizontal'>
+                {% bootstrap3form filter.form False %}
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        {% bootstrap3submit 'Search' %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% if request.GET %}
 	<div class="section">

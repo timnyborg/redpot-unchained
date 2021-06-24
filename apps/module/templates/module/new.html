@@ -13,8 +13,11 @@
                 <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
                     {% csrf_token %}
                     {% bootstrap3form form True %}
-                    {% bootstrap3submit %}
-
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            {% bootstrap3submit %}
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>

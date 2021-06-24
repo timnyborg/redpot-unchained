@@ -25,7 +25,7 @@ from .services import clone_fields, copy_books, copy_children, copy_fees
 
 class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.CreateView):
     form_class = forms.CloneForm
-    template_name = 'module/clone.html'
+    template_name = 'core/form.html'
     success_message = 'Module cloned'
     title = 'Module'
     subtitle = 'Clone'
@@ -77,7 +77,7 @@ class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimesta
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
     model = Module
     form_class = forms.EditForm
-    template_name = 'module/edit.html'
+    template_name = 'core/form.html'
     success_message = 'Details updated.'
 
 
@@ -96,7 +96,7 @@ class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestamp
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
-    template_name = 'module/search.html'
+    template_name = 'core/search.html'
     queryset = Module.objects.select_related('division', 'portfolio')
     table_class = ModuleSearchTable
     filterset_class = ModuleSearchFilter

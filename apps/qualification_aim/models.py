@@ -71,6 +71,9 @@ class QualificationAim(SignatureModel):
     def get_edit_url(self):
         return reverse('qualification_aim:edit', args=[self.pk])
 
+    def get_delete_url(self):
+        return reverse('qualification_aim:delete', args=[self.pk])
+
     @property
     def academic_year(self) -> Optional[int]:
         if self.start_date:

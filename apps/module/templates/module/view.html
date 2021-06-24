@@ -532,7 +532,6 @@
                         <td>£{{ fee.amount | floatformat:2 }}</td>
                         <td class="quick-icons">
                             <a href="{% url 'fee:edit' fee.pk %}"><i class="fas fa-pencil-alt"></i></a>
-                            <a href="{% url 'fee:delete' fee.pk %}"><i class="fas fa-times"></i></a>
                         </td>
                     </tr>
                 {% endif %}

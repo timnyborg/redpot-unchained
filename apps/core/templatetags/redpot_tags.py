@@ -70,15 +70,24 @@ def bootstrap3modal(
 
 
 @register.simple_tag
-def bootstrap3submit(text='Submit', btn_type='primary', offset=2):
+def bootstrap3submit(text: str = 'Submit', btn_type: str = 'primary'):
     return mark_safe(
         f"""
-        <div class="form-group">
-            <div class="col-sm-offset-{offset} col-sm-{12-offset}">
-                <button type="submit" class="btn btn-{btn_type}">{text}</button>
-            </div>
-        </div>
-    """
+        <button type="submit" class="btn btn-{btn_type}">
+            {text}
+        </button>'
+        """
+    )
+
+
+@register.simple_tag
+def bootstrap3delete(url: str, btn_type: str = 'danger', text: str = 'Delete'):
+    return mark_safe(
+        f"""
+        <a href="{url}" class="pull-right btn btn-{btn_type}">
+            {text}
+        </a>
+        """
     )
 
 

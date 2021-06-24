@@ -8,7 +8,14 @@
             <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
                 {% csrf_token %}
                 {% bootstrap3form form True %}
-                {% bootstrap3submit %}
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        {% if object.get_delete_url %}
+                            {% bootstrap3delete object.get_delete_url %}
+                        {% endif %}
+                        {% bootstrap3submit 'Save' %}
+                    </div>
+                </div>
             </form>
         </div>
     </div>
