@@ -57,7 +57,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
 class Edit(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
     model = Programme
     form_class = ProgrammeEditForm
-    template_name = 'programme/edit.html'
+    template_name = 'core/form.html'
     success_message = 'Details updated.'
 
     def get_form_kwargs(self):
@@ -69,12 +69,12 @@ class Edit(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessag
 class New(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.CreateView):
     model = Programme
     form_class = ProgrammeNewForm
-    template_name = 'programme/edit.html'
+    template_name = 'core/form.html'
     success_message = 'Details updated.'
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
-    template_name = 'programme/search.html'
+    template_name = 'core/search.html'
     queryset = Programme.objects.select_related('portfolio', 'division', 'qualification')
     table_class = ProgrammeSearchTable
     filterset_class = ProgrammeSearchFilter
@@ -82,7 +82,7 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
 
 
 class AddModule(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.CreateView):
-    template_name = 'programme/add_module.html'
+    template_name = 'core/form.html'
     model = ProgrammeModule
     form_class = AttachModuleForm
     success_message = 'Module attached'

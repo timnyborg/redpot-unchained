@@ -78,3 +78,27 @@ class TestEditView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.qa.refresh_from_db()
         self.assertEqual(self.qa.title, 'Test title')
+
+
+class TestDeleteView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.qa = factories.QualificationAimFactory()
+        cls.url = cls.qa.get_delete_url()
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_delete(self):
+        response = self.client.post(
+            self.url,
+            data={},
+        )
+        self.assertEqual(response.status_code, 302)
+        with self.assertRaises(models.QualificationAim.DoesNotExist):
+            self.qa.refresh_from_db()

@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse
 
 from apps.core.models import SignatureModel
 
@@ -70,6 +71,12 @@ class Fee(SignatureModel):
 
     def __str__(self):
         return str(self.description)
+
+    def get_absolute_url(self):
+        return reverse('fee:edit', args=[self.pk])
+
+    def get_delete_url(self):
+        return reverse('fee:delete', args=[self.pk])
 
     def clean(self):
         # Catering fees should always have their flag set (common user-error)

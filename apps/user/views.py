@@ -11,7 +11,7 @@ class EditProfile(PageTitleMixin, SuccessMessageMixin, LoginRequiredMixin, Updat
 
     model = User
     fields = ('first_name', 'last_name', 'role', 'phone', 'room', 'image')
-    template_name = 'user/edit.html'
+    template_name = 'core/form.html'
     subtitle = 'Edit profile'
     subtitle_object = False
     success_message = 'Profile updated'
