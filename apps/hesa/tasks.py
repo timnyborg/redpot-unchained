@@ -1,10 +1,11 @@
-from celery import shared_task
 from celery_progress.backend import ProgressRecorder
+
+from redpot.celery import app
 
 from . import services
 
 
-@shared_task(name='create_hesa_return', bind=True)
+@app.task(name='create_hesa_return', bind=True)
 def create_return(self, *, academic_year: int, created_by: str):
     recorder = ProgressRecorder(self)
 

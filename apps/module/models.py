@@ -347,7 +347,7 @@ class Module(SignatureModel):
         today = now.date()
 
         # Automatic date logic
-        if self.publish_date > today or today >= self.unpublish_date:
+        if self.publish_date > today or self.unpublish_date and today >= self.unpublish_date:
             # Todo: determine if the Unpublished status has any value
             return Statuses.UNPUBLISHED
         elif self.is_cancelled:
@@ -368,7 +368,7 @@ class Module(SignatureModel):
             # Todo: determine if this has any value
             return Statuses.UNPUBLISHED  # All others are unpublished, if any others exist
 
-    def update_status(self):
+    def update_status(self) -> dict:
         """Routine to update module status and is_published if set to automatic publication"""
 
         now = datetime.now()
@@ -418,6 +418,14 @@ class Module(SignatureModel):
         changed = initial_status != self.status_id or initial_pub != self.is_published
         if changed:
             self.save()
+
+        return {
+            'changed': changed,
+            'old_status': initial_status,
+            'new_status': self.status_id,
+            'old_published': initial_pub,
+            'new_published': self.is_published,
+        }
 
     def clean(self):
         # Check both term start/end date fields are filled, or neither

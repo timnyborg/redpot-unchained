@@ -1,10 +1,12 @@
+from contextlib import suppress
 from datetime import date
 
 import django_tables2 as tables
 
+from django.core import mail
 from django.test import RequestFactory, SimpleTestCase
 
-from ..utils import datatables, dates
+from ..utils import celery, datatables, dates
 
 
 class TestAcademicYear(SimpleTestCase):
@@ -60,3 +62,15 @@ class TestLinkColumns(SimpleTestCase):
         request = self.factory.get('')
         html = LinkTable(data=[self.obj]).as_html(request)
         self.assertIn('<a href="/delete/">', html)
+
+
+class TestMailOnFailure(SimpleTestCase):
+    @celery.mail_on_failure
+    def fails(self):
+        raise Exception()
+
+    def test_mail_on_failure(self):
+        with suppress(Exception):
+            self.fails()
+        # Check mail was sent
+        self.assertEqual(len(mail.outbox), 1)

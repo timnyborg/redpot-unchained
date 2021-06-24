@@ -1,0 +1,9 @@
+<html>
+    <div style="font-family:Calibri;">
+        <p>The following module has been automatically updated:</p>
+        <p><b>{{ module.title }} ({{ module.code }})</b></p>
+        <p>Status: {{ new_status }}</p>
+        <p>Web publication: {% if module.is_published %}Published{% else %}Unpublished{% endif %}</p>
+        <p><a href="{{ canonical_url }}{{ module.get_absolute_url }}">View the module in Redpot</a></p>
+    </div>
+</html>
