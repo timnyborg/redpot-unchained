@@ -4,7 +4,13 @@ from apps.core.models import SignatureModel
 
 
 class WebsiteAccount(SignatureModel):
-    student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
+    student = models.ForeignKey(
+        'student.Student',
+        models.DO_NOTHING,
+        db_column='student',
+        related_name='website_accounts',
+        related_query_name='website_account',
+    )
     username = models.EmailField(
         max_length=256,
         unique=True,

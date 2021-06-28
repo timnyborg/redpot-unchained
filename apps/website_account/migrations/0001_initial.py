@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('password', models.CharField(blank=True, help_text='This is an encrypted value, not the actual password', max_length=256)),
                 ('is_disabled', models.BooleanField(default=False, verbose_name='Disabled?')),
                 ('reset_password_key', models.CharField(blank=True, editable=False, max_length=512, null=True)),
-                ('student', models.ForeignKey(db_column='student', on_delete=django.db.models.deletion.DO_NOTHING, to='student.Student')),
+                ('student', models.ForeignKey(db_column='student', on_delete=django.db.models.deletion.DO_NOTHING, related_name='website_accounts', related_query_name='website_account', to='student.Student')),
             ],
             options={
                 'db_table': 'login',
