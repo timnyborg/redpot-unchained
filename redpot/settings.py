@@ -105,6 +105,7 @@ PROJECT_APPS = [
     'apps.tutor',
     'apps.tutor_payment',
     'apps.user',
+    'apps.website_account',
 ]
 
 INSTALLED_APPS = PREREQ_APPS + PROJECT_APPS
