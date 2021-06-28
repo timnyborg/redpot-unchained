@@ -445,23 +445,6 @@ class LedgerAccount(models.Model):
         unique_together = (('code', 'is_hidden'),)
 
 
-class Login(models.Model):
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
-    username = models.CharField(max_length=256)
-    password = models.CharField(max_length=256, blank=True, null=True)
-    is_disabled = models.BooleanField(blank=True, null=True)
-    reset_password_key = models.CharField(max_length=512, blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'login'
-        unique_together = (('student', 'username'),)
-
-
 class ModuleCabsBooking(models.Model):
     module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
     mbr_id = models.TextField(blank=True, null=True)
