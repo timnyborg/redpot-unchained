@@ -5,6 +5,8 @@ from apps.core.models import PhoneField, SignatureModel
 
 AT_PROVIDER_STUDY_LOCATION = 1
 
+CERT_HE_SITS_CODE = 'UR_9A1'
+
 
 class Programme(SignatureModel):
     FUNDING_LEVELS = [
@@ -117,6 +119,11 @@ class Programme(SignatureModel):
 
     def get_absolute_url(self):
         return reverse('programme:view', args=[self.id])
+
+    @property
+    def is_certhe(self) -> bool:
+        # Todo: There must be a way to this without hardcoding statuses (old and new certhe)
+        return self.sits_code == CERT_HE_SITS_CODE
 
 
 class ProgrammeModule(models.Model):

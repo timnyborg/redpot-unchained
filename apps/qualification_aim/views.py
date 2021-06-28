@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
 
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
@@ -57,3 +57,30 @@ class Delete(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, generic.Del
 
     def get_success_url(self):
         return self.object.student.get_absolute_url()
+
+
+class EditCertHEMarks(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
+    model = models.CertHEMarks
+    form_class = forms.CertHEMarksForm
+    template_name = 'core/form.html'
+    success_message = 'CertHE marks updated'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.qualification_aim = get_object_or_404(models.QualificationAim, pk=self.kwargs['qa_id'])
+        if not self.qualification_aim.programme.is_certhe:
+            return redirect(self.get_success_url())
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        # Create the child record if it doesn't exist.
+        # Not sure why we do it this way instead of having a CREATE button
+        try:
+            return self.qualification_aim.certhe_marks
+        except models.CertHEMarks.DoesNotExist:
+            return models.CertHEMarks.objects.create(qualification_aim=self.qualification_aim)
+
+    def get_subtitle(self):
+        return f'Edit – {self.qualification_aim.student}'
+
+    def get_success_url(self):
+        return self.qualification_aim.get_absolute_url()

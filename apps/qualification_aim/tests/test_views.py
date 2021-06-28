@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from apps.programme.models import CERT_HE_SITS_CODE
 from apps.programme.tests.factories import ProgrammeFactory
 from apps.student.tests.factories import StudentFactory
 
@@ -102,3 +103,31 @@ class TestDeleteView(TestCase):
         self.assertEqual(response.status_code, 302)
         with self.assertRaises(models.QualificationAim.DoesNotExist):
             self.qa.refresh_from_db()
+
+
+class TestCertHEEditView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.programme = ProgrammeFactory(sits_code=CERT_HE_SITS_CODE)
+        cls.qa = factories.QualificationAimFactory(programme=cls.programme)
+        cls.url = reverse('qualification_aim:certhe-marks', args=[cls.qa.pk])
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get_creates_if_missing(self):
+        # Assert no record to begin with
+        with self.assertRaises(models.CertHEMarks.DoesNotExist):
+            self.qa.certhe_marks
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        # Check it's been added
+        self.qa.refresh_from_db()
+        self.assertTrue(self.qa.certhe_marks)
+
+    def test_redirect_if_not_certhe(self):
+        self.programme.sits_code = ''
+        self.programme.save()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
