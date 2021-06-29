@@ -1,0 +1,32 @@
+{% extends 'staff_listing_layout.html' %}
+{% load static %}
+{% block center %}
+      <div class="row">
+          <div class="panel panel-default">
+          <div class="panel-heading">  <h4 >Staff Profile</h4></div>
+           <div class="panel-body">
+          <div class="col-md-4 col-xs-12 col-sm-6 col-lg-4">
+{#           <img alt="Profile Pic" src="{% if staff.image %}{% static ''|add:'images/staff_profile/nyborgt_4zclPbe.jpeg' %}{% else %}https://x1.xingassets.com/assets/frontend_minified/img/users/nobody_m.original.jpg{% endif %}" id="profile-image1" class="img-circle img-responsive">#}
+           <img alt="Profile Pic" src="{% if staff.image %}{% static staff.image.name %}{% else %}https://x1.xingassets.com/assets/frontend_minified/img/users/nobody_m.original.jpg{% endif %}" id="profile-image1" class="img-circle img-responsive">
+
+
+          </div>
+          <div class="col-md-8 col-xs-12 col-sm-6 col-lg-8" >
+              <div class="container" >
+                <h2>{{ staff.first_name }} {{ staff.last_name }}</h2>
+                <p><b>{{ staff.role }}</b></p>
+
+
+              </div>
+               <hr>
+              <ul class="container details" style="list-style: none;">
+                <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span>{{ staff.username }}</p></li>
+                <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span>{% if staff.email %}{{ staff.email }}{% else %}-{% endif %}</p></li>
+                <li><p><span class="glyphicon glyphicon-earphone" style="width:50px;"></span>{% if staff.phone %}{{ staff.phone }}{% else %}-{% endif %}</p></li>
+                <li><p><span class="glyphicon glyphicon-map-marker" style="width:50px;"></span>{% if staff.room %}{{ staff.room }}{% else %}-{% endif %}</p></li>
+              </ul>
+              <hr>
+              <div class="col-sm-5 col-xs-6" >Date Joined: {{ staff.date_joined | date }}</div>
+          </div>
+      </div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'staff_listing_layout_bs4.html' %}
+{% block center %}
+        <div class="card-deck">
+  <div class="card">
+    <img class="card-img-top" src="..." alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Last updated 3 mins ago</small>
+    </div>
+  </div>
+  <div class="card">
+    <img class="card-img-top" src="..." alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Last updated 3 mins ago</small>
+    </div>
+  </div>
+  <div class="card">
+    <img class="card-img-top" src="..." alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Last updated 3 mins ago</small>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{#<div class="row justify-content-center">#}
+{#{{ for profile in profiles.sort(lambda x: (x.last_name or '').lower()): }}#}
+{#    {{link=URL('profile', args=[profile.id])}}#}
+{#    {{ if profile.image:#}
+{#        image=URL('download', args=profile.image)#}
+{#    else:#}
+{#        image='static/images/default-placeholder-300x300.png'#}
+{#    pass#}
+{#    }}#}
+{#    <div class="card mt-3 mr-3 ml-3" style="width: 12rem;">#}
+{#        <a href="{{=link}}">#}
+{#          <img class="card-img-top" src="{{=image}}" alt="Card image cap">#}
+{#          <div class="card-body">#}
+{#            {{=H5('%(first_name)s %(last_name)s' % profile)}}#}
+{#            {{ if profile.phone: }}#}
+{#                <span class='fa fa-phone'></span>#}
+{#                {{ =profile.phone.replace('+44 (0)1865 2', '') }}#}
+{#                <br/>#}
+{#            {{ pass }}#}
+{#            <p class="card-text">{{=TAG.small(profile.role)}} </p>#}
+{#          </div>#}
+{#        </a>#}
+{#    </div>#}
+{#{{ pass }}#}
+{#</div>#}
+{##}
+{#Vars:#}
+{#id, link, image, phone, fn ,ln#}
