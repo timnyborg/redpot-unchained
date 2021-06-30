@@ -173,11 +173,10 @@ DATABASES = {
         'HOST': get_secret('DB_HOST', 'mssql'),
         'USER': get_secret('DB_USER', 'sa'),
         'PASSWORD': get_secret('DB_PASSWORD', 'Test@only'),
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        },
     }
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MESSAGE_TAGS = {
     # Overriding the error tag to match bootstrap 3

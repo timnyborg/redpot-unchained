@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='HESACostCentre',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('description', models.CharField(blank=True, max_length=64, null=True)),
                 ('price_group', models.CharField(blank=True, max_length=2, null=True)),
             ],
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProgrammeHecosSubject',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('percentage', models.IntegerField()),
                 ('hecos_subject', models.ForeignKey(db_column='hecos_subject', on_delete=django.db.models.deletion.DO_NOTHING, to='hesa.HECoSSubject')),
                 ('programme', models.ForeignKey(db_column='programme', on_delete=django.db.models.deletion.DO_NOTHING, to='programme.Programme')),
@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ModuleHECoSSubject',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
                 ('created_on', models.DateTimeField(auto_now_add=True, null=True)),
                 ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Batch',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('academic_year', models.IntegerField()),
                 ('created_on', models.DateTimeField(auto_now_add=True)),
                 ('created_by', models.CharField(blank=True, max_length=32, null=True)),
@@ -85,7 +85,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Course',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('programme', models.IntegerField(blank=True, null=True)),
                 ('ukprn_fk', models.IntegerField(db_column='UKPRN_FK', default=10007774)),
                 ('courseid', models.CharField(blank=True, db_column='COURSEID', max_length=8, null=True)),
@@ -109,7 +109,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='StudentOnModule',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('enrolment', models.IntegerField(blank=True, null=True)),
                 ('instanceid_fk', models.CharField(blank=True, db_column='INSTANCEID_FK', max_length=16, null=True)),
                 ('modid', models.CharField(blank=True, db_column='MODID', max_length=16, null=True)),
@@ -125,7 +125,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Student',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('student', models.IntegerField()),
                 ('ukprn_fk', models.IntegerField(db_column='UKPRN_FK', default=10007774)),
                 ('husid', models.CharField(blank=True, db_column='HUSID', max_length=32, null=True)),
@@ -152,7 +152,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='QualificationsAwarded',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('instanceid_fk', models.CharField(blank=True, db_column='INSTANCEID_FK', max_length=16, null=True)),
                 ('qual', models.CharField(blank=True, db_column='QUAL', max_length=3, null=True)),
                 ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.DO_NOTHING,
@@ -165,7 +165,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ModuleSubject',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('modid_fk', models.CharField(db_column='MODID_FK', max_length=32)),
                 ('costcn', models.IntegerField(blank=True, db_column='COSTCN', null=True)),
                 ('modsbjp', models.IntegerField(db_column='MODSBJP')),
@@ -180,7 +180,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Module',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('module', models.IntegerField(blank=True, null=True)),
                 ('ukprn_fk', models.IntegerField(db_column='UKPRN_FK', default=10007774)),
                 ('modid', models.CharField(blank=True, db_column='MODID', max_length=32, null=True)),
@@ -201,7 +201,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Institution',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('instapp', models.IntegerField(db_column='INSTAPP', default=0)),
                 ('recid', models.IntegerField(db_column='RECID')),
                 ('ukprn', models.IntegerField(db_column='UKPRN', default=10007774)),
@@ -215,7 +215,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Instance',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('qa', models.IntegerField(blank=True, null=True)),
                 ('instanceid', models.CharField(blank=True, db_column='INSTANCEID', max_length=16, null=True)),
                 ('ownstu_fk', models.IntegerField(blank=True, db_column='OWNSTU_FK', null=True)),
@@ -260,7 +260,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EntryProfile',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('instanceid_fk', models.CharField(blank=True, db_column='INSTANCEID_FK', max_length=16, null=True)),
                 ('domicile', models.CharField(blank=True, db_column='DOMICILE', max_length=2, null=True)),
                 ('qualent3', models.CharField(blank=True, db_column='QUALENT3', max_length=3, null=True)),
@@ -276,7 +276,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CourseSubject',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('courseid_fk', models.CharField(blank=True, db_column='COURSEID_FK', max_length=8, null=True)),
                 ('sbjca', models.CharField(blank=True, db_column='SBJCA', max_length=6, null=True)),
                 ('sbjpcnt', models.IntegerField(blank=True, db_column='SBJPCNT', null=True)),

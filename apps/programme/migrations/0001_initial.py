@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Programme',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
                 ('created_on', models.DateTimeField(auto_now_add=True, null=True)),
                 ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
@@ -181,7 +181,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProgrammeModule',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 (
                     'module',
                     models.ForeignKey(

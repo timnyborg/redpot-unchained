@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Book',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.TextField(blank=True, null=True)),
                 ('author', models.TextField(blank=True, null=True)),
                 ('type', models.CharField(max_length=24)),
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Location',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
                 ('created_on', models.DateTimeField(auto_now_add=True, null=True)),
                 ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Module',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
                 ('created_on', models.DateTimeField(auto_now_add=True, null=True)),
                 ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
@@ -189,7 +189,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ModuleFormat',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('description', models.CharField(blank=True, max_length=50, null=True)),
             ],
             options={
@@ -213,7 +213,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Subject',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(blank=True, max_length=64, null=True)),
                 ('area', models.CharField(blank=True, max_length=64, null=True)),
             ],
@@ -224,7 +224,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ModuleWaitlist',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('listed_on', models.DateTimeField(auto_now_add=True)),
                 ('emailed_on', models.DateTimeField(blank=True, null=True)),
                 (
@@ -250,7 +250,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ModuleSubject',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 (
                     'module',
                     models.ForeignKey(
@@ -271,7 +271,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ModuleMarketingType',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 (
                     'marketing_type',
                     models.ForeignKey(

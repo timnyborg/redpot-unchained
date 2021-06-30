@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='User',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('password', models.CharField(max_length=128, verbose_name='password')),
                 ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
                 (
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
                         verbose_name='username',
                     ),
                 ),
-                ('first_name', models.CharField(blank=True, max_length=30, verbose_name='first name')),
+                ('first_name', models.CharField(blank=True, max_length=150, verbose_name='first name')),
                 ('last_name', models.CharField(blank=True, max_length=150, verbose_name='last name')),
                 ('email', models.EmailField(blank=True, max_length=254, verbose_name='email address')),
                 (
@@ -119,7 +119,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Division',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=64)),
                 ('shortname', models.CharField(blank=True, max_length=8, null=True)),
                 ('email', models.EmailField(blank=True, max_length=256, null=True)),
@@ -136,7 +136,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Portfolio',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
                 ('email', models.EmailField(blank=True, max_length=256, null=True)),
                 ('phone', models.CharField(blank=True, max_length=256, null=True)),
