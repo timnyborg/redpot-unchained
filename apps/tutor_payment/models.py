@@ -84,7 +84,6 @@ class TutorFee(models.Model):
             holiday_date = (
                 date(tutor_module.module.start_date.year, tutor_module.module.end_date.month, 1)
                 + relativedelta(months=1)
-                - relativedelta(days=1)
             )
 
         holiday_amount = HOLIDAY_RATE * amount
