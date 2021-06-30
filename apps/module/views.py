@@ -9,15 +9,17 @@ from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.text import slugify
 from django.views import generic
 from django.views.decorators.csrf import csrf_exempt
 
 from apps.core.utils.dates import academic_year
-from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitleMixin
 from apps.discount.models import Discount
+from apps.enrolment.models import Enrolment
 from apps.tutor.utils import expense_forms
 
-from . import forms
+from . import exports, forms
 from .datatables import BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
 from .models import Module, ModuleStatus
 from .services import clone_fields, copy_books, copy_children, copy_fees
@@ -198,3 +200,35 @@ def toggle_auto_feedback(request, pk):
     obj.auto_feedback = not obj.auto_feedback
     obj.save()
     return HttpResponse()
+
+
+class StudentList(LoginRequiredMixin, ExcelExportView):
+    export_class = exports.StudentListExport
+
+    def get(self, request, *args, **kwargs):
+        self.module = get_object_or_404(Module, pk=kwargs['pk'])
+        return super().get(request, *args, **kwargs)
+
+    def get_filename(self):
+        return f'{self.module.code}_student_list.xlsx'
+
+    def get_export_queryset(self):
+        return Enrolment.objects.filter(module=self.module)
+
+
+class MoodleList(LoginRequiredMixin, ExcelExportView):
+    export_class = exports.MoodleListExport
+
+    def get(self, request, *args, **kwargs):
+        self.module = get_object_or_404(Module, pk=kwargs['pk'])
+        return super().get(request, *args, **kwargs)
+
+    def get_filename(self):
+        title = slugify(self.module.title)
+        return f"{self.module.code}_{title}.xlsx"
+
+    def get_export_queryset(self):
+        return Enrolment.objects.filter(
+            module=self.module,
+            status__in=[10, 90],  # Todo: use a column or enum
+        )

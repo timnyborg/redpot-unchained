@@ -14,4 +14,7 @@ urlpatterns = [
     # support functions
     path('toggle-auto-reminder/<int:pk>', views.toggle_auto_reminder, name='toggle-auto-reminder'),
     path('toggle-auto-feedback/<int:pk>', views.toggle_auto_feedback, name='toggle-auto-feedback'),
+    # reports
+    path('student-list/<int:pk>', views.StudentList.as_view(), name='student-list'),
+    path('moodle-list/<int:pk>', views.MoodleList.as_view(), name='moodle-list'),
 ]

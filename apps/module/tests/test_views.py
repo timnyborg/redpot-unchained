@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from apps.enrolment.tests.factories import EnrolmentFactory
 from apps.programme.models import ProgrammeModule
 from apps.programme.tests.factories import ProgrammeFactory
 
@@ -149,3 +150,26 @@ class TestAddProgrammeView(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ProgrammeModule.objects.last().module_id, self.module.pk)
+
+
+class TestExcelExportViews(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.module = factories.ModuleFactory()
+        cls.enrolment = EnrolmentFactory(module=cls.module)
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_student_list(self):
+        url = reverse('module:student-list', args=[self.module.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('spreadsheetml', response['content-type'])
+
+    def test_moodle_list(self):
+        url = reverse('module:moodle-list', args=[self.module.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('spreadsheetml', response['content-type'])
