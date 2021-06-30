@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models.functions import Replace
 
 from apps.core.utils.datatables import ViewLinkColumn
+from apps.core.utils.widgets import DatePickerInput
 
 from .models import Student
 
@@ -28,7 +29,7 @@ class SearchFilter(filters.FilterSet):
         lookup_expr='unaccent__startswith',
     )
 
-    birthdate = filters.DateFilter(label='Birthdate', field_name='birthdate')
+    birthdate = filters.DateFilter(label='Birthdate', field_name='birthdate', widget=DatePickerInput())
 
     def filter_postcode(self, queryset, field_name, value):
         """Finds postcodes starting the same way, while removing spaces from the search and target"""

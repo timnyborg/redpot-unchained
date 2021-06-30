@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
                 ('modified_on', models.DateTimeField(auto_now_add=True, null=True)),
                 ('number', models.CharField(blank=True, max_length=64, null=True)),
-                ('type', models.IntegerField(choices=[(7, 'Sso'), (8, 'Oss'), (9, 'Ssn')])),
+                ('type', models.IntegerField(choices=[(1, 'Student Card'), (7, 'Sso'), (8, 'Oss'), (9, 'Ssn')])),
                 ('note', models.CharField(blank=True, max_length=64, null=True)),
                 ('start_date', models.DateField(blank=True, null=True)),
                 ('end_date', models.DateField(blank=True, null=True)),

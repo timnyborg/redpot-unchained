@@ -88,6 +88,7 @@ PREREQ_APPS = [
     'celery_progress',
     'django_celery_beat',
     'django_celery_results',
+    'bootstrap_datepicker_plus',
 ]
 
 PROJECT_APPS = [

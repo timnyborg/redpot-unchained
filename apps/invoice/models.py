@@ -26,32 +26,30 @@ class InvoiceQuerySet(models.QuerySet):
 
 
 class Invoice(SignatureModel):
-    number = models.IntegerField(unique=True)
-    prefix = models.CharField(max_length=32, default='XG')
-    date = models.DateField(blank=True, null=True)
-    fao = models.CharField(max_length=128, blank=True, null=True)
+    number = models.IntegerField(unique=True, editable=False)
+    prefix = models.CharField(max_length=32, default='XG', editable=False)
+    date = models.DateField(auto_now_add=True)
+    due_date = models.DateField(null=True, db_column='duedate')
+    fao = models.CharField(max_length=128, blank=True, null=True, verbose_name='FAO')
     invoiced_to = models.CharField(max_length=128, blank=True, null=True)
-    line1 = models.CharField(max_length=128, blank=True, null=True)
-    line2 = models.CharField(max_length=128, blank=True, null=True)
-    line3 = models.CharField(max_length=128, blank=True, null=True)
-    town = models.CharField(max_length=64, blank=True, null=True)
-    countystate = models.CharField(max_length=64, blank=True, null=True)
+    line1 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Address line 1')
+    line2 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Line 2')
+    line3 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Line 3')
+    town = models.CharField(max_length=64, blank=True, null=True, verbose_name='City/town')
+    countystate = models.CharField(max_length=64, blank=True, null=True, verbose_name='County/state')
     country = models.CharField(max_length=64, blank=True, null=True)
     postcode = models.CharField(max_length=32, blank=True, null=True)
-    amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
+    amount = models.DecimalField(max_digits=19, decimal_places=4, editable=False)
     custom_narrative = models.BooleanField(default=False)
     narrative = models.TextField(blank=True, null=True)
-    ref_no = models.CharField(max_length=64, blank=True, null=True)
-    division = models.IntegerField(blank=True, null=True)
-    allocation = models.IntegerField(blank=True, null=True)
-    # Due_date mapped from a column not following our naming scheme
-    due_date = models.DateField(blank=True, null=True, db_column='duedate')
+    ref_no = models.CharField(max_length=64, blank=True, null=True, verbose_name='Customer ref. #')
+    division = models.IntegerField(blank=True, null=True, editable=False)
     contact_person = models.CharField(max_length=128, blank=True, null=True)
     contact_email = models.CharField(max_length=255, blank=True, null=True)
     contact_phone = models.CharField(max_length=64, blank=True, null=True)
     company = models.CharField(max_length=128, blank=True, null=True)
     formatted_addressee = models.TextField(blank=True, null=True)
-    vat_no = models.CharField(max_length=64, blank=True, null=True)
+    vat_no = models.CharField(max_length=64, blank=True, null=True, verbose_name='VAT #')
 
     ledger_items = models.ManyToManyField('Ledger', through='InvoiceLedger', through_fields=('invoice', 'ledger'))
 
@@ -71,6 +69,9 @@ class Invoice(SignatureModel):
 
     def get_absolute_url(self):
         return reverse('invoice:view', args=[self.id])
+
+    def get_edit_url(self):
+        return reverse('invoice:edit', args=[self.id])
 
     def balance(self):
         return self.allocated_ledger_items.aggregate(sum=models.Sum('amount'))['sum']

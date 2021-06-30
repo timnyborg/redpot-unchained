@@ -2,8 +2,6 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.enrolment.tests.factories import EnrolmentFactory
-
 from . import factories
 
 
@@ -11,8 +9,7 @@ class TestViewsWithLogin(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        enrolment = EnrolmentFactory()
-        fee_line = factories.LedgerFactory(enrolment=enrolment)
+        fee_line = factories.LedgerFactory()
         cls.invoice = factories.InvoiceFactory()
         cls.invoice.ledger_items.add(
             fee_line,
@@ -51,7 +48,7 @@ class TestViewsWithLogin(TestCase):
 
     def test_view_invoice(self):
         response = self.client.get(reverse('invoice:view', args=[self.invoice.id]))
-        # TODO: We should use a factory, and check for invoice data being present
+        # TODO: We should check for invoice data being present
         self.assertEqual(response.status_code, 200)
 
     def test_lookup_succeeds(self):
