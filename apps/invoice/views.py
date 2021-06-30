@@ -2,11 +2,12 @@ from django_filters.views import FilterView
 from django_tables2.views import RequestConfig, SingleTableMixin
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.views.generic.detail import DetailView
+from django.views import generic
 from django.views.generic.edit import FormMixin
 
 from apps.core.utils.views import PageTitleMixin
@@ -21,27 +22,31 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FormMixin, Fi
     table_class = datatables.InvoiceSearchTable
     filterset_class = datatables.InvoiceSearchFilter
     subtitle = 'Search'
-    form_class = forms.InvoiceLookupForm
+    form_class = forms.LookupForm
 
 
-def lookup(request):
+class Lookup(generic.View):
     """Redirects to an invoice matching `number` with or without EQ prefix.
     When not found, sends the user back to /search
     """
-    invnum = request.POST['number']
-    if not invnum.isdigit():
-        # If they've included a prefix (eg EQ), strip it out
-        invnum = invnum[2:]
 
-    try:
-        invoice = Invoice.objects.get(number=invnum)
-        return redirect(invoice.get_absolute_url())
-    except (Invoice.DoesNotExist, ValueError):
-        messages.error(request, 'Invoice not found')
-        return redirect(reverse('invoice:search'))
+    http_method_names = ['post']
+
+    def post(self, request):
+        invnum = request.POST['number']
+        if not invnum.isdigit():
+            # If they've included a prefix (eg EQ), strip it out
+            invnum = invnum[2:]
+
+        try:
+            invoice = Invoice.objects.get(number=invnum)
+            return redirect(invoice.get_absolute_url())
+        except (Invoice.DoesNotExist, ValueError):
+            messages.error(request, 'Invoice not found')
+            return redirect(reverse('invoice:search'))
 
 
-class View(LoginRequiredMixin, PageTitleMixin, DetailView):
+class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
     template_name = 'invoice/view.html'
     model = Invoice
 
@@ -69,3 +74,12 @@ class View(LoginRequiredMixin, PageTitleMixin, DetailView):
             'plan': plan,
             'schedule_table': schedule_table,
         }
+
+
+class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
+    model = Invoice
+    form_class = forms.EditForm
+    template_name = 'core/form.html'
+    permission_required = 'invoice.edit'
+    permission_denied_message = 'Only members of Finance can edit invoices'
+    success_message = 'Invoice updated'

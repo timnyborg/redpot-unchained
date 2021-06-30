@@ -3,6 +3,8 @@ from django.db import transaction
 from django.forms import ValidationError
 from django.forms.models import fields_for_model
 
+from apps.core.utils.widgets import MonthPickerInput
+
 from .models import TutorFee, TutorFeeRate
 
 
@@ -35,6 +37,7 @@ class EditForm(forms.ModelForm):
             'approver',
             'pay_after',
         )
+        widgets = {'pay_after': MonthPickerInput()}
 
     def __init__(self, editable_status, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -36,7 +36,6 @@ class Migration(migrations.Migration):
                 ('narrative', models.TextField(blank=True, null=True)),
                 ('ref_no', models.CharField(blank=True, max_length=64, null=True)),
                 ('division', models.IntegerField(blank=True, null=True)),
-                ('allocation', models.IntegerField(blank=True, null=True)),
                 ('due_date', models.DateField(blank=True, db_column='duedate', null=True)),
                 ('contact_person', models.CharField(blank=True, max_length=128, null=True)),
                 ('contact_email', models.CharField(blank=True, max_length=255, null=True)),
