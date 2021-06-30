@@ -173,6 +173,7 @@ class MoodleID(SignatureModel):
 
 class OtherID(SignatureModel):
     class Types(models.IntegerChoices):
+        STUDENT_CARD = 1
         SSO = 7
         OSS = 8
         SSN = 9
