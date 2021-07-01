@@ -6,15 +6,19 @@ from django.db.models import Q
 from django.utils.safestring import mark_safe
 
 from apps.core.utils.datatables import PoundsColumn, ViewLinkColumn
-from apps.core.utils.widgets import DatePickerInput
+from apps.core.utils.widgets import DatePickerInput, PoundInput
 
 from .models import Invoice, Ledger, PaymentPlanSchedule
 
 
 class InvoiceSearchFilter(django_filters.FilterSet):
     invoiced_to = django_filters.CharFilter(field_name='invoiced_to', label='Invoiced to', lookup_expr='icontains')
-    minimum = django_filters.NumberFilter(field_name='amount', label='Minimum amount', lookup_expr='gte')
-    maximum = django_filters.NumberFilter(field_name='amount', label='Maximum amount', lookup_expr='lte')
+    minimum = django_filters.NumberFilter(
+        field_name='amount', label='Minimum amount', lookup_expr='gte', widget=PoundInput()
+    )
+    maximum = django_filters.NumberFilter(
+        field_name='amount', label='Maximum amount', lookup_expr='lte', widget=PoundInput()
+    )
     created_by = django_filters.CharFilter(field_name='created_by', label='Created by (username)', lookup_expr='exact')
     created_after = django_filters.DateFilter(
         field_name='created_on', label='Created on or after', lookup_expr='gte', widget=DatePickerInput()
