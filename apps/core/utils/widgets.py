@@ -12,7 +12,7 @@ import bootstrap_datepicker_plus
 from django.conf import settings
 
 
-class BaseDatePicker(bootstrap_datepicker_plus.DatePickerInput):
+class PickerOptionsMixin:
     """Remove the extra options by default from our date/time pickers"""
 
     _default_options = {
@@ -22,11 +22,16 @@ class BaseDatePicker(bootstrap_datepicker_plus.DatePickerInput):
     }
 
 
-class DatePickerInput(BaseDatePicker):
+class DateTimePickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.DateTimePickerInput):
+    format: str = settings.DATETIME_INPUT_FORMATS[0]
+    options = {'useCurrent': 'day'}  # Defaults to 00:00 rather than the current time
+
+
+class DatePickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.DatePickerInput):
     format: str = settings.DATE_INPUT_FORMATS[0]
 
 
-class MonthPickerInput(BaseDatePicker):
+class MonthPickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.DatePickerInput):
     format: str = '%B %Y'
 
     def value_from_datadict(self, data, files, name):

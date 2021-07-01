@@ -1,5 +1,6 @@
 from django.forms import ModelForm, fields
 
+from apps.core.utils import widgets
 from apps.programme.models import ProgrammeModule
 
 from .models import Module
@@ -9,6 +10,16 @@ class EditForm(ModelForm):  # noqa: DJ06
     class Meta:
         model = Module
         exclude = ['payment_plans']
+        widgets = {
+            'start_date': widgets.DatePickerInput(),
+            'end_date': widgets.DatePickerInput(),
+            'open_date': widgets.DatePickerInput(),
+            'closed_date': widgets.DatePickerInput(),
+            'publish_date': widgets.DatePickerInput(),
+            'unpublish_date': widgets.DatePickerInput(),
+            'michaelmas_end': widgets.DatePickerInput(),
+            'hilary_start': widgets.DatePickerInput(),
+        }
 
 
 class CloneForm(ModelForm):
