@@ -256,7 +256,7 @@ SHORT_DATETIME_FORMAT = 'j M Y H:i'
 TIME_FORMAT = 'G:i'  # 24 hour time without leading zeroes
 DATE_INPUT_FORMATS = [
     '%d %b %Y',  # '25 Oct 2006' - default in forms
-    '%d %b, %Y',  # '25 Oct, 2006'
+    '%d %B %Y',  # '25 October 2006'
     '%Y-%m-%d',  # '2006-10-25'
     '%d/%m/%Y',  # '25/10/2006'
     '%d/%m/%y',  # '25/10/06'
@@ -267,8 +267,18 @@ DATE_INPUT_FORMATS = [
     '%d %B %Y',  # '25 October 2006'
     '%d %B, %Y',  # '25 October, 2006'
 ]
-
-
+DATETIME_INPUT_FORMATS = [
+    '%d %b %Y %H:%M',  # '25 Oct 2016 14:30' - default in forms
+    '%d %B %Y %H:%M',  # '25 October 2016 14:30'
+    '%d %b %Y %H:%M:%S',  # '25 Oct 2016 14:30:59'
+    '%d %B %Y %H:%M:%S',  # '25 October 2016 14:30:59'
+    '%Y-%m-%d %H:%M:%S',  # '2006-10-25 14:30:59'
+    '%Y-%m-%d %H:%M',  # '2006-10-25 14:30'
+    '%d/%m/%Y %H:%M:%S',  # '25/10/2006 14:30:59'
+    '%d/%m/%Y %H:%M',  # '25/10/2006 14:30'
+    '%d/%m/%y %H:%M:%S',  # '25/10/06 14:30:59'
+    '%d/%m/%y %H:%M',  # '25/10/06 14:30'
+]
 # Email settings
 EMAIL_HOST = get_secret('EMAIL_HOST', '')
 DEFAULT_FROM_EMAIL = get_secret('DEFAULT_FROM_EMAIL', 'redpot-support@conted.ox.ac.uk')
