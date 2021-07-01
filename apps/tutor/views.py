@@ -16,6 +16,30 @@ from .models import Tutor, TutorModule
 from .utils.mail_merge import MailMergeView
 
 
+class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
+    model = Tutor
+    template_name = 'core/form.html'
+
+    def get_form_class(self):
+        # Show a full or reduced form depending on the user's rights
+        if self.request.user.has_perm('tutor.edit_bank_details'):
+            return forms.Edit
+        return forms.BasicEdit
+
+
+class RightToWork(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
+    model = Tutor
+    template_name = 'core/form.html'
+    form_class = forms.RightToWork
+    subtitle = 'Right to work'
+    success_message = 'Right to work details updated'
+
+    def get_initial(self):
+        if not self.object.rtw_check_by:
+            return {'rtw_check_by': self.request.user.get_full_name()}
+        return {}
+
+
 class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, generic.DetailView):
     model = TutorModule
     template_name = 'tutor_module/view.html'

@@ -174,9 +174,8 @@ class AddProgramme(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gene
         self.module = get_object_or_404(Module, pk=kwargs['module_id'])
         return super().dispatch(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        form.instance.module = self.module
-        return super().form_valid(form)
+    def get_initial(self):
+        return {'module': self.module}
 
     def get_success_url(self):
         if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):

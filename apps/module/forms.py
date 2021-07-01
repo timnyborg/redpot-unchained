@@ -1,14 +1,16 @@
-from django.forms import ModelForm, fields
+from django import forms
+from django.core import exceptions
+from django.forms import fields
 
 from apps.core.utils import widgets
 from apps.programme.models import ProgrammeModule
 
-from .models import Module
+from . import models
 
 
-class EditForm(ModelForm):  # noqa: DJ06
+class EditForm(forms.ModelForm):  # noqa: DJ06
     class Meta:
-        model = Module
+        model = models.Module
         exclude = ['payment_plans']
         widgets = {
             'start_date': widgets.DatePickerInput(),
@@ -22,7 +24,7 @@ class EditForm(ModelForm):  # noqa: DJ06
         }
 
 
-class CloneForm(ModelForm):
+class CloneForm(forms.ModelForm):
     # A dummy field to display data (may be a bad idea)
     source_module = fields.CharField(disabled=True)
     copy_fees = fields.BooleanField(
@@ -56,17 +58,26 @@ class CloneForm(ModelForm):
             del self.fields[field]
 
     class Meta:
-        model = Module
+        model = models.Module
         fields = ('source_module', 'code', 'title', 'is_repeat', 'copy_fees', 'copy_books', 'copy_dates', 'keep_url')
 
 
-class CreateForm(ModelForm):
+class CreateForm(forms.ModelForm):
     class Meta:
-        model = Module
+        model = models.Module
         fields = ('code', 'title', 'division', 'portfolio', 'non_credit_bearing')
 
 
-class AddProgrammeForm(ModelForm):
+class AddProgrammeForm(forms.ModelForm):
+    module = forms.ModelChoiceField(
+        queryset=models.Module.objects.all(),
+        disabled=True,
+        widget=forms.HiddenInput(),
+    )
+
     class Meta:
         model = ProgrammeModule
-        fields = ('programme',)
+        fields = ['programme', 'module']
+        error_messages = {
+            exceptions.NON_FIELD_ERRORS: {'unique_together': 'The module is already attached to the programme'}
+        }
