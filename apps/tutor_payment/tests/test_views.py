@@ -18,8 +18,11 @@ class TestCreatePayment(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        permission = Permission.objects.get(codename='raise')
-        cls.user.user_permissions.add(permission)
+        permissions = [
+            Permission.objects.get(codename='raise'),
+            Permission.objects.get(codename='approve'),
+        ]
+        cls.user.user_permissions.add(*permissions)
         cls.tutor_on_module = TutorModuleFactory()
         cls.url = reverse('tutor-payment:new', args=[cls.tutor_on_module.pk])
 
@@ -39,7 +42,7 @@ class TestCreatePayment(TestCase):
                 'amount': 25,
                 'weeks': 4,
                 'type': 1,  # todo: choices/enum
-                'approver': 'abc',  # todo: actual user
+                'approver': 'testuser',
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -49,8 +52,11 @@ class TestEditPayment(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        permission = Permission.objects.get(codename='raise')
-        cls.user.user_permissions.add(permission)
+        permissions = [
+            Permission.objects.get(codename='raise'),
+            Permission.objects.get(codename='approve'),
+        ]
+        cls.user.user_permissions.add(*permissions)
         cls.payment = factories.TutorFeeFactory(raised_by=cls.user.username, amount=50)
         cls.url = reverse('tutor-payment:edit', args=[cls.payment.pk])
 
@@ -70,7 +76,7 @@ class TestEditPayment(TestCase):
                 'amount': 25,
                 'weeks': 4,
                 'type': 1,  # todo: choices/enum
-                'approver': 'abc',  # todo: actual user
+                'approver': 'testuser',
             },
         )
 

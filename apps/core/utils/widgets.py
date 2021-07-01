@@ -1,8 +1,9 @@
 """
-Date inputs
+Contains:
+    * Standardized Date/Datetime/Time widgets that can be used across the application.
+      (Allows us to configure just once (e.g. default format), and swap libraries if ever necessary)
+    * Standard widgets with bootstrap prepends/appends (e.g. pound sign)
 
-Contains standardized Date/Datetime/Time widgets that can be used across the application.
-Allows us to configure just once (e.g. default format), and swap libraries if ever necessary
 """
 
 from datetime import datetime
@@ -10,6 +11,7 @@ from datetime import datetime
 import bootstrap_datepicker_plus
 
 from django.conf import settings
+from django.forms import widgets
 
 
 class PickerOptionsMixin:
@@ -44,3 +46,9 @@ class MonthPickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.DatePickerI
             return datetime.strptime(value, self.format).date()
         except (ValueError, TypeError):
             return value
+
+
+class PoundInput(widgets.NumberInput):
+    """Bootstrap text input with a £ appended"""
+
+    template_name = "widgets/pound_widget.html"
