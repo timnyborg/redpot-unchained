@@ -6,7 +6,7 @@
     <p>Are you sure you want to remove <b>{{ programmemodule.module.long_form }}</b> from <b>{{ programmemodule.programme }}</b>?</p>
     <form action="" method="post" class="form-horizontal">
         {% csrf_token %}
-        {% bootstrap3submit text='Remove' btn_type='danger' offset=0 %}
+        {% bootstrap3submit text='Remove' btn_type='danger' %}
         {% bootstrap3backbutton %}
     </form>
 </div>

@@ -1,11 +1,11 @@
 from dal import autocomplete
 
 from django import forms
+from django.core import exceptions
 
 from . import models
 
 
-# Create the form class.
 class ProgrammeEditForm(forms.ModelForm):
     class Meta:
         model = models.Programme
@@ -50,9 +50,18 @@ class ProgrammeNewForm(forms.ModelForm):
 
 
 class AttachModuleForm(forms.ModelForm):
+    programme = forms.ModelChoiceField(
+        queryset=models.Programme.objects.all(),
+        disabled=True,
+        widget=forms.HiddenInput(),
+    )
+
     class Meta:
         model = models.ProgrammeModule
-        fields = ['module']
+        fields = ['programme', 'module']
         widgets = {
             'module': autocomplete.ModelSelect2(url='autocomplete:module', attrs={'data-minimum-input-length': 3})
+        }
+        error_messages = {
+            exceptions.NON_FIELD_ERRORS: {'unique_together': 'The module is already attached to the programme'}
         }

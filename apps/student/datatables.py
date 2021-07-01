@@ -1,6 +1,7 @@
 import django_filters as filters
 import django_tables2 as tables
 
+from django import forms
 from django.db import models
 from django.db.models.functions import Replace
 
@@ -60,6 +61,17 @@ class SearchFilter(filters.FilterSet):
     )
 
     # todo: phone filter
+
+    def filter_tutors_only(self, queryset, field_name, value):
+        if value:
+            return queryset.filter(tutor__id__isnull=False)
+        return queryset
+
+    tutors_only = filters.BooleanFilter(
+        label='Tutors only?',
+        method='filter_tutors_only',
+        widget=forms.CheckboxInput,
+    )
 
     class Meta:
         model = Student

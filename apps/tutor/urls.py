@@ -14,6 +14,8 @@ tutor_module_patterns = (
 )
 
 urlpatterns = [
+    path('edit/<int:pk>', views.Edit.as_view(), name='edit'),  # tutor:edit
+    path('right-to-work/<int:pk>', views.RightToWork.as_view(), name='right-to-work'),
     path('tutor-module/', include(tutor_module_patterns)),
     # Todo: overhaul this whole expense-form url structure
     path(

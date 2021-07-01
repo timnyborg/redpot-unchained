@@ -827,25 +827,6 @@ class Room(models.Model):
         db_table = 'room'
 
 
-class RtwDocumentType(models.Model):
-    rtw_type = models.ForeignKey('RtwType', models.DO_NOTHING, db_column='rtw_type')
-    name = models.CharField(max_length=64, blank=True, null=True)
-    display_order = models.IntegerField(blank=True, null=True)
-    limited_hours = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'rtw_document_type'
-
-
-class RtwType(models.Model):
-    name = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'rtw_type'
-
-
 class Setting(models.Model):
     name = models.TextField()
     type = models.TextField()

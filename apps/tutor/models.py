@@ -1,3 +1,4 @@
+from django.core import validators
 from django.db import models
 from django.urls import reverse
 
@@ -10,38 +11,74 @@ class TutorManager(models.Manager):
         return super().get_queryset().select_related('student')
 
 
+class RightToWorkType(models.IntegerChoices):
+    PERMANENT = (1, 'List A (permanent)')
+    LIMITED = (2, 'List B (limited)')
+    PRE_1997 = (3, 'Started pre-1997')
+    OVERSEAS = (4, 'Working overseas - RTW not required')
+
+
 class Tutor(SignatureModel):
     student = models.OneToOneField('student.Student', models.DO_NOTHING, db_column='student')
     qualifications = models.CharField(max_length=256, blank=True, null=True)
     affiliation = models.CharField(max_length=256, blank=True, null=True)
-    nino = models.CharField(max_length=64, blank=True, null=True)
-    employee_no = models.CharField(max_length=32, blank=True, null=True)
-    appointment_id = models.CharField(max_length=32, blank=True, null=True)
 
-    # todo: longterm - move banking data into a one-to-one table (easier permissioning)
-    bankname = models.CharField(max_length=64, blank=True, null=True)
-    branchaddress = models.CharField(max_length=128, blank=True, null=True)
-    accountname = models.CharField(max_length=64, blank=True, null=True)
-    sortcode = models.CharField(max_length=8, blank=True, null=True)
-    accountno = models.CharField(max_length=32, blank=True, null=True)
-    swift = models.CharField(max_length=11, blank=True, null=True)  # Field name made lowercase.
-    iban = models.CharField(max_length=34, blank=True, null=True)  # Field name made lowercase.
-    other_bank_details = models.CharField(max_length=512, blank=True, null=True)
+    nino = models.CharField(
+        max_length=64, blank=True, null=True, verbose_name='National insurance #', help_text='Enter without spaces'
+    )
+    employee_no = models.CharField(max_length=32, blank=True, null=True, verbose_name='Employee #')
+    appointment_id = models.CharField(max_length=32, blank=True, null=True, verbose_name='Appointment ID')
+    bankname = models.CharField(max_length=64, blank=True, null=True, verbose_name='Bank name')
+    branchaddress = models.CharField(max_length=128, blank=True, null=True, verbose_name='Branch address')
+    accountname = models.CharField(max_length=64, blank=True, null=True, verbose_name='Account name')
+    sortcode = models.CharField(
+        max_length=8,
+        blank=True,
+        null=True,
+        verbose_name='Sort code',
+        validators=[validators.RegexValidator(r'(\d{6}|\d\d-\d\d-\d\d)', 'Must be in the form 12-34-56 or 123456')],
+    )
+    accountno = models.CharField(max_length=32, blank=True, null=True, verbose_name='Account #')
+    swift = models.CharField(
+        max_length=11,
+        blank=True,
+        null=True,
+        verbose_name='SWIFT',
+        help_text='Enter without spaces',
+        validators=[validators.RegexValidator(r'^[A-z]{6}[A-z\d]{2,5}$', 'Must be in the form ABCDEF12')],
+    )
+    iban = models.CharField(
+        max_length=34,
+        blank=True,
+        null=True,
+        verbose_name='IBAN',
+        help_text='Enter without spaces',
+        validators=[
+            validators.RegexValidator(r'^[A-z]{2}\d{2}[A-z\d]{4}\d{7,20}$', 'Must be in the form AB12CDEF3456789')
+        ],
+    )
+    other_bank_details = models.CharField(max_length=512, blank=True, null=True, help_text='E.g. routing numbers')
+    oracle_supplier_number = models.IntegerField(blank=True, null=True)
+
     biography = models.TextField(blank=True, null=True)
-    image = models.CharField(max_length=255, blank=True, null=True)
+    image = models.ImageField(blank=True)
 
     # todo: longterm - move rtw data into a one-to-one table (easier permissioning)
-    # rtw_type = models.ForeignKey(RtwType, models.DO_NOTHING, db_column='rtw_type', blank=True, null=True)
-    # rtw_document_type = models.ForeignKey(
-    #     RtwDocumentType, models.DO_NOTHING,
-    #     db_column='rtw_document_type',
-    #     blank=True, null=True
-    # )
-    rtw_check_on = models.DateField(blank=True, null=True)
-    rtw_check_by = models.CharField(max_length=50, blank=True, null=True)
-    rtw_start_date = models.DateField(blank=True, null=True)
-    rtw_end_date = models.DateField(blank=True, null=True)
-    oracle_supplier_number = models.IntegerField(blank=True, null=True)
+    rtw_type = models.IntegerField(
+        choices=RightToWorkType.choices, db_column='rtw_type', blank=True, null=True, verbose_name='List'
+    )
+    rtw_document_type = models.ForeignKey(
+        'RightToWorkDocumentType',
+        models.DO_NOTHING,
+        db_column='rtw_document_type',
+        blank=True,
+        null=True,
+        verbose_name='Document type',
+    )
+    rtw_check_on = models.DateField(blank=True, null=True, verbose_name='Date check done')
+    rtw_check_by = models.CharField(max_length=50, blank=True, null=True, verbose_name='Check done by')
+    rtw_start_date = models.DateField(blank=True, null=True, verbose_name='Document issued on')
+    rtw_end_date = models.DateField(blank=True, null=True, verbose_name='Document valid until')
 
     modules = models.ManyToManyField(
         'module.Module',
@@ -54,13 +91,22 @@ class Tutor(SignatureModel):
     class Meta:
         # managed = False
         db_table = 'tutor'
-        # unique_together = (('id', 'student'),)
+        permissions = [('edit_bank_details', 'Can view and edit a tutor\'s banking details')]
 
     def __str__(self):
         return str(self.student)
 
     def get_absolute_url(self):
         return self.student.get_absolute_url()
+
+    def clean(self):
+        # No dashes in sortcode, and upper case other fields
+        if self.sortcode:
+            self.sortcode = self.sortcode.replace('-', '')
+        if self.swift:
+            self.swift = self.swift.upper()
+        if self.iban:
+            self.iban = self.iban.upper()
 
 
 class TutorModule(SignatureModel):
@@ -105,3 +151,16 @@ class TutorModule(SignatureModel):
 
     def get_edit_url(self):
         return reverse('tutor:module:edit', args=[self.pk])
+
+
+class RightToWorkDocumentType(models.Model):
+    rtw_type = models.IntegerField(choices=RightToWorkType.choices, db_column='rtw_type')
+    name = models.CharField(max_length=64)
+    display_order = models.IntegerField(default=0)
+    limited_hours = models.BooleanField()
+
+    class Meta:
+        db_table = 'rtw_document_type'
+
+    def __str__(self) -> str:
+        return str(self.name)
