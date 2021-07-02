@@ -305,7 +305,7 @@
                         <i class="glyphicon glyphicon-option-horizontal"></i>
                     </a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="create-moodle-ids/{{ module.id }}"><span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs</a></li>
+                        <li><a href="{% url 'module:assign-moodle-ids' module.id %}"><span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs</a></li>
                         <li><a href="award_points/{{ module.id }}"><span class="fas fa-fw fa-graduation-cap"></span> Award CATS points</a></li>
                         <li><a href="{% url 'module:clone' module.id %}"><span class="fas fa-fw fa-clone"></span> Clone this module</a></li>
                         <li><a href="copy_fields/{{ module.id }}"><span class="fas fa-fw fa-paste"></span> Copy web fields</a></li>
@@ -549,7 +549,6 @@
                         <td>£{{ fee.amount | floatformat:2 }}</td>
                         <td class="quick-icons">
                             <a href="{% url 'fee:edit' fee.pk %}"><i class="fas fa-pencil-alt"></i></a>
-                            <a href="{% url 'fee:delete' fee.pk %}"><i class="fas fa-times"></i></a>
                         </td>
                     </tr>
                 {% endif %}

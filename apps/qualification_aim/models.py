@@ -14,7 +14,9 @@ NON_UK_DISTANCE_STUDY_LOCATION = 9
 
 
 class QualificationAim(SignatureModel):
-    student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
+    student = models.ForeignKey(
+        'student.Student', models.DO_NOTHING, db_column='student', related_name='qas', related_query_name='qa'
+    )
     programme = models.ForeignKey(
         'programme.Programme',
         models.DO_NOTHING,
