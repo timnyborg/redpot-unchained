@@ -2,6 +2,9 @@ from datetime import datetime
 
 from django.contrib.auth.models import User
 
+from apps.student.models import Student
+from apps.student.services import assign_moodle_id
+
 from .models import Book, Module
 
 
@@ -128,3 +131,21 @@ def copy_children(*, source: Module, target: Module, user: User):
     #     idb.module_hecos_subject.insert(
     #         module=new_id, hecos_subject=record.hecos_subject, percentage=record.percentage
     #     )
+
+
+def assign_moodle_ids(*, module: Module, created_by: str):
+    """
+    Acquires and attaches MoodleIDs for students enrolled on a module.
+    Marks newly generated IDs with the module ID (FirstModID), so the
+    report used by TALL can show new passwords and "same as before"
+    """
+
+    students = Student.objects.filter(
+        qa__enrolment__module=module,
+        qa__enrolment__status__takes_place=True,
+    ).exclude(moodle_id__id__isnull=False)
+
+    for student in students:
+        assign_moodle_id(student=student, first_module_code=module.code, created_by=created_by)
+
+    return len(students)

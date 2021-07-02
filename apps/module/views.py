@@ -1,12 +1,13 @@
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
+from django import http
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
 from django.db.models.functions import Coalesce
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.text import slugify
@@ -19,10 +20,9 @@ from apps.discount.models import Discount
 from apps.enrolment.models import Enrolment
 from apps.tutor.utils import expense_forms
 
-from . import exports, forms
+from . import exports, forms, services
 from .datatables import BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
 from .models import Module, ModuleStatus
-from .services import clone_fields, copy_books, copy_children, copy_fees
 
 
 class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.CreateView):
@@ -60,7 +60,7 @@ class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimesta
     def form_valid(self, form):
         response = super().form_valid(form)
         form.instance.source_module_code = self.src_module.code
-        clone_fields(
+        services.clone_fields(
             source=self.src_module,
             target=form.instance,
             copy_url=form.cleaned_data['keep_url'],
@@ -68,11 +68,11 @@ class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimesta
         )
         form.instance.save()
         # Which child records are copied are (partly) down to the form selections
-        copy_children(source=self.src_module, target=form.instance, user=self.request.user)
+        services.copy_children(source=self.src_module, target=form.instance, user=self.request.user)
         if form.cleaned_data.get('copy_fees'):
-            copy_fees(source=self.src_module, target=form.instance, user=self.request.user)
+            services.copy_fees(source=self.src_module, target=form.instance, user=self.request.user)
         if form.cleaned_data.get('copy_books'):
-            copy_books(source=self.src_module, target=form.instance)
+            services.copy_books(source=self.src_module, target=form.instance)
         return response
 
 
@@ -189,7 +189,7 @@ def toggle_auto_reminder(request, pk):
     obj = Module.objects.get(id=pk)
     obj.auto_reminder = not obj.auto_reminder
     obj.save()
-    return HttpResponse()
+    return http.HttpResponse()
 
 
 @login_required
@@ -198,7 +198,7 @@ def toggle_auto_feedback(request, pk):
     obj = Module.objects.get(id=pk)
     obj.auto_feedback = not obj.auto_feedback
     obj.save()
-    return HttpResponse()
+    return http.HttpResponse()
 
 
 class StudentList(LoginRequiredMixin, ExcelExportView):
@@ -231,3 +231,17 @@ class MoodleList(LoginRequiredMixin, ExcelExportView):
             module=self.module,
             status__in=[10, 90],  # Todo: use a column or enum
         )
+
+
+class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
+    """Generates moodle IDs for all a module's students, redirecting back to the module page"""
+
+    http_method_names = ['get']
+
+    # todo: convert to POST once we have a good POST-link solution,
+    #  or even better, that link is ajax'ed and handles message popups!
+    def get(self, request, module_id: int):
+        module = get_object_or_404(Module, pk=module_id)
+        count = services.assign_moodle_ids(module=module, created_by=request.user.username)
+        messages.success(request, f'{count} moodle ID(s) generated')
+        return http.HttpResponseRedirect(module.get_absolute_url())
