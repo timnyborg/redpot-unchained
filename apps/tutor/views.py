@@ -67,7 +67,7 @@ class TutorOnModuleEdit(
 ):
     model = TutorModule
     form_class = forms.TutorModuleEditForm
-    template_name = 'tutor_module/edit.html'
+    template_name = 'core/form.html'
     success_message = 'Tutor-on-module record updated'
 
     def get_success_url(self):

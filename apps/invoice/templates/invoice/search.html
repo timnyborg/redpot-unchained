@@ -1,17 +1,23 @@
 {% extends 'layout.html' %}
 {% load redpot_tags %}
 {% load render_table from django_tables2 %}
+{% load widget_tweaks %}
 
 {% block center %}
-
 <div class="section">
     <div class="row">
-        <div class="col-xs-6">
+        <div class="col-xs-12 col-md-8">
+            <h2>Lookup</h2>
             <form method='POST' action="{% url 'invoice:lookup' %}" class='form-horizontal'>
-                {# todo: turn this into an inline with appended submit button (bootstrap3_lookup_form?) #}
                 {% csrf_token %}
-                {% bootstrap3form form False %}
-                {% bootstrap3submit 'Find' %}
+                <div class="input-group col-xs-12 col-sm-6">
+                    {% render_field form.number class+="form-control" %}
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fa fa-search"></i> Find
+                        </button>
+                    </span>
+                </div>
             </form>
         </div>
     </div>
@@ -20,6 +26,7 @@
 <div class="section">
 	<div class="row">
 		<div class="col-xs-12 col-md-8">
+            <h2>Search</h2>
             <form action="" class='form-horizontal'>
                 {% bootstrap3form filter.form False %}
                 <div class="form-group">

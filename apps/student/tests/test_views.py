@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from apps.tutor.models import Tutor
+
 from ..models import Student
 from .factories import StudentFactory
 
@@ -116,3 +118,20 @@ class TestCreateEmail(TestCase):
     def test_invalid_student_returns_404(self):
         response = self.client.get(self.invalid_url)
         self.assertEqual(response.status_code, 404)
+
+
+class TestMakeTutor(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.student = StudentFactory()
+        cls.url = reverse('student:make-tutor', kwargs={'student_id': cls.student.pk})
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_make_tutor(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.student.refresh_from_db()
+        self.assertEqual(Tutor.objects.last().student, self.student)

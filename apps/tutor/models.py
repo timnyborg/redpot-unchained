@@ -99,6 +99,9 @@ class Tutor(SignatureModel):
     def get_absolute_url(self):
         return self.student.get_absolute_url()
 
+    def get_edit_url(self):
+        return reverse('tutor:edit', args=[self.pk])
+
     def clean(self):
         # No dashes in sortcode, and upper case other fields
         if self.sortcode:

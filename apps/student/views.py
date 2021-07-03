@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
 
 from apps.core.utils.views import PageTitleMixin
+from apps.tutor.models import Tutor
 
 from . import datatables, forms
 from .models import Email, Student
@@ -117,3 +118,21 @@ class CreateEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, gener
 
     def get_success_url(self):
         return self.object.student.get_absolute_url() + '#email'
+
+
+class MakeTutor(LoginRequiredMixin, generic.View):
+    """Converts a person into a tutor record"""
+
+    http_method_names = ['get']
+
+    # todo: convert to post once we have a good approach to post links
+    def get(self, request, student_id):
+        student = get_object_or_404(
+            Student.objects.filter(tutor__id__isnull=True),  # Prevents attempting to create extra tutor records
+            pk=student_id,
+        )
+        tutor = Tutor.objects.create(
+            student=student, created_by=request.user.username, modified_by=request.user.username
+        )
+        messages.success(request, 'Tutor record created')
+        return redirect(tutor.get_edit_url())

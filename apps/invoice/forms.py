@@ -10,6 +10,7 @@ class LookupForm(forms.Form):
     number = forms.CharField(
         label='Number',
         validators=[validators.MinLengthValidator(3)],
+        widget=forms.TextInput(attrs={'placeholder': 'e.g. EQ12345'}),
     )
 
 
