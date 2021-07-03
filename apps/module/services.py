@@ -136,7 +136,7 @@ def copy_children(*, source: Module, target: Module, user: User):
 def assign_moodle_ids(*, module: Module, created_by: str):
     """
     Acquires and attaches MoodleIDs for students enrolled on a module.
-    Marks newly generated IDs with the module ID (FirstModID), so the
+    Marks newly generated IDs with the module code, so the
     report used by TALL can show new passwords and "same as before"
     """
 
