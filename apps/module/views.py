@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
 from django.db.models.functions import Coalesce
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.text import slugify
 from django.views import generic
@@ -74,6 +74,29 @@ class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimesta
         if form.cleaned_data.get('copy_books'):
             services.copy_books(source=self.src_module, target=form.instance)
         return response
+
+
+class CopyFees(LoginRequiredMixin, PageTitleMixin, generic.FormView):
+    form_class = forms.CopyFeesForm
+    template_name = 'core/form.html'
+    title = 'Module'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.target_module = get_object_or_404(Module, pk=self.kwargs['module_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_subtitle(self):
+        return f'Copy fees – {self.target_module.title} ({self.target_module.code})'
+
+    def form_valid(self, form):
+        source_module = form.cleaned_data['source_module']
+        copied = services.copy_fees(
+            source=source_module,
+            target=self.target_module,
+            user=self.request.user,
+        )
+        messages.success(self.request, f'{copied} fee(s) copied from {source_module}')
+        return redirect(self.target_module.get_absolute_url() + '#fees')
 
 
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):

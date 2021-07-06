@@ -1,3 +1,5 @@
+from dal import autocomplete
+
 from django import forms
 from django.core import exceptions
 from django.forms import fields
@@ -60,6 +62,19 @@ class CloneForm(forms.ModelForm):
     class Meta:
         model = models.Module
         fields = ('source_module', 'code', 'title', 'is_repeat', 'copy_fees', 'copy_books', 'copy_dates', 'keep_url')
+
+
+class CopyFeesForm(forms.Form):
+    submit_label = 'Copy fees'
+    source_module = forms.ModelChoiceField(
+        models.Module.objects.all(),
+        widget=autocomplete.ModelSelect2(
+            url='autocomplete:module',
+            attrs={'data-minimum-input-length': 3},
+        ),
+        label='Source module',
+        help_text='Copy all fees from this module',
+    )
 
 
 class CreateForm(forms.ModelForm):

@@ -8,8 +8,10 @@ from apps.student.services import assign_moodle_id
 from .models import Book, Module
 
 
-def copy_fees(*, source: Module, target: Module, user: User) -> None:
-    for fee in source.fees.all():
+def copy_fees(*, source: Module, target: Module, user: User) -> int:
+    """Copies all fees from one module to another"""
+    fees = source.fees.all()
+    for fee in fees:
         # Copy all attributes of a fee, excepting its ID, module and timestamp
         fee.pk = None  # See https://docs.djangoproject.com/en/3.0/topics/db/queries/#copying-model-instances
         fee.module = target
@@ -18,6 +20,7 @@ def copy_fees(*, source: Module, target: Module, user: User) -> None:
         fee.created_on = datetime.now()
         fee.modified_on = datetime.now()
         fee.save()
+    return len(fees)
 
 
 def copy_books(*, source: Module, target: Module) -> None:
