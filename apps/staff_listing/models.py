@@ -1,6 +1,7 @@
 from django.db import models
 # from apps.programme.models import Division, Qualification, Programme
-from apps.core.models import SignatureModel, User
+from apps.core.models import SignatureModel, User, Division
+from apps.programme.models import Programme
 
 class StaffRole(models.Model):
     name = models.CharField(max_length=64)
@@ -13,9 +14,9 @@ class StaffRole(models.Model):
         return self.name
 
 class ProgrammeStaff(SignatureModel):
-    programme = models.ForeignKey('programme.Programme', models.DO_NOTHING, db_column='programme')
-    staff = models.ForeignKey(User, models.DO_NOTHING, db_column='staff')
-    role = models.ForeignKey('StaffRole', models.DO_NOTHING, db_column='role')
+    programme = models.ForeignKey('programme.Programme', models.CASCADE, db_column='programme', related_name='programme_staff_set')
+    staff = models.ForeignKey(User, models.CASCADE, db_column='staff', related_name='programme_staff_set')
+    role = models.ForeignKey('StaffRole', models.CASCADE, db_column='role')
     note = models.CharField(max_length=64, blank=True, null=True)
 
     class Meta:
