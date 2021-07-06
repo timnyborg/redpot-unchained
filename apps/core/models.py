@@ -4,8 +4,6 @@ from datetime import datetime
 from pathlib import Path
 
 from imagekit.models import ProcessedImageField
-from imagekit.processors import ResizeToFit
-from imagekit.models import ImageSpecField, ProcessedImageField
 from pilkit.processors import ResizeToFit
 
 from django.contrib.auth.models import AbstractUser

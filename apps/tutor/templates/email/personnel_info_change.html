@@ -2,12 +2,15 @@
 <div style="font-family:Calibri;">
     <p>Dear Personnel team, </p>
     <p>The following details were updated by <b>{{ updated_by }}</b> for the tutor
-        <b>{{ tutor.firstname }} {{ tutor.surname }}</b>:
+        <b>{{ person.firstname }} {{ person.surname }}</b>:
     </p>
     {% for field, before, after in changes %}
-        <li>{{ field|capfirst }} has changed from {{ before|default:'<blank>' }} to {{ after|default:'<blank>' }}</li>
+        <li>
+            {{ field|capfirst }} has changed from
+            <b>{{ before|default:'<blank>' }}</b> to <b>{{ after|default:'<blank>' }}</b>
+        </li>
     {% endfor %}
-    <p>(See full tutor record at {{ canonical_url }}{{ tutor.get_absolute_url }})</p>
+    <p>(See full tutor record at {{ canonical_url }}{{ person.get_absolute_url }})</p>
     <p>Please update CoreHR as needed.</p>
     <p>Have a nice day :)</p>
 </div>

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from django.db import models, transaction
+from django.db.models import QuerySet
 from django.urls import reverse
 
 from apps.core.models import AddressModel, SignatureModel, SITSLockingModelMixin
@@ -161,13 +162,16 @@ class Student(SITSLockingModelMixin, SignatureModel):
         }
         return gender_to_sex_map.get(self.gender or '')
 
+    def get_default_email(self) -> Optional[Email]:
+        return self.emails.default().first()
+
     def get_default_address(self) -> Optional[Address]:
         return self.addresses.default().first()
 
     def get_billing_address(self) -> Optional[Address]:
         return self.addresses.billing().first() or self.get_default_address()
 
-    def get_invoices(self):
+    def get_invoices(self) -> QuerySet[Invoice]:
         return Invoice.objects.filter(invoice_ledger__ledger__enrolment__qa__student=self).distinct()
 
     @transaction.atomic
@@ -283,6 +287,11 @@ class Address(AddressModel, SITSLockingModelMixin, SignatureModel):
         return self.created_by == 'SITS' or self.modified_by == 'SITS' or self.sits_type is not None
 
 
+class EmailQuerySet(models.QuerySet):
+    def default(self) -> models.QuerySet:
+        return self.filter(is_default=True)
+
+
 class Email(SITSLockingModelMixin, SignatureModel):
     sits_managed_fields = ['email']
     student = models.ForeignKey(
@@ -291,6 +300,8 @@ class Email(SITSLockingModelMixin, SignatureModel):
     email = models.EmailField(max_length=64)
     note = models.CharField(max_length=128, blank=True, null=True)
     is_default = models.BooleanField(default=False, verbose_name='Default?')
+
+    objects = EmailQuerySet.as_manager()
 
     class Meta:
         db_table = 'email'

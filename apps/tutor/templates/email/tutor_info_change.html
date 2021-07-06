@@ -4,8 +4,8 @@
     <p>Dear {{ firstname }},</p>
     <p>Your banking information was updated in our payroll records:</p>
     <ul>
-        <li>New bank account number ending in *****{{ account }}
-        <li>New bank sortcode ending in **-**-{{ sortcode }}
+        <li>Account number ending in *****{{ account|slice:'-3:' }}
+        <li>Sortcode ending in **-**-{{ sortcode|slice:'-2:' }}
     </ul>
     <p>
         If you have not requested this change, it is important that you let us know as soon as possible.

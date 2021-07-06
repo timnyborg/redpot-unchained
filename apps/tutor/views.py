@@ -15,9 +15,6 @@ from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin
 from apps.module.models import Module
 
 from . import forms, services
-from .models import Tutor, TutorModule
-from .utils.mail_merge import MailMergeView
-from . import forms
 from .models import Tutor, TutorActivity, TutorModule
 
 
@@ -32,12 +29,9 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestam
             return forms.Edit
         return forms.BasicEdit
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> http.HttpResponse:
         services.email_personnel_change(
-            model=self.object,
-            initial_values=form.initial,
-            changed_data=form.changed_data,
-            request=self.request,
+            model=self.object, initial_values=form.initial, changed_data=form.changed_data, user=self.request.user
         )
         return super().form_valid(form)
 

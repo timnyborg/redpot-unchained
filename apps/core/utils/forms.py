@@ -33,7 +33,6 @@ class ApproverChoiceField(forms.ModelChoiceField):
 class SITSLockingFormMixin:
     """ModelForm mixin which automatically disables an instance's SITS fields if required"""
 
-    instance: models.SITSLockingModelMixin
     fields: dict
 
     def __init__(self, *args, **kwargs):
