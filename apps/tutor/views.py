@@ -14,6 +14,9 @@ from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.module.models import Module
 
+from . import forms, services
+from .models import Tutor, TutorModule
+from .utils.mail_merge import MailMergeView
 from . import forms
 from .models import Tutor, TutorActivity, TutorModule
 
@@ -28,6 +31,15 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestam
         if self.request.user.has_perm('tutor.edit_bank_details'):
             return forms.Edit
         return forms.BasicEdit
+
+    def form_valid(self, form):
+        services.email_personnel_change(
+            model=self.object,
+            initial_values=form.initial,
+            changed_data=form.changed_data,
+            request=self.request,
+        )
+        return super().form_valid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url() + '#tutor'
