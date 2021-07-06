@@ -4,10 +4,10 @@
     <p>The following details were updated by <b>{{ updated_by }}</b> for the tutor
         <b>{{ tutor.firstname }} {{ tutor.surname }}</b>:
     </p>
-    {% for change in changes %}
-        <li>{{ change }}</li>
+    {% for field, before, after in changes %}
+        <li>{{ field|capfirst }} has changed from {{ before|default:'<blank>' }} to {{ after|default:'<blank>' }}</li>
     {% endfor %}
-    <p>(See full tutor record on {{ canonical_url }}{{ tutor.get_absolute_url }})</p>
+    <p>(See full tutor record at {{ canonical_url }}{{ tutor.get_absolute_url }})</p>
     <p>Please update CoreHR as needed.</p>
     <p>Have a nice day :)</p>
 </div>

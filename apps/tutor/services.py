@@ -55,13 +55,7 @@ def email_personnel_change(
                 # changes.append('Address has changed from ' + (' '.join(format_address(old)) or '<blank>') + ' to '
                 # + (' '.join(format_address(new)) or '<blank>'))
             elif field in fields:
-                changes.append(
-                    field.capitalize()
-                    + ' has changed from '
-                    + (initial_values[field] or '<blank>')
-                    + ' to '
-                    + (getattr(model, field) or '<blank>')
-                )
+                changes.append((field, initial_values[field], getattr(model, field)))
 
     elif isinstance(model, Address):
         # New address
