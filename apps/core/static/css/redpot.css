@@ -840,4 +840,43 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
   border-color: #fff;
   background: none; }
 
+.wall .card-img-top {
+    width: 100%;
+    height: 10vw;
+    object-fit: cover;
+}
+
+.wall .card {
+  text-align: left;
+}
+
+.wall .card p, .card-phone{
+    font-size: 90%;
+}
+
+.wall .card a {
+  text-decoration: none !important;
+  color: inherit;
+}
+
+.wall .card:hover {
+  background-color: #eee;
+}
+
+.image-cropper {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: #ccc;
+}
+
+.image-cropper img {
+  display: inline;
+  margin: 0 auto;
+  height: 100%;
+  width: auto;
+}
+
 /*# sourceMappingURL=redpot.css.map */

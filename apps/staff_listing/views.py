@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from django.views import generic
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from apps.core.utils.views import PageTitleMixin
-from apps.core.models import User
+# from apps.core.models import User
+from .models import ProgrammeStaff, Programme, User, Division, StaffRole
 from django_tables2 import SingleTableView
 from .datatables import StaffListTable
 from django.views.generic import ListView, DetailView
@@ -42,76 +42,70 @@ class StaffListView(LoginRequiredMixin, PageTitleMixin, SingleTableView):
         # return User.objects.filter(is_active = 1)
 
 class StaffDetailView(LoginRequiredMixin, PageTitleMixin, DetailView):
+    title = 'Staff listing'
+    subtitle = 'Profile'
     model = User
     template_name = 'staff_listing/profile.html'
     context_object_name = 'staff'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # context['staff_programmes'] = ProgrammeStaff.objects.filter(staff=self.object.id)
+        # print(context)
+        context['staff_programmes'] = self.object.programme_staff_set.all()
+        print(context)
         return context
 
 class WallListView(LoginRequiredMixin, PageTitleMixin, ListView):
-    model = User
+    # model = User
     title = 'Staff listing'
     subtitle = 'Wall'
     template_name = 'staff_listing/wall.html'
     context_object_name = 'staffs'
 
+    def get_queryset(self):
+        return User.objects.filter()
+        # return User.objects.filter(is_active=1, on_facewall=1)
 
-# def list():
-#     user = idb.auth_user
-#     profiles = idb(
-#         (user.is_active == True)
-#         & (user.division == idb.division.id)
-#     ).select(
-#         user.id.with_alias('id'),
-#         user.first_name.with_alias('first_name'),
-#         user.last_name.with_alias('last_name'),
-#         user.email.with_alias('email'),
-#         user.phone.with_alias('phone'),
-#         user.role.with_alias('role'),
-#         idb.division.name.with_alias('division'),
-#     )
-#     return dict(profiles=profiles)
-#
-#
-# def courses():
-#     manager = idb.auth_user.with_alias('manager')
-#     staff = idb.auth_user.with_alias('staff')
-#
-#     programmes = idb(
-#         (idb.programme.division == idb.division.id)
-#         & (idb.programme.contact_list_display == True)
-#     ).select(
-#         manager.ALL,
-#         staff.ALL,
-#         idb.programme.ALL,
-#         idb.staff_role.ALL,
-#         idb.programme_staff.note,
-#         left=[
-#             manager.on(idb.division.manager == manager.id),
-#             idb.programme_staff.on(idb.programme_staff.programme == idb.programme.id),
-#             staff.on(idb.programme_staff.staff == staff.id),
-#             idb.staff_role.on(idb.programme_staff.role == idb.staff_role.id)
-#         ],
-#         orderby=[
-#             idb.programme.short_name.coalesce(idb.programme.title),
-#             idb.programme_staff.role,
-#             idb.staff.last_name,
-#             idb.staff.first_name
-#         ]
-#     )
-#
-#     structure = [
-#         ('Non-accredited', 'non-acc', {1}),
-#         ('Undergraduate short courses', 'ug-credit', {61}),
-#         ('Undergraduate certificates', 'ug-cert', {30, 33}),
-#         ('Undergraduate diplomas', 'ug-dip', {34, 35}),
-#         ('Postgraduate short courses', 'pg-credit', {62, 63}),
-#         ('Postgraduate certificates', 'pg-cert', {6}),
-#         ('Postgraduate diplomas', 'pg-dip', {7}),
-#         ('Masters degrees', 'masters', {5}),
-#         ('D.Phils', 'dphils', {2, 3}),
-#     ]
-#
-#     return dict(programmes=programmes, structure=structure)
+class CoursesListView(LoginRequiredMixin, PageTitleMixin, ListView):
+    title = 'Staff listing'
+    subtitle = 'Courses list'
+    template_name = 'staff_listing/courses_list.html'
+    # model = Programme
+    context_object_name = 'programmes'
+
+    def get_queryset(self):
+        progs = Programme.objects.filter(contact_list_display=1)
+        return progs
+
+    # Tables needed:
+    # programme -> title, phone, email
+    # programme_staff -> joins user
+    # division -> joins manager
+    # core_user -> first_name, last_name
+    # staff_role -> 'name'
+    def get_context_data(self, **kwargs):
+        context = super(CoursesListView, self).get_context_data(**kwargs)
+        context['non-acc'] = [('Non-accredited', 'non-acc', self.object_list.filter(qualification=1))]
+        context['ug-credit'] = [('Undergraduate short courses', 'ug-credit', self.object_list.filter(qualification=61))]
+        context['ug-cert'] = [('Undergraduate certificates', 'ug-cert', self.object_list.filter(qualification__in=[30,33]))]
+        context['ug-dip'] = [('Undergraduate diplomas', 'ug-dip', self.object_list.filter(qualification__in=[34,35]))]
+        context['pg-credit'] = [('Postgraduate short courses', 'pg-credit', self.object_list.filter(qualification__in=[62,63]))]
+        context['pg-cert'] = [('Postgraduate certificates', 'pg-cert', self.object_list.filter(qualification=6))]
+        context['pg-dip'] = [('Postgraduate diplomas', 'pg-dip', self.object_list.filter(qualification=7))]
+        context['masters'] = [('Masters degrees', 'masters', self.object_list.filter(qualification=5))]
+        context['dphils'] = [('D.Phils', 'dphils', self.object_list.filter(qualification__in=[2,3]))]
+
+        context['structure'] = [('Non-accredited', 'non-acc', self.object_list.filter(qualification=1)),
+                                ('Undergraduate short courses', 'ug-credit', self.object_list.filter(qualification=61)),
+                                ('Undergraduate certificates', 'ug-cert', self.object_list.filter(qualification__in=[30, 33])),
+                                ('Undergraduate diplomas', 'ug-dip', self.object_list.filter(qualification__in=[34, 35])),
+                                ('Postgraduate short courses', 'pg-credit', self.object_list.filter(qualification__in=[62, 63])),
+                                ('Postgraduate certificates', 'pg-cert', self.object_list.filter(qualification=6)),
+                                ('Postgraduate diplomas', 'pg-dip', self.object_list.filter(qualification=7)),
+                                ('Masters degrees', 'masters', self.object_list.filter(qualification=5)),
+                                ('D.Phils', 'dphils', self.object_list.filter(qualification__in=[2, 3]))
+                               ]
+
+        print(context)
+        return context
