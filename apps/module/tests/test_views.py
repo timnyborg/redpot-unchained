@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.enrolment.tests.factories import EnrolmentFactory
+from apps.fee.tests.factories import FeeFactory
 from apps.programme.models import ProgrammeModule
 from apps.programme.tests.factories import ProgrammeFactory
 
@@ -192,3 +193,27 @@ class TestAssignMoodleIDsView(TestCase):
         moodle_record = self.enrolment.qa.student.moodle_id
         self.assertEqual(moodle_record.first_module_code, self.enrolment.module.code)
         self.assertEqual(moodle_record.created_by, self.user.username)
+
+
+class TestCopyFees(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.source_module = factories.ModuleFactory()
+        cls.target_module = factories.ModuleFactory()
+        cls.source_fee = FeeFactory(module=cls.source_module)
+        cls.url = reverse('module:copy-fees', args=[cls.target_module.pk])
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_copy(self):
+        response = self.client.post(self.url, data={'source_module': self.source_module.id})
+        self.assertEqual(response.status_code, 302)
+        new_fee = self.target_module.fees.last()
+        self.assertEqual(new_fee.amount, self.source_fee.amount)
+        self.assertEqual(new_fee.description, self.source_fee.description)

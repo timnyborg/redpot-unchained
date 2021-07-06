@@ -516,7 +516,7 @@
         <span class="sr-only">Toggle Dropdown</span>
       </button>
       <ul class="dropdown-menu">
-        <li><a href="copy-fees/{{ module.id }}"><span class="fa fa-gbp"></span> Copy fees</a></li>
+        <li><a href="{% url 'module:copy-fees' module.id %}"><i class="fas fa-fw fa-pound-sign"></i> Copy fees</a></li>
       </ul>
     </div>
     <a id='fees' class='nav-anchor'></a>

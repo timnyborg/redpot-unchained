@@ -13,7 +13,7 @@
                         {% if object.get_delete_url %}
                             {% bootstrap3delete object.get_delete_url %}
                         {% endif %}
-                        {% bootstrap3submit 'Save' %}
+                        {% bootstrap3submit form.submit_label|default:'Save' %}
                     </div>
                 </div>
             </form>
