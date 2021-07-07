@@ -879,4 +879,14 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
   width: auto;
 }
 
+/*Bootstrap 4 accordion css begins*/
+.accordion .card-header:after {
+    font-family: 'FontAwesome';
+    content: "\f068";/* symbol for "uncollapsed" panels */
+    float: right;
+}
+.accordion .card-header.collapsed:after {
+    content: "\f067";/* symbol for "collapsed" panels */
+}
+/*Bootstrap 4 accordion css ends*/
 /*# sourceMappingURL=redpot.css.map */

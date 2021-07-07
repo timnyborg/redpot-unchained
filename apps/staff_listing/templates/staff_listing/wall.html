@@ -21,33 +21,3 @@
         {% endfor %}
     </div>
 {% endblock %}
-
-
-{#<div class="row justify-content-center">#}
-{#{{ for profile in profiles.sort(lambda x: (x.last_name or '').lower()): }}#}
-{#    {{link=URL('profile', args=[profile.id])}}#}
-{#    {{ if profile.image:#}
-{#        image=URL('download', args=profile.image)#}
-{#    else:#}
-{#        image='static/images/default-placeholder-300x300.png'#}
-{#    pass#}
-{#    }}#}
-{#    <div class="card mt-3 mr-3 ml-3" style="width: 12rem;">#}
-{#        <a href="{{=link}}">#}
-{#          <img class="card-img-top" src="{{=image}}" alt="Card image cap">#}
-{#          <div class="card-body">#}
-{#            {{=H5('%(first_name)s %(last_name)s' % profile)}}#}
-{#            {{ if profile.phone: }}#}
-{#                <span class='fa fa-phone'></span>#}
-{#                {{ =profile.phone.replace('+44 (0)1865 2', '') }}#}
-{#                <br/>#}
-{#            {{ pass }}#}
-{#            <p class="card-text">{{=TAG.small(profile.role)}} </p>#}
-{#          </div>#}
-{#        </a>#}
-{#    </div>#}
-{#{{ pass }}#}
-{#</div>#}
-{##}
-{#Vars:#}
-{#id, link, image, phone, fn ,ln#}
