@@ -217,3 +217,25 @@ class TestCopyFees(TestCase):
         new_fee = self.target_module.fees.last()
         self.assertEqual(new_fee.amount, self.source_fee.amount)
         self.assertEqual(new_fee.description, self.source_fee.description)
+
+
+class TestCopyWebFields(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.source_module = factories.ModuleFactory(overview='Details!')
+        cls.target_module = factories.ModuleFactory()
+        cls.url = reverse('module:copy-web-fields', args=[cls.target_module.pk])
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_copy(self):
+        response = self.client.post(self.url, data={'source_module': self.source_module.id})
+        self.assertEqual(response.status_code, 302)
+        self.target_module.refresh_from_db()
+        self.assertEqual(self.target_module.overview, 'Details!')

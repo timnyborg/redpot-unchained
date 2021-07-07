@@ -77,6 +77,19 @@ class CopyFeesForm(forms.Form):
     )
 
 
+class CopyFieldsForm(forms.Form):
+    submit_label = 'Copy fields'
+    source_module = forms.ModelChoiceField(
+        models.Module.objects.all(),
+        widget=autocomplete.ModelSelect2(
+            url='autocomplete:module',
+            attrs={'data-minimum-input-length': 3},
+        ),
+        label='Source module',
+        help_text='Copy web fields from this module (overview, programme details, etc.)',
+    )
+
+
 class CreateForm(forms.ModelForm):
     class Meta:
         model = models.Module
