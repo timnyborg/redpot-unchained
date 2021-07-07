@@ -1,5 +1,4 @@
 from django.db import models
-# from apps.programme.models import Division, Qualification, Programme
 from apps.core.models import SignatureModel, User, Division
 from apps.programme.models import Programme
 
