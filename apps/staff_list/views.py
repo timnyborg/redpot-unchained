@@ -11,7 +11,7 @@ class SiteTitleMixin(PageTitleMixin):
 
 class StaffListView(LoginRequiredMixin, SiteTitleMixin, SingleTableView):
     subtitle = 'List'
-    template_name = 'staff_listing/list.html'
+    template_name = 'staff_list/list.html'
     table_class = StaffListTable
     table_pagination = False
 
@@ -19,12 +19,10 @@ class StaffListView(LoginRequiredMixin, SiteTitleMixin, SingleTableView):
         return User.objects.filter()
         # return User.objects.filter(is_active = 1) #Todo - enable when deploying to produciton
 
-
-
 class StaffDetailView(LoginRequiredMixin, SiteTitleMixin, DetailView):
     subtitle = 'Profile'
     model = User
-    template_name = 'staff_listing/profile.html'
+    template_name = 'staff_list/profile.html'
     context_object_name = 'staff'
 
     def get_context_data(self, **kwargs):
@@ -34,7 +32,7 @@ class StaffDetailView(LoginRequiredMixin, SiteTitleMixin, DetailView):
 
 class WallListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     subtitle = 'Wall'
-    template_name = 'staff_listing/wall.html'
+    template_name = 'staff_list/wall.html'
     context_object_name = 'staffs'
 
     def get_queryset(self):
@@ -43,7 +41,7 @@ class WallListView(LoginRequiredMixin, SiteTitleMixin, ListView):
 
 class CoursesListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     subtitle = 'Courses list'
-    template_name = 'staff_listing/courses_list.html'
+    template_name = 'staff_list/courses_list.html'
     context_object_name = 'programmes'
 
     def get_queryset(self):

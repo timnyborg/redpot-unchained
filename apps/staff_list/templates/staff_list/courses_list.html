@@ -1,4 +1,4 @@
-{% extends 'staff_listing_layout_9_3_bs4.html' %}
+{% extends 'staff_list_layout_9_3_bs4.html' %}
 {% load render_table from django_tables2 %}
 
 {% block container %}
@@ -20,13 +20,13 @@
                                         <div class="col-6">
                                             {% for progstaff in prog.programme_staff_set.all %}
                                                 {% if progstaff.staff.get_full_name %}
-                                                    <p><a href="{% url 'staff_listing:profile' progstaff.staff.id %}">{{ progstaff.staff.get_full_name }}</a> - {{ progstaff.role }}</p>
+                                                    <p><a href="{% url 'staff_list:profile' progstaff.staff.id %}">{{ progstaff.staff.get_full_name }}</a> - {{ progstaff.role }}</p>
                                                 {% endif %}
                                             {% endfor %}
                                         </div>
                                         <div class="col-6">
                                             {% if prog.division.manager.get_full_name %}
-                                                <p><a href="{% url 'staff_listing:profile' prog.division.manager.id %}">{{ prog.division.manager.get_full_name }}</a> - Manager</p>
+                                                <p><a href="{% url 'staff_list:profile' prog.division.manager.id %}">{{ prog.division.manager.get_full_name }}</a> - Manager</p>
                                             {% endif %}
                                         </div>
                                     </div>

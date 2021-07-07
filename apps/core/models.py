@@ -74,7 +74,7 @@ class User(SignatureModel, AbstractUser):
     division = models.ForeignKey('Division', on_delete=models.CASCADE, db_column='division')
 
     def get_absolute_url(self):
-        return reverse('staff_listing:profile', args=[self.pk])
+        return reverse('staff_list:profile', args=[self.pk])
 
     def phone_number(self):
         if self.phone:

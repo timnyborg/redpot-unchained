@@ -1,10 +1,10 @@
-{% extends 'staff_listing_layout_bs4.html' %}
+{% extends 'staff_list_layout_bs4.html' %}
 {% load static %}
 {% block center %}
     <div class="row justify-content-center wall">
         {% for staff in staffs %}
                 <div class="card mt-3 mr-3 ml-3" style="width: 12rem;">
-                    <a href="{% url 'staff_listing:profile' staff.id %}">
+                    <a href="{% url 'staff_list:profile' staff.id %}">
                       <img class="card-img-top" src="{% if staff.image %}{% static staff.image.name %}{% else %}{% static 'images/staff_profile/default_pic.jpg' %}{% endif %}" alt="profile image">
                       <div class="card-body">
                             <h6>{{ staff.first_name }} {{ staff.last_name }}</h6>
