@@ -106,6 +106,7 @@ PROJECT_APPS = [
     'apps.tutor',
     'apps.tutor_payment',
     'apps.user',
+    'apps.staff_list',
     'apps.website_account',
 ]
 
