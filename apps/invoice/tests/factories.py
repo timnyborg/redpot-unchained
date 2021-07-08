@@ -22,3 +22,4 @@ class LedgerFactory(factory.django.DjangoModelFactory):
     date = factory.Faker('date')
     type_id = 1  # todo: enum
     allocation = 1
+    account = models.DEBTOR_ACCOUNT  # todo: We may want a FeeFactory and PaymentFactory instead

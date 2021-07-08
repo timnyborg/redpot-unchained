@@ -14,7 +14,7 @@ class LookupForm(forms.Form):
     )
 
 
-class EditForm(forms.ModelForm):
+class InvoiceForm(forms.ModelForm):
     class Meta:
         model = models.Invoice
         fields = [

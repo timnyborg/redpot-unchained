@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 
 from apps.core.utils.datatables import PoundsColumn, ViewLinkColumn
 from apps.core.utils.widgets import DatePickerInput, PoundInput
+from apps.enrolment.models import Enrolment
 
 from .models import Invoice, Ledger, PaymentPlanSchedule
 
@@ -133,3 +134,40 @@ class PaymentScheduleTable(tables.Table):
         fields = ('due_date', 'amount', 'is_deposit')
         order_by = ('due_date',)
         orderable = False
+
+
+class ChooseEnrolmentsTable(tables.Table):
+    enrolment = tables.CheckBoxColumn(
+        accessor='id',
+        attrs={"th__input": {"id": "toggle-all"}},
+        orderable=False,
+        checked=True,
+    )
+    balance = PoundsColumn(orderable=False)
+
+    class Meta:
+        model = Enrolment
+        template_name = "django_tables2/bootstrap.html"
+        fields = ('enrolment', 'module__code', 'module__title', 'created_by', 'created_on', 'balance')
+        order_by = ('-created_on',)
+        per_page = 100
+
+
+class ChooseFeesTable(tables.Table):
+    fee = tables.CheckBoxColumn(
+        accessor='id',
+        attrs={"th__input": {"id": "toggle-all"}},
+        orderable=False,
+        checked=True,
+    )
+    amount = PoundsColumn()
+    enrolment = tables.Column(linkify=True)
+
+    def render_enrolment(self, value) -> str:
+        return str(value.module.code)
+
+    class Meta:
+        model = Ledger
+        template_name = "django_tables2/bootstrap.html"
+        fields = ('fee', 'amount', 'narrative', 'type', 'date', 'enrolment')
+        per_page = 100

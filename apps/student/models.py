@@ -80,8 +80,11 @@ class Student(SignatureModel):
     def get_absolute_url(self) -> str:
         return reverse('student-view', args=[self.id])
 
-    def get_default_address(self) -> Address:
+    def get_default_address(self) -> Optional[Address]:
         return self.addresses.default().first()
+
+    def get_billing_address(self) -> Optional[Address]:
+        return self.addresses.billing().first() or self.get_default_address()
 
 
 class AddressQuerySet(models.QuerySet):

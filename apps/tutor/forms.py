@@ -1,8 +1,8 @@
 from dal import autocomplete
 
-from django.forms import ModelForm, widgets
+from django.forms import ModelForm
 
-from apps.core.utils.widgets import DatePickerInput
+from apps.core.utils.widgets import DatePickerInput, ReadOnlyModelWidget
 from apps.module.models import Module
 
 from .models import RightToWorkType, Tutor, TutorModule
@@ -85,20 +85,6 @@ class RightToWork(ModelForm):
             # But not for anything else
             self.cleaned_data['rtw_start_date'] = None
             self.cleaned_data['rtw_end_date'] = None
-
-
-class ReadOnlyModelWidget(widgets.Widget):
-    def __init__(self, model, *args, **kwargs):
-        self.model = model
-        super().__init__(*args, **kwargs)
-
-    def render(self, name, value, attrs=None, renderer=None):
-        instance = self.model.objects.get(pk=value)
-        # -static for b2, -plaintext for bs4.  todo: consider how to move that into the form rendering
-        return f"""
-            <input type="hidden" name="{name}" value="{value}">
-            <div class='form-control-static form-control-plaintext'>{instance}</div>
-        """
 
 
 class TutorModuleEditForm(ModelForm):

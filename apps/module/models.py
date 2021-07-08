@@ -519,7 +519,7 @@ class Location(SignatureModel):
 class ModuleWaitlist(models.Model):
     module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', related_name='waitlist')
     student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
-    listed_on = models.DateTimeField(auto_now_add=True)
+    listed_on = models.DateTimeField(default=datetime.now)
     emailed_on = models.DateTimeField(blank=True, null=True)
 
     class Meta:

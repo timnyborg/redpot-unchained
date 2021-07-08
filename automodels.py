@@ -346,57 +346,6 @@ class FeedbackAdmin(models.Model):
         db_table = 'feedback_admin'
 
 
-class Invoice(models.Model):
-    number = models.IntegerField()
-    prefix = models.CharField(max_length=32, blank=True, null=True)
-    type = models.IntegerField(blank=True, null=True)
-    date = models.DateField(blank=True, null=True)
-    fao = models.CharField(max_length=128, blank=True, null=True)
-    invoiced_to = models.CharField(max_length=128, blank=True, null=True)
-    line1 = models.CharField(max_length=128, blank=True, null=True)
-    line2 = models.CharField(max_length=128, blank=True, null=True)
-    line3 = models.CharField(max_length=128, blank=True, null=True)
-    town = models.CharField(max_length=64, blank=True, null=True)
-    countystate = models.CharField(max_length=64, blank=True, null=True)
-    country = models.CharField(max_length=64, blank=True, null=True)
-    postcode = models.CharField(max_length=32, blank=True, null=True)
-    amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    custom_narrative = models.BooleanField()
-    narrative = models.TextField(blank=True, null=True)
-    ref_no = models.CharField(max_length=64, blank=True, null=True)
-    division = models.IntegerField(blank=True, null=True)
-    allocation = models.IntegerField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    duedate = models.DateField(blank=True, null=True)
-    contact_person = models.CharField(max_length=128, blank=True, null=True)
-    contact_email = models.CharField(max_length=255, blank=True, null=True)
-    contact_phone = models.CharField(max_length=64, blank=True, null=True)
-    company = models.CharField(max_length=128, blank=True, null=True)
-    formatted_addressee = models.TextField(blank=True, null=True)
-    referred = models.BooleanField()
-    vat_no = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'invoice'
-
-
-class InvoiceLedger(models.Model):
-    id = models.AutoField()
-    ledger = models.ForeignKey('Ledger', models.DO_NOTHING, db_column='ledger')
-    invoice = models.ForeignKey(Invoice, models.DO_NOTHING, db_column='invoice')
-    allocation = models.IntegerField(blank=True, null=True)
-    item_no = models.IntegerField(blank=True, null=True)
-    type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'invoice_ledger'
-
-
 class Kmi(models.Model):
     id = models.AutoField()
     student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
@@ -409,28 +358,6 @@ class Kmi(models.Model):
     class Meta:
         managed = False
         db_table = 'kmi'
-
-
-class Ledger(models.Model):
-    date = models.DateTimeField(blank=True, null=True)
-    amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
-    finance_code = models.CharField(max_length=64, blank=True, null=True)
-    narrative = models.CharField(max_length=128, blank=True, null=True)
-    division = models.ForeignKey(Division, models.DO_NOTHING, db_column='division', blank=True, null=True)
-    type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
-    account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
-    enrolment = models.ForeignKey(Enrolment, models.DO_NOTHING, db_column='enrolment', blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    allocation = models.IntegerField(blank=True, null=True)
-    ref_no = models.IntegerField(blank=True, null=True)
-    batch = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'ledger'
 
 
 class LedgerAccount(models.Model):

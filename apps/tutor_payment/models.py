@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
@@ -39,7 +39,7 @@ class TutorFee(models.Model):
     approver = models.CharField(max_length=32)
 
     raised_by = models.CharField(max_length=50, editable=False)
-    raised_on = models.DateTimeField(editable=False, auto_now_add=True)
+    raised_on = models.DateTimeField(editable=False, default=datetime.now)
     approved_by = models.CharField(max_length=50, blank=True, null=True, editable=False)
     approved_on = models.DateTimeField(blank=True, null=True, editable=False)
     transferred_by = models.CharField(max_length=50, blank=True, null=True, editable=False)
@@ -81,10 +81,9 @@ class TutorFee(models.Model):
         """
         if not holiday_date:
             # Get the last day of the last month of the module
-            holiday_date = (
-                date(tutor_module.module.start_date.year, tutor_module.module.end_date.month, 1)
-                + relativedelta(months=1)
-            )
+            holiday_date = date(
+                tutor_module.module.start_date.year, tutor_module.module.end_date.month, 1
+            ) + relativedelta(months=1)
 
         holiday_amount = HOLIDAY_RATE * amount
         net_amount = amount - holiday_amount

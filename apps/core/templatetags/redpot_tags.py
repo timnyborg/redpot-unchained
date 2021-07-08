@@ -20,7 +20,7 @@ def edit_button(url: Union[str, Model], icon: str = 'pencil-alt', target: str = 
         else:
             raise AttributeError(f'The model {url._meta.object_name} needs to define get_edit_url()')
 
-    b = f"""
+    button = f"""
         <a href="{url}"
            class="btn btn-default btn-lg pull-right"
            target="{target}"
@@ -29,7 +29,7 @@ def edit_button(url: Union[str, Model], icon: str = 'pencil-alt', target: str = 
         ><span class='fas fa-{icon}'></span>
         </a>
     """
-    return mark_safe(b)
+    return mark_safe(button)
 
 
 @register.inclusion_tag('utility/timestamp.html')

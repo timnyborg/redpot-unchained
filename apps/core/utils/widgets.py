@@ -52,3 +52,19 @@ class PoundInput(widgets.NumberInput):
     """Bootstrap text input with a £ appended"""
 
     template_name = "widgets/pound_widget.html"
+
+
+class ReadOnlyModelWidget(widgets.Widget):
+    """A readonly widget for displaying a single model with bootstrap styling"""
+
+    def __init__(self, model, *args, **kwargs):
+        self.model = model
+        super().__init__(*args, **kwargs)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        instance = self.model.objects.get(pk=value)
+        # -static for b2, -plaintext for bs4.  todo: consider how to move that into the form rendering
+        return f"""
+            <input type="hidden" name="{name}" value="{value}">
+            <div class='form-control-static form-control-plaintext'>{instance}</div>
+        """
