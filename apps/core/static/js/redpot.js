@@ -168,3 +168,14 @@ $(function() {
         $(this).trigger('update_counter');
     });
 });
+
+// "Toggle all" checkboxes for datatables
+$(function() {
+    document.getElementById('toggle-all').onclick = function () {
+        // Get all other checkboxes
+        let checkboxes = document.querySelectorAll("input[type='checkbox']:not([id*='toggle-all'])");
+        for (let checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    }
+})

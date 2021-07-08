@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Iterator, Optional
+from typing import Iterator
 
 from django.db.models import Max
 
@@ -50,7 +50,7 @@ def next_moodle_id() -> Iterator[int]:
         val += 1
 
 
-def assign_moodle_id(*, student: models.Student, created_by: str, first_module_code: Optional[str] = None) -> None:
+def assign_moodle_id(*, student: models.Student, created_by: str, first_module_code: str) -> None:
     id_generator = next_moodle_id()
     models.MoodleID.objects.create(
         student=student,

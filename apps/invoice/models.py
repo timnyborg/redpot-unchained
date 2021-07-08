@@ -1,9 +1,13 @@
-from datetime import date
+from datetime import date, datetime
+from decimal import Decimal
+from typing import Optional
 
 from django.db import models
 from django.urls import reverse
 
 from apps.core.models import SignatureModel
+
+DEBTOR_ACCOUNT = 'Z300'
 
 
 class InvoiceQuerySet(models.QuerySet):
@@ -28,10 +32,10 @@ class InvoiceQuerySet(models.QuerySet):
 class Invoice(SignatureModel):
     number = models.IntegerField(unique=True, editable=False)
     prefix = models.CharField(max_length=32, default='XG', editable=False)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField(default=datetime.now)
     due_date = models.DateField(null=True, db_column='duedate')
     fao = models.CharField(max_length=128, blank=True, null=True, verbose_name='FAO')
-    invoiced_to = models.CharField(max_length=128, blank=True, null=True)
+    invoiced_to = models.CharField(max_length=128, verbose_name='Invoice to')
     line1 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Address line 1')
     line2 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Line 2')
     line3 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Line 3')
@@ -97,7 +101,6 @@ class InvoiceLedger(models.Model):
         related_name='invoice_ledger_allocations',
     )
     item_no = models.IntegerField(blank=True, null=True)
-    # type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
 
     class Meta:
         # managed = False
@@ -115,6 +118,22 @@ class TransactionType(models.Model):
 
     def __str__(self):
         return self.description
+
+
+class LedgerQuerySet(models.QuerySet):
+    def debts(self) -> models.QuerySet:
+        return self.filter(account=DEBTOR_ACCOUNT)
+
+    def invoiced(self) -> models.QuerySet:
+        return self.filter(invoice_ledger__id__isnull=False)
+
+    def uninvoiced(self) -> models.QuerySet:
+        return self.filter(invoice_ledger__id__isnull=True)
+
+    def balance(self) -> Optional[Decimal]:
+        """Convenience function to get the sum of the queryset"""
+        # todo: should the `or Decimal(0)` go in here, making it non optional?
+        return self.aggregate(balance=models.Sum('amount'))['balance']
 
 
 # ledger should got in a finance models file (or core model file)
@@ -135,6 +154,8 @@ class Ledger(models.Model):
     allocation = models.IntegerField()
     ref_no = models.IntegerField(blank=True, null=True)
     batch = models.IntegerField(blank=True, null=True)
+
+    objects = LedgerQuerySet.as_manager()
 
     class Meta:
         # managed = False
