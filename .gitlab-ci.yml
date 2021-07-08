@@ -7,8 +7,7 @@ variables:
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
   # only run bandit (for now)
-  SAST_DEFAULT_ANALYZERS: "bandit"
-
+  SAST_EXCLUDED_ANALYZERS: "eslint,semgrep"
 
 stages:
   - build
