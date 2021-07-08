@@ -6,7 +6,9 @@
         {% block center %}
             <div class="section">
                 {% for title, id, progs in qualifications %}
-                    <h3 id="{{ id }}">{{ title }}</h3>
+                    <a id='{{ id }}' class='nav-anchor'></a> {# For dynamic side navigation menu #}
+                    <h2>{{ title }}</h2>
+
                     <div class="container">
                         {% for prog in progs %}
                         <div id="accordion" class="accordion">
@@ -44,11 +46,10 @@
 
     <div class="col-3">
 		{% block right_sidebar %}
-            <div class="section">
-                {% for label,id,quals in programmes.structure %}
-                    <li>{{ label }}-{{ id }}-{{ quals }}</li>
-                {% endfor %}
+            <div class="hidden-xs affix-top" data-spy="affix" data-offset-top="105" id="sidebar">
+                <ul class="nav sidenav">
+                </ul>
             </div>
-		{% endblock %}
+        {% endblock %}
     </div>
 {% endblock %}

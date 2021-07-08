@@ -4,7 +4,7 @@ from .models import Programme, User
 from django_tables2 import SingleTableView
 from .datatables import StaffListTable
 from django.views.generic import ListView, DetailView
-
+from django.shortcuts import get_object_or_404
 
 class SiteTitleMixin(PageTitleMixin):
     title = 'Staff List'
