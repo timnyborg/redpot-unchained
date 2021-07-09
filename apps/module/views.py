@@ -99,6 +99,29 @@ class CopyFees(LoginRequiredMixin, PageTitleMixin, generic.FormView):
         return redirect(self.target_module.get_absolute_url() + '#fees')
 
 
+class CopyWebFields(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.FormView):
+    form_class = forms.CopyFieldsForm
+    template_name = 'core/form.html'
+    title = 'Module'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.target_module = get_object_or_404(Module, pk=self.kwargs['module_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_subtitle(self):
+        return f'Copy web fields – {self.target_module.title} ({self.target_module.code})'
+
+    def form_valid(self, form):
+        services.copy_web_fields(
+            source=form.cleaned_data['source_module'],
+            target=self.target_module,
+            user=self.request.user,
+        )
+        self.target_module.save()
+        messages.success(self.request, 'Web fields copied')
+        return redirect(self.target_module.get_absolute_url())
+
+
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
     model = Module
     form_class = forms.EditForm

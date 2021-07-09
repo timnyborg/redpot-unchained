@@ -7,6 +7,28 @@ from apps.student.services import assign_moodle_id
 
 from .models import Book, Module
 
+WEB_FIELDS = [
+    # Text fields used for website copy.  Used in both clone_fields and copy_web_fields
+    'overview',
+    'snippet',
+    'notification',
+    'programme_details',
+    'selection_criteria',
+    'course_aims',
+    'certification',
+    'assessment_methods',
+    'it_requirements',
+    'level_and_demands',
+    'recommended_reading',
+    'teaching_methods',
+    'teaching_outcomes',
+    'accommodation',
+    'payment',
+    'scholarships',
+    'how_to_apply',
+    'further_details',
+]
+
 
 def copy_fees(*, source: Module, target: Module, user: User) -> int:
     """Copies all fees from one module to another"""
@@ -65,26 +87,8 @@ def clone_fields(*, source: Module, target: Module, copy_url: bool = False, copy
         'portfolio_id',
         'status_id',
         'terms_and_conditions',  # todo: convert to _id aftertable implemented
-        # Blobs
-        'overview',
-        'snippet',
-        'notification',
-        'programme_details',
-        'selection_criteria',
-        'course_aims',
-        'certification',
-        'assessment_methods',
-        'it_requirements',
-        'level_and_demands',
-        'recommended_reading',
-        'teaching_methods',
-        'teaching_outcomes',
-        'accommodation',
-        'payment',
-        'scholarships',
-        'how_to_apply',
-        'further_details',
-    ]
+    ] + WEB_FIELDS
+
     if copy_url:
         field_list.append('url')
     if copy_dates:
@@ -102,6 +106,17 @@ def clone_fields(*, source: Module, target: Module, copy_url: bool = False, copy
     # Copy the fields one by one
     for field in field_list:
         setattr(target, field, getattr(source, field))
+
+
+def copy_web_fields(*, source: Module, target: Module, user: User) -> None:
+    """
+    Copy only the website marketing fields from one module to another
+    You must call .save() yourself
+    """
+    for field in WEB_FIELDS:
+        setattr(target, field, getattr(source, field))
+    target.modified_by = user.username
+    target.modified_on = datetime.now()
 
 
 def copy_children(*, source: Module, target: Module, user: User):
