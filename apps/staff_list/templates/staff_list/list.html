@@ -1,0 +1,12 @@
+{% extends 'staff_list_layout_bs4.html' %}
+{% load render_table from django_tables2 %}
+
+{% block center %}
+    <div class="section">
+        <h4>Showing {{ table.rows|length }} results</h4>
+        {% render_table table %}
+    </div>
+{% endblock %}
+
+
+

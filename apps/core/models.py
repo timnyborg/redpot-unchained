@@ -5,6 +5,7 @@ from django_resized import ResizedImageField
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.urls import reverse
 from django.utils.deconstruct import deconstructible
 
 from .utils.models import PhoneField
@@ -71,6 +72,14 @@ class User(SignatureModel, AbstractUser):
     phone = PhoneField(max_length=512, blank=True, null=True)
     room = models.CharField(max_length=512, blank=True, null=True)
     on_facewall = models.BooleanField(default=True)
+    division = models.ForeignKey('Division', on_delete=models.CASCADE, db_column='division', default=1)
+
+    def get_absolute_url(self):
+        return reverse('staff_list:profile', args=[self.pk])
+
+    def phone_number(self):
+        if self.phone:
+            return self.phone.replace('+44 (0)1865 2', '')
 
 
 class Portfolio(models.Model):
@@ -92,7 +101,9 @@ class Division(models.Model):
     shortname = models.CharField(max_length=8, blank=True, null=True)
     email = models.EmailField(max_length=256, blank=True, null=True)
     finance_prefix = models.CharField(max_length=2, blank=True, null=True)
-    manager = models.ForeignKey('core.User', models.DO_NOTHING, db_column='manager', blank=True, null=True)
+    manager = models.ForeignKey(
+        'core.User', models.DO_NOTHING, db_column='manager', related_name='manager_of', blank=True, null=True
+    )
 
     class Meta:
         db_table = 'division'
