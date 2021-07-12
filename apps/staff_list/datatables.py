@@ -1,7 +1,11 @@
 import django_tables2 as tables
-from .models import User
-from apps.core.utils.datatables import ViewLinkColumn
+
 from django.utils.html import format_html
+
+from apps.core.utils.datatables import ViewLinkColumn
+
+from .models import User
+
 
 class StaffListTable(tables.Table):
     link = ViewLinkColumn('')
@@ -15,4 +19,3 @@ class StaffListTable(tables.Table):
 
     def render_email(self):
         return format_html("<i class='fas fa-envelope'></i>")
-

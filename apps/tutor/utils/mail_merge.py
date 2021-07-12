@@ -69,11 +69,11 @@ class MailMergeView(MultipleObjectTemplateResponseMixin, View):
         return response
 
     def get_filename(self, queryset):
-        """ Override if a dynamic filename is required. """
+        """Override if a dynamic filename is required."""
         return self.filename
 
     def get_template_file(self, queryset):
-        """ Override if a dynamic template is required. """
+        """Override if a dynamic template is required."""
         return self.template_file
 
     def _merge(self, file, context):

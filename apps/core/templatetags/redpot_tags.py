@@ -68,6 +68,7 @@ def bootstrap3modal(
         'header': header,
     }
 
+
 @register.inclusion_tag('utility/bootstrap4_form.html')
 def bootstrap4form(form, status_classes=True):
     return {'form': form, 'status_classes': status_classes}
