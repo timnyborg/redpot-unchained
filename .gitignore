@@ -18,3 +18,5 @@ venv
 # media folders
 media/
 protected_media/
+
+*.pkl
