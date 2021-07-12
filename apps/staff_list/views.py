@@ -57,7 +57,7 @@ class CoursesListView(LoginRequiredMixin, SiteTitleMixin, ListView):
         return progs
 
     def get_context_data(self, **kwargs):
-        context = super(CoursesListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context['qualifications'] = [
             ('Non-accredited', 'non-acc', self.object_list.filter(qualification=1)),
