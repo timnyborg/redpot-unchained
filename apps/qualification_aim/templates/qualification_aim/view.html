@@ -33,7 +33,8 @@
         <div class="col-xs-12 col-md-4">
             {% if object.is_certhe %}
                 <hr class="hidden-md hidden-lg">
-                {% edit_button 'edit-certhe-marks' %}
+                {% url 'qualification_aim:certhe-marks' object.id as certhe_url %}
+                {% edit_button certhe_url %}
                 <h2>Cert. HE marks</h2>
 
                 {% if object.certhe_marks %}
@@ -76,6 +77,10 @@
 
 <div class="section">
     <a id='enrolments' class='nav-anchor'></a>
+    <div class="pull-right top-right-button">
+        <a href="enrolment/create/something" class="btn btn-success btn-xs"><span class="fas fa-plus"></span> Add enrolment</a>
+    </div>
+
     <h2>Enrolments ({{ enrolments|length }})</h2>
     <table class="table table-condensed table-striped table-hover hide-rows" data-display=5>
         <thead>

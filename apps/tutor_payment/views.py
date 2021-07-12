@@ -100,7 +100,7 @@ class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequir
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     title = 'Tutor payment'
     subtitle = 'Search'
-    template_name = 'student/search.html'
+    template_name = 'core/search.html'
 
     table_class = datatables.SearchTable
     filterset_class = datatables.SearchFilter

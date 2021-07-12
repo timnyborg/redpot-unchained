@@ -1,9 +1,13 @@
+from datetime import date
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
 from apps.enrolment.tests.factories import EnrolmentFactory
+from apps.student.tests.factories import AddressFactory
 
+from .. import models
 from . import factories
 
 
@@ -11,8 +15,7 @@ class TestViewsWithLogin(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        enrolment = EnrolmentFactory()
-        fee_line = factories.LedgerFactory(enrolment=enrolment)
+        fee_line = factories.LedgerFactory()
         cls.invoice = factories.InvoiceFactory()
         cls.invoice.ledger_items.add(
             fee_line,
@@ -51,7 +54,7 @@ class TestViewsWithLogin(TestCase):
 
     def test_view_invoice(self):
         response = self.client.get(reverse('invoice:view', args=[self.invoice.id]))
-        # TODO: We should use a factory, and check for invoice data being present
+        # TODO: We should check for invoice data being present
         self.assertEqual(response.status_code, 200)
 
     def test_lookup_succeeds(self):
@@ -67,3 +70,58 @@ class TestViewsWithLogin(TestCase):
     def test_lookup_fails_with_bad_number(self):
         response = self.client.post(reverse('invoice:lookup'), data={'number': 'ABCDEFG'})
         self.assertRedirects(response, '/invoice/search')
+
+
+class TestCreateViews(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.enrolment = EnrolmentFactory()
+        cls.student = cls.enrolment.qa.student
+        cls.address = AddressFactory(student=cls.student)  # Add an address to test default values
+        cls.fees = factories.LedgerFactory.create_batch(size=2, enrolment=cls.enrolment)
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_choose_enrolments_get(self):
+        response = self.client.get(reverse('invoice:choose-enrolments', args=[self.student.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['table'].rows), 1)
+
+    def test_choose_fees_get(self):
+        response = self.client.get(
+            reverse('invoice:choose-fees', args=[self.student.pk]),
+            data={'enrolment': self.enrolment.pk},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['table'].rows), 2)
+
+    def test_create_get_without_fees_raises_404(self):
+        response = self.client.get(
+            reverse('invoice:create', args=[self.student.pk]),
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_create_get(self):
+        response = self.client.get(
+            reverse('invoice:create', args=[self.student.pk]),
+            data={'fee': [self.fees[0].pk]},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.address.line1)
+
+    def test_create_post(self):
+        response = self.client.post(
+            reverse('invoice:create', args=[self.student.pk]) + f'?fee={self.fees[0].pk}&fee={self.fees[1].pk}',
+            data={
+                'due_date': date(2020, 1, 1),
+                'invoiced_to': 'Person',
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        # Check the created invoice has the correct details
+        invoice = models.Invoice.objects.last()
+        self.assertEqual(invoice.invoiced_to, 'Person')
+        self.assertEqual(invoice.amount, sum(f.amount for f in self.fees))
+        self.assertEqual(invoice.ledger_items.count(), 2)

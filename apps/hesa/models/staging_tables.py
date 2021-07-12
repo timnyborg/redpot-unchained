@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Iterable
 
 from django.db import models
@@ -24,7 +25,7 @@ class XMLStagingModel:
 
 class Batch(XMLStagingModel, models.Model):
     academic_year = models.IntegerField()
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=datetime.now)
     created_by = models.CharField(max_length=32, blank=True, null=True)
     filename = models.CharField(max_length=512, blank=True, null=True)
 

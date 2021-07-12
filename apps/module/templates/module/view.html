@@ -290,9 +290,9 @@
                         <li><a href="WWW_ADDRESS+'/courses/reading-list-pdf/'+module.code"><span class="fas fa-fw fa-file-word"></span> Reading list for students (.pdf)</a></li>
                         {% endif %}
                         <li role="separator" class="divider"></li>
-                        <li><a href="student_list/{{ module.id }}"><span class="fas fa-fw fa-file-excel"></span> Student list (.xlsx)</a></li>
+                        <li><a href="{% url 'module:student-list' module.id %}"><span class="fas fa-fw fa-file-excel"></span> Student list (.xlsx)</a></li>
                         {% if module.portfolio_id == 17 %}
-                        <li><a href="moodle_list/{{ module.id }}"><span class="fas fa-fw fa-file-excel"></span> Moodle student list (.xlsx)</a></li>
+                        <li><a href="{% url 'module:moodle-list' module.id %}"><span class="fas fa-fw fa-file-excel"></span> Moodle student list (.xlsx)</a></li>
                         {% endif %}
                         {% if module.code|slice:'-3:' == 'HEC' %}
                         <li><a href="student','certhe_progress', args=(0,module.id)"><span class="fas fa-fw fa-certificate"></span> CertHE progress report (.docx)</a></li>
@@ -305,7 +305,7 @@
                         <i class="glyphicon glyphicon-option-horizontal"></i>
                     </a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="create-moodle-ids/{{ module.id }}"><span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs</a></li>
+                        <li><a href="{% url 'module:assign-moodle-ids' module.id %}"><span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs</a></li>
                         <li><a href="award_points/{{ module.id }}"><span class="fas fa-fw fa-graduation-cap"></span> Award CATS points</a></li>
                         <li><a href="{% url 'module:clone' module.id %}"><span class="fas fa-fw fa-clone"></span> Clone this module</a></li>
                         <li><a href="copy_fields/{{ module.id }}"><span class="fas fa-fw fa-paste"></span> Copy web fields</a></li>
@@ -516,7 +516,7 @@
         <span class="sr-only">Toggle Dropdown</span>
       </button>
       <ul class="dropdown-menu">
-        <li><a href="copy-fees/{{ module.id }}"><span class="fa fa-gbp"></span> Copy fees</a></li>
+        <li><a href="{% url 'module:copy-fees' module.id %}"><i class="fas fa-fw fa-pound-sign"></i> Copy fees</a></li>
       </ul>
     </div>
     <a id='fees' class='nav-anchor'></a>
@@ -549,7 +549,6 @@
                         <td>£{{ fee.amount | floatformat:2 }}</td>
                         <td class="quick-icons">
                             <a href="{% url 'fee:edit' fee.pk %}"><i class="fas fa-pencil-alt"></i></a>
-                            <a href="{% url 'fee:delete' fee.pk %}"><i class="fas fa-times"></i></a>
                         </td>
                     </tr>
                 {% endif %}

@@ -1,10 +1,12 @@
 import django_filters as filters
 import django_tables2 as tables
 
+from django import forms
 from django.db import models
 from django.db.models.functions import Replace
 
 from apps.core.utils.datatables import ViewLinkColumn
+from apps.core.utils.widgets import DatePickerInput
 
 from .models import Student
 
@@ -28,7 +30,7 @@ class SearchFilter(filters.FilterSet):
         lookup_expr='unaccent__startswith',
     )
 
-    birthdate = filters.DateFilter(label='Birthdate', field_name='birthdate')
+    birthdate = filters.DateFilter(label='Birthdate', field_name='birthdate', widget=DatePickerInput())
 
     def filter_postcode(self, queryset, field_name, value):
         """Finds postcodes starting the same way, while removing spaces from the search and target"""
@@ -59,6 +61,17 @@ class SearchFilter(filters.FilterSet):
     )
 
     # todo: phone filter
+
+    def filter_tutors_only(self, queryset, field_name, value):
+        if value:
+            return queryset.filter(tutor__id__isnull=False)
+        return queryset
+
+    tutors_only = filters.BooleanFilter(
+        label='Tutors only?',
+        method='filter_tutors_only',
+        widget=forms.CheckboxInput,
+    )
 
     class Meta:
         model = Student

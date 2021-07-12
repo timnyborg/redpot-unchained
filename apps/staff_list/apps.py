@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class StaffListingConfig(AppConfig):
-    name = 'staff_list'
+    name = 'apps.staff_list'

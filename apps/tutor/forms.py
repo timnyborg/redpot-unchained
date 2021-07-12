@@ -1,24 +1,90 @@
 from dal import autocomplete
 
-from django.forms import ModelForm, widgets
+from django.forms import ModelForm
 
+from apps.core.utils.widgets import DatePickerInput, ReadOnlyModelWidget
 from apps.module.models import Module
 
-from .models import Tutor, TutorModule
+from .models import RightToWorkType, Tutor, TutorModule
 
 
-class ReadOnlyModelWidget(widgets.Widget):
-    def __init__(self, model, *args, **kwargs):
-        self.model = model
-        super().__init__(*args, **kwargs)
+class BasicEdit(ModelForm):
+    """Basic form for users lacking bank details rights"""
 
-    def render(self, name, value, attrs=None, renderer=None):
-        instance = self.model.objects.get(pk=value)
-        # -static for b2, -plaintext for bs4.  todo: consider how to move that into the form rendering
-        return f"""
-            <input type="hidden" name="{name}" value="{value}">
-            <div class='form-control-static form-control-plaintext'>{instance}</div>
-        """
+    class Meta:
+        model = Tutor
+        fields = [
+            'qualifications',
+            'affiliation',
+            'biography',
+            'image',
+        ]
+
+
+class Edit(ModelForm):
+    """Full form for users with bank details rights"""
+
+    class Meta:
+        model = Tutor
+        fields = [
+            'qualifications',
+            'affiliation',
+            'nino',
+            'employee_no',
+            'appointment_id',
+            'bankname',
+            'branchaddress',
+            'accountname',
+            'sortcode',
+            'accountno',
+            'swift',
+            'iban',
+            'other_bank_details',
+            'biography',
+            'image',
+            'oracle_supplier_number',
+        ]
+
+
+class RightToWork(ModelForm):
+    # todo: document_type as an autocomplete
+    # (https://django-autocomplete-light.readthedocs.io/en/master/tutorial.html#filtering-results-based-on-the-value-of-other-fields-in-the-form)
+    class Meta:
+        model = Tutor
+        fields = ['rtw_type', 'rtw_document_type', 'rtw_check_on', 'rtw_check_by', 'rtw_start_date', 'rtw_end_date']
+        widgets = {
+            'rtw_start_date': DatePickerInput(),
+            'rtw_end_date': DatePickerInput(),
+            'rtw_check_on': DatePickerInput(),
+        }
+
+    def clean(self):
+        rtw_type = self.cleaned_data.get('rtw_type')
+        document_type = self.cleaned_data.get('rtw_document_type')
+        start_date = self.cleaned_data.get('rtw_start_date')
+        end_date = self.cleaned_data.get('rtw_end_date')
+
+        if rtw_type in (RightToWorkType.PERMANENT, RightToWorkType.LIMITED):
+            if not document_type:
+                self.add_error('rtw_document_type', 'Required')
+            # Check that document type is a subset of type (if necessary)
+            elif document_type.rtw_type != rtw_type:
+                self.add_error('rtw_document_type', 'Invalid document')
+        else:
+            self.cleaned_data['rtw_document_type'] = None
+
+        if rtw_type == RightToWorkType.LIMITED:
+            # Document start and end date required for list B
+            if not start_date:
+                self.add_error('rtw_start_date', 'Required for List B')
+            if not end_date:
+                self.add_error('rtw_end_date', 'Required for List B')
+            if start_date and end_date and start_date > end_date:
+                self.add_error('rtw_end_date', 'Must be later than date of issue')
+        else:
+            # But not for anything else
+            self.cleaned_data['rtw_start_date'] = None
+            self.cleaned_data['rtw_end_date'] = None
 
 
 class TutorModuleEditForm(ModelForm):

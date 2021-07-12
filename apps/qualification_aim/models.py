@@ -14,7 +14,9 @@ NON_UK_DISTANCE_STUDY_LOCATION = 9
 
 
 class QualificationAim(SignatureModel):
-    student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
+    student = models.ForeignKey(
+        'student.Student', models.DO_NOTHING, db_column='student', related_name='qas', related_query_name='qa'
+    )
     programme = models.ForeignKey(
         'programme.Programme',
         models.DO_NOTHING,
@@ -42,7 +44,9 @@ class QualificationAim(SignatureModel):
     reason_for_ending = models.ForeignKey(
         'ReasonForEnding', models.DO_NOTHING, db_column='reason_for_ending', blank=True, null=True
     )
-    sits_code = models.CharField(max_length=12, blank=True, null=True, verbose_name='SITS code')
+    sits_code = models.CharField(
+        max_length=12, blank=True, null=True, verbose_name='SITS code', help_text="Maps to SITS' enrolment code"
+    )
 
     class Meta:
         # managed = False
@@ -83,10 +87,6 @@ class QualificationAim(SignatureModel):
     def __str__(self):
         return f'{self.student}: {self.title}'
 
-    def is_certhe(self) -> bool:
-        # Todo: There must be a way to this without hardcoding statuses (old and new certhe)
-        return self.programme_id in (5, 270)
-
     @property
     def locked_fields(self) -> list[str]:
         """Determine whether the object is managed by SITS, and thus has fields locked for editing"""
@@ -120,22 +120,41 @@ class ReasonForEnding(SignatureModel):
 
 
 class CertHEMarks(SignatureModel):
+    SUBJECTS = {
+        100299: 'Archaeology',
+        100306: 'Art history',
+        100782: 'Architectural history',
+        100302: 'History',
+        101037: 'Literature',
+        100046: 'Creative writing',
+        100337: 'Philosophy',
+        100601: 'Political economy',
+    }
+
     qualification_aim = models.OneToOneField(
         'QualificationAim', models.DO_NOTHING, db_column='qa', related_name='certhe_marks'
     )
     courses_transferred_in = models.TextField(blank=True, null=True)
     credits_transferred_in = models.IntegerField(blank=True, null=True)
-    subject = models.ForeignKey('hesa.HECoSSubject', models.DO_NOTHING, db_column='subject', blank=True, null=True)
-    assignment1_date = models.DateField(blank=True, null=True)
-    assignment1_grade = models.IntegerField(blank=True, null=True)
-    assignment2_date = models.DateField(blank=True, null=True)
-    assignment2_grade = models.IntegerField(blank=True, null=True)
-    assignment3_date = models.DateField(blank=True, null=True)
-    assignment3_grade = models.IntegerField(blank=True, null=True)
-    journal1_date = models.DateField(blank=True, null=True)
-    journal2_date = models.DateField(blank=True, null=True)
-    journal_cats_points = models.IntegerField(blank=True, null=True)
-    is_introductory_course = models.BooleanField(blank=True, null=True)
+    subject = models.ForeignKey(
+        'hesa.HECoSSubject',
+        models.DO_NOTHING,
+        db_column='subject',
+        blank=True,
+        null=True,
+        limit_choices_to={'id__in': SUBJECTS},
+    )
+    assignment1_date = models.DateField(blank=True, null=True, verbose_name='Assignment 1 date')
+    assignment1_grade = models.IntegerField(blank=True, null=True, verbose_name='Assignment 1 grade')
+    assignment2_date = models.DateField(blank=True, null=True, verbose_name='Assignment 2 date')
+    assignment2_grade = models.IntegerField(blank=True, null=True, verbose_name='Assignment 2 grade')
+    assignment3_date = models.DateField(blank=True, null=True, verbose_name='Assignment 3 date')
+    assignment3_grade = models.IntegerField(blank=True, null=True, verbose_name='Assignment 3 grade')
+    journal1_date = models.DateField(blank=True, null=True, verbose_name='Journal 1 date')
+    journal2_date = models.DateField(blank=True, null=True, verbose_name='Journal 2 date')
+    journal_cats_points = models.IntegerField(blank=True, null=True, verbose_name='Journal CATS points')
+    is_introductory_course = models.BooleanField(verbose_name='Introductory course', default=False)
 
     class Meta:
         db_table = 'certhe_marks'
+        verbose_name = 'Certificate of Higher Education marks'

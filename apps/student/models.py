@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from django.db import models
@@ -75,18 +77,21 @@ class Student(SignatureModel):
         }
         return gender_to_sex_map.get(self.gender)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse('student-view', args=[self.id])
 
-    def get_default_address(self):
+    def get_default_address(self) -> Optional[Address]:
         return self.addresses.default().first()
+
+    def get_billing_address(self) -> Optional[Address]:
+        return self.addresses.billing().first() or self.get_default_address()
 
 
 class AddressQuerySet(models.QuerySet):
-    def default(self):
+    def default(self) -> models.QuerySet:
         return self.filter(is_default=True)
 
-    def billing(self):
+    def billing(self) -> models.QuerySet:
         return self.filter(is_billing=True)
 
 
@@ -171,6 +176,7 @@ class MoodleID(SignatureModel):
 
 class OtherID(SignatureModel):
     class Types(models.IntegerChoices):
+        STUDENT_CARD = 1
         SSO = 7
         OSS = 8
         SSN = 9

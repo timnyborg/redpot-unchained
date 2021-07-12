@@ -40,6 +40,7 @@ urlpatterns = [
     path('autocomplete/', include('apps.autocomplete.urls')),
     path('user/', include('apps.user.urls')),
     path('staff-list/', include('apps.staff_list.urls')),
+    path('website-account/', include('apps.website_account.urls')),
     # Example of legacy URLs
     path(
         'student/view/<int:id>',

@@ -6,8 +6,7 @@
 <div class="section">
     <div class="row">
         <div class="col-xs-12 col-md-4">
-            {% url 'programme:edit' invoice.id as edit_url %}
-            {% edit_button edit_url %}
+            {% edit_button invoice %}
             <h2>{{ invoice }}</h2>
 
             <div class="clearfix"></div>

@@ -77,7 +77,7 @@
                 <td>{{ payment.details | truncatechars:50 }}</td> {#  todo: add abbr #}
                 <td>{{ payment.raised_by }}</td>
                 <td>{{ payment.raised_on }}</td>
-                <td>{{ payment.pay_after | default:'–' }}</td>
+                <td>{{ payment.pay_after | date:'M Y' | default:'–' }}</td>
                 <td>{{ payment.transferred_on | default:'–' }}</td>
                 <td>
                     <a href="{{ payment.get_edit_url }}?next={{ request.get_full_path }}">

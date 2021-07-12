@@ -6,16 +6,24 @@ from django.db.models import Q
 from django.utils.safestring import mark_safe
 
 from apps.core.utils.datatables import PoundsColumn, ViewLinkColumn
+from apps.core.utils.widgets import DatePickerInput, PoundInput
+from apps.enrolment.models import Enrolment
 
 from .models import Invoice, Ledger, PaymentPlanSchedule
 
 
 class InvoiceSearchFilter(django_filters.FilterSet):
     invoiced_to = django_filters.CharFilter(field_name='invoiced_to', label='Invoiced to', lookup_expr='icontains')
-    minimum = django_filters.NumberFilter(field_name='amount', label='Minimum amount', lookup_expr='gte')
-    maximum = django_filters.NumberFilter(field_name='amount', label='Maximum amount', lookup_expr='lte')
+    minimum = django_filters.NumberFilter(
+        field_name='amount', label='Minimum amount', lookup_expr='gte', widget=PoundInput()
+    )
+    maximum = django_filters.NumberFilter(
+        field_name='amount', label='Maximum amount', lookup_expr='lte', widget=PoundInput()
+    )
     created_by = django_filters.CharFilter(field_name='created_by', label='Created by (username)', lookup_expr='exact')
-    created_after = django_filters.DateFilter(field_name='created_on', label='Created on or after', lookup_expr='gte')
+    created_after = django_filters.DateFilter(
+        field_name='created_on', label='Created on or after', lookup_expr='gte', widget=DatePickerInput()
+    )
 
     def filter_address(self, queryset, field_name, value):
         """Filters on any invoice address field"""
@@ -126,3 +134,40 @@ class PaymentScheduleTable(tables.Table):
         fields = ('due_date', 'amount', 'is_deposit')
         order_by = ('due_date',)
         orderable = False
+
+
+class ChooseEnrolmentsTable(tables.Table):
+    enrolment = tables.CheckBoxColumn(
+        accessor='id',
+        attrs={"th__input": {"id": "toggle-all"}},
+        orderable=False,
+        checked=True,
+    )
+    balance = PoundsColumn(orderable=False)
+
+    class Meta:
+        model = Enrolment
+        template_name = "django_tables2/bootstrap.html"
+        fields = ('enrolment', 'module__code', 'module__title', 'created_by', 'created_on', 'balance')
+        order_by = ('-created_on',)
+        per_page = 100
+
+
+class ChooseFeesTable(tables.Table):
+    fee = tables.CheckBoxColumn(
+        accessor='id',
+        attrs={"th__input": {"id": "toggle-all"}},
+        orderable=False,
+        checked=True,
+    )
+    amount = PoundsColumn()
+    enrolment = tables.Column(linkify=True)
+
+    def render_enrolment(self, value) -> str:
+        return str(value.module.code)
+
+    class Meta:
+        model = Ledger
+        template_name = "django_tables2/bootstrap.html"
+        fields = ('fee', 'amount', 'narrative', 'type', 'date', 'enrolment')
+        per_page = 100

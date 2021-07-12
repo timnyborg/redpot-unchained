@@ -3,10 +3,15 @@ from django.db import transaction
 from django.forms import ValidationError
 from django.forms.models import fields_for_model
 
+from apps.core.utils import widgets
+from apps.core.utils.forms import ApproverChoiceField
+
 from .models import TutorFee, TutorFeeRate
 
 
 class CreateForm(forms.ModelForm):
+    approver = ApproverChoiceField('tutor_payment.approve')
+
     class Meta:
         model = TutorFee
         fields = (
@@ -19,9 +24,16 @@ class CreateForm(forms.ModelForm):
             'approver',
             'pay_after',
         )
+        widgets = {
+            'hourly_rate': widgets.PoundInput(),
+            'amount': widgets.PoundInput(),
+            'pay_after': widgets.MonthPickerInput(),
+        }
 
 
 class EditForm(forms.ModelForm):
+    approver = ApproverChoiceField('tutor_payment.approve')
+
     class Meta:
         model = TutorFee
         fields = (
@@ -35,6 +47,11 @@ class EditForm(forms.ModelForm):
             'approver',
             'pay_after',
         )
+        widgets = {
+            'hourly_rate': widgets.PoundInput(),
+            'amount': widgets.PoundInput(),
+            'pay_after': widgets.MonthPickerInput(),
+        }
 
     def __init__(self, editable_status, *args, **kwargs):
         super().__init__(*args, **kwargs)

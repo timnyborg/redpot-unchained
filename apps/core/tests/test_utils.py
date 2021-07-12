@@ -6,7 +6,7 @@ import django_tables2 as tables
 from django.core import mail
 from django.test import RequestFactory, SimpleTestCase
 
-from ..utils import celery, datatables, dates
+from ..utils import celery, datatables, dates, widgets
 
 
 class TestAcademicYear(SimpleTestCase):
@@ -74,3 +74,31 @@ class TestMailOnFailure(SimpleTestCase):
             self.fails()
         # Check mail was sent
         self.assertEqual(len(mail.outbox), 1)
+
+
+class TestMonthPickerWidget(SimpleTestCase):
+    widget = widgets.MonthPickerInput()
+
+    def test_adds_day(self):
+        result = self.widget.value_from_datadict(
+            data={'name': 'January 2021'},
+            files={},
+            name='name',
+        )
+        self.assertEqual(result, date(2021, 1, 1))
+
+    def test_ignores_nondate(self):
+        result = self.widget.value_from_datadict(
+            data={'name': 'garbage'},
+            files={},
+            name='name',
+        )
+        self.assertEqual(result, 'garbage')
+
+    def test_handles_no_data(self):
+        result = self.widget.value_from_datadict(
+            data={},
+            files={},
+            name='name',
+        )
+        self.assertIsNone(result)

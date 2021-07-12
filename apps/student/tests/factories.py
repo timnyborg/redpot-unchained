@@ -9,3 +9,18 @@ class StudentFactory(factory.django.DjangoModelFactory):
 
     firstname = factory.Faker('first_name')
     surname = factory.Faker('last_name')
+
+
+class AddressFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Address
+
+    student = factory.SubFactory(StudentFactory)
+    line1 = factory.Faker('street_address')
+    postcode = factory.Faker('postcode')
+    town = factory.Faker('city')
+    is_default = True
+
+
+class StudentWithAddressFactory(StudentFactory):
+    address = factory.RelatedFactory(AddressFactory, factory_related_name='student')

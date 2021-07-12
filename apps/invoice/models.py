@@ -1,9 +1,13 @@
-from datetime import date
+from datetime import date, datetime
+from decimal import Decimal
+from typing import Optional
 
 from django.db import models
 from django.urls import reverse
 
 from apps.core.models import SignatureModel
+
+DEBTOR_ACCOUNT = 'Z300'
 
 
 class InvoiceQuerySet(models.QuerySet):
@@ -26,32 +30,30 @@ class InvoiceQuerySet(models.QuerySet):
 
 
 class Invoice(SignatureModel):
-    number = models.IntegerField(unique=True)
-    prefix = models.CharField(max_length=32, default='XG')
-    date = models.DateField(blank=True, null=True)
-    fao = models.CharField(max_length=128, blank=True, null=True)
-    invoiced_to = models.CharField(max_length=128, blank=True, null=True)
-    line1 = models.CharField(max_length=128, blank=True, null=True)
-    line2 = models.CharField(max_length=128, blank=True, null=True)
-    line3 = models.CharField(max_length=128, blank=True, null=True)
-    town = models.CharField(max_length=64, blank=True, null=True)
-    countystate = models.CharField(max_length=64, blank=True, null=True)
+    number = models.IntegerField(unique=True, editable=False)
+    prefix = models.CharField(max_length=32, default='XG', editable=False)
+    date = models.DateField(default=datetime.now)
+    due_date = models.DateField(null=True, db_column='duedate')
+    fao = models.CharField(max_length=128, blank=True, null=True, verbose_name='FAO')
+    invoiced_to = models.CharField(max_length=128, verbose_name='Invoice to')
+    line1 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Address line 1')
+    line2 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Line 2')
+    line3 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Line 3')
+    town = models.CharField(max_length=64, blank=True, null=True, verbose_name='City/town')
+    countystate = models.CharField(max_length=64, blank=True, null=True, verbose_name='County/state')
     country = models.CharField(max_length=64, blank=True, null=True)
     postcode = models.CharField(max_length=32, blank=True, null=True)
-    amount = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
+    amount = models.DecimalField(max_digits=19, decimal_places=4, editable=False)
     custom_narrative = models.BooleanField(default=False)
     narrative = models.TextField(blank=True, null=True)
-    ref_no = models.CharField(max_length=64, blank=True, null=True)
-    division = models.IntegerField(blank=True, null=True)
-    allocation = models.IntegerField(blank=True, null=True)
-    # Due_date mapped from a column not following our naming scheme
-    due_date = models.DateField(blank=True, null=True, db_column='duedate')
+    ref_no = models.CharField(max_length=64, blank=True, null=True, verbose_name='Customer ref. #')
+    division = models.IntegerField(blank=True, null=True, editable=False)
     contact_person = models.CharField(max_length=128, blank=True, null=True)
     contact_email = models.CharField(max_length=255, blank=True, null=True)
     contact_phone = models.CharField(max_length=64, blank=True, null=True)
     company = models.CharField(max_length=128, blank=True, null=True)
     formatted_addressee = models.TextField(blank=True, null=True)
-    vat_no = models.CharField(max_length=64, blank=True, null=True)
+    vat_no = models.CharField(max_length=64, blank=True, null=True, verbose_name='VAT #')
 
     ledger_items = models.ManyToManyField('Ledger', through='InvoiceLedger', through_fields=('invoice', 'ledger'))
 
@@ -71,6 +73,9 @@ class Invoice(SignatureModel):
 
     def get_absolute_url(self):
         return reverse('invoice:view', args=[self.id])
+
+    def get_edit_url(self):
+        return reverse('invoice:edit', args=[self.id])
 
     def balance(self):
         return self.allocated_ledger_items.aggregate(sum=models.Sum('amount'))['sum']
@@ -96,7 +101,6 @@ class InvoiceLedger(models.Model):
         related_name='invoice_ledger_allocations',
     )
     item_no = models.IntegerField(blank=True, null=True)
-    # type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type', blank=True, null=True)
 
     class Meta:
         # managed = False
@@ -114,6 +118,22 @@ class TransactionType(models.Model):
 
     def __str__(self):
         return self.description
+
+
+class LedgerQuerySet(models.QuerySet):
+    def debts(self) -> models.QuerySet:
+        return self.filter(account=DEBTOR_ACCOUNT)
+
+    def invoiced(self) -> models.QuerySet:
+        return self.filter(invoice_ledger__id__isnull=False)
+
+    def uninvoiced(self) -> models.QuerySet:
+        return self.filter(invoice_ledger__id__isnull=True)
+
+    def balance(self) -> Optional[Decimal]:
+        """Convenience function to get the sum of the queryset"""
+        # todo: should the `or Decimal(0)` go in here, making it non optional?
+        return self.aggregate(balance=models.Sum('amount'))['balance']
 
 
 # ledger should got in a finance models file (or core model file)
@@ -134,6 +154,8 @@ class Ledger(models.Model):
     allocation = models.IntegerField()
     ref_no = models.IntegerField(blank=True, null=True)
     batch = models.IntegerField(blank=True, null=True)
+
+    objects = LedgerQuerySet.as_manager()
 
     class Meta:
         # managed = False

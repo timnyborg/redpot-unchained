@@ -2,7 +2,7 @@ from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count, OuterRef, Subquery
 from django.shortcuts import get_object_or_404
@@ -66,9 +66,10 @@ class Edit(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessag
         return kwargs
 
 
-class New(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.CreateView):
+class New(PermissionRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.CreateView):
     model = Programme
     form_class = ProgrammeNewForm
+    permission_required = 'programme.create'
     template_name = 'core/form.html'
     success_message = 'Details updated.'
 
@@ -94,12 +95,8 @@ class AddModule(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic
         self.programme = get_object_or_404(Programme, pk=kwargs['programme_id'])
         return super().dispatch(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        """
-        Overridden to add the programme
-        """
-        form.instance.programme = self.programme
-        return super().form_valid(form)
+    def get_initial(self):
+        return {'programme': self.programme}
 
     def get_success_url(self):
         return self.programme.get_absolute_url()

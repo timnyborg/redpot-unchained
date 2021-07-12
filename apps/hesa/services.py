@@ -217,9 +217,8 @@ class HESAReturn:
         results = (
             QualificationAim.objects.filter(id__in=Subquery(in_query))
             .annotate(
-                # nested relation in FilteredRelation supported in 3.2
-                # default_address=FilteredRelation('student__address', condition=Q(student__address__is_default=True)),
-                # postcode=F('default_address__postcode'),
+                default_address=FilteredRelation('student__address', condition=Q(student__address__is_default=True)),
+                postcode=F('default_address__postcode'),
             )
             .select_related(
                 'student__domicile',
@@ -235,9 +234,9 @@ class HESAReturn:
                 instanceid_fk=self._instance_id(row.id),
                 domicile=row.student.domicile.hesa_code,
                 qualent3=row.entry_qualification_id,
-                # todo: enable when on django 3.2
-                # postcode=_correct_postcode(row.qa.student.termtime_postcode or row.postcode or '')
-                # if row.student.domicile.hesa_code in ('XF', 'XG', 'XH', 'XI', 'XK', 'XL', 'GG', 'JE', 'IM') else None
+                postcode=_correct_postcode(row.student.termtime_postcode or row.postcode or '')
+                if row.student.domicile.hesa_code in ('XF', 'XG', 'XH', 'XI', 'XK', 'XL', 'GG', 'JE', 'IM')
+                else None,
             )
 
     def _qualification_awarded(self) -> None:
@@ -449,6 +448,8 @@ def _completion(*, enrolments) -> int:
 
 
 def _elq(*, qa: QualificationAim) -> str:
+    if not qa.entry_qualification:
+        return ''
     if qa.programme.qualification.elq_rank > qa.entry_qualification.elq_rank:
         return '03'
     return '01'

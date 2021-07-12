@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 
 from apps.core.models import SignatureModel
@@ -42,6 +44,10 @@ class Enrolment(SignatureModel):
 
     def student(self):
         return self.qa.student
+
+    def balance(self) -> Decimal:
+        ledger_balance = self.ledger_set.debts().balance()
+        return ledger_balance or Decimal(0)
 
 
 class EnrolmentResult(SignatureModel):

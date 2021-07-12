@@ -2,11 +2,16 @@ from datetime import datetime
 
 from django.contrib.auth.models import User
 
+from apps.student.models import Student
+from apps.student.services import assign_moodle_id
+
 from .models import Book, Module
 
 
-def copy_fees(*, source: Module, target: Module, user: User) -> None:
-    for fee in source.fees.all():
+def copy_fees(*, source: Module, target: Module, user: User) -> int:
+    """Copies all fees from one module to another"""
+    fees = source.fees.all()
+    for fee in fees:
         # Copy all attributes of a fee, excepting its ID, module and timestamp
         fee.pk = None  # See https://docs.djangoproject.com/en/3.0/topics/db/queries/#copying-model-instances
         fee.module = target
@@ -15,6 +20,7 @@ def copy_fees(*, source: Module, target: Module, user: User) -> None:
         fee.created_on = datetime.now()
         fee.modified_on = datetime.now()
         fee.save()
+    return len(fees)
 
 
 def copy_books(*, source: Module, target: Module) -> None:
@@ -128,3 +134,21 @@ def copy_children(*, source: Module, target: Module, user: User):
     #     idb.module_hecos_subject.insert(
     #         module=new_id, hecos_subject=record.hecos_subject, percentage=record.percentage
     #     )
+
+
+def assign_moodle_ids(*, module: Module, created_by: str):
+    """
+    Acquires and attaches MoodleIDs for students enrolled on a module.
+    Marks newly generated IDs with the module code, so the
+    report used by TALL can show new passwords and "same as before"
+    """
+
+    students = Student.objects.filter(
+        qa__enrolment__module=module,
+        qa__enrolment__status__takes_place=True,
+    ).exclude(moodle_id__id__isnull=False)
+
+    for student in students:
+        assign_moodle_id(student=student, first_module_code=module.code, created_by=created_by)
+
+    return len(students)

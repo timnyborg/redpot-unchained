@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% load django_tables2 %}
+{% load redpot_tags %}
+
+{% block center %}
+    <div class="section">
+        <h4>Step 2: Choose fees to add to invoice</h4>
+        <form method="get" action="{% url 'invoice:create' student.id %}">
+            {% render_table table %}
+            {% bootstrap3submit 'Select' %}
+        </form>
+    </div>
+{% endblock %}

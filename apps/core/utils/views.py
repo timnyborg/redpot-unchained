@@ -1,5 +1,11 @@
 from datetime import datetime
+from typing import Optional, Type
 
+from import_export.resources import ModelResource
+
+from django.core.exceptions import ImproperlyConfigured
+from django.db.models import QuerySet
+from django.http import HttpResponse
 from django.views import generic
 
 
@@ -67,3 +73,42 @@ class PageTitleMixin:
             }
         )
         return kwargs
+
+
+class ExcelExportView(generic.View):
+    """A view that allows easy exporting of excel spreadsheets from django-import-export's ModelResource objects"""
+
+    http_method_names = ['get']
+
+    filename: str = ''
+    export_class: Type[ModelResource]
+    queryset: Optional[QuerySet] = None
+
+    def get_filename(self) -> str:
+        """Return the filename of the download"""
+        if self.filename:
+            return self.filename
+        raise ImproperlyConfigured(
+            f'{self.__class__.__name__} is missing a filename.  Define a filename, or implement get_filename()'
+        )
+
+    def get_export_class(self) -> Type[ModelResource]:
+        """Return the export class to use"""
+        return self.export_class
+
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        filename = self.get_filename()
+        export_class = self.get_export_class()
+        queryset = self.get_export_queryset()
+        dataset = export_class().export(queryset)
+        output = dataset.xlsx
+
+        response = HttpResponse(
+            output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+
+    def get_export_queryset(self) -> Optional[QuerySet]:
+        """Return the queryset used in the exporter"""
+        return self.queryset

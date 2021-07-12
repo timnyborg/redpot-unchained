@@ -14,6 +14,7 @@ class HECoSSubject(models.Model):
     class Meta:
         # managed = False
         db_table = 'hecos_subject'
+        ordering = ('name',)
 
     def __str__(self) -> str:
         return str(self.name)

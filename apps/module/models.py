@@ -54,8 +54,8 @@ class ModuleManager(models.Manager):
         'further_details',
     ]
 
-    def get_queryset(self, *args, **kwargs):
-        return super().get_queryset(*args, **kwargs).defer(*self.defer_fields)
+    def get_queryset(self) -> models.QuerySet:
+        return super().get_queryset().defer(*self.defer_fields)
 
 
 class Module(SignatureModel):
@@ -201,7 +201,7 @@ class Module(SignatureModel):
         # managed = False
         db_table = 'module'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
 
     def save(self, *args, **kwargs):
@@ -214,13 +214,13 @@ class Module(SignatureModel):
 
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse('module:view', args=[self.id])
 
-    def get_edit_url(self):
+    def get_edit_url(self) -> str:
         return reverse('module:edit', args=[self.id])
 
-    def get_website_url(self):
+    def get_website_url(self) -> str:
         return f'{PUBLIC_WEBSITE_URL}/courses/{self.url}?code={self.code}'
 
     @property
@@ -240,22 +240,22 @@ class Module(SignatureModel):
         return round(100 * self.credit_points / denominator)
 
     @property
-    def long_form(self):
+    def long_form(self) -> str:
         if self.start_date:
             return f'{self.code} - {self.title} ({self.start_date:%d %b %Y})'
         return f'{self.code} - {self.title}'
 
-    @cached_property
-    def places_taken(self):
+    def places_taken(self) -> int:
         return self.enrolments.filter(status__takes_place=True).count()
 
-    def is_full(self):
-        return self.max_size and self.places_taken() >= self.max_size
+    def is_full(self) -> bool:
+        return bool(self.max_size) and self.places_taken() >= self.max_size
 
     @property
-    def finance_code(self):
+    def finance_code(self) -> Optional[str]:
         if self.cost_centre and self.activity_code and self.source_of_funds:
             return f'{self.cost_centre} {self.activity_code} {self.source_of_funds}'
+        return None
 
     def other_runs(self):
         # Provides a list of other module runs, if url is set
@@ -310,11 +310,11 @@ class Module(SignatureModel):
         }
 
     @property
-    def is_publishable(self):
+    def is_publishable(self) -> bool:
         return self._publish_check['success']
 
     @property
-    def publish_errors(self):
+    def publish_errors(self) -> dict:
         return self._publish_check['errors']
 
     @cached_property
@@ -427,7 +427,7 @@ class Module(SignatureModel):
             'new_published': self.is_published,
         }
 
-    def clean(self):
+    def clean(self) -> None:
         # Check both term start/end date fields are filled, or neither
         if bool(self.hilary_start) != bool(self.michaelmas_end):
             raise ValidationError(
@@ -481,19 +481,19 @@ class ModuleStatus(models.Model):
         db_table = 'module_status'
         ordering = ['id']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.description)
 
 
 class ModuleFormat(models.Model):
-    description = models.CharField(max_length=50, blank=True, null=True)
+    description = models.CharField(max_length=50)
 
     class Meta:
         # managed = False
         db_table = 'module_format'
 
-    def __str__(self):
-        return self.description
+    def __str__(self) -> str:
+        return str(self.description)
 
 
 class Location(SignatureModel):
@@ -508,7 +508,7 @@ class Location(SignatureModel):
         # managed = False
         db_table = 'location'
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.city and self.building:
             return f'{self.building}, {self.city}'
         elif self.building:
@@ -519,20 +519,20 @@ class Location(SignatureModel):
 class ModuleWaitlist(models.Model):
     module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', related_name='waitlist')
     student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
-    listed_on = models.DateTimeField(auto_now_add=True)
+    listed_on = models.DateTimeField(default=datetime.now)
     emailed_on = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         # managed = False
         db_table = 'module_waitlist'
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return '#'
 
-    def get_edit_url(self):
+    def get_edit_url(self) -> str:
         return '#'
 
-    def get_delete_url(self):
+    def get_delete_url(self) -> str:
         return '#'
 
 
@@ -552,13 +552,13 @@ class Book(models.Model):
         # managed = False
         db_table = 'book'
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return '#'
 
-    def get_edit_url(self):
+    def get_edit_url(self) -> str:
         return '#'
 
-    def get_delete_url(self):
+    def get_delete_url(self) -> str:
         return '#'
 
 
@@ -570,22 +570,22 @@ class BookStatus(models.Model):
         # managed = False
         db_table = 'book_status'
 
-    def __str__(self):
-        return self.status
+    def __str__(self) -> str:
+        return str(self.status)
 
 
 class Subject(models.Model):
-    name = models.CharField(max_length=64, blank=True, null=True)
-    area = models.CharField(max_length=64, blank=True, null=True)
+    name = models.CharField(max_length=64)
+    area = models.CharField(max_length=64)
 
     class Meta:
         # managed = False
         db_table = 'subject'
 
-    def __str__(self):
-        return self.name
+    def __str__(self) -> str:
+        return str(self.name)
 
-    def long_form(self):
+    def long_form(self) -> str:
         return f'{self.name} ({self.area})'
 
 
@@ -601,14 +601,14 @@ class ModuleSubject(models.Model):
 
 class MarketingType(models.Model):
     id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=64, blank=True, null=True)
+    name = models.CharField(max_length=64)
 
     class Meta:
         # managed = False
         db_table = 'marketing_type'
 
-    def __str__(self):
-        return self.name
+    def __str__(self) -> str:
+        return str(self.name)
 
 
 class ModuleMarketingType(models.Model):

@@ -17,6 +17,7 @@ class CreateForm(forms.ModelForm):
 
 
 class EditForm(forms.ModelForm):
+    # Todo: permissions-based field access
     class Meta:
         model = models.QualificationAim
         fields = (
@@ -33,3 +34,23 @@ class EditForm(forms.ModelForm):
         # Disable any SITS-managed fields
         for field in set(self.instance.locked_fields).intersection(self.fields):
             self.fields[field].disabled = True
+
+
+class CertHEMarksForm(forms.ModelForm):
+    class Meta:
+        model = models.CertHEMarks
+        fields = [
+            'courses_transferred_in',
+            'credits_transferred_in',
+            'subject',
+            'assignment1_date',
+            'assignment1_grade',
+            'assignment2_date',
+            'assignment2_grade',
+            'assignment3_date',
+            'assignment3_grade',
+            'journal1_date',
+            'journal2_date',
+            'journal_cats_points',
+            'is_introductory_course',
+        ]

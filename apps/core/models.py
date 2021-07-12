@@ -1,13 +1,14 @@
 import os
+from datetime import datetime
 
 from django_resized import ResizedImageField
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.urls import reverse
 from django.utils.deconstruct import deconstructible
 
 from .utils.models import PhoneField
-from django.urls import reverse
 
 
 class SignatureModel(models.Model):
@@ -36,9 +37,9 @@ class SignatureModel(models.Model):
     # Todo: consider making these non-nullable.  Would ensure timestamps are applied to all create forms, but wouldn't
     # help ensure on update forms
     created_by = models.CharField(max_length=8, blank=True, null=True, editable=False)
-    created_on = models.DateTimeField(blank=True, null=True, auto_now_add=True, editable=False)
+    created_on = models.DateTimeField(blank=True, null=True, default=datetime.now, editable=False)
     modified_by = models.CharField(max_length=8, blank=True, null=True, editable=False)
-    modified_on = models.DateTimeField(blank=True, null=True, auto_now_add=True, editable=False)
+    modified_on = models.DateTimeField(blank=True, null=True, default=datetime.now, editable=False)
 
     class Meta:
         abstract = True
@@ -71,7 +72,7 @@ class User(SignatureModel, AbstractUser):
     phone = PhoneField(max_length=512, blank=True, null=True)
     room = models.CharField(max_length=512, blank=True, null=True)
     on_facewall = models.BooleanField(default=True)
-    division = models.ForeignKey('Division', on_delete=models.CASCADE, db_column='division')
+    division = models.ForeignKey('Division', on_delete=models.CASCADE, db_column='division', default=1)
 
     def get_absolute_url(self):
         return reverse('staff_list:profile', args=[self.pk])
@@ -100,7 +101,9 @@ class Division(models.Model):
     shortname = models.CharField(max_length=8, blank=True, null=True)
     email = models.EmailField(max_length=256, blank=True, null=True)
     finance_prefix = models.CharField(max_length=2, blank=True, null=True)
-    manager = models.ForeignKey('core.User', models.DO_NOTHING, db_column='manager', related_name='manager_of', blank=True, null=True)
+    manager = models.ForeignKey(
+        'core.User', models.DO_NOTHING, db_column='manager', related_name='manager_of', blank=True, null=True
+    )
 
     class Meta:
         db_table = 'division'

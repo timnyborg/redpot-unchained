@@ -1,26 +1,28 @@
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
+from django import http
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
 from django.db.models.functions import Coalesce
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.text import slugify
 from django.views import generic
 from django.views.decorators.csrf import csrf_exempt
 
 from apps.core.utils.dates import academic_year
-from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitleMixin
 from apps.discount.models import Discount
+from apps.enrolment.models import Enrolment
 from apps.tutor.utils import expense_forms
 
-from . import forms
+from . import exports, forms, services
 from .datatables import BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
 from .models import Module, ModuleStatus
-from .services import clone_fields, copy_books, copy_children, copy_fees
 
 
 class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.CreateView):
@@ -58,7 +60,7 @@ class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimesta
     def form_valid(self, form):
         response = super().form_valid(form)
         form.instance.source_module_code = self.src_module.code
-        clone_fields(
+        services.clone_fields(
             source=self.src_module,
             target=form.instance,
             copy_url=form.cleaned_data['keep_url'],
@@ -66,12 +68,35 @@ class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimesta
         )
         form.instance.save()
         # Which child records are copied are (partly) down to the form selections
-        copy_children(source=self.src_module, target=form.instance, user=self.request.user)
+        services.copy_children(source=self.src_module, target=form.instance, user=self.request.user)
         if form.cleaned_data.get('copy_fees'):
-            copy_fees(source=self.src_module, target=form.instance, user=self.request.user)
+            services.copy_fees(source=self.src_module, target=form.instance, user=self.request.user)
         if form.cleaned_data.get('copy_books'):
-            copy_books(source=self.src_module, target=form.instance)
+            services.copy_books(source=self.src_module, target=form.instance)
         return response
+
+
+class CopyFees(LoginRequiredMixin, PageTitleMixin, generic.FormView):
+    form_class = forms.CopyFeesForm
+    template_name = 'core/form.html'
+    title = 'Module'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.target_module = get_object_or_404(Module, pk=self.kwargs['module_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_subtitle(self):
+        return f'Copy fees – {self.target_module.title} ({self.target_module.code})'
+
+    def form_valid(self, form):
+        source_module = form.cleaned_data['source_module']
+        copied = services.copy_fees(
+            source=source_module,
+            target=self.target_module,
+            user=self.request.user,
+        )
+        messages.success(self.request, f'{copied} fee(s) copied from {source_module}')
+        return redirect(self.target_module.get_absolute_url() + '#fees')
 
 
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
@@ -172,9 +197,8 @@ class AddProgramme(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gene
         self.module = get_object_or_404(Module, pk=kwargs['module_id'])
         return super().dispatch(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        form.instance.module = self.module
-        return super().form_valid(form)
+    def get_initial(self):
+        return {'module': self.module}
 
     def get_success_url(self):
         if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
@@ -188,7 +212,7 @@ def toggle_auto_reminder(request, pk):
     obj = Module.objects.get(id=pk)
     obj.auto_reminder = not obj.auto_reminder
     obj.save()
-    return HttpResponse()
+    return http.HttpResponse()
 
 
 @login_required
@@ -197,4 +221,50 @@ def toggle_auto_feedback(request, pk):
     obj = Module.objects.get(id=pk)
     obj.auto_feedback = not obj.auto_feedback
     obj.save()
-    return HttpResponse()
+    return http.HttpResponse()
+
+
+class StudentList(LoginRequiredMixin, ExcelExportView):
+    export_class = exports.StudentListExport
+
+    def get(self, request, *args, **kwargs):
+        self.module = get_object_or_404(Module, pk=kwargs['pk'])
+        return super().get(request, *args, **kwargs)
+
+    def get_filename(self):
+        return f'{self.module.code}_student_list.xlsx'
+
+    def get_export_queryset(self):
+        return Enrolment.objects.filter(module=self.module)
+
+
+class MoodleList(LoginRequiredMixin, ExcelExportView):
+    export_class = exports.MoodleListExport
+
+    def get(self, request, *args, **kwargs):
+        self.module = get_object_or_404(Module, pk=kwargs['pk'])
+        return super().get(request, *args, **kwargs)
+
+    def get_filename(self):
+        title = slugify(self.module.title)
+        return f"{self.module.code}_{title}.xlsx"
+
+    def get_export_queryset(self):
+        return Enrolment.objects.filter(
+            module=self.module,
+            status__in=[10, 90],  # Todo: use a column or enum
+        )
+
+
+class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
+    """Generates moodle IDs for all a module's students, redirecting back to the module page"""
+
+    http_method_names = ['get']
+
+    # todo: convert to POST once we have a good POST-link solution,
+    #  or even better, that link is ajax'ed and handles message popups!
+    def get(self, request, module_id: int):
+        module = get_object_or_404(Module, pk=module_id)
+        count = services.assign_moodle_ids(module=module, created_by=request.user.username)
+        messages.success(request, f'{count} moodle ID(s) generated')
+        return http.HttpResponseRedirect(module.get_absolute_url())
