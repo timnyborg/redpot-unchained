@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.enrolment.tests.factories import EnrolmentFactory
+from apps.finance.tests.factories import LedgerFactory
 from apps.student.tests.factories import AddressFactory
 
 from .. import models
@@ -15,7 +16,7 @@ class TestViewsWithLogin(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        fee_line = factories.LedgerFactory()
+        fee_line = LedgerFactory()
         cls.invoice = factories.InvoiceFactory()
         cls.invoice.ledger_items.add(
             fee_line,
@@ -79,7 +80,7 @@ class TestCreateViews(TestCase):
         cls.enrolment = EnrolmentFactory()
         cls.student = cls.enrolment.qa.student
         cls.address = AddressFactory(student=cls.student)  # Add an address to test default values
-        cls.fees = factories.LedgerFactory.create_batch(size=2, enrolment=cls.enrolment)
+        cls.fees = LedgerFactory.create_batch(size=2, enrolment=cls.enrolment)
 
     def setUp(self):
         self.client.force_login(self.user)

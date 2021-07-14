@@ -360,18 +360,6 @@ class Kmi(models.Model):
         db_table = 'kmi'
 
 
-class LedgerAccount(models.Model):
-    id = models.AutoField()
-    code = models.CharField(primary_key=True, max_length=64)
-    description = models.CharField(max_length=64, blank=True, null=True)
-    is_hidden = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'ledger_account'
-        unique_together = (('code', 'is_hidden'),)
-
-
 class ModuleCabsBooking(models.Model):
     module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
     mbr_id = models.TextField(blank=True, null=True)

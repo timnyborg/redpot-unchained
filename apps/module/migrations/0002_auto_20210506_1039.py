@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('invoice', '0002_auto_20210506_1039'),
         ('core', '0001_initial'),
         ('programme', '0001_initial'),
         ('module', '0001_initial'),
@@ -53,11 +52,6 @@ class Migration(migrations.Migration):
             model_name='module',
             name='marketing_types',
             field=models.ManyToManyField(through='module.ModuleMarketingType', to='module.MarketingType'),
-        ),
-        migrations.AddField(
-            model_name='module',
-            name='payment_plans',
-            field=models.ManyToManyField(through='invoice.ModulePaymentPlan', to='invoice.PaymentPlanType'),
         ),
         migrations.AddField(
             model_name='module',

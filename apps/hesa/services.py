@@ -11,7 +11,7 @@ from lxml import etree
 from django.db.models import F, FilteredRelation, OuterRef, Prefetch, Q, Subquery
 
 from apps.enrolment.models import Enrolment
-from apps.invoice.models import Ledger
+from apps.finance.models import Accounts, Ledger
 from apps.module.models import Module
 from apps.programme.models import Programme
 from apps.qualification_aim.models import QualificationAim
@@ -32,8 +32,6 @@ UNKNOWN_RESULT = '6'
 COMPLETE_PENDING_RESULT = 'C'
 
 FEE_TRANSACTION_TYPE = 1
-
-DEBTOR_ACCOUNT = 'Z300'
 
 
 # todo: determine if we need both the task and services
@@ -172,7 +170,7 @@ class HESAReturn:
                         Prefetch(
                             'ledger_set',
                             to_attr='fee_ledger_items',
-                            queryset=Ledger.objects.filter(type__id=FEE_TRANSACTION_TYPE, account=DEBTOR_ACCOUNT),
+                            queryset=Ledger.objects.filter(type__id=FEE_TRANSACTION_TYPE, account=Accounts.DEBTOR),
                         ),
                     ),
                 ),

@@ -1,5 +1,7 @@
 from django.forms import ModelForm
 
+from apps.core.utils.widgets import PoundInput
+
 from .models import Fee
 
 
@@ -23,6 +25,7 @@ class FeeForm(ModelForm):
             'end_date',
             'limit',
         )
+        widgets = {'amount': PoundInput()}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
