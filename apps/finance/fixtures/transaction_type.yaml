@@ -1,142 +1,142 @@
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 1
   fields:
     description: Fee
     is_cash: false
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 2
   fields:
     description: Discount
     is_cash: false
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 9
   fields:
     description: Student loan
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 10
   fields:
     description: BACS
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 11
   fields:
     description: Cash
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 12
   fields:
     description: Cheque
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 13
   fields:
     description: Credit card
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 14
   fields:
     description: Standing order
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 15
   fields:
     description: Direct debit
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 16
   fields:
     description: Online
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 17
   fields:
     description: Scheduled payment
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 18
   fields:
     description: Internal trade
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 19
   fields:
     description: Bursary (external)
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 20
   fields:
     description: Fee invoice
     is_cash: false
     is_active: false
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 21
   fields:
     description: Credit note
     is_cash: false
     is_active: false
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 22
   fields:
     description: Oracle invoice
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 30
   fields:
     description: Refund
     is_cash: true
     is_active: false
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 31
   fields:
     description: Cheque refund
     is_cash: true
     is_active: false
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 95
   fields:
     description: Bursary (internal)
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 96
   fields:
     description: Voucher
     is_cash: true
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 97
   fields:
     description: Concession
     is_cash: false
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 98
   fields:
     description: Currency difference
     is_cash: false
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 99
   fields:
     description: Write-off
     is_cash: false
     is_active: true
-- model: invoice.transactiontype
+- model: finance.transactiontype
   pk: 100
   fields:
     description: Transfer

@@ -8,8 +8,9 @@ from django.utils.safestring import mark_safe
 from apps.core.utils.datatables import PoundsColumn, ViewLinkColumn
 from apps.core.utils.widgets import DatePickerInput, PoundInput
 from apps.enrolment.models import Enrolment
+from apps.finance.models import Ledger
 
-from .models import Invoice, Ledger, PaymentPlanSchedule
+from .models import Invoice, PaymentPlanSchedule
 
 
 class InvoiceSearchFilter(django_filters.FilterSet):
@@ -104,7 +105,7 @@ class InvoiceFeesTable(tables.Table):
     class Meta:
         model = Ledger
         template_name = "django_tables2/bootstrap.html"
-        fields = ('amount', 'narrative', 'type', 'date', 'enrolment')
+        fields = ('amount', 'narrative', 'type', 'timestamp', 'enrolment')
         order_by = ('date', 'id')
 
     enrolment = tables.Column(accessor=tables.A('enrolment'), linkify=True)
@@ -120,7 +121,7 @@ class InvoicePaymentsTable(tables.Table):
     class Meta:
         model = Ledger
         template_name = "django_tables2/bootstrap.html"
-        fields = ('amount', 'narrative', 'type', 'date')
+        fields = ('amount', 'narrative', 'type', 'timestamp')
         order_by = ('date', 'id')
 
     def render_print(self, record):

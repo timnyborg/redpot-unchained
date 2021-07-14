@@ -14,7 +14,9 @@
                     <a href="{{ object.student.get_absolute_url }}">{{ object.student }}</a>
                 </dd>
                 <dt>Programme</dt>
-                <dd>{{ object.programme }}</dd>
+                <dd>
+                    <a href="{{ object.programme.get_absolute_url }}">{{ object.programme }}</a>
+                </dd>
                 <dt>Title</dt>
                 <dd>{{ object.title }}</dd>
                 <dt>Start date</dt>
@@ -97,9 +99,11 @@
         {% for row in enrolments %}
             <tr>
                 <td class="col-xs-1">
-                    <a href="{{ row.module.get_edit_url }}">{{ row.module.code }}</a>
+                    <a href="{{ row.module.get_absolute_url }}">{{ row.module.code }}</a>
                 </td>
-                <td>{{ row.module.title }}</td>
+                <td>
+                    <a href="{{ row.module.get_absolute_url }}">{{ row.module.title }}</a>
+                </td>
                 <td class="col-xs-2">{{ row.status }}</td>
                 <td class="col-xs-2">{{ row.result }}</td>
                 <td class="col-xs-1">{{ row.points_awarded | default:'–' }}</td>

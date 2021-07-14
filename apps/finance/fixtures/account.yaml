@@ -1,0 +1,60 @@
+- model: finance.account
+  pk: '19101'
+  fields:
+    description: Dr Control Osiris
+    is_hidden: true
+- model: finance.account
+  pk: '21095'
+  fields:
+    description: College fees
+    is_hidden: false
+- model: finance.account
+  pk: '43310'
+  fields:
+    description: Tuition
+    is_hidden: false
+- model: finance.account
+  pk: '43910'
+  fields:
+    description: College Charges
+    is_hidden: true
+- model: finance.account
+  pk: '48210'
+  fields:
+    description: Catering / Accommodation (obsolete)
+    is_hidden: true
+- model: finance.account
+  pk: '49320'
+  fields:
+    description: Miscellaneous (field trips, etc.)
+    is_hidden: false
+- model: finance.account
+  pk: '49560'
+  fields:
+    description: Catering & accommodation
+    is_hidden: false
+- model: finance.account
+  pk: '96120'
+  fields:
+    description: Grants to Undergraduates
+    is_hidden: true
+- model: finance.account
+  pk: '99230'
+  fields:
+    description: Foreign Exchange Profit/Loss
+    is_hidden: true
+- model: finance.account
+  pk: Z300
+  fields:
+    description: Dr Control
+    is_hidden: true
+- model: finance.account
+  pk: ZP00
+  fields:
+    description: VAT Control
+    is_hidden: true
+- model: finance.account
+  pk: ZY00
+  fields:
+    description: Cash Control
+    is_hidden: true

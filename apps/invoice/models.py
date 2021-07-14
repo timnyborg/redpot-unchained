@@ -1,13 +1,9 @@
 from datetime import date, datetime
-from decimal import Decimal
-from typing import Optional
 
 from django.db import models
 from django.urls import reverse
 
 from apps.core.models import SignatureModel
-
-DEBTOR_ACCOUNT = 'Z300'
 
 
 class InvoiceQuerySet(models.QuerySet):
@@ -55,11 +51,16 @@ class Invoice(SignatureModel):
     formatted_addressee = models.TextField(blank=True, null=True)
     vat_no = models.CharField(max_length=64, blank=True, null=True, verbose_name='VAT #')
 
-    ledger_items = models.ManyToManyField('Ledger', through='InvoiceLedger', through_fields=('invoice', 'ledger'))
+    ledger_items = models.ManyToManyField(
+        'finance.Ledger', through='InvoiceLedger', through_fields=('invoice', 'ledger')
+    )
 
     # Artificial many-to-many to support our obsolete credit note allocation nonsense
     allocated_ledger_items = models.ManyToManyField(
-        'Ledger', through='InvoiceLedger', through_fields=('allocation', 'ledger'), related_name='allocated_invoice'
+        'finance.Ledger',
+        through='InvoiceLedger',
+        through_fields=('allocation', 'ledger'),
+        related_name='allocated_invoice',
     )
 
     objects = InvoiceQuerySet.as_manager()
@@ -90,7 +91,7 @@ class Invoice(SignatureModel):
 
 
 class InvoiceLedger(models.Model):
-    ledger = models.ForeignKey('Ledger', models.DO_NOTHING, db_column='ledger', related_name='invoice_ledger')
+    ledger = models.ForeignKey('finance.Ledger', models.DO_NOTHING, db_column='ledger', related_name='invoice_ledger')
     invoice = models.ForeignKey(Invoice, models.DO_NOTHING, db_column='invoice', related_name='invoice_ledger')
     # Awful backwards-compatibility. Allocation was used some items on some invoices ("credit notes") paid off others?!
     allocation = models.ForeignKey(
@@ -105,61 +106,6 @@ class InvoiceLedger(models.Model):
     class Meta:
         # managed = False
         db_table = 'invoice_ledger'
-
-
-class TransactionType(models.Model):
-    description = models.CharField(max_length=32, blank=True, null=True)
-    is_cash = models.BooleanField()
-    is_active = models.BooleanField(default=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'transaction_type'
-
-    def __str__(self):
-        return self.description
-
-
-class LedgerQuerySet(models.QuerySet):
-    def debts(self) -> models.QuerySet:
-        return self.filter(account=DEBTOR_ACCOUNT)
-
-    def invoiced(self) -> models.QuerySet:
-        return self.filter(invoice_ledger__id__isnull=False)
-
-    def uninvoiced(self) -> models.QuerySet:
-        return self.filter(invoice_ledger__id__isnull=True)
-
-    def balance(self) -> Optional[Decimal]:
-        """Convenience function to get the sum of the queryset"""
-        # todo: should the `or Decimal(0)` go in here, making it non optional?
-        return self.aggregate(balance=models.Sum('amount'))['balance']
-
-
-# ledger should got in a finance models file (or core model file)
-class Ledger(models.Model):
-    date = models.DateTimeField()
-    amount = models.DecimalField(max_digits=19, decimal_places=4)
-    finance_code = models.CharField(max_length=64, blank=True, null=True)
-    narrative = models.CharField(max_length=128)
-    # todo: investigate if this (division) has value
-    division = models.ForeignKey('core.Division', models.DO_NOTHING, db_column='division', blank=True, null=True)
-    type = models.ForeignKey('TransactionType', models.DO_NOTHING, db_column='type')
-    # account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
-    account = models.CharField(max_length=4, db_column='account')
-    enrolment = models.ForeignKey(
-        'enrolment.Enrolment', models.DO_NOTHING, db_column='enrolment', blank=True, null=True
-    )
-
-    allocation = models.IntegerField()
-    ref_no = models.IntegerField(blank=True, null=True)
-    batch = models.IntegerField(blank=True, null=True)
-
-    objects = LedgerQuerySet.as_manager()
-
-    class Meta:
-        # managed = False
-        db_table = 'ledger'
 
 
 class PaymentPlan(SignatureModel):

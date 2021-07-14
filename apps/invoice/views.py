@@ -16,10 +16,10 @@ from django.views.generic.edit import FormMixin
 
 from apps.core.utils.views import PageTitleMixin
 from apps.enrolment.models import Enrolment
-from apps.invoice.models import Ledger
+from apps.finance.models import Ledger
 from apps.student.models import Student
 
-from . import datatables, forms, models, services
+from . import datatables, forms, services
 from .models import Invoice
 
 
@@ -138,7 +138,7 @@ class ChooseFees(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, generic.T
 
     def get_queryset(self):
         return (
-            models.Ledger.objects.filter(
+            Ledger.objects.filter(
                 enrolment__qa__student=self.student,
                 enrolment__in=self.request.GET.getlist('enrolment'),
             )
@@ -167,7 +167,7 @@ class Create(LoginRequiredMixin, PageTitleMixin, generic.FormView):
         self.fees = Ledger.objects.debts().uninvoiced().filter(pk__in=fee_ids, enrolment__qa__student=self.student)
         if not self.fees:
             raise http.Http404('No fees found')
-        self.amount = self.fees.balance()
+        self.amount = self.fees.total()
         return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self):

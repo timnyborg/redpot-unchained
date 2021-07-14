@@ -1,6 +1,7 @@
 from dal import autocomplete
 
 from django.forms import ModelForm
+from django.utils.safestring import mark_safe
 
 from apps.core.utils.widgets import DatePickerInput, ReadOnlyModelWidget
 from apps.module.models import Module
@@ -97,6 +98,14 @@ class TutorModuleEditForm(ModelForm):
             'director_of_studies',
             'biography',
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add a link to the tutor's global biography
+        bio_link = self.instance.tutor.student.get_absolute_url() + '#tutor'
+        self.fields['biography'].help_text = mark_safe(
+            f'When filled, this overrides <a href="{bio_link}">the default tutor biography</a> for this module only'
+        )
 
 
 class TutorModuleCreateForm(ModelForm):

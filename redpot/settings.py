@@ -97,6 +97,7 @@ PROJECT_APPS = [
     'apps.discount',
     'apps.enrolment',
     'apps.fee',
+    'apps.finance',
     'apps.hesa',
     'apps.invoice',
     'apps.module',
