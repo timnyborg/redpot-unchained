@@ -8,11 +8,11 @@
                 <div class="card-body">
                   <div class="d-flex flex-column align-items-center text-center">
                   <div class="image-cropper">
-                    <img src="{% if staff.image %}{% static staff.image.name %}{% else %}{% static 'images/staff_profile/default_pic.jpg' %}{% endif %}" alt="Admin" width="150">
+                    <img src="{% if staff.image %}{{ staff.image.url }}{% else %}{% static 'images/staff_profile/default_pic.jpg' %}{% endif %}" alt="Admin" width="150">
                   </div>
                       <div class="mt-3">
                       <h4>{{ staff.first_name }} {{ staff.last_name }}</h4>
-                      <p class="text-secondary mb-1"><i class="fas fa-briefcase"></i>{% if staff.role %} {{ staff.role }} {% else %} Not given{% endif %}</p>
+                      <p class="text-secondary mb-1"><i class="fas fa-fw fa-briefcase"></i>{% if staff.role %} {{ staff.role }} {% else %} Not given{% endif %}</p>
                     </div>
                   </div>
                 </div>
@@ -24,7 +24,7 @@
                 <div class="card-body">
                   <div class="row">
                     <div class="col-sm-3">
-                      <h6 class="mb-0"><i class="fas fa-user-tag"></i> Full Name</h6>
+                      <h6 class="mb-0"><i class="fas fa-fw fa-user-tag"></i> Full Name</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
                       {{ staff.first_name }} {{ staff.last_name }}
@@ -33,7 +33,7 @@
                   <hr>
                   <div class="row">
                     <div class="col-sm-3">
-                      <h6 class="mb-0"><i class="fas fa-envelope"></i> Email</h6>
+                      <h6 class="mb-0"><i class="fas fa-fw fa-envelope"></i> Email</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
                         {% if staff.email %} {{ staff.email }} {% else %}-{% endif %}
@@ -42,7 +42,7 @@
                   <hr>
                   <div class="row">
                     <div class="col-sm-3">
-                      <h6 class="mb-0"><i class="fas fa-phone"></i> Phone</h6>
+                      <h6 class="mb-0"><i class="fas fa-fw fa-phone"></i> Phone</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
                       {% if staff.phone %} {{ staff.phone }} {% else %}-{% endif %}
@@ -51,7 +51,7 @@
                   <hr>
                   <div class="row">
                     <div class="col-sm-3">
-                      <h6 class="mb-0"><i class="fas fa-map-marker"></i> Location</h6>
+                      <h6 class="mb-0"><i class="fas fa-fw fa-map-marker"></i> Location</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
                       {% if staff.room %} {{ staff.room }} {% else %}-{% endif %}
@@ -60,7 +60,7 @@
                   <hr>
                   <div class="row">
                     <div class="col-sm-3">
-                      <h6 class="mb-0"><i class="fas fa-user-clock"></i> Date joined</h6>
+                      <h6 class="mb-0"><i class="fas fa-fw fa-user-clock"></i> Date joined</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
                       {{ staff.date_joined | date }}

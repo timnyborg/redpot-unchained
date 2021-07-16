@@ -73,20 +73,28 @@ Menu.add_item("main", MenuItem("Dev", '#', children=dev_children, check=lambda r
 # Right-hand login/user menu
 Menu.add_item("user", MenuItem("Login", reverse("login"), check=lambda request: not request.user.is_authenticated))
 
+
 # Define children for the my account menu
-myaccount_children = (
-    MenuItem("Edit Profile", reverse("user:profile"), icon="user"),
-    MenuItem(
-        "Admin", reverse("admin:index"), separator=True, icon='tools', check=lambda request: request.user.is_superuser
-    ),
-    MenuItem(
-        "Logout",
-        reverse("logout"),
-        separator=True,
-        icon='sign-out-alt',
-        check=lambda request: request.user.is_authenticated,
-    ),
-)
+def myaccount_children(request):
+    return [
+        MenuItem("Edit Profile", reverse("user:profile"), icon="user-edit"),
+        MenuItem("View Profile", request.user.get_absolute_url(), icon="user"),
+        MenuItem(
+            "Admin",
+            reverse("admin:index"),
+            separator=True,
+            icon='tools',
+            check=lambda request: request.user.is_superuser,
+        ),
+        MenuItem(
+            "Logout",
+            reverse("logout"),
+            separator=True,
+            icon='sign-out-alt',
+            check=lambda request: request.user.is_authenticated,
+        ),
+    ]
+
 
 Menu.add_item(
     "user",

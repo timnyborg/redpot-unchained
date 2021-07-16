@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import json
-import os
 from pathlib import Path
 
 import ldap
@@ -28,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # The secrets approach needs real work.  Hopefully something will work for python & env-based (docker)
 try:
-    with open(os.path.join(BASE_DIR, 'secrets.json')) as secrets_file:
+    with open(BASE_DIR / 'secrets.json') as secrets_file:
         secrets = json.load(secrets_file)
 except FileNotFoundError:
     secrets = {}
@@ -244,7 +243,13 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = BASE_DIR / 'static'
+
+MEDIA_URL = get_secret('MEDIA_URL', '/media/')
+MEDIA_ROOT = get_secret('MEDIA_ROOT', BASE_DIR / 'media')
+
+DJANGORESIZED_DEFAULT_QUALITY = 75
+DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'PNG': ".png"}
 
 # Login customization
 LOGIN_REDIRECT_URL = '/'
