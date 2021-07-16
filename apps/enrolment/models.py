@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.db import models
+from django.urls import reverse
 
 from apps.core.models import SignatureModel
 
@@ -40,13 +41,13 @@ class Enrolment(SignatureModel):
         db_table = 'enrolment'
 
     def get_absolute_url(self):
-        return '#'
+        return reverse('enrolment:view', args=[self.pk])
 
     def student(self):
         return self.qa.student
 
     def balance(self) -> Decimal:
-        ledger_balance = self.ledger_set.debts().balance()
+        ledger_balance = self.ledger_set.debts().total()
         return ledger_balance or Decimal(0)
 
 

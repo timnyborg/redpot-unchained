@@ -90,7 +90,7 @@ class Fee(SignatureModel):
 
 class FeeType(models.Model):
     narrative = models.CharField(max_length=64, blank=True, null=True)
-    # account = models.ForeignKey('LedgerAccount', models.DO_NOTHING, db_column='account', blank=True, null=True)
+    account = models.ForeignKey('finance.Account', models.PROTECT, db_column='account')
     display_order = models.IntegerField(blank=True, null=True)
     is_tuition = models.BooleanField()
     is_active = models.IntegerField()
@@ -111,7 +111,9 @@ class Accommodation(SignatureModel):
         TWIN = (200, 'Twin')
         __empty__ = ' - Select - '
 
-    enrolment = models.ForeignKey('enrolment.Enrolment', models.DO_NOTHING, db_column='enrolment')
+    enrolment = models.ForeignKey(
+        'enrolment.Enrolment', models.DO_NOTHING, db_column='enrolment', related_name='accommodation'
+    )
     type = models.IntegerField(choices=Types.choices)
     note = models.CharField(max_length=256, blank=True, null=True)
     limit = models.ForeignKey(
@@ -151,6 +153,9 @@ class Limit(SignatureModel):
 
     def __str__(self):
         return str(self.description)
+
+    def get_absolute_url(self):
+        return '#'
 
     def places_left(self, www_buffer: bool = True) -> int:
         return self.places - (self.www_buffer if www_buffer else 0) - self.bookings.count()

@@ -91,7 +91,9 @@ class Invoice(SignatureModel):
 
 
 class InvoiceLedger(models.Model):
-    ledger = models.ForeignKey('finance.Ledger', models.DO_NOTHING, db_column='ledger', related_name='invoice_ledger')
+    ledger = models.OneToOneField(
+        'finance.Ledger', models.DO_NOTHING, db_column='ledger', related_name='invoice_ledger'
+    )
     invoice = models.ForeignKey(Invoice, models.DO_NOTHING, db_column='invoice', related_name='invoice_ledger')
     # Awful backwards-compatibility. Allocation was used some items on some invoices ("credit notes") paid off others?!
     allocation = models.ForeignKey(

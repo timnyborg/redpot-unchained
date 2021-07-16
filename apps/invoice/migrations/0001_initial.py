@@ -141,7 +141,7 @@ class Migration(migrations.Migration):
                 ('item_no', models.IntegerField(blank=True, null=True)),
                 ('allocation', models.ForeignKey(db_column='allocation', on_delete=django.db.models.deletion.DO_NOTHING, related_name='invoice_ledger_allocations', to='invoice.invoice', to_field='number')),
                 ('invoice', models.ForeignKey(db_column='invoice', on_delete=django.db.models.deletion.DO_NOTHING, related_name='invoice_ledger', to='invoice.invoice')),
-                ('ledger', models.ForeignKey(db_column='ledger', on_delete=django.db.models.deletion.DO_NOTHING, related_name='invoice_ledger', to='finance.ledger')),
+                ('ledger', models.OneToOneField(db_column='ledger', on_delete=django.db.models.deletion.DO_NOTHING, related_name='invoice_ledger', to='finance.ledger')),
             ],
             options={
                 'db_table': 'invoice_ledger',

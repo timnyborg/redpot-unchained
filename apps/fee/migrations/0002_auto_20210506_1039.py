@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
             model_name='accommodation',
             name='enrolment',
             field=models.ForeignKey(
-                db_column='enrolment', on_delete=django.db.models.deletion.DO_NOTHING, to='enrolment.Enrolment'
+                db_column='enrolment', on_delete=django.db.models.deletion.DO_NOTHING, to='enrolment.Enrolment', related_name='accommodation'
             ),
         ),
         migrations.AddField(

@@ -16,9 +16,21 @@ class Accounts(models.TextChoices):
     TUITION = '43310', 'Tuition'
 
 
+class TransactionTypes(models.IntegerChoices):
+    """Non-exhaustive enum of transaction types, including those commonly used in business logic"""
+
+    FEE = 1, 'Fee'
+    CREDIT_CARD = 13, 'Credit card'
+    ONLINE = 16, 'Online'
+    RCP = 17, 'Repeating card payment'
+
+
 class LedgerQuerySet(models.QuerySet):
     def debts(self) -> models.QuerySet:
         return self.filter(account=Accounts.DEBTOR)
+
+    def payments(self) -> models.QuerySet:
+        return self.filter(type__is_cash=True)
 
     def invoiced(self) -> models.QuerySet:
         return self.filter(invoice_ledger__id__isnull=False)
@@ -34,7 +46,7 @@ class LedgerQuerySet(models.QuerySet):
 
 class Ledger(SignatureModel):
     # `timestamp` records the actual date of a transaction, which may differ from created_on (instalments, backfilling)
-    timestamp = models.DateTimeField(db_column='date')
+    timestamp = models.DateTimeField(db_column='date', verbose_name='Date')
     amount = models.DecimalField(max_digits=19, decimal_places=4)
     finance_code = models.CharField(max_length=64, blank=True, null=True)
     narrative = models.CharField(max_length=128)

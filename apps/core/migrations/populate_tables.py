@@ -9,7 +9,7 @@ def load_fixture(apps, schema_editor):
     call_command('loaddata', 'entry_qualification.yaml')
     call_command('loaddata', 'enrolment_status.yaml')
     call_command('loaddata', 'enrolment_result.yaml')
-    call_command('loaddata', 'fee_type.yaml')
+    call_command('loaddata', 'fee_type.yaml')  # depends on account
     call_command('loaddata', 'module_status.yaml')
     call_command('loaddata', 'nationality.yaml')
     call_command('loaddata', 'portfolio.yaml')
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
         ('programme', '0002_auto_20210513_0856'),
         ('tutor_payment', '0001_initial'),
         ('enrolment', '0001_initial'),
-        ('fee', '0001_initial'),
+        ('fee', '0004_feetype_account'),
         ('finance', '0001_initial'),
         ('qualification_aim', '0001_initial'),
         ('student', '0003_auto_20210513_0812'),

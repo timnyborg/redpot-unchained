@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+{% load render_table from django_tables2 %}
+
+{% block center %}
+    <div class="section">
+        <h2>Course fees</h2>
+        <form action="{% url 'finance:add-module-fees' enrolment.id %}" method="post" class="form-horizontal">
+            {% csrf_token %}
+            {% render_table table %}
+            {% bootstrap3submit 'Add fees' %}
+        </form>
+        <div class='horizontal-divider'><span>OR</span></div>
+
+        <h2>Custom fee or adjustment</h2>
+        <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
+            {% csrf_token %}
+            {% bootstrap3form form %}
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    {% bootstrap3submit form.submit_label|default:'Save' %}
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

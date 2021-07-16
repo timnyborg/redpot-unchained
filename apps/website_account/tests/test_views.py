@@ -9,7 +9,8 @@ from .. import models
 
 class TestCreatePayment(LoggedInViewTestMixin, test.TestCase):
     @classmethod
-    def extra_test_data(cls):
+    def setUpTestData(cls):
+        super().setUpTestData()
         cls.student = StudentFactory()
         cls.url = reverse('website_account:create', args=[cls.student.pk])
 
@@ -27,7 +28,8 @@ class TestCreatePayment(LoggedInViewTestMixin, test.TestCase):
 
 class TestEditPayment(LoggedInViewTestMixin, test.TestCase):
     @classmethod
-    def extra_test_data(cls):
+    def setUpTestData(cls):
+        super().setUpTestData()
         cls.account = models.WebsiteAccount.objects.create(
             student=StudentFactory(),
         )

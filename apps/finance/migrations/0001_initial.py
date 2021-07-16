@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             name='Ledger',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField(db_column='date')),
+                ('timestamp', models.DateTimeField(db_column='date', verbose_name='Date')),
                 ('amount', models.DecimalField(decimal_places=4, max_digits=19)),
                 ('finance_code', models.CharField(blank=True, max_length=64, null=True)),
                 ('narrative', models.CharField(max_length=128)),

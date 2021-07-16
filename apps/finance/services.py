@@ -5,6 +5,7 @@ from typing import Optional
 from django.db.models import Max
 
 from apps.core.models import User
+from apps.fee.models import Accommodation, Catering, Fee
 
 from . import models
 
@@ -65,4 +66,34 @@ def insert_ledger(
             account_id=models.Accounts.DEBTOR,
             amount=amount,  # Note the positive
             **common,
+        )
+
+
+def add_enrolment_fee(*, enrolment_id: int, fee_id: int, discount: int = 0, user: User) -> None:
+    """Adds an existing module fee to an enrolment, including catering/accommodation records as required"""
+    if discount >= 100:
+        raise ValueError('Discount cannot be 100 or higher')
+
+    fee = Fee.objects.select_related('type__account').get(pk=fee_id)
+    insert_ledger(
+        account_id=fee.type.account.code,
+        finance_code=fee.finance_code,
+        narrative=fee.description,
+        amount=fee.amount * (1 - Decimal(discount) / 100),
+        type_id=models.TransactionTypes.FEE,
+        enrolment_id=enrolment_id,
+        ref_no=fee.id,
+        user=user,
+    )
+
+    # If the fee is victual-related, add in a catering line.
+    if fee.is_catering:
+        Catering.objects.create(fee=fee, enrolment_id=enrolment_id)
+
+    # If the fee is accomodation-related, add in an accommodation line.
+    if fee.is_single_accom or fee.is_twin_accom:
+        Accommodation.objects.create(
+            type=Accommodation.Types.SINGLE if fee.is_single_accom else Accommodation.Types.TWIN,
+            limit=fee.limit,
+            enrolment_id=enrolment_id,
         )
