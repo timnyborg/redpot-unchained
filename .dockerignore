@@ -11,3 +11,4 @@ secrets.*
 *.env
 .venv
 venv
+media/

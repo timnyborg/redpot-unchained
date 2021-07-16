@@ -7,7 +7,7 @@
             <li class="{% if item.selected %} active{% endif %}{% if item.children %} dropdown-submenu{% endif %}">
                 <a href="{{ item.url }}" {% if item.target %} target="{{ item.target }}" {% endif %}>
 					{% if item.icon %}
-						<i class="fas fa-{{ item.icon }}"></i>&nbsp;
+						<i class="fas fa-fw fa-{{ item.icon }}"></i>&nbsp;
 					{% endif %}
 					{{ item.title }}
 				</a>

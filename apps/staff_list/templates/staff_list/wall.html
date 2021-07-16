@@ -5,7 +5,7 @@
         {% for staff in staffs %}
                 <div class="card mt-3 mr-3 ml-3" style="width: 12rem;">
                     <a href="{% url 'staff_list:profile' staff.id %}">
-                      <img class="card-img-top" src="{% if staff.image %}{% static staff.image.name %}{% else %}{% static 'images/staff_profile/default_pic.jpg' %}{% endif %}" alt="profile image">
+                      <img class="card-img-top" src="{% if staff.image %}{{ staff.image.url }}{% else %}{% static 'images/staff_profile/default_pic.jpg' %}{% endif %}" alt="profile image">
                       <div class="card-body">
                             <h6>{{ staff.first_name }} {{ staff.last_name }}</h6>
                             {% if staff.phone %}

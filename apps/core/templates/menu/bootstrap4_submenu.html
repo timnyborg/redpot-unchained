@@ -5,7 +5,7 @@
               <div class="dropdown-divider"></div>
 			{% endif %}
             <a class="dropdown-item" href="{{ item.url }}" {% if item.target %} target="{{ item.target }}" {% endif %}>
-                {% if item.icon %}<i class="fas fa-{{ item.icon }}"></i>&nbsp;{% endif %}{{ item.title }}
+                {% if item.icon %}<i class="fas fa-fw fa-{{ item.icon }}"></i>&nbsp;{% endif %}{{ item.title }}
             </a>
         {% endif %}
     {% endfor %}
