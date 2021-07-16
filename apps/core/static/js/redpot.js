@@ -87,7 +87,7 @@ $('.modal').on('show.bs.modal', function (event) {
     // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
     // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
     var modal = $(this);
-modal.find('.modal-confirm-action').attr('href', target);
+    modal.find('.modal-confirm-action').attr('href', target);
 });
 
 //jTruncate, adapted from http://www.jeremymartin.name/projects.php?project=jTruncate
@@ -140,7 +140,7 @@ modal.find('.modal-confirm-action').attr('href', target);
                             ellipsis.css("display", "inline");
                         }
                         return false;
-                      });
+                    });
                 }
             } // end if
 
@@ -171,11 +171,14 @@ $(function() {
 
 // "Toggle all" checkboxes for datatables
 $(function() {
-    document.getElementById('toggle-all').onclick = function () {
-        // Get all other checkboxes
-        let checkboxes = document.querySelectorAll("input[type='checkbox']:not([id*='toggle-all'])");
-        for (let checkbox of checkboxes) {
-            checkbox.checked = this.checked;
+    let select_all_box = document.getElementById('toggle-all');
+    if (select_all_box){
+        select_all_box.onclick = function () {
+            // Get all other checkboxes
+            let checkboxes = document.querySelectorAll("input[type='checkbox']:not([id*='toggle-all'])");
+            for (let checkbox of checkboxes) {
+                checkbox.checked = this.checked;
+            }
         }
     }
 })

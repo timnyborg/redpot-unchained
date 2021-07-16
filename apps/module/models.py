@@ -14,6 +14,7 @@ from django.utils.functional import cached_property
 from apps.core.models import SignatureModel
 from apps.core.utils.dates import academic_year
 from apps.core.utils.models import UpperCaseCharField
+from apps.fee.models import Accommodation
 from redpot.settings import PUBLIC_WEBSITE_URL
 
 
@@ -250,6 +251,16 @@ class Module(SignatureModel):
 
     def is_full(self) -> bool:
         return bool(self.max_size) and self.places_taken() >= self.max_size
+
+    def get_singles_left(self) -> int:
+        """Return [allocated places] - [booked places]"""
+        bookings = self.enrolments.filter(accommodation__type=Accommodation.Types.SINGLE).count()
+        return (self.single_places or 0) - bookings
+
+    def get_twins_left(self) -> int:
+        """Return [allocated places] - [booked places]"""
+        bookings = self.enrolments.filter(accommodation__type=Accommodation.Types.TWIN).count()
+        return (self.twin_places or 0) - bookings
 
     @property
     def finance_code(self) -> Optional[str]:

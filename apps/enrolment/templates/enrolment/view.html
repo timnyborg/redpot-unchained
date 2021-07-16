@@ -1,0 +1,173 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+{% load django_tables2 %}
+
+{% block center %}
+
+    <div class="section">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="col-xs-12 col-md-2 pull-right">
+                    {% if course_completion_certificate_visible %}
+                        <a href="certificate" target="_blank" class="btn btn-default btn-block">
+                            <i class="fas fa-fw fa-certificate"></i> Certificate
+                        </a>
+                    {% endif %}
+                    <a
+                            href="generate-email"
+                            target="_blank"
+                            class="btn btn-info btn-block"
+                            {% if not enrolment.status.takes_place %}disabled{% endif %}
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-title="An email will be sent to you for review"
+                    >
+                        <i class="fas fa-fw fa-envelope"></i> Confirmation
+                    </a>
+                </div>
+
+                <dl class="dl-horizontal">
+                    <dt>Student</dt><dd><a href="{{ student.get_absolute_url }}">{{ student }}</a></dd>
+                    <dt>Qualification aim</dt><dd><a href="{{ enrolment.qa.get_absolute_url }}">{{ enrolment.qa.title }}</a></dd>
+                    <dt>Status</dt><dd>{{ enrolment.status }}</dd>
+                    <dt>Result</dt><dd>{{ enrolment.result }}</dd>
+                    {% if enrolment.qa.programme.qualification.is_postgraduate %}
+                        <dt>Mark</dt><dd>{{ enrolment.mark | default:'–' }}</dd>
+                    {% endif %}
+                    {% if enrolment.points_awarded %}
+                        <dt>Points awarded</dt><dd>{{ enrolment.points_awarded }}</dd>
+                        <dt>Transcript printed</dt><dd>{{ enrolment.transcript_date | date | default:'No'}}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+        {% timestamp enrolment %}
+    </div>
+
+    <a id="finances"></a>
+    <div class="section">
+        <h2>Finances</h2>
+        {% render_table finance_table %}
+        <h4>Outstanding changes</h4>
+        TODO: AMENDMENT GRID
+        <h4>Balance</h4>
+        <p>£{{ enrolment.balance | floatformat:2 }}</p>
+
+        <a
+                href="{% url 'finance:add-fees' enrolment.id %}"
+                class="btn btn-success"
+                {% if not enrolment.module.finance_code %}disabled{% endif %}
+        >
+            <i class="fas fa-fw fa-plus"></i> Add or adjust fee
+        </a>
+        <a
+                href="{% url 'finance:add-payment' enrolment.id %}"
+                class="btn btn-success"
+                {% if payment_disabled and not perms.finance %}disabled{% endif %}
+        >
+            <i class="fas fa-fw fa-pound-sign"></i> Add payment
+        </a>
+        <a
+                href="{% url 'invoice:choose-enrolments' student.id %}?enrolments={{ enrolment.id }}"
+                class="btn btn-primary"
+                {% if payment_disabled and not perms.finance %}disabled{% endif %}
+        >
+            <i class="fas fa-fw fa-plus"></i> New invoice
+        </a>
+        <a href="{% url 'invoice:payment' student.id as todo %}" class="btn btn-primary">
+            <i class="fas fa-fw fa-pound-sign"></i> Invoice payment
+        </a>
+
+        {% if not enrolment.module.finance_code %}
+            {# todo: anchor to correct fields in edit form #}
+            <p><a class="text text-warning" href="{% url 'module:edit' enrolment.module.id %}"><b>Finance code required</b></a></p>
+        {% endif %}
+
+        <div class="btn-group pull-right">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <span class="fas fa-fw fa-pound-sign"></span> Request change <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                {% include 'enrolment/includes/amendment_options.html' %}
+            </ul>
+            <a class="btn btn-default pull-right" href="/enrolment/statement/{{ enrolment.id }}" target="_blank">
+                <span class="fa fa-print"></span> Statement
+            </a>
+        </div>
+
+        {% if perms.finance %}
+            <h4>Finance tools</h4>
+            <a class="btn btn-warning" href="/invoice/credit">
+                <span class="fas fa-fw fa-minus"></span> Credit invoice
+            </a>
+            <a class="btn btn-warning" href="/ledger/transfer/134141">
+                <span class="fas fa-fw fa-arrow-right"></span> Transfer
+            </a>
+        {% endif %}
+    </div>
+
+    {# todo: consider why we have sections w/ tables, when it's vanishingly rare to have >1 accom record #}
+    <div class="section">
+        <div class="pull-right top-right-button">
+            <a href="catering/new/{{ enrolment.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add catering</a>
+        </div>
+        <h2>Catering</h2>
+        {% if catering %}
+            <table class="table table-condensed table-striped table-hover" data-display='3'>
+                <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Diet</th>
+                    <th>Details</th>
+                    <th></th>
+                </tr>
+                </thead>
+                {% for booking in catering %}
+                    <tr>
+                        <td>{{ booking.fee.description }}</td>
+                        {# todo: test student related data once implemented #}
+                        <td>{{ student.diet.diet_type.description }}</td>
+                        <td>{{ student.diet.note }}
+                        </td>
+                        <td>
+                            <a href="catering/delete"><i class="fas fa-times"></i></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <div class="pull-right top-right-button">
+            <a href="accommodation/new/{{ enrolment.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add accommodation</a>
+        </div>
+        <h2>Accommodation</h2>
+        {% if accommodation %}
+            <table class="table table-condensed table-striped table-hover" data-display='3'>
+                <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Note</th>
+                    <th>Limit</th>
+                    <th></th>
+                </tr>
+                </thead>
+                {% for booking in accommodation %}
+                    <tr>
+                        <td>{{ booking.get_type_display }}</td>
+                        <td>{{ booking.note }}</td>
+                        <td>
+                            {% if booking.limit %}
+                                <a href="limit/view">{{ booking.limit.description }}</a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="accommodation/edit"><i class="fas fa-pencil-alt"></i></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

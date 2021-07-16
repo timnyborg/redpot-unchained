@@ -1,0 +1,39 @@
+<li><a href="change-request/new/transfer"><span class="fas fa-fw fa-arrow-right"></span> Transfer</a></li>
+<li><a href="change-request/new/amendment"><span class="fa fa-pencil-alt fa-fw"></span> Amendment</a></li>
+{% if amendment_options.any %}
+    {% if amendment_options.online %}
+        <li>
+            <a href="change-request/new/refund/online">
+                <span class="fa fa-globe fa-fw"></span> Refund (online)
+            </a>
+        </li>
+    {% endif %}
+    {% if amendment_options.credit_card %}
+        <li>
+            <a href="change-request/new/refund/credit-card">
+                <span class="fa fa-credit-card fa-fw"></span> Refund (credit card)
+            </a>
+        </li>
+    {% endif %}
+    {% if amendment_options.rcp %}
+        <li>
+            <a href="change-request/new/refund/rcp">
+                <span class="fa fa-hourglass fa-fw"></span> Refund (scheduled payment)
+            </a>
+        </li>
+    {% endif %}
+    <li>
+        <a href="change-request/new/refund/bank-return">
+            <span class="fas fa-university fa-fw"></span> Refund (bank return)
+        </a>
+    </li>
+    <li>
+        <a href="#"
+           data-toggle="modal"
+           data-target="#confirm-print-amendment"
+           data-href="amendment/new/bacs-and-other"
+        >
+            <span class="fa fa-print fa-fw"></span> Refund (BACS and other) (.xlsx)
+        </a>
+    </li>
+{% endif %}
