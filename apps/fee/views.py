@@ -25,7 +25,7 @@ class Create(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTi
         form.instance.module = self.module
         return super().form_valid(form)
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return self.module.get_absolute_url() + '#fees'
 
 
@@ -35,7 +35,7 @@ class Edit(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitl
     form_class = forms.FeeForm
     success_message = 'Fee updated: %(description)s (£%(amount).2f)'
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return self.object.module.get_absolute_url() + '#fees'
 
 
@@ -44,6 +44,6 @@ class Delete(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
     model = Fee
     success_message = 'Fee deleted'
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         messages.success(self.request, self.success_message)  # DeleteViews don't do this automatically
         return self.object.module.get_absolute_url() + '#fees'

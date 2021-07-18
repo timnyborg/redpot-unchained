@@ -5,9 +5,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import generic
 
+from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.fee.models import Fee
@@ -57,10 +57,8 @@ class AddFees(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleTab
         )
         return super().form_valid(form)
 
-    def get_success_url(self):
-        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
-            return self.request.GET['next']
-        return self.enrolment.get_absolute_url()
+    def get_success_url(self) -> str:
+        return next_url_if_safe(self.request) or self.enrolment.get_absolute_url()
 
 
 class AddPayment(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.FormView):
@@ -88,10 +86,8 @@ class AddPayment(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generi
         )
         return super().form_valid(form)
 
-    def get_success_url(self):
-        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
-            return self.request.GET['next']
-        return self.enrolment.get_absolute_url()
+    def get_success_url(self) -> str:
+        return next_url_if_safe(self.request) or self.enrolment.get_absolute_url()
 
 
 class AddModuleFees(LoginRequiredMixin, generic.View):

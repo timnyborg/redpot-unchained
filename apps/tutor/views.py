@@ -5,9 +5,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import generic
 
+from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.module.models import Module
 
@@ -34,7 +34,7 @@ class RightToWork(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoT
     subtitle = 'Right to work'
     success_message = 'Right to work details updated'
 
-    def get_initial(self):
+    def get_initial(self) -> dict:
         if not self.object.rtw_check_by:
             return {'rtw_check_by': self.request.user.get_full_name()}
         return {}
@@ -70,10 +70,8 @@ class TutorOnModuleEdit(
     template_name = 'core/form.html'
     success_message = 'Tutor-on-module record updated'
 
-    def get_success_url(self):
-        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
-            return self.request.GET.get('next')
-        return self.object.get_absolute_url()
+    def get_success_url(self) -> str:
+        return next_url_if_safe(self.request) or self.object.get_absolute_url()
 
 
 class TutorOnModuleCreate(
@@ -84,7 +82,7 @@ class TutorOnModuleCreate(
     template_name = 'core/form.html'
     success_message = 'Tutor added'
 
-    def get_initial(self):
+    def get_initial(self) -> dict:
         module_id = self.request.GET.get('module')
         tutor_id = self.request.GET.get('tutor')
         if module_id:
@@ -95,10 +93,8 @@ class TutorOnModuleCreate(
             return {'tutor': self.tutor}
         raise Http404('Requires a module or tutor')
 
-    def get_success_url(self):
-        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
-            return self.request.GET.get('next')
-        return self.object.module.get_absolute_url() + '#tutor-modules'
+    def get_success_url(self) -> str:
+        return next_url_if_safe(self.request) or self.object.module.get_absolute_url() + '#tutor-modules'
 
 
 """
