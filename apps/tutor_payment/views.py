@@ -4,10 +4,10 @@ from django_tables2.views import SingleTableMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import get_object_or_404, redirect
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
+from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.tutor.models import TutorModule
 
@@ -33,10 +33,8 @@ class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, gener
     def get_subtitle(self):
         return f'New – {self.tutor_module}'
 
-    def get_success_url(self):
-        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
-            return self.request.GET.get('next')
-        return self.tutor_module.get_absolute_url() + '#payments'
+    def get_success_url(self) -> str:
+        return next_url_if_safe(self.request) or self.tutor_module.get_absolute_url() + '#payments'
 
 
 class Edit(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
@@ -67,10 +65,8 @@ class Edit(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestam
         kwargs['editable_status'] = self.request.user.has_perm('tutor_payment.transfer')
         return kwargs
 
-    def get_success_url(self):
-        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
-            return self.request.GET.get('next')
-        return self.object.tutor_module.get_absolute_url() + '#payments'
+    def get_success_url(self) -> str:
+        return next_url_if_safe(self.request) or self.object.tutor_module.get_absolute_url() + '#payments'
 
 
 class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequiredMixin, generic.FormView):
@@ -86,7 +82,7 @@ class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequir
         self.object = self.get_object()
         return super().dispatch(request, *args, **kwargs)
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return self.object.get_absolute_url() + '#fees'
 
     def form_valid(self, form):

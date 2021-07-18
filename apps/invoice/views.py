@@ -170,7 +170,7 @@ class Create(LoginRequiredMixin, PageTitleMixin, generic.FormView):
         self.amount = self.fees.total()
         return super().dispatch(request, *args, **kwargs)
 
-    def get_initial(self):
+    def get_initial(self) -> dict:
         # Use the first fee to get default contact information
         module = self.fees[0].enrolment.module
         initial = {

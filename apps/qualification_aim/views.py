@@ -55,7 +55,7 @@ class Delete(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, generic.Del
     model = models.QualificationAim
     template_name = 'core/delete_form.html'
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return self.object.student.get_absolute_url()
 
 
@@ -82,5 +82,5 @@ class EditCertHEMarks(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixi
     def get_subtitle(self):
         return f'Edit – {self.qualification_aim.student}'
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return self.qualification_aim.get_absolute_url()

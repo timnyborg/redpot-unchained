@@ -26,7 +26,7 @@ class Create(LoginRequiredMixin, SuccessMessageMixin, AutoTimestampMixin, PageTi
         form.instance.student = self.student
         return super().form_valid(form)
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return self.student.get_absolute_url() + '#login'
 
 
@@ -49,7 +49,7 @@ class Edit(LoginRequiredMixin, PageTitleMixin, generic.UpdateView):
             form.instance.password = passwords.make_legacy_password(new_password)
         return super().form_valid(form)
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return self.object.student.get_absolute_url() + '#login'
 
 

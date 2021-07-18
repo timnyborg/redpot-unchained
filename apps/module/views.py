@@ -9,12 +9,12 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.text import slugify
 from django.views import generic
 from django.views.decorators.csrf import csrf_exempt
 
 from apps.core.utils.dates import academic_year
+from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitleMixin
 from apps.discount.models import Discount
 from apps.enrolment.models import Enrolment
@@ -44,7 +44,7 @@ class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimesta
         kwargs = super().get_form_kwargs()
         return {'remove_fields': remove_fields, **kwargs}
 
-    def get_initial(self):
+    def get_initial(self) -> dict:
         initial = super().get_initial()
         # Increment the default ID to the next academic year
         new_code = self.src_module.code[:1] + str(academic_year() + 1)[2:] + self.src_module.code[3:]
@@ -220,13 +220,11 @@ class AddProgramme(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gene
         self.module = get_object_or_404(Module, pk=kwargs['module_id'])
         return super().dispatch(request, *args, **kwargs)
 
-    def get_initial(self):
+    def get_initial(self) -> dict:
         return {'module': self.module}
 
-    def get_success_url(self):
-        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
-            return self.request.GET.get('next')
-        return self.module.get_absolute_url()
+    def get_success_url(self) -> str:
+        return next_url_if_safe(self.request) or self.module.get_absolute_url()
 
 
 @login_required

@@ -2,11 +2,13 @@ from contextlib import suppress
 from datetime import date
 
 import django_tables2 as tables
+from parameterized import parameterized
 
+from django import http
 from django.core import mail
 from django.test import RequestFactory, SimpleTestCase
 
-from ..utils import celery, datatables, dates, widgets
+from ..utils import celery, datatables, dates, urls, widgets
 
 
 class TestAcademicYear(SimpleTestCase):
@@ -102,3 +104,17 @@ class TestMonthPickerWidget(SimpleTestCase):
             name='name',
         )
         self.assertIsNone(result)
+
+
+class TestNextURLIfSafe(SimpleTestCase):
+    @parameterized.expand(
+        [
+            ('valid', '/next/page', '/next/page'),
+            ('invalid', 'https://google.com', None),
+            ('empty', None, None),
+        ]
+    )
+    def test_url(self, _, url, expected):
+        request = http.HttpRequest()
+        request.GET['next'] = url
+        self.assertEqual(urls.next_url_if_safe(request), expected)

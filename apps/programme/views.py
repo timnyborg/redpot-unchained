@@ -6,9 +6,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count, OuterRef, Subquery
 from django.shortcuts import get_object_or_404
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import generic
 
+from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.module.models import Module, ModuleStatus
 
@@ -95,10 +95,10 @@ class AddModule(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic
         self.programme = get_object_or_404(Programme, pk=kwargs['programme_id'])
         return super().dispatch(request, *args, **kwargs)
 
-    def get_initial(self):
+    def get_initial(self) -> dict:
         return {'programme': self.programme}
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return self.programme.get_absolute_url()
 
 
@@ -130,15 +130,12 @@ class RemoveModule(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 
     def get_object(self, queryset=None):
         # A special override because I'm calling this class with /programme_id/module_id/ instead of /pk/
-        # use get_object_or_404
         return get_object_or_404(
             ProgrammeModule,
             programme=self.kwargs['programme_id'],
             module=self.kwargs['module_id'],
         )
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         messages.success(self.request, self.success_message)  # DeleteViews don't do this automatically
-        if url_has_allowed_host_and_scheme(self.request.GET.get('next'), allowed_hosts=None):
-            return self.request.GET.get('next')
-        return self.object.module
+        return next_url_if_safe(self.request) or self.object.get_absolute_url()

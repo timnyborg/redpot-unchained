@@ -33,7 +33,6 @@ class Statuses(models.IntegerChoices):
 class ModuleManager(models.Manager):
     """A manager which defers html blob fields by default"""
 
-    use_for_related_fields = True
     defer_fields = [
         'overview',
         'accommodation',

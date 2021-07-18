@@ -113,10 +113,10 @@ class CreateEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, gener
     template_name = 'core/form.html'
     title = 'Email'
 
-    def get_initial(self):
+    def get_initial(self) -> dict:
         return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return self.object.student.get_absolute_url() + '#email'
 
 
