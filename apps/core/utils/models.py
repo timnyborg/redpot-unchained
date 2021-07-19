@@ -25,4 +25,7 @@ class PhoneInput(widgets.TextInput):
 
 class PhoneField(models.CharField):
     default_validators = [validators.RegexValidator(regex='^[-0-9 +()]+$', message='Invalid phone number')]
-    widget = PhoneInput
+
+    def formfield(self, **kwargs):
+        defaults = {'widget': PhoneInput(), **kwargs}
+        return super().formfield(**defaults)

@@ -9,6 +9,14 @@ from apps.core.models import SignatureModel
 NOT_CODED_RESULT = 7
 
 
+class Statuses(models.IntegerField):
+    """Non-exhaustive list of statuses used in business logic"""
+
+    CONFIRMED = 10
+    PROVISIONAL = 20
+    CONFIRMED_NON_CREDIT = 90
+
+
 class Enrolment(SignatureModel):
     qa = models.ForeignKey(
         'qualification_aim.QualificationAim',
@@ -42,9 +50,6 @@ class Enrolment(SignatureModel):
 
     def get_absolute_url(self):
         return reverse('enrolment:view', args=[self.pk])
-
-    def student(self):
-        return self.qa.student
 
     def balance(self) -> Decimal:
         ledger_balance = self.ledger_set.debts().total()

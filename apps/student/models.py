@@ -9,6 +9,8 @@ from apps.core.models import SignatureModel
 
 NOT_KNOWN_DOMICILE = 181
 NOT_KNOWN_NATIONALITY = 181
+NOT_KNOWN_ETHNICITY = 99
+NOT_KNOWN_RELIGION = 99
 
 
 class Student(SignatureModel):
@@ -210,6 +212,9 @@ class Nationality(models.Model):
         # managed = False
         db_table = 'nationality'
 
+    def __str__(self) -> str:
+        return str(self.name)
+
 
 class Domicile(models.Model):
     name = models.CharField(max_length=64)
@@ -226,3 +231,6 @@ class Domicile(models.Model):
     def is_uk(self) -> bool:
         # Todo: make a UK column
         return self.pk in [240, 241, 242, 243]
+
+    def __str__(self) -> str:
+        return str(self.name)

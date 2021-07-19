@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 from django import forms
 
 from .. import models
@@ -9,10 +13,12 @@ class ApproverChoiceField(forms.ModelChoiceField):
     """
 
     def __init__(self, permission: str, *, include_superusers: bool = False, **kwargs):
-        defaults = {
+
+        defaults: dict[str, Any] = {
             'empty_label': '– Select –',
             'to_field_name': 'username',
         }
+
         queryset = models.User.objects.with_perm(
             perm=permission,
             backend='django.contrib.auth.backends.ModelBackend',

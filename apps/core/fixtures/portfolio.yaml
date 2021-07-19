@@ -5,3 +5,10 @@
     division: 1
     email: null
     phone: null
+- model: core.portfolio
+  pk: 32
+  fields:
+    name: Weekly classes
+    division: 1
+    email: null
+    phone: null

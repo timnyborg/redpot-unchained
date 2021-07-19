@@ -51,7 +51,6 @@ class StudentListExport(resources.ModelResource):
 
     class Meta:
         model = Enrolment
-        fields = []  # all defined above
 
 
 class ConstantField(fields.Field):
@@ -110,4 +109,3 @@ class MoodleListExport(resources.ModelResource):
 
     class Meta:
         model = Enrolment
-        fields = []  # all defined above

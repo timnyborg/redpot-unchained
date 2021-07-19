@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
+from typing import Any
 
 from django.contrib.auth.models import User
 
@@ -121,7 +124,7 @@ def copy_web_fields(*, source: Module, target: Module, user: User) -> None:
 
 def copy_children(*, source: Module, target: Module, user: User):
     """Copy all of a module's child records (subjects, programmes, marketing_types, tutors)"""
-    signature_fields = {
+    signature_fields: dict[str, Any] = {
         'created_by': user.username,
         'modified_by': user.username,
         'created_on': datetime.now(),
