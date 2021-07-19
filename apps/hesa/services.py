@@ -3,7 +3,7 @@ import os
 import re
 from datetime import date
 from time import time
-from typing import Optional
+from typing import Iterable, Optional
 
 from celery_progress.backend import ProgressRecorder
 from lxml import etree
@@ -180,6 +180,7 @@ class HESAReturn:
         )
 
         for row in results:
+            enrolments: Iterable[Enrolment] = row.returned_enrolments  # type: ignore
             models.Instance.objects.create(
                 batch=self.batch,
                 qa=row.id,
@@ -187,23 +188,23 @@ class HESAReturn:
                 ownstu_fk=row.student.sits_id or row.student.id,
                 numhus=self._instance_id(row.id),
                 courseid=row.programme.id,
-                comdate=min(enrolment.module.start_date for enrolment in row.returned_enrolments),
+                comdate=min(enrolment.module.start_date for enrolment in enrolments if enrolment.module.start_date),
                 mode=row.programme.study_mode,
-                stuload=sum(enrolment.module.full_time_equivalent for enrolment in row.returned_enrolments),
+                stuload=sum(enrolment.module.full_time_equivalent for enrolment in enrolments),
                 # our short courses don't really have an end date, so it's set to be the end of the academic year
                 enddate=date(self.academic_year + 1, 7, 31),
-                rsnend=_reason_for_ending(enrolments=row.returned_enrolments),
+                rsnend=_reason_for_ending(enrolments=enrolments),
                 # feeelig and fundcode get modified in post-processing
                 feeelig=1 if row.student.is_eu else 2,
                 fundcode=1 if row.student.is_eu else 2,
                 mstufee='01',  # only varies on award courses
                 fundlev=row.programme.funding_level,
-                fundcomp=_completion(enrolments=row.returned_enrolments),
+                fundcomp=_completion(enrolments=enrolments),
                 typeyr=row.programme.reporting_year_type,
                 locsdy=row.study_location.hesa_code,
                 disall=5 if row.student.disability != 0 else None,
-                grossfee=_grossfee(enrolments=row.returned_enrolments),
-                netfee=_netfee(enrolments=row.returned_enrolments),
+                grossfee=_grossfee(enrolments=enrolments),
+                netfee=_netfee(enrolments=enrolments),
                 elq=_elq(qa=row),
                 # Required field for our Master's level courses, but we have no research council students
                 rcstdnt=99 if row.programme.qualification.hesa_code[0] in ('E', 'M') else None,

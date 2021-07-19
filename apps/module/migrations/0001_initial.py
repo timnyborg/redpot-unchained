@@ -201,10 +201,10 @@ class Migration(migrations.Migration):
             name='ModuleStatus',
             fields=[
                 ('id', models.IntegerField(primary_key=True, serialize=False)),
-                ('description', models.CharField(blank=True, max_length=64, null=True)),
-                ('publish', models.BooleanField(blank=True, null=True)),
+                ('description', models.CharField(max_length=64)),
+                ('publish', models.BooleanField()),
                 ('short_desc', models.CharField(blank=True, max_length=50, null=True)),
-                ('waiting_list', models.BooleanField(blank=True, null=True)),
+                ('waiting_list', models.BooleanField()),
             ],
             options={
                 'db_table': 'module_status',

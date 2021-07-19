@@ -211,7 +211,7 @@ class Migration(migrations.Migration):
             model_name='programme',
             name='modules',
             field=models.ManyToManyField(
-                related_name='programmes', through='programme.ProgrammeModule', to='module.Module'
+                related_name='programmes', through='programme.ProgrammeModule', to='module.Module', related_query_name='programme'
             ),
         ),
         migrations.AddField(

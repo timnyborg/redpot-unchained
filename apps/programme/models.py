@@ -99,7 +99,9 @@ class Programme(SignatureModel):
     email = models.EmailField(max_length=64, blank=True, null=True)
     phone = PhoneField(max_length=64, blank=True, null=True)
 
-    modules = models.ManyToManyField('module.Module', through='ProgrammeModule', related_name='programmes')
+    modules = models.ManyToManyField(
+        'module.Module', through='ProgrammeModule', related_name='programmes', related_query_name='programme'
+    )
 
     class Meta:
         # managed = False

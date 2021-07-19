@@ -237,7 +237,7 @@ class Module(SignatureModel):
             denominator = 120.0
         else:
             return 0.0
-        return round(100 * self.credit_points / denominator)
+        return round(100 * (self.credit_points or 0) / denominator)
 
     @property
     def long_form(self) -> str:
@@ -249,7 +249,7 @@ class Module(SignatureModel):
         return self.enrolments.filter(status__takes_place=True).count()
 
     def is_full(self) -> bool:
-        return bool(self.max_size) and self.places_taken() >= self.max_size
+        return bool(self.max_size and self.places_taken() >= self.max_size)
 
     def get_singles_left(self) -> int:
         """Return [allocated places] - [booked places]"""
@@ -481,10 +481,10 @@ class Module(SignatureModel):
 
 class ModuleStatus(models.Model):
     id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
-    publish = models.BooleanField(blank=True, null=True)
+    description = models.CharField(max_length=64)
+    publish = models.BooleanField()
     short_desc = models.CharField(max_length=50, blank=True, null=True)
-    waiting_list = models.BooleanField(blank=True, null=True)
+    waiting_list = models.BooleanField()
 
     class Meta:
         # managed = False

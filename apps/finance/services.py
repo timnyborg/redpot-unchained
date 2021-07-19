@@ -22,7 +22,7 @@ def insert_ledger(
     account_id: str,
     amount: Decimal,
     user: User,
-    finance_code: str,
+    finance_code: Optional[str],
     narrative: str,
     type_id: int,
     timestamp: datetime = None,
@@ -82,7 +82,7 @@ def add_enrolment_fee(*, enrolment_id: int, fee_id: int, discount: int = 0, user
         amount=fee.amount * (1 - Decimal(discount) / 100),
         type_id=models.TransactionTypes.FEE,
         enrolment_id=enrolment_id,
-        ref_no=fee.id,
+        ref_no=str(fee.id),
         user=user,
     )
 

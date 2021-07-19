@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Iterator
 
@@ -59,3 +61,41 @@ def assign_moodle_id(*, student: models.Student, created_by: str, first_module_c
         created_by=created_by,
         modified_by=created_by,
     )
+
+
+EMPTY_ATTRIBUTE_VALUES = {
+    'birthdate': [],
+    'gender': [],
+    'nationality': [models.NOT_KNOWN_NATIONALITY],
+    'domicile': [models.NOT_KNOWN_DOMICILE],
+    'ethnicity': [models.NOT_KNOWN_ETHNICITY],
+    'religion_or_belief': [models.NOT_KNOWN_RELIGION],
+    'highest_qualification': ['X06'],  # todo: replace with enum
+}
+
+
+def missing_student_data(*, student: models.Student) -> list[str]:
+    """Returns a list of fields lacking values (null or Not known)"""
+    # Todo: append _id once religion & highest qual models are implemented
+    empty_fields = []
+    for attribute, values in EMPTY_ATTRIBUTE_VALUES.items():
+        fieldname = attribute
+        # for foreign keys, we need to check the _id
+        if hasattr(student, attribute + '_id'):
+            fieldname += '_id'
+        value = getattr(student, fieldname)
+        # plain values
+        if value in [None] + values:
+            empty_fields.append(attribute)
+
+    return empty_fields
+
+
+def supplement_student_data(*, student: models.Student, **kwargs) -> None:
+    """Updates the attributes of a student record"""
+    for field, value in kwargs.items():
+        if not models.Student._meta.get_field(field):
+            raise AttributeError(f"Student model doesn't have a field '{field}'")
+        setattr(student, field, value)
+    student.full_clean()
+    student.save()
