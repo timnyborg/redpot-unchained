@@ -7,6 +7,7 @@ app_name = 'module'
 urlpatterns = [
     path('assign-moodle-ids/<int:module_id>', views.AssignMoodleIDs.as_view(), name='assign-moodle-ids'),
     path('clone/<int:pk>', views.Clone.as_view(), name='clone'),
+    path('clone', views.Clone.as_view(), name='clone'),
     path('copy-fees/<int:module_id>', views.CopyFees.as_view(), name='copy-fees'),
     path('copy-web-fields/<int:module_id>', views.CopyWebFields.as_view(), name='copy-web-fields'),
     path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
