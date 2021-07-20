@@ -890,3 +890,16 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 }
 /*Bootstrap 4 accordion css ends*/
 /*# sourceMappingURL=redpot.css.map */
+
+
+/* Trying to make DAL match bootstrap.  DAL css should be replaced instead? */
+
+.select2-selection.select2-selection--single.form-control {
+    height: 35px;
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    padding-top: 3px;
+}
+.select2-selection__arrow {
+    top: 4px !important;
+}

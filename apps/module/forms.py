@@ -26,6 +26,15 @@ class EditForm(forms.ModelForm):  # noqa: DJ06
         }
 
 
+class LookupForm(forms.Form):
+    module = forms.IntegerField(
+        widget=autocomplete.ListSelect2(
+            url='autocomplete:module',
+            attrs={'data-minimum-input-length': 3, 'data-placeholder': 'Enter a module title or code'},
+        ),
+    )
+
+
 class CloneForm(forms.ModelForm):
     # A dummy field to display data (may be a bad idea)
     source_module = fields.CharField(disabled=True)

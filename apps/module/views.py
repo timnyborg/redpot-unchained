@@ -26,6 +26,8 @@ from .models import Module, ModuleStatus
 
 
 class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.CreateView):
+    """Allows cloning a given module.  Accessible via .../<pk> or .../?module=<pk>"""
+
     form_class = forms.CloneForm
     template_name = 'core/form.html'
     success_message = 'Module cloned'
@@ -34,7 +36,8 @@ class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimesta
 
     def get_form_kwargs(self):
         # Set the source module, and use it to determine which form fields to remove
-        self.src_module = get_object_or_404(Module, pk=self.kwargs['pk'])
+        module_pk = self.request.GET.get('module') or self.kwargs.get('pk')
+        self.src_module = get_object_or_404(Module, pk=module_pk)
         remove_fields = []
         if self.src_module.portfolio_id != 32:  # todo: consider what to do with this logic
             remove_fields.append('is_repeat')
@@ -133,8 +136,13 @@ class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestamp
     form_class = forms.CreateForm
     template_name = 'module/new.html'
     model = Module
-    subtitle_object = False
     success_message = 'Module created'
+
+    def get_context_data(self, **kwargs):
+        # Add in the extra lookup form (submit to another page via GET)
+        context = super().get_context_data(**kwargs)
+        context['lookup_form'] = forms.LookupForm()
+        return context
 
     def form_valid(self, form):
         # Default to the portfolio's email and phone
