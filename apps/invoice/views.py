@@ -195,3 +195,28 @@ class Create(LoginRequiredMixin, PageTitleMixin, generic.FormView):
         )
         messages.success(self.request, f'Invoice created: {invoice}')
         return redirect(invoice.get_absolute_url())
+
+
+class UploadRCP(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
+    permission_required = 'invoice.upload_rcp'
+    form_class = forms.UploadRCPForm
+    template_name = 'core/form.html'
+    title = 'Repeating card payments'
+    subtitle = 'Upload'
+
+    def form_valid(self, form):
+        try:
+            payments_added = services.add_repeating_payments_from_file(file=form.cleaned_data['file'])
+        except UnicodeDecodeError:
+            form.add_error('file', 'Invalid file uploaded')
+            return self.form_invalid(form)
+
+        if payments_added:
+            messages.success(self.request, f'{payments_added} payment(s) added')
+        else:
+            messages.warning(self.request, 'No payments added.  Ensure you have a valid file')
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.request.get_full_path()  # self-redirect

@@ -11,4 +11,5 @@ urlpatterns = [
     path('choose-enrolments/<int:student_id>', views.ChooseEnrolments.as_view(), name='choose-enrolments'),
     path('choose-fees/<int:student_id>', views.ChooseFees.as_view(), name='choose-fees'),
     path('create/<int:student_id>', views.Create.as_view(), name='create'),
+    path('upload-rcp', views.UploadRCP.as_view(), name='upload-rcp'),
 ]
