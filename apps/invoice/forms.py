@@ -37,3 +37,12 @@ class InvoiceForm(forms.ModelForm):
             'narrative',
         ]
         widgets = {'due_date': DatePickerInput()}
+
+
+class UploadRCPForm(forms.Form):
+    submit_label = 'Upload payments'
+    file = forms.FileField(
+        validators=[validators.FileExtensionValidator(['csv'])],
+        widget=forms.FileInput(attrs={'accept': '.csv'}),
+        help_text='A payments .csv file from WPM',
+    )

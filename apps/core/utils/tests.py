@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 
 
 class LoggedInMixin:
+    user: get_user_model()
+
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')

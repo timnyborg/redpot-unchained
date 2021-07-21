@@ -1,9 +1,12 @@
 from datetime import date
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
+from apps.core.utils.tests import LoggedInViewTestMixin
 from apps.enrolment.tests.factories import EnrolmentFactory
 from apps.finance.tests.factories import LedgerFactory
 from apps.student.tests.factories import AddressFactory
@@ -126,3 +129,30 @@ class TestCreateViews(TestCase):
         self.assertEqual(invoice.invoiced_to, 'Person')
         self.assertEqual(invoice.amount, sum(f.amount for f in self.fees))
         self.assertEqual(invoice.ledger_items.count(), 2)
+
+
+class TestRCPUpload(LoggedInViewTestMixin, TestCase):
+    url = reverse('invoice:upload-rcp')
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user.is_superuser = True
+        cls.user.save()
+
+    def test_wrong_extension_error(self):
+        file = SimpleUploadedFile('bad.txt', b'content')
+        response = self.client.post(self.url, data={'file': file})
+        self.assertIn('txt', response.context['form'].errors['file'][0])
+
+    def test_invalid_encoding_error(self):
+        file = SimpleUploadedFile('good.csv', 'content'.encode('utf-16'))
+        response = self.client.post(self.url, data={'file': file})
+        self.assertIn('Invalid', response.context['form'].errors['file'][0])
+
+    def test_valid_upload(self):
+        file = SimpleUploadedFile('good.csv', b'content')
+        with patch('apps.invoice.services.add_repeating_payments_from_file') as mock_method:
+            response = self.client.post(self.url, data={'file': file})
+            self.assertEqual(response.status_code, 302)
+            self.assertTrue(mock_method.called)
