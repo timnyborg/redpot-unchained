@@ -200,6 +200,7 @@ class Module(SignatureModel):
     class Meta:
         # managed = False
         db_table = 'module'
+        base_manager_name = 'objects'
 
     def __str__(self) -> str:
         return self.title

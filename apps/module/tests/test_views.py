@@ -237,5 +237,5 @@ class TestCopyWebFields(TestCase):
     def test_copy(self):
         response = self.client.post(self.url, data={'source_module': self.source_module.id})
         self.assertEqual(response.status_code, 302)
-        self.target_module.refresh_from_db()
+        self.target_module.refresh_from_db(fields=['overview'])  # `fields` works around defer()
         self.assertEqual(self.target_module.overview, 'Details!')
