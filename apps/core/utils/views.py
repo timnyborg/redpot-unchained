@@ -3,9 +3,10 @@ from typing import Optional, Type
 
 from import_export.resources import ModelResource
 
+from django import http
+from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import QuerySet
-from django.http import HttpResponse
+from django.db import models
 from django.views import generic
 
 
@@ -75,6 +76,37 @@ class PageTitleMixin:
         return kwargs
 
 
+class DeletionFailedMessageMixin:
+    """
+    Causes a DeleteView to display an error message if deletion fails due to protected child records
+    Also displays a success message if defined
+    """
+
+    success_message: str = ''
+
+    def delete(self, request, *args, **kwargs) -> http.HttpResponse:
+        try:
+            self.object = self.get_object()
+            self.object.delete()
+        except models.ProtectedError as e:
+            protected_class = e.protected_objects.pop()._meta.verbose_name
+            messages.error(
+                request, f"This record cannot be deleted because other records depend on it ({protected_class})"
+            )
+            return self.on_failure(request, *args, **kwargs)
+        else:
+            return self.on_success()
+
+    def on_success(self) -> http.HttpResponse:
+        """Override to add custom behaviour when the delete succeeds (e.g. a message)"""
+        success_url = self.get_success_url()
+        return http.HttpResponseRedirect(success_url)
+
+    def on_failure(self, request, *args, **kwargs) -> http.HttpResponse:
+        """Override to add custom behaviour when the delete fails"""
+        return self.get(request, *args, **kwargs)
+
+
 class ExcelExportView(generic.View):
     """A view that allows easy exporting of excel spreadsheets from django-import-export's ModelResource objects"""
 
@@ -82,7 +114,7 @@ class ExcelExportView(generic.View):
 
     filename: str = ''
     export_class: Type[ModelResource]
-    queryset: Optional[QuerySet] = None
+    queryset: Optional[models.QuerySet] = None
 
     def get_filename(self) -> str:
         """Return the filename of the download"""
@@ -96,19 +128,19 @@ class ExcelExportView(generic.View):
         """Return the export class to use"""
         return self.export_class
 
-    def get(self, request, *args, **kwargs) -> HttpResponse:
+    def get(self, request, *args, **kwargs) -> http.HttpResponse:
         filename = self.get_filename()
         export_class = self.get_export_class()
         queryset = self.get_export_queryset()
         dataset = export_class().export(queryset)
         output = dataset.xlsx
 
-        response = HttpResponse(
+        response = http.HttpResponse(
             output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
 
-    def get_export_queryset(self) -> Optional[QuerySet]:
+    def get_export_queryset(self) -> Optional[models.QuerySet]:
         """Return the queryset used in the exporter"""
         return self.queryset

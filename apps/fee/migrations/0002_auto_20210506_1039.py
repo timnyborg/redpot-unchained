@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             name='module',
             field=models.ForeignKey(
                 db_column='module',
-                on_delete=django.db.models.deletion.DO_NOTHING,
+                on_delete=django.db.models.deletion.PROTECT,
                 related_name='fees',
                 to='module.Module',
             ),
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 db_column='type',
                 default=7,
                 limit_choices_to={'is_active': True},
-                on_delete=django.db.models.deletion.DO_NOTHING,
+                on_delete=django.db.models.deletion.PROTECT,
                 to='fee.FeeType',
             ),
         ),
@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
             name='enrolment',
             field=models.ForeignKey(
                 db_column='enrolment',
-                on_delete=django.db.models.deletion.DO_NOTHING,
+                on_delete=django.db.models.deletion.PROTECT,
                 related_name='catering',
                 to='enrolment.Enrolment',
             ),
@@ -50,14 +50,14 @@ class Migration(migrations.Migration):
             model_name='catering',
             name='fee',
             field=models.ForeignKey(
-                db_column='fee', on_delete=django.db.models.deletion.DO_NOTHING, related_name='catering', to='fee.Fee'
+                db_column='fee', on_delete=django.db.models.deletion.PROTECT, related_name='catering', to='fee.Fee'
             ),
         ),
         migrations.AddField(
             model_name='accommodation',
             name='enrolment',
             field=models.ForeignKey(
-                db_column='enrolment', on_delete=django.db.models.deletion.DO_NOTHING, to='enrolment.Enrolment', related_name='accommodation'
+                db_column='enrolment', on_delete=django.db.models.deletion.PROTECT, to='enrolment.Enrolment', related_name='accommodation'
             ),
         ),
         migrations.AddField(
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 db_column='limit',
                 null=True,
-                on_delete=django.db.models.deletion.DO_NOTHING,
+                on_delete=django.db.models.deletion.PROTECT,
                 related_name='bookings',
                 related_query_name='booking',
                 to='fee.Limit',
