@@ -14,11 +14,11 @@ class FeeTypes(models.IntegerChoices):
 
 
 class Fee(SignatureModel):
-    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', related_name='fees')
+    module = models.ForeignKey('module.Module', models.PROTECT, db_column='module', related_name='fees')
     amount = models.DecimalField(max_digits=19, decimal_places=4)
     type = models.ForeignKey(
         'FeeType',
-        models.DO_NOTHING,
+        models.PROTECT,
         db_column='type',
         default=FeeTypes.PROGRAMME,
         limit_choices_to={'is_active': True},
@@ -47,7 +47,7 @@ class Fee(SignatureModel):
     )
     limit = models.ForeignKey(
         to='Limit',
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         related_name='fees',
         related_query_name='fee',
         blank=True,
@@ -66,7 +66,6 @@ class Fee(SignatureModel):
         return self.catering_bookings.filter(status__takes_place=True).count()
 
     class Meta:
-        # managed = False
         db_table = 'fee'
 
     def __str__(self):
@@ -96,7 +95,6 @@ class FeeType(models.Model):
     is_active = models.IntegerField()
 
     class Meta:
-        # managed = False
         db_table = 'fee_type'
         ordering = ('display_order',)
 
@@ -112,13 +110,13 @@ class Accommodation(SignatureModel):
         __empty__ = ' - Select - '
 
     enrolment = models.ForeignKey(
-        'enrolment.Enrolment', models.DO_NOTHING, db_column='enrolment', related_name='accommodation'
+        'enrolment.Enrolment', models.PROTECT, db_column='enrolment', related_name='accommodation'
     )
     type = models.IntegerField(choices=Types.choices)
     note = models.CharField(max_length=256, blank=True, null=True)
     limit = models.ForeignKey(
         'Limit',
-        models.DO_NOTHING,
+        models.PROTECT,
         db_column='limit',
         blank=True,
         null=True,
@@ -127,18 +125,16 @@ class Accommodation(SignatureModel):
     )
 
     class Meta:
-        # managed = False
         db_table = 'accommodation'
 
 
 class Catering(SignatureModel):
-    fee = models.ForeignKey('Fee', models.DO_NOTHING, db_column='fee', related_name='catering')
+    fee = models.ForeignKey('Fee', models.PROTECT, db_column='fee', related_name='catering')
     enrolment = models.ForeignKey(
-        'enrolment.Enrolment', models.DO_NOTHING, db_column='enrolment', related_name='catering'
+        'enrolment.Enrolment', models.PROTECT, db_column='enrolment', related_name='catering'
     )
 
     class Meta:
-        # managed = False
         db_table = 'catering'
 
 
@@ -148,7 +144,6 @@ class Limit(SignatureModel):
     www_buffer = models.IntegerField(default=0, help_text='Spaces that cannot be booked online')
 
     class Meta:
-        # managed = False
         db_table = 'limit'
 
     def __str__(self):

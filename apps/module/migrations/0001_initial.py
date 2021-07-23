@@ -185,6 +185,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'module',
+                'base_manager_name': 'objects',
             },
         ),
         migrations.CreateModel(

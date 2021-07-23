@@ -4,7 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import get_object_or_404
 from django.views import generic
 
-from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.module.models import Module
 
 from . import forms
@@ -39,11 +39,14 @@ class Edit(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitl
         return self.object.module.get_absolute_url() + '#fees'
 
 
-class Delete(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+class Delete(LoginRequiredMixin, PageTitleMixin, DeletionFailedMessageMixin, generic.DeleteView):
     template_name = 'core/delete_form.html'
     model = Fee
     success_message = 'Fee deleted'
 
-    def get_success_url(self) -> str:
+    def on_success(self):
         messages.success(self.request, self.success_message)  # DeleteViews don't do this automatically
+        return super().on_success()
+
+    def get_success_url(self) -> str:
         return self.object.module.get_absolute_url() + '#fees'
