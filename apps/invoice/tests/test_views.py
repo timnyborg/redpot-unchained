@@ -24,7 +24,7 @@ class TestViewsWithLogin(TestCase):
         cls.invoice.ledger_items.add(
             fee_line,
             # Setting allocation is required so long as we use this awkward field (and have it as NOT NULL)
-            through_defaults={'allocation': cls.invoice},
+            through_defaults={'allocation': cls.invoice, 'item_no': 0},
         )
 
     def setUp(self):

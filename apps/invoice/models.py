@@ -82,12 +82,16 @@ class Invoice(SignatureModel):
         return self.allocated_ledger_items.aggregate(sum=models.Sum('amount'))['sum']
 
     def get_fees(self):
-        # Quickly get all an invoice's fee lines.  Fees are add with an incrementing `number`
+        """Quickly get all an invoice's fee lines.  Fees are add with an incrementing `number`"""
         return self.ledger_items.filter(invoice_ledger__item_no__gt=0)
 
     def get_payments(self):
-        # Quickly get all an invoice's payment lines.  Payments are added with `number`=0
+        """Quickly get all an invoice's payment lines.  Payments are added with `number`=0"""
         return self.ledger_items.filter(invoice_ledger__item_no=0)
+
+    def get_credit_note_items(self):
+        """Get items on (legacy) credit notes, which are attached to a separate invoice but allocated to this one"""
+        return self.allocated_ledger_items.exclude(invoice=self.pk)
 
 
 class InvoiceLedger(models.Model):
@@ -96,6 +100,7 @@ class InvoiceLedger(models.Model):
     )
     invoice = models.ForeignKey(Invoice, models.DO_NOTHING, db_column='invoice', related_name='invoice_ledger')
     # Awful backwards-compatibility. Allocation was used some items on some invoices ("credit notes") paid off others?!
+    # Todo: change the foreign key to point to id rather than number, to be consistent with `invoice`
     allocation = models.ForeignKey(
         Invoice,
         models.DO_NOTHING,
@@ -103,7 +108,9 @@ class InvoiceLedger(models.Model):
         to_field='number',
         related_name='invoice_ledger_allocations',
     )
-    item_no = models.IntegerField(blank=True, null=True)
+    # todo: replace this with a useful type field: something like FEE/CREDIT/PAYMENT, or ATTACHED/NONATTACHED.
+    #       The numbering is useless, since you can just order by ledger date and pk
+    item_no = models.IntegerField()  # fees at the time of invoicing are given values 1, 2, 3...  Payments are given 0
 
     class Meta:
         # managed = False

@@ -128,6 +128,17 @@ class InvoicePaymentsTable(tables.Table):
         return mark_safe("<i class='fas fa-print'></i>")
 
 
+class InvoiceCreditNoteTable(tables.Table):
+    amount = PoundsColumn()
+    invoice = tables.Column(verbose_name='Credit note', accessor='invoice_ledger__invoice', linkify=True)
+
+    class Meta:
+        model = Ledger
+        template_name = "django_tables2/bootstrap.html"
+        fields = ('amount', 'narrative', 'type', 'timestamp', 'invoice')
+        order_by = ('date', 'id')
+
+
 class PaymentScheduleTable(tables.Table):
     class Meta:
         model = PaymentPlanSchedule

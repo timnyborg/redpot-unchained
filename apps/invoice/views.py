@@ -61,11 +61,18 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         kwargs = super().get_context_data(**kwargs)
         fees = self.object.get_fees().select_related('enrolment__module', 'type')
         fee_table = datatables.InvoiceFeesTable(fees, prefix="fees-")
-        RequestConfig(self.request).configure(fee_table)  # Enables sorting, in lieu of the MultiTableMixin
 
-        payments = self.object.get_payments().select_related('enrolment__module', 'type')
+        credits = self.object.get_payments().non_cash().select_related('enrolment__module', 'type')
+        credit_table = datatables.InvoicePaymentsTable(credits, prefix="credits-")
+
+        payments = self.object.get_payments().cash().select_related('enrolment__module', 'type')
         payment_table = datatables.InvoicePaymentsTable(payments, prefix="payments-")
-        RequestConfig(self.request).configure(payment_table)
+
+        credit_notes = self.object.get_credit_note_items().non_cash().select_related('enrolment__module', 'type')
+        credit_note_table = datatables.InvoiceCreditNoteTable(credit_notes, prefix="credit-notes-")
+
+        for table in (fee_table, credit_table, payment_table, credit_note_table):
+            RequestConfig(self.request).configure(table)  # enable independent sorting
 
         try:
             plan = self.object.payment_plan
@@ -77,6 +84,8 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         return {
             **kwargs,
             'fee_table': fee_table,
+            'credit_table': credit_table,
+            'credit_note_table': credit_note_table,
             'payment_table': payment_table,
             'plan': plan,
             'schedule_table': schedule_table,
