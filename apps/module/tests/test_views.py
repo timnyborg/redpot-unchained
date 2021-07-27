@@ -17,10 +17,8 @@ class TestViewsWithoutLogin(TestCase):
         self.assertEqual(response.status_code, 302)
         response = self.client.get(reverse('module:edit', args=[1]))
         self.assertEqual(response.status_code, 302)
-        response = self.client.get(reverse('module:toggle-auto-reminder', args=[1]))
-        self.assertEqual(response.status_code, 302)
-        response = self.client.get(reverse('module:toggle-auto-feedback', args=[1]))
-        self.assertEqual(response.status_code, 302)
+        response = self.client.patch(reverse('module:update-api', args=[1]))
+        self.assertEqual(response.status_code, 403)
 
 
 class TestViewsWithLogin(TestCase):
@@ -56,25 +54,42 @@ class TestViewsWithLogin(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_toggle_autoreminder(self):
+        # todo: move all api tests to a new file
         """Test that auto_reminder is toggled from True -> False, then False -> True"""
-        response = self.client.post(reverse('module:toggle-auto-reminder', args=[self.object.pk]))
+        response = self.client.patch(
+            reverse('module:update-api', args=[self.object.pk]),
+            data={'auto_reminder': False},
+            content_type='application/json',
+        )
         self.assertEqual(response.status_code, 200)
         self.object.refresh_from_db()
         self.assertEqual(self.object.auto_reminder, False)
 
-        response = self.client.post(reverse('module:toggle-auto-reminder', args=[self.object.pk]))
+        response = self.client.patch(
+            reverse('module:update-api', args=[self.object.pk]),
+            data={'auto_reminder': True},
+            content_type='application/json',
+        )
         self.assertEqual(response.status_code, 200)
         self.object.refresh_from_db()
         self.assertEqual(self.object.auto_reminder, True)
 
     def test_toggle_autofeedback(self):
         """Test that auto_feedback is toggled from True -> False, then False -> True"""
-        response = self.client.post(reverse('module:toggle-auto-feedback', args=[self.object.pk]))
+        response = self.client.patch(
+            reverse('module:update-api', args=[self.object.pk]),
+            data={'auto_feedback': False},
+            content_type='application/json',
+        )
         self.assertEqual(response.status_code, 200)
         self.object.refresh_from_db()
         self.assertEqual(self.object.auto_feedback, False)
 
-        response = self.client.post(reverse('module:toggle-auto-feedback', args=[self.object.pk]))
+        response = self.client.patch(
+            reverse('module:update-api', args=[self.object.pk]),
+            data={'auto_feedback': True},
+            content_type='application/json',
+        )
         self.assertEqual(response.status_code, 200)
         self.object.refresh_from_db()
         self.assertEqual(self.object.auto_feedback, True)

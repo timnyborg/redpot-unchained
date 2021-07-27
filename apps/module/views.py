@@ -3,7 +3,6 @@ from django_tables2.views import SingleTableMixin
 
 from django import http
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
@@ -11,7 +10,6 @@ from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.text import slugify
 from django.views import generic
-from django.views.decorators.csrf import csrf_exempt
 
 from apps.core.utils.dates import academic_year
 from apps.core.utils.urls import next_url_if_safe
@@ -233,24 +231,6 @@ class AddProgramme(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gene
 
     def get_success_url(self) -> str:
         return next_url_if_safe(self.request) or self.module.get_absolute_url()
-
-
-@login_required
-@csrf_exempt
-def toggle_auto_reminder(request, pk):
-    obj = Module.objects.get(id=pk)
-    obj.auto_reminder = not obj.auto_reminder
-    obj.save()
-    return http.HttpResponse()
-
-
-@login_required
-@csrf_exempt
-def toggle_auto_feedback(request, pk):
-    obj = Module.objects.get(id=pk)
-    obj.auto_feedback = not obj.auto_feedback
-    obj.save()
-    return http.HttpResponse()
 
 
 class StudentList(LoginRequiredMixin, ExcelExportView):

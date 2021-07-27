@@ -181,8 +181,12 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="/manual_publish/{{ module.id }}">
-                            <span class="fas fa-user"></span> Manual
+                        <a role="button"
+                           data-api-field="auto_publish"
+                           data-api-value="false"
+                           data-on-success="reload"
+                        >
+                            <i class="fas fa-user"></i> Manual
                         </a>
                     </li>
                 </ul>
@@ -196,7 +200,11 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="auto-publish/{{ module.id }}">
+                        <a role="button"
+                           data-api-field="auto_publish"
+                           data-api-value="true"
+                           data-on-success="reload"
+                        >
                             <div class="context-menu-item" >
                                 <i class="fas fa-fw fa-cog fa-pull-left"></i>
                                 <div class="description">
@@ -214,14 +222,21 @@
 
         {% if module.is_published %}
             <div class="btn-group">
-                <a href="#" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                <a role="button"
+                   class="btn btn-success dropdown-toggle {% if module.auto_publish %}disabled{% endif %}"
+                   data-toggle="dropdown"
+                >
                     <i class="fas fa-fw fa-play"></i>
                     Published
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="unpublish/{{ module.id }}">
+                        <a role="button"
+                           data-api-field="is_published"
+                           data-api-value="false"
+                           data-on-success="reload"
+                        >
                             <i class="fas fa-fw fa-stop"></i> Unpublish
                         </a>
                     </li>
@@ -229,14 +244,21 @@
             </div>
         {% else %}
             <div class="btn-group">
-                <a href="#" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                <a role="button"
+                   class="btn btn-danger dropdown-toggle {% if module.auto_publish or not module.is_publishable %}disabled{% endif %}"
+                   data-toggle="dropdown"
+                >
                     <i class="fas fa-fw fa-stop"></i>
                     Unpublished
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="publish/{{ module.id }}">
+                        <a role="button"
+                           data-api-field="is_published"
+                           data-api-value="true"
+                           data-on-success="reload"
+                        >
                             <i class="fas fa-fw fa-play"></i> Publish
                         </a>
                     </li>
@@ -246,27 +268,29 @@
       </div>
       <div class="col-md-5">
         <p>Course Status</p>
-        <div class="btn-group" >
-                {# todo: implement locking on auto_publishing or cancelled #}
-                <a href="#" class="btn btn-primary" data-toggle="dropdown">
-                    {{ module.status }}
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                    {% for status in statuses %}
-                        <li>
-                            <a href="set-status/{{ module.id }}/{{ status.id }}">
-                                {{ status }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="btn-group">
-                <a href="{{ module.get_website_url }}" target="_blank" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Webpage">
-                    <i class="fas fa-fw fa-globe"></i> Webpage
-                </a>
-            </div>
+        <a href="#"
+           class="btn btn-primary {% if module.auto_publish %}disabled{% endif %}"
+           data-toggle="dropdown"
+        >
+            {{ module.status }}
+            <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            {% for status in statuses %}
+                <li>
+                    <a role="button"
+                       data-api-field="status"
+                       data-api-value="{{ status.id }}"
+                       data-on-success="reload"
+                    >
+                        {{ status }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="{{ module.get_website_url }}" target="_blank" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Webpage">
+            <i class="fas fa-fw fa-globe"></i> Webpage
+        </a>
       </div>
       <div class="col-md-3">
           <p>Reports and Tools</p>
@@ -336,13 +360,13 @@
                     Sent on {{ module.reminder_sent_on | date }}
                 </span>
                 </h4>
-            {% elif module.auto_reminder %}
-                <label class="checkbox-inline" id="switch-ar" data-toggle="tooltip" data-placement="top" title="When ON, students will be emailed a reminder about the course, 5 days before it starts.">
-                    <input type="checkbox" checked data-toggle="toggle">
-                </label>
             {% else %}
-                <label class="checkbox-inline" id="switch-ar" data-toggle="tooltip" data-placement="top" title="When ON, students will be emailed a reminder about the course, 5 days before it starts.">
-                    <input type="checkbox" data-toggle="toggle">
+                <label class="checkbox-inline" data-toggle="tooltip" data-placement="top" title="When ON, students will be emailed a reminder about the course, 5 days before it starts.">
+                    <input type="checkbox"
+                        {% if module.auto_reminder %}checked{% endif %}
+                        data-toggle="toggle"
+                        data-api-field="auto_reminder"
+                    >
                 </label>
             {% endif %}
             <div class="btn-group" id="preview-eye">
@@ -354,19 +378,18 @@
 
         <div class="col-md-4">
             <h5>Automated feedback</h5>
+            <label class="checkbox-inline" data-toggle="tooltip" data-placement="top" title="When ON, Students will be emailed to request feedback the morning after the course ends.">
+                <input type="checkbox"
+                    {% if module.auto_feedback %}checked{% endif %}
+                    data-toggle="toggle"
+                    data-api-field="auto_feedback"
+                    data-on-success="reload"
+                >
+            </label>
             {% if module.auto_feedback %}
-                <label class="checkbox-inline" id="switch-af" data-toggle="tooltip" data-placement="top" title="When ON, Students will be emailed to request feedback the morning after the course ends.">
-                    <input type="checkbox" checked data-toggle="toggle">
-                </label>
-                <div class="btn-group" id="view-eye">
-                    <a href="feedback/results/{{ module.id }}" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="View">
-                        <i class="glyphicon glyphicon-eye-open"></i>
-                    </a>
-                </div>
-            {% else %}
-                <label class="checkbox-inline" id="switch-af" data-toggle="tooltip" data-placement="top" title="When ON, Students will be emailed to request feedback the morning after the course ends.">
-                    <input type="checkbox" data-toggle="toggle">
-                </label>
+                <a href="feedback/results/{{ module.id }}" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="View">
+                    <i class="glyphicon glyphicon-eye-open"></i>
+                </a>
             {% endif %}
         </div>
     </div><!-- Row ends -->
@@ -423,8 +446,8 @@
     {% endif %}
     {% for enrolment in enrolments %}
         <tr>
-            <td><a href="">{{ enrolment.student.surname }}</a></td>
-            <td><a href="">{{ enrolment.student.firstname }}</a></td>
+            <td><a href="">{{ enrolment.qa.student.surname }}</a></td>
+            <td><a href="">{{ enrolment.qa.student.firstname }}</a></td>
             <td>{{ enrolment.status.description }}</td>
             {% if not module.non_credit_bearing %}
             <td>{{ enrolment.result.description }}</td>
@@ -708,26 +731,32 @@
 
 <script>
     // JavaScript
-        //ajax url call on the backend.
-        $("#switch-ar").click(function() {
-            $.ajax({
-                type: "POST",
-                url: "{% url 'module:toggle-auto-reminder' module.id %}",
-                data: {ar: $(this).val()},
-            });
+    //ajax url call on the backend.
+    function api_update() {
+        const success_actions = {
+            'reload': (data) => {
+                window.location.reload();
+            },
+        }
+        const element = $(this)[0];
+        let val;
+        if (element.type === 'checkbox') {
+            val = $(this).prop('checked')
+        } else {
+            val = $(this).data('api-value');
+        }
+        let data = {};
+        data[$(this).data('api-field')] = val;
+        $.ajax({
+            type: "PATCH",
+            headers:{"X-CSRFToken": "{{ csrf_token }}"},
+            url: "{% url 'module:update-api' module.id %}",
+            data: data,
+            success: success_actions[$(this).data('on-success')]
         });
+    }
 
-        $("#switch-af").click(function() {
-            $.ajax({
-                type: "POST",
-                url: "{% url 'module:toggle-auto-feedback' module.id %}",
-                data: {af: $(this).val()},
-                success: function(data){
-                    window.location.reload();
-                },
-            });
-        });
-
+    $("[data-api-field]").change(api_update).click(api_update);
 </script>
 {% comment %}
 
