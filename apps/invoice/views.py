@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
@@ -39,17 +40,18 @@ class Lookup(generic.View):
     http_method_names = ['post']
 
     def post(self, request):
-        invnum = request.POST['number']
-        if not invnum.isdigit():
-            # If they've included a prefix (eg EQ), strip it out
-            invnum = invnum[2:]
-
         try:
-            invoice = models.Invoice.objects.get(number=invnum)
-            return redirect(invoice.get_absolute_url())
-        except (models.Invoice.DoesNotExist, ValueError):
+            # Extract the invoice number, ignoring the prefix and any trailing whitespace
+            match = re.fullmatch(r'[A-z]{0,2}(\d+)\s*', request.POST['number'])
+            if not match:
+                raise models.Invoice.DoesNotExist()
+            invoice_number = match.group(1)
+            invoice = models.Invoice.objects.get(number=invoice_number)
+        except models.Invoice.DoesNotExist:
             messages.error(request, 'Invoice not found')
             return redirect(reverse('invoice:search'))
+        else:
+            return redirect(invoice.get_absolute_url())
 
 
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
