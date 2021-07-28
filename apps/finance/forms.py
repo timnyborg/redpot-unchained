@@ -15,7 +15,6 @@ class AddFeeForm(forms.ModelForm):
     type = forms.ModelChoiceField(
         queryset=models.TransactionType.objects.all(),
         limit_choices_to={'is_cash': False, 'is_active': True},
-        error_messages={'blank': 'Required'},
     )
 
     class Meta:
@@ -36,7 +35,6 @@ class AddPaymentForm(forms.ModelForm):
     type = forms.ModelChoiceField(
         queryset=models.TransactionType.objects.all(),
         limit_choices_to={'is_cash': True, 'is_active': True},
-        error_messages={'blank': 'Required'},
     )
 
     class Meta:
@@ -54,10 +52,7 @@ class MultipleEnrolmentPaymentForm(forms.Form):
 
     amount = forms.DecimalField(widget=PoundInput(), label='Total paid')
     narrative = forms.CharField()
-    type = forms.ModelChoiceField(
-        queryset=models.TransactionType.objects.filter(is_cash=True, is_active=True),
-        # error_messages={'something': 'Required'}
-    )
+    type = forms.ModelChoiceField(queryset=models.TransactionType.objects.filter(is_cash=True, is_active=True))
 
     def clean(self):
         # Extract the allocation fields, and create a dictionary of {id: amount} for easy processing
@@ -65,9 +60,11 @@ class MultipleEnrolmentPaymentForm(forms.Form):
             int(key.replace('allocation_', '')): val for key, val in self.cleaned_data.items() if 'allocation_' in key
         }
         self.cleaned_data['allocations'] = allocations
+
         # Ensure the total allocations matches the amount
+        amount = self.cleaned_data.get('amount')
         allocated = sum(allocations.values())
-        if allocated != self.cleaned_data['amount']:
+        if amount and allocated != amount:
             self.add_error('amount', f'Does not match amount allocated below (£{allocated})')
 
     def __init__(self, enrolments: list[Enrolment], *args, **kwargs):
