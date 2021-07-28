@@ -14,6 +14,7 @@ class TestFeeViews(TestCase):
         cls.fee = factories.FeeFactory(module=cls.module)
         cls.create_url = reverse('fee:new', args=[cls.module.pk])
         cls.edit_url = reverse('fee:edit', args=[cls.fee.pk])
+        cls.delete_url = reverse('fee:delete', args=[cls.fee.pk])
 
     def setUp(self):
         self.client.force_login(self.user)
@@ -49,3 +50,9 @@ class TestFeeViews(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Fee.objects.last().amount, 200.00)
+
+    def test_post_delete(self):
+        response = self.client.post(self.delete_url)
+        self.assertEqual(response.status_code, 302)
+        with self.assertRaises(Fee.DoesNotExist):
+            self.fee.refresh_from_db()
