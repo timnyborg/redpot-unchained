@@ -174,6 +174,9 @@ DATABASES = {
         'HOST': get_secret('DB_HOST', 'mssql'),
         'USER': get_secret('DB_USER', 'sa'),
         'PASSWORD': get_secret('DB_PASSWORD', 'Test@only'),
+        'TEST': {
+            'NAME': get_secret('TEST_DB_NAME', 'redpot_test'),
+        },
     }
 }
 
