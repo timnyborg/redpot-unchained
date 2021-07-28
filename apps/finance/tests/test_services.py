@@ -52,3 +52,34 @@ class TestAddEnrolmentFee(test.TestCase):
                 fee_id=fee.id,
                 user=self.user,
             )
+
+
+class TestDistributedPayment(test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+
+    def test_total_check(self):
+        with self.assertRaises(services.DistributedPaymentTotalError):
+            allocations = {1: Decimal(5), 2: Decimal(15)}
+            services.add_distributed_payment(
+                narrative='test',
+                amount=Decimal(10),
+                type_id=models.TransactionTypes.CREDIT_CARD,
+                user=self.user,
+                enrolments=allocations,
+            )
+
+    def test_payment(self):
+        enrolments = EnrolmentFactory.create_batch(size=3)
+        allocations = {enrolment.id: Decimal(5) for enrolment in enrolments}
+        services.add_distributed_payment(
+            narrative='test',
+            amount=Decimal(15),
+            type_id=models.TransactionTypes.CREDIT_CARD,
+            user=self.user,
+            enrolments=allocations,
+        )
+        ledger_items = models.Ledger.objects.all()
+        self.assertEqual(len(ledger_items), 4)
+        self.assertEqual(ledger_items.total(), 0)

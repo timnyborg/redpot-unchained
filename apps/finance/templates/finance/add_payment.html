@@ -1,0 +1,9 @@
+{% extends 'core/form.html' %}
+
+{% block after-form %}
+<h5>
+    <a href="{% url 'finance:choose-multiple-enrolments' enrolment.qa.student.id %}?next={{ enrolment.get_absolute_url }}">
+        <i class="fas fa-chevron-right"></i> Multiple enrolment payment
+    </a>
+</h5>
+{% endblock %}

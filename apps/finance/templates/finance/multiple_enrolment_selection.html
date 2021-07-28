@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+{% load django_tables2 %}
+
+{% block center %}
+    <div class='section'>
+        <h2>Select enrolments</h2>
+        <h3>Single student</h3>
+        {% if student_enrolments_table.rows %}
+            <form action="" method="post">
+                {% csrf_token %}
+                {% render_table student_enrolments_table %}
+                <input type="submit" class="btn btn-primary" value="Select">
+            </form>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-ban empty-state-icon"></i>
+                <h4>This student has no recent enrolments</h4>
+            </div>
+        {% endif %}
+
+        <div class='horizontal-divider'><span>OR</span></div>
+
+        <h3>My recent outstanding enrolments</h3>
+        {% if recent_enrolments_table.rows %}
+        <form action="" method="post">
+            {% csrf_token %}
+            {% render_table recent_enrolments_table %}
+            <input type="submit" class="btn btn-primary" value="Select">
+        </form>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-ban empty-state-icon"></i>
+            <h4>You haven't recently enrolled any students</h4>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -51,26 +51,26 @@
         <h4>Outstanding changes</h4>
         TODO: AMENDMENT GRID
         <h4>Balance</h4>
-        <p>£{{ enrolment.balance | floatformat:2 }}</p>
+        <p>£{{ enrolment.get_balance | floatformat:2 }}</p>
 
         <a
-                href="{% url 'finance:add-fees' enrolment.id %}"
-                class="btn btn-success"
-                {% if not enrolment.module.finance_code %}disabled{% endif %}
+            href="{% url 'finance:add-fees' enrolment.id %}"
+            class="btn btn-success"
+            {% if not enrolment.module.finance_code %}disabled{% endif %}
         >
             <i class="fas fa-fw fa-plus"></i> Add or adjust fee
         </a>
         <a
-                href="{% url 'finance:add-payment' enrolment.id %}"
-                class="btn btn-success"
-                {% if payment_disabled and not perms.finance %}disabled{% endif %}
+            href="{% url 'finance:add-payment' enrolment.id %}"
+            class="btn btn-success"
+            {% if payment_disabled and not perms.finance %}disabled{% endif %}
         >
             <i class="fas fa-fw fa-pound-sign"></i> Add payment
         </a>
         <a
-                href="{% url 'invoice:choose-enrolments' student.id %}?enrolments={{ enrolment.id }}"
-                class="btn btn-primary"
-                {% if payment_disabled and not perms.finance %}disabled{% endif %}
+            href="{% url 'invoice:choose-enrolments' student.id %}?enrolments={{ enrolment.id }}"
+            class="btn btn-primary"
+            {% if payment_disabled and not perms.finance %}disabled{% endif %}
         >
             <i class="fas fa-fw fa-plus"></i> New invoice
         </a>

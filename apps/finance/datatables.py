@@ -1,6 +1,7 @@
 import django_tables2 as tables
 
 from apps.core.utils.datatables import PoundsColumn
+from apps.enrolment.models import Enrolment
 from apps.fee.models import Fee
 
 
@@ -41,3 +42,28 @@ class AddFeesTable(tables.Table):
         template_name = "django_tables2/bootstrap.html"
         fields = ('fee', 'description', 'type', 'amount', 'limit', 'places_left')
         order_by = ('type', 'description')
+
+
+class OutstandingEnrolmentsTable(tables.Table):
+    """Lists a series of enrolments with their outstanding balance (for paying multiple at once)"""
+
+    enrolment = tables.CheckBoxColumn(
+        accessor='id',
+        attrs={"th__input": {"id": "toggle-all"}},
+        orderable=False,
+    )
+    balance = PoundsColumn()
+
+    class Meta:
+        model = Enrolment
+        template_name = "django_tables2/bootstrap.html"
+        fields = (
+            'enrolment',
+            'qa__student__surname',
+            'qa__student__firstname',
+            'module__code',
+            'module__title',
+            'balance',
+        )
+        order_by = ('-created_on',)
+        per_page = 20

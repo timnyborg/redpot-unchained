@@ -1,11 +1,15 @@
+from __future__ import annotations
+
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
+from django.db import transaction
 from django.db.models import Max
 
 from apps.core.models import User
 from apps.fee.models import Accommodation, Catering, Fee
+from apps.module.models import Module
 
 from . import models
 
@@ -97,3 +101,48 @@ def add_enrolment_fee(*, enrolment_id: int, fee_id: int, discount: int = 0, user
             limit=fee.limit,
             enrolment_id=enrolment_id,
         )
+
+
+class DistributedPaymentTotalError(Exception):
+    """Raised when the individual allocations don't sum to the total the amount"""
+
+
+@transaction.atomic
+def add_distributed_payment(
+    *, narrative: str, amount: Decimal, type_id: int, user: User, enrolments: dict[int, Decimal]
+) -> None:
+    """Distributes a payment among multiple enrolments, with a single payment row and multiple debt rows"""
+    total = sum(enrolments.values())
+    if amount != total:
+        raise DistributedPaymentTotalError(f"Total does not match: {amount} vs {total}")
+
+    allocation = next_allocation()
+    timestamp = datetime.now()  # identical timestamp for all rows
+
+    for enrolment_id, sub_amount in enrolments.items():
+        finance_code = Module.objects.get(enrolment__id=enrolment_id).finance_code
+        insert_ledger(
+            account_id=models.Accounts.DEBTOR,
+            finance_code=finance_code,
+            narrative=narrative,
+            amount=-sub_amount,
+            type_id=type_id,
+            allocation=allocation,
+            enrolment_id=enrolment_id,
+            debtor_only=True,
+            user=user,
+            timestamp=timestamp,
+        )
+
+    # Corresponding total
+    insert_ledger(
+        account_id=models.Accounts.CASH,
+        finance_code='',
+        narrative=narrative,
+        amount=-amount,
+        type_id=type_id,
+        allocation=allocation,
+        account_only=True,
+        user=user,
+        timestamp=timestamp,
+    )
