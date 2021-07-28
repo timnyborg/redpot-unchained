@@ -4,6 +4,7 @@ from django.db import models
 from django.urls import reverse
 
 from apps.core.models import SignatureModel
+from apps.finance.models import Accounts
 
 # Constants used as defaults.  If used more extensively, we may need to use enums
 NOT_CODED_RESULT = 7
@@ -15,6 +16,16 @@ class Statuses(models.IntegerField):
     CONFIRMED = 10
     PROVISIONAL = 20
     CONFIRMED_NON_CREDIT = 90
+
+
+class EnrolmentQuerySet(models.QuerySet):
+    def outstanding(self):
+        """Enrolments with balance > 0"""
+        return self.with_balance().filter(balance__gt=0)
+
+    def with_balance(self):
+        """Add an outstanding `balance` attribute to each row"""
+        return self.annotate(balance=models.Sum('ledger__amount', filter=models.Q(ledger__account=Accounts.DEBTOR)))
 
 
 class Enrolment(SignatureModel):
@@ -44,6 +55,8 @@ class Enrolment(SignatureModel):
     mark = models.IntegerField(blank=True, null=True)
     transcript_date = models.DateTimeField(blank=True, null=True, editable=False)
 
+    objects = EnrolmentQuerySet.as_manager()
+
     class Meta:
         # managed = False
         db_table = 'enrolment'
@@ -51,7 +64,7 @@ class Enrolment(SignatureModel):
     def get_absolute_url(self):
         return reverse('enrolment:view', args=[self.pk])
 
-    def balance(self) -> Decimal:
+    def get_balance(self) -> Decimal:
         ledger_balance = self.ledger_set.debts().total()
         return ledger_balance or Decimal(0)
 
