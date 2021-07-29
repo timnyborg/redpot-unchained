@@ -10,7 +10,7 @@ from apps.core.utils.widgets import DatePickerInput, PoundInput
 from apps.enrolment.models import Enrolment
 from apps.finance.models import Ledger
 
-from .models import Invoice, PaymentPlanSchedule
+from .models import Invoice, ScheduledPayment
 
 
 class InvoiceSearchFilter(django_filters.FilterSet):
@@ -140,8 +140,10 @@ class InvoiceCreditNoteTable(tables.Table):
 
 
 class PaymentScheduleTable(tables.Table):
+    amount = PoundsColumn()
+
     class Meta:
-        model = PaymentPlanSchedule
+        model = ScheduledPayment
         template_name = "django_tables2/bootstrap.html"
         fields = ('due_date', 'amount', 'is_deposit')
         order_by = ('due_date',)

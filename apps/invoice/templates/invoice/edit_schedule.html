@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+
+{% block center %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handsontable/6.2.2/handsontable.full.min.js" integrity="sha512-w+FVoHdIN47woVGeCmxjX+SAEh2avuUM+7i4PxUJlRNeOfaRp5o8GQvjkEgpVxzBkjacXBX2aRu733ZaJC9ubw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/handsontable/6.2.2/handsontable.full.css" integrity="sha512-LQObHXgbXwDxkGCnMPPE+P5c9bHcVvLUyg59TUUr1i5YMapW3+IEnNi1dzKdULTTKoyHOKNIoxBxPj0K/oPtsQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/numbro/1.9.3/languages.min.js"></script>#}
+
+    <div class="section">
+        <div id="sheet"></div>
+        <br>
+        <a class="btn btn-primary" id="save"><span class="fa fa-download"></span> Save</a>
+
+        {{ schedule | json_script:'schedule-data' }}
+
+        <script>
+            n = JSON.parse(document.getElementById('schedule-data').textContent);
+            var data = JSON.parse(document.getElementById('schedule-data').textContent);
+
+            var container = document.getElementById('sheet');
+            var hot = new Handsontable(container, {
+                data: data,
+                rowHeaders: false,
+                minSpareRows:1,
+                colHeaders: ['Due date', 'Amount', 'Deposit?'],
+                colWidths: [100, 100, 60],
+                columnSorting: true,
+                columns: [
+                    {
+                        data: 'due_date',
+                        type: 'date',
+                        dateFormat: 'YYYY-MM-DD',
+                        correctFormat: true,
+                    },
+                    {
+                        data: 'amount',
+                        type: 'numeric',
+                        format: '$0,0.00',
+                        language: 'en-GB',
+                    },
+                    {
+                        data: 'is_deposit',
+                        type: 'checkbox',
+                        className: "htCenter"
+                    }
+                ]
+            });
+
+            let save = document.getElementById('save');
+            Handsontable.dom.addEvent(save, 'click', function() {
+                // save all cells' data
+                $.ajax({
+                    dataType: "json",
+                    contentType: 'application/json',
+                    // Exclude the blank line that Handsontable always adds
+                    data: JSON.stringify(hot.getSourceData().slice(0, -1)),
+                    headers:{"X-CSRFToken": "{{ csrf_token }}"},
+                    type: "POST",
+                    url: "{% url 'invoice:save-payment-schedule' paymentplan.id %}",
+                }).success(function (data, string, jqXHR) {
+                    location.href = '{{ paymentplan.invoice.get_absolute_url }}#schedule';
+                }).error(function (data, string, jqXHR) {
+                    alert('Error: ' + data.responseText); // todo: a better alert
+                });
+            });
+        </script>
+    </div>
+{% endblock %}

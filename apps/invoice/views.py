@@ -14,18 +14,17 @@ from django.urls import reverse
 from django.views import generic
 from django.views.generic.edit import FormMixin
 
-from apps.core.utils.views import PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.finance.models import Ledger
 from apps.student.models import Student
 
-from . import datatables, forms, services
-from .models import Invoice
+from . import datatables, forms, models, services
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FormMixin, FilterView):
     template_name = 'invoice/search.html'
-    model = Invoice
+    model = models.Invoice
     table_class = datatables.InvoiceSearchTable
     filterset_class = datatables.InvoiceSearchFilter
     subtitle = 'Search'
@@ -46,16 +45,16 @@ class Lookup(generic.View):
             invnum = invnum[2:]
 
         try:
-            invoice = Invoice.objects.get(number=invnum)
+            invoice = models.Invoice.objects.get(number=invnum)
             return redirect(invoice.get_absolute_url())
-        except (Invoice.DoesNotExist, ValueError):
+        except (models.Invoice.DoesNotExist, ValueError):
             messages.error(request, 'Invoice not found')
             return redirect(reverse('invoice:search'))
 
 
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
     template_name = 'invoice/view.html'
-    model = Invoice
+    model = models.Invoice
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
@@ -76,7 +75,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
 
         try:
             plan = self.object.payment_plan
-            schedule_table = datatables.PaymentScheduleTable(plan.schedule.all())
+            schedule_table = datatables.PaymentScheduleTable(plan.scheduled_payments.all())
         except ObjectDoesNotExist:
             plan = None
             schedule_table = None
@@ -93,7 +92,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
 
 
 class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
-    model = Invoice
+    model = models.Invoice
     form_class = forms.InvoiceForm
     template_name = 'core/form.html'
     permission_required = 'invoice.edit'
@@ -229,3 +228,62 @@ class UploadRCP(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
 
     def get_success_url(self):
         return self.request.get_full_path()  # self-redirect
+
+
+class EditPaymentPlan(
+    PermissionRequiredMixin, SuccessMessageMixin, AutoTimestampMixin, PageTitleMixin, generic.UpdateView
+):
+    permission_required = 'payment_plan.edit'
+    model = models.PaymentPlan
+    form_class = forms.PaymentPlanForm
+    template_name = 'core/form.html'
+    success_message = 'Payment plan updated'
+
+    def get_subtitle(self):
+        return f'Edit – {self.object.invoice}'
+
+    def get_success_url(self):
+        return self.object.invoice.get_absolute_url() + '#schedule'
+
+
+class CreatePaymentPlan(
+    PermissionRequiredMixin, SuccessMessageMixin, AutoTimestampMixin, PageTitleMixin, generic.CreateView
+):
+    permission_required = 'payment_plan.create'
+    model = models.PaymentPlan
+    form_class = forms.PaymentPlanForm
+    template_name = 'core/form.html'
+    success_message = 'Payment plan updated'
+
+    def dispatch(self, request, *args, **kwargs):
+        # Check there's no existing plan
+        self.invoice = get_object_or_404(models.Invoice, pk=self.kwargs['invoice_id'], payment_plan__isnull=True)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        return {
+            'invoice': self.invoice,
+            'amount': self.invoice.balance(),
+            'type': models.PaymentPlan.CUSTOM_TYPE,
+            'status': models.PaymentPlan.CUSTOM_PENDING_STATUS,
+        }
+
+    def get_subtitle(self):
+        return f'Create – {self.invoice}'
+
+    def get_success_url(self):
+        return reverse('invoice:edit-payment-schedule', args=[self.object.pk])
+
+
+class EditSchedule(PermissionRequiredMixin, PageTitleMixin, generic.DetailView):
+    queryset = models.PaymentPlan.objects.prefetch_related('schedule')
+    template_name = 'invoice/edit_schedule.html'
+    permission_required = 'payment_plan.create'
+
+    def get_subtitle(self):
+        return f'Edit schedule – {self.object.invoice}'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['schedule'] = list(self.object.scheduled_payments.values('due_date', 'amount', 'is_deposit'))
+        return context

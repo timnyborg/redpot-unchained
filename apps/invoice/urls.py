@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import api, views
 
 app_name = 'invoice'
 urlpatterns = [
@@ -8,8 +8,14 @@ urlpatterns = [
     path('view/<int:pk>', views.View.as_view(), name='view'),
     path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
     path('lookup', views.Lookup.as_view(), name='lookup'),
+    path('upload-rcp', views.UploadRCP.as_view(), name='upload-rcp'),
+    # invoice creation steps
     path('choose-enrolments/<int:student_id>', views.ChooseEnrolments.as_view(), name='choose-enrolments'),
     path('choose-fees/<int:student_id>', views.ChooseFees.as_view(), name='choose-fees'),
     path('create/<int:student_id>', views.Create.as_view(), name='create'),
-    path('upload-rcp', views.UploadRCP.as_view(), name='upload-rcp'),
+    # payment plan urls
+    path('create-payment-plan/<int:invoice_id>', views.CreatePaymentPlan.as_view(), name='create-payment-plan'),
+    path('edit-payment-plan/<int:pk>', views.EditPaymentPlan.as_view(), name='edit-payment-plan'),
+    path('edit-payment-schedule/<int:pk>', views.EditSchedule.as_view(), name='edit-payment-schedule'),
+    path('save-payment-schedule/<int:plan_id>', api.SaveSchedule.as_view(), name='save-payment-schedule'),
 ]
