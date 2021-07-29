@@ -1,0 +1,16 @@
+- model: invoice.paymentplantype
+  pk: 1
+  fields:
+    name: Full payment
+    deposit: '0.00'
+    payments: 1
+    payments_due: Immediately
+    start_month: null
+- model: invoice.paymentplantype
+  pk: 16
+  fields:
+    name: Custom
+    deposit: '0.00'
+    payments: null
+    payments_due: null
+    start_month: null

@@ -3,10 +3,11 @@ from django.contrib.auth import get_user_model
 
 class LoggedInMixin:
     user: get_user_model()
+    superuser: bool = False
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.user = get_user_model().objects.create_user(username='testuser', is_superuser=cls.superuser)
 
     def setUp(self):
         self.client.force_login(self.user)

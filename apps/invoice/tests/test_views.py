@@ -156,3 +156,25 @@ class TestRCPUpload(LoggedInViewTestMixin, TestCase):
             response = self.client.post(self.url, data={'file': file})
             self.assertEqual(response.status_code, 302)
             self.assertTrue(mock_method.called)
+
+
+class TestCreatePaymentPlan(LoggedInViewTestMixin, TestCase):
+    superuser = True
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.invoice = factories.InvoiceFactory()
+        cls.url = reverse('invoice:create-payment-plan', kwargs={'invoice_id': cls.invoice.pk})
+
+    def test_create(self):
+        response = self.client.post(
+            self.url,
+            data={
+                'type': models.CUSTOM_PLAN_TYPE,
+                'amount': 100,
+                'status': models.CUSTOM_PAYMENT_PENDING_STATUS,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.invoice.payment_plan.amount, 100)

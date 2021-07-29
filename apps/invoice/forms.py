@@ -1,7 +1,7 @@
 from django import forms
 from django.core import validators
 
-from apps.core.utils.widgets import DatePickerInput
+from apps.core.utils.widgets import DatePickerInput, PoundInput
 
 from . import models
 
@@ -46,3 +46,19 @@ class UploadRCPForm(forms.Form):
         widget=forms.FileInput(attrs={'accept': '.csv'}),
         help_text='A payments .csv file from WPM',
     )
+
+
+class PaymentPlanForm(forms.ModelForm):
+    """Used for both creating and updating payment plans"""
+
+    invoice = forms.ModelChoiceField(
+        queryset=models.Invoice.objects.all(),
+        widget=forms.HiddenInput(),
+        disabled=True,
+    )
+
+    class Meta:
+        model = models.PaymentPlan
+        fields = ('invoice', 'type', 'status', 'amount')
+        help_texts = {'status': "If plan already exists, choose 'Payment schedule active'"}
+        widgets = {'amount': PoundInput()}

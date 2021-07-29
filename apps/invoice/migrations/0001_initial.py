@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='PaymentPlanSchedule',
+            name='ScheduledPayment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
@@ -105,12 +105,11 @@ class Migration(migrations.Migration):
                 ('modified_on', models.DateTimeField(blank=True, default=datetime.datetime.now, editable=False, null=True)),
                 ('due_date', models.DateField()),
                 ('amount', models.DecimalField(decimal_places=2, max_digits=16)),
-                ('number', models.IntegerField()),
                 ('is_deposit', models.BooleanField()),
-                ('payment_plan', models.ForeignKey(db_column='payment_plan', on_delete=django.db.models.deletion.DO_NOTHING, related_name='schedule', to='invoice.paymentplan')),
+                ('payment_plan', models.ForeignKey(db_column='payment_plan', on_delete=django.db.models.deletion.DO_NOTHING, related_name='scheduled_payments', related_query_name='scheduled_payment', to='invoice.paymentplan')),
             ],
             options={
-                'db_table': 'payment_plan_schedule',
+                'db_table': 'payment_plan_schedule', 'ordering': ('due_date',)
             },
         ),
         migrations.AddField(

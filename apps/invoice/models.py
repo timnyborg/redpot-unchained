@@ -5,6 +5,9 @@ from django.urls import reverse
 
 from apps.core.models import SignatureModel
 
+CUSTOM_PLAN_TYPE = 16
+CUSTOM_PAYMENT_PENDING_STATUS = 2
+
 
 class InvoiceQuerySet(models.QuerySet):
     def outstanding(self):
@@ -118,9 +121,10 @@ class InvoiceLedger(models.Model):
 
 
 class PaymentPlan(SignatureModel):
-    # Constants used in logic (because we are using foreign keys, not choices)
+    # Constants used in logic - todo: move to enums
     CUSTOM_TYPE = 16
     PENDING_STATUS = 1  # student has selected a plan, but not activated it
+    CUSTOM_PENDING_STATUS = 2  # staff have configured a plan, but not activated it
 
     type = models.ForeignKey('PaymentPlanType', models.DO_NOTHING, db_column='type')
     status = models.ForeignKey('PaymentPlanStatus', models.DO_NOTHING, db_column='status')
@@ -144,18 +148,22 @@ class PaymentPlan(SignatureModel):
         return self.type_id == self.CUSTOM_TYPE
 
 
-class PaymentPlanSchedule(SignatureModel):
-    CUSTOM_TYPE = 16
-
-    payment_plan = models.ForeignKey(PaymentPlan, models.DO_NOTHING, db_column='payment_plan', related_name='schedule')
+class ScheduledPayment(SignatureModel):
+    payment_plan = models.ForeignKey(
+        PaymentPlan,
+        models.DO_NOTHING,
+        db_column='payment_plan',
+        related_name='scheduled_payments',
+        related_query_name='scheduled_payment',
+    )
     due_date = models.DateField()
     amount = models.DecimalField(max_digits=16, decimal_places=2)
-    number = models.IntegerField()  # todo: investigate if this has value
     is_deposit = models.BooleanField()  # todo: investigate if this has value
 
     class Meta:
         # managed = False
         db_table = 'payment_plan_schedule'
+        ordering = ('due_date',)
 
 
 # Todo: consider whether to remove and convert status to a text field with choices
@@ -185,6 +193,7 @@ class PaymentPlanType(SignatureModel):
     class Meta:
         # managed = False
         db_table = 'payment_plan_type'
+        ordering = ('payments_due', 'deposit', 'payments')
 
     def __str__(self):
         return self.name

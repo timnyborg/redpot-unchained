@@ -79,7 +79,7 @@
         <div class='col-sm-6'>
             {% if perms.finance %}
             <div class="pull-right top-right-button">
-                <a href="plan/{{ invoice.id }}" class="btn btn-success btn-xs"><span class="fas fa-fw fa-pencil-alt"></span> Edit plan</a>
+                <a href="{% url 'invoice:edit-payment-plan' plan.pk %}" class="btn btn-success btn-xs"><span class="fas fa-fw fa-pencil-alt"></span> Edit plan</a>
             </div>
             {% endif %}
             <h2>Payment plan</h2>
@@ -98,7 +98,9 @@
         <div class='col-sm-6'>
             {% if plan.is_custom and perms.finance %}
                 <div class="pull-right top-right-button">
-                    <a href="schedule/{{ invoice.id }}" class="btn btn-success btn-xs"><span class="fas fa-fw fa-plus"></span> Edit Schedule</a>
+                    <a href="{% url 'invoice:edit-payment-schedule' plan.id %}" class="btn btn-success btn-xs">
+                        <span class="fas fa-fw fa-plus"></span> Edit schedule
+                    </a>
                 </div>
             {% endif %}
             <a id="schedule"></a>
@@ -111,8 +113,8 @@
 {% elif perms.finance %}
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="plan/{{ invoice.id }}" class="btn btn-success btn-xs">
-            <span class="fas fa-fw fa-plus"></span> Add Payment plan
+        <a href="{% url 'invoice:create-payment-plan' invoice.id %}" class="btn btn-success btn-xs">
+            <span class="fas fa-fw fa-plus"></span> Add payment plan
         </a>
     </div>
     <h2>Payment plan</h2>
