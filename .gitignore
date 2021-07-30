@@ -7,3 +7,4 @@ Pipfile*
 .venv
 venv
 media/
+.vscode

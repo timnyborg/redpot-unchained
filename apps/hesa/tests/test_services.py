@@ -94,7 +94,7 @@ class TestReturnProduction(test.TestCase):
     def setUpTestData(cls):
         """Create a hesa-returnable student record"""
         cls.programme = ProgrammeFactory(qualification_id=INSTITUTIONAL_CREDIT_QUALIFICATION)
-        cls.student = StudentFactory(domicile_id=ENGLAND_DOMICILE, ethnicity=1)  # todo: convert once model implemented
+        cls.student = StudentFactory(domicile_id=ENGLAND_DOMICILE)  # todo: convert once model implemented
         cls.qa = QualificationAimFactory(
             student=cls.student,
             programme=cls.programme,

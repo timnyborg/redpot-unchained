@@ -1,0 +1,873 @@
+{% extends 'layout_9_3.html' %}
+{% load redpot_tags %}
+{% load tutor_module_tags %}
+{% load render_table from django_tables2 %}
+
+{% block title %}Person{% endblock %}
+{% block subtitle %}View - {{student.firstname}} {{student.surname }}{% endblock %}
+
+{% block right_sidebar %}
+<div class="hidden-xs affix-top" data-spy="affix" data-offset-top="105" id="sidebar">
+    <ul class="nav sidenav">
+    </ul>
+</div>
+{% endblock %}
+
+{% block center %}
+<div class="section">
+    {% if student.sits_id %}
+    <div class="section-alert-header alert-warning" role="alert">
+        <span class="fa fa-exclamation-circle"></span>
+        <b>This student has a record in SITS and some of its data is now read only.</b>
+    </div>
+    {% endif %}
+
+    {% if student.is_flagged %}
+    <div class="alert alert-danger" role="alert">
+        <span class="fa fa-exclamation-circle"></span>
+        <b>This person has been flagged {{ student.note }}</b>
+    </div>
+    {% endif %}
+
+    {% if student.deceased %}
+    <div class="alert alert-danger" role="alert">
+        <span class="fa fa-exclamation-circle"></span>
+        <b>This person is deceased</b>
+    </div>
+    {% endif %}
+
+    {% if suspension and suspension.actual_return_date %}
+    <div class="alert alert-warning" role="alert">
+        <span class="fa fa-exclamation-circle"></span>
+        <b>This student has suspended their award bearing studies since {{ suspension.start_date }}</b>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-xs-12">
+            {% url 'student:edit' student.id as edit_url %}
+            {% edit_button edit_url %}
+            <a id='student' class='nav-anchor'></a>
+            <h2>Personal details</h2>
+            <hr>
+            <div class="col-xs-12 col-md-6">
+                <dl class="dl-horizontal">
+                    <dt>Title</dt><dd>{{ student.title }}</dd>
+                    <dt>Surname</dt><dd>{{ student.surname }}</dd>
+                    <dt>First name</dt><dd>{{ student.firstname }}</dd>
+                    <dt>Middle names</dt><dd>{{ student.middlename }}</dd>
+                    <dt>Nickname</dt><dd>{{ student.nickname }}</dd>
+                    <dt>Birthdate</dt><dd>{{ student.birthdate }}</dd>
+                    <dt>Gender</dt><dd>{{ student.gender }}</dd>
+                    <dt>HESA ID</dt><dd>{{ student.husid }}</dd>
+                    <dt>SITS ID</dt><dd>{{ student.sits_id }}</dd>
+                    <dt>Nationality</dt><dd>{{ student.nationality.name }}</dd>
+                    <dt>Domicile</dt><dd>{{ student.domicile.name }}</dd>
+                    <dt>Ethnicity</dt><dd>{{ student.ethnicity.name }}</dd>
+                    <dt>Home/EU?</dt><dd>{{ student.is_eu }}</dd>
+                    <dt>Occupation</dt><dd>{{ student.occupation }}</dd>
+                    <dt>Note</dt><dd>{{ student.note }}</dd>
+                    {% if last_merger %}
+                    <br>
+                    <hr>
+                    <dt>Merged by</dt><dd>{{ last_merger.created_by }}</dd>
+                    <dt>Merged on</dt><dd>{{ last_merger.modified_on | date:'SHORT_DATE_FORMAT' }}</dd>
+                    <!-- TODO: Create Merge history link page -->
+                    <a href="/student/merge-history/{{ last_merger.target }}" class="btn btn-info btn-xs">
+                        <span class="fa fa-eye"></span> Merge history
+                    </a>
+                    {% endif %}
+                </dl>
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <!-- TODO: Disability dropdown feature needs to be implmented -->
+                <h4>Disability <small><a data-toggle="collapse" href="#collapse-disability"><span class="fa fa-chevron-down"></span></a></small></h4>
+                <dl class="dl-horizontal collapse" id="collapse-disability">
+                    <dt>Disability</dt><dd>{{ student.disability.description }}</dd>
+                    <dt>Detail</dt><dd>{{ student.disability_detail }}</dd>
+                    <dt>Action taken</dt><dd>{{ student.disability_action }}</dd>
+                </dl>
+                <h4>Dietary preferences
+                    <small>
+                        <a data-toggle="collapse" href="#collapse-diet"><span class="fa fa-chevron-down"></span></a>
+                        <!-- TODO: Diet section needs to be created -->
+                        <a href="/edit/{{student.id}}/diet/{{diet.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                    </small>
+                </h4>
+                <dl class="dl-horizontal collapse" id="collapse-diet">
+                    {% if diet %}
+                    <dt>Special diet</dt><dd>{{ diet_type }}</dd>
+                    <dt>Details</dt><dd>{{ diet.note }}</dd>
+                    {% else %}
+                    None
+                    {% endif %}
+                </dl>
+                <h4>Emergency contact
+                    <small><a data-toggle="collapse" href="#collapse-emergency"><span class="fa fa-chevron-down"></span></a></small>
+                    <!-- TODO: Create emergency contact page  -->
+                    <a href="/edit/{{student.id}}/emergency_contact/{{emergency_contact.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                </h4>
+                <dl class="dl-horizontal collapse" id="collapse-emergency">
+                    {% if emergency_contact %}
+                        <dt>Name</dt><dd>{{ emergency_contact.name }}</dd>
+                        <dt>Email</dt><dd>{{ emergency_contact.email }}</dd>
+                        <dt>Phone</dt><dd>{{ emergency_contact.phone }}</dd>
+                    {% else %}
+                    None
+                    {% endif %}
+                </dl>
+                <hr>
+                <h4>Marketing</h4>
+                <h5>Email</h5>
+                <div class="btn-group">
+                    {% if student.email_optin %}
+                        <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">Opted in <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/student/marketing/{{ student.id }}">{% icon_text 'Opt-out' 'fa-check text-danger' %}</a></li>
+                        </ul>
+                    {% else %}
+                        <a class="btn btn-default dropdown-toggle" data-toggle="dropdown">Not opted-in <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/student/marketing/{{ student.id }}">{% icon_text 'Opt-in' 'fa-check text-success' %}</a></li>
+                        </ul>
+                    {% endif %}
+                </div>
+                <h5>Mail</h5>
+                <div class="btn-group">
+                    {% if student.no_publicity %}
+                        <a class="btn btn-danger dropdown-toggle" data-toggle="dropdown">Opted-out <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-check text-success"></span> Opt-in</a></li>
+                        </ul>
+                    {% elif student.mail_optin %}
+                        <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">Opted in <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-remove text-danger"></span> Opt-out</a></li>
+                        </ul>
+                    {% else %}
+                        <a class="btn btn-default dropdown-toggle" data-toggle="dropdown">Not opted-in <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-check text-danger"></span> Opt-in</a></li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% timestamp student %}
+</div>
+
+<div class="section">
+    <div class="pull-right top-right-button">
+        <a href="/address/new/{{ student.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add address</a>
+    </div>
+    <a id='address' class='nav-anchor'></a>
+        <h2>Address</h2>
+        {% if addresses %}
+        <!-- TODO : The chevron down doesn't change to chevron up when opened. Js in tools.js (I think)-->
+        <ul class="item-list hide-items" data-max-item=2>
+        {% for address in addresses %}
+            <li class="item" data-created-on="{{ address.created_on }}">
+                <div class="item-info">
+                    <div class='row'>
+                        <div id="addressField{{ address.id }}" class="col-xs-3">
+                            <span style="white-space: pre-line;">{{ address.formatted }}</span>
+                        </div>
+                        <div class="col-xs-3">
+                        {% if address.is_default %}
+                            <span class="label label-primary">Default</span>
+                        {% endif %}
+                        {% if address.sits_type %}
+                            {% if address.sits_type == 'C' %}
+                                <span class="label label-warning">SITS Correspondence</span>
+                            {% elif address.sits_type == 'H' %}
+                                <span class="label label-warning">SITS Home</span>
+                            {% else %}
+                                <span class="label label-warning">SITS Term time</span>
+                            {% endif %}
+                        {% endif %}
+                        {% if address.is_billing %}
+                            <span class="label label-success"
+                                data-toggle="tooltip"
+                                data-title="Used for invoicing"
+                            >Billing</span>
+                        {% endif %}
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="pull-right">
+                                {% if not address.is_billing %}
+                                <a href="#"
+                                class="btn btn-default hide-until-hover"
+                                data-toggle="modal"
+                                data-target="#confirm-billing-address"
+                                data-href="set_billing_address/{{ address.id }}"
+                                >
+                                 Set billing
+                                </a>
+                                {% endif %}
+                                {% if not address.is_default %}
+                                <a href="#"
+                                class="btn btn-default hide-until-hover"
+                                data-toggle="modal"
+                                data-target="#confirm-default-address"
+                                data-href="/set_default_address/{{ address.id }}"
+                                >
+                                Set default
+                                </a>
+                                {% endif %}
+                                <a data-toggle="tooltip" placement="top" data-title="Copy address to clipboard" class="btn btn-default copyAddressButton" onclick="copyToClipboardBreakLines('#addressField{{ address.id}}')">
+                                    <span class="far fa-copy">
+                                    </span>
+                                </a>
+                                <a href="/address/edit/{{ address.id }}" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+</div>
+
+<div class="section">
+    <div class="pull-right top-right-button">
+        <a href="/edit/request.args(0)/email/new" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add email</a>
+    </div>
+
+    <a id='email' class='nav-anchor'></a>
+    <h2>Email</h2>
+
+    <div id="target_add_new"></div>
+    {% if emails %}
+    <ul class="item-list hide-items" data-max-item=2>
+    {% for email in emails %}
+        <li class="item" data-created-on="{{ email.created_on }}">
+            <div class='row'>
+                <div class="col-xs-6">
+                    <div class="item-info">
+                        <a id="dynamicUpdateEmailField_{{email.id}}" href="mailto:{{ email.email }}">{{ email.email }}</a>
+                        {% if email.is_default %}
+                            <span class="label label-primary">Default</span>
+                        {% endif %}
+                        {% if email.created_by == 'SITS' or email.modified_by == 'SITS' %}
+                            <span class="label label-warning">SITS</span>
+                        {% endif %}
+                        {% if email.note %}
+                            <span id="dynamicUpdateNoteBox_{{ email.id }}" class="far fa-comment"
+                                data-toggle="tooltip"
+                                data-title="{{ email.note }}"
+                            ></span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="pull-right" style="margin:-7px 0;">
+                        {% if not email.is_default %}
+                            <a href="#"
+                               class="btn btn-default hide-until-hover"
+                               data-toggle="modal"
+                               data-target="#confirm-default-email"
+                               data-href="set_default_email/{{ email.id }}"
+                            >
+                                Set default
+                            </a>
+                        {% endif %}
+                        <a data-toggle="tooltip" placement="top" data-title="Copy email to clipboard" class="btn btn-default" onclick="copyToClipboard('{{email.email}}')"><span class="far fa-copy"></span></a>
+                        <a onclick="toggleTheBox({{email.id}}); ajax('/student/get_email_editing_form/?email_id{{email.id}}', ['email_id'], 'target_{{email.id}}');" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                    </div>
+                </div>
+                <div style="display:none;" class="slidingOutEmailEditing_{{email.id}}">
+                    <div id="target_{{email.id}}"></div>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+
+<div class="section">
+    <div class="pull-right top-right-button">
+        <a href="/edit/{{ student.id }}/phone/new" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add phone</a>
+    </div>
+
+    <a id='phone' class='nav-anchor'></a>
+    <h2>Phone</h2>
+    {% if phones %}
+    <ul class="item-list hide-items" data-max-item=2>
+    {% for phone in phones %}
+        <li class="item" data-created-on="{{ phone.created_on }}">
+            <div class='row'>
+                <div class="col-xs-9">
+                    <div class="item-info">
+                        <a href="tel:{{phone.number}}">{{phone.number}}</a>
+                        {% if phone.is_default %}
+                            <span class="label label-primary">Default</span>
+                        {% endif %}
+                        {% if 'phone' not in 'phone.type.lower()' %}
+                            <span class="label label-default">{{phone.type}}</span>
+                        {% endif %}
+                        {% if phone.created_by == 'SITS' or phone.modified_by == 'SITS' %}
+                            <span class="label label-warning">SITS</span>
+                        {% endif %}
+                        <!-- TODO: Tooltip not working for comment -->
+                        {% if phone.note %}
+                            <span class="far fa-comment"
+                                data-toggle="tooltip"
+                                data-title="{{phone.note}}"
+                            ></span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-3">
+                    <div class="pull-right" style="margin:-7px 0;">
+                        {% if not phone.is_default %}
+                            <a href="#"
+                               class="btn btn-default hide-until-hover"
+                               data-toggle="modal"
+                               data-target="#confirm-default-phone"
+                               data-href="/set_default_phone/{{phone.id}}"
+                            >
+                                Set default
+                            </a>
+                        {% endif %}
+                        <a href="/edit/{{ student.id }}/phone/{{ phone.id }}" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                    </div>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+
+<div class="section">
+    <a id='enrolments' class='nav-anchor' data-badge-text='{{qa_list.total_enrolments}}'></a>
+    <h2>Enrolments</h2>
+    {% for qa in qa_list %}
+    <div class='panel panel-default'>
+        <div class="panel-heading">
+            <div class="pull-right">
+                <a href="/enrolment/new/{{ qa.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add enrolment</a>
+            </div>
+            <div class="panel-title">
+                {% if qa.qa_warning %}
+                <span title="Contains a Credit-bearing module" class="text-danger">
+                    <span class="fa fa-exclamation-circle"></span>
+                </span>
+                {% endif %}
+
+                <a href="/redpot/qa/view/{{ qa.id }}"><b>{{ qa.title }}</b></a>
+                <small> &bull; {{ qa.enrolments.count }} course{{qa.enrolments.count|pluralize}}</small>
+
+                {% if qa.programme.qualification.is_award and qa.end_date and qa.reason_for_ending %}
+                    {% if qa.reason_for_ending.id == 1 %}
+                    <span class="label label-success">Completed</span>
+                    {% else %}
+                    <span class="label label-warning">Ended</span>
+                    {% endif %}
+                {% elif qa.programme.qualification.on_hesa_return %}
+                    {% if qa.points_awarded %}
+                    <small>&bull; {{ qa.points_awarded }} CATS points</small>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        <ul class="item-list hide-items" data-max-item=5>
+            {% for enrolment in qa.enrolments.all %}
+            <li class="item" data-created-on="{{ enrolment.created_on}}">
+                <div class="pull-right">
+                    <a href="/enrolment/{{enrolment.id}}" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                </div>
+                <div class="item-title">
+
+                    {% if enrolment.module.credit_points and qa.non_accredited %}
+                        <span title="Credit-bearing module within a non-credit-bearing programme" class="text-danger">
+                            <span class="fa fa-exclamation-circle"></span>
+                        </span>
+                    {% endif %}
+                    <a href="/module/view/{{ enrolment.module.id }}">{{ enrolment.module.title }}</a>
+                </div>
+                <div class="item-info">
+                    <a href="/module/view/{{ enrolment.module.id }}">{{ enrolment.module.code }}</a> &bull; {{ enrolment.module.start_date }}
+                    {% if enrolment.module.end_date and enrolment.module.end_date != enrolment.module.start_date %}
+                        &ndash; {{enrolment.module.end_date}}
+                    {% endif %}
+                    {% enrolment_label enrolment.status.id enrolment.status %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+    <a class="btn btn-success" href="/qa/new/{{student.id}}">{% icon_text 'Add programme' 'fa-plus' %}</a>
+    <a class="btn btn-primary" href="/waitlist/add/{{student.id}}">{% icon_text 'Add to waiting list' 'fa-list' %}</a>
+
+    <div class="btn-group pull-right">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            <span class="fa fa-file"></span> Documents <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="/student/statement/{{student.id}}" target="_blank">{% icon_text 'Statement' 'fa-pound-sign' %}</a></li>
+            {% if qa_list.qa_certhe %}
+            <li><a href="/student/certhe_progress/{{student.id}}" target="_blank">{% icon_text 'CertHE progress report' 'fa-certificate' %}</a></li>
+            {% endif %}
+            {% comment %} {{if auth.has_permission('print_transcripts'):}} {% endcomment %}
+            <li class="divider"></li>
+            <li class="dropdown-header">Transcripts</li>
+            <li><a href="/student/transcript/{{student.id}}/undergraduate" target="_blank">{% icon_text 'Undergraduate' 'fa-graduation-cap' %}</a></li>
+            <li><a href="/student/transcript/{{student.id}}/undergraduate/True" target="_blank">{% icon_text 'Undergraduate (with header)' 'fa-graduation-cap' %}</a></li>
+            <li><a href="student/transcript/{{student.id}}/postgraduate" target="_blank">{% icon_text 'Postgraduate' 'fa-graduation-cap' %}</li>
+            <li><a href="/student/transcript/{{student.id}}/postgraduate/True" target="_blank">{% icon_text 'Postgraduate (with header)' 'fa-graduation-cap' %}</a></li>
+            {% comment %} {% endif %} {% endcomment %}
+        </ul>
+    </div>
+</div>
+
+{% if waitlists %}
+<div class="section">
+    <a id='waitlists' class='nav-anchor' data-badge-text='{{ waitlists.count }}'></a>
+    <h2>Waiting lists</h2>
+    <table class="table table-condensed table-striped table-hover hide-rows" data-display='3'>
+        <thead><tr><th>Module</th><th>Title</th><th>Listed on</th></tr></thead>
+        {% for waitlist in waitlists %}
+        <tr>
+            <td><a href="/module/view/{{ waitlist.module.code }}">{{ waitlist.module.code }}</a></td>
+            <td><a href="/module/view/{{ waitlist.module.code }}">Contemporary Irish Fiction</a></td>
+            <td>{{ waitlist.listed_on | date:'d M Y H:i' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+{% if course_applications %}
+<div class="section">
+    <a id='applications' class='nav-anchor' data-badge-text='{{course_applications.count}}'></a>
+    <h2>Applications</h2>
+    <table class="table table-condensed table-striped table-hover hide-rows" data-display='3'>
+    <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
+    {% for application in course_applications %}
+        <tr>
+            <td><a href="/module/view/{{ application.module.code }}">{{ application.module.code }}</a></td>
+            <td><a href="/module/view/{{ application.module.code }}">{{ application.module.title }}</a></td>
+            <td>
+                {% if application.is_completed %}
+                <span class="label label-success">Completed</span>
+                {% else %}
+                <span class="label label-default">In progress</span>
+                {% endif %}
+            </td>
+            <td><a href="/form/view/{{ application.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a></td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+<div class="section">
+    <div class="pull-right top-right-button">
+        <a href="/invoice/choose_enrolments/{{student.id}}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add invoice</a>
+    </div>
+    <a id='invoices' class='nav-anchor' data-badge-text='' data-badge-class='warning'></a>
+    <h2>Invoices</h2>
+    {% if invoices %}
+    <ul class="item-list hide-items" data-max-item=2>
+        {% for invoice in invoices %}
+        <li class="item" data-created-on="{{invoice.created_on}}">
+            <div class="item-title">
+                <div class="pull-right">
+                    <a href="invoice/view/{{invoice.id}}" class="btn btn-default"><span class="fa fa-search"></span></a>
+                </div>
+                <a href="/invoice/view/{{invoice.id}}">
+                {{invoice}}
+                &bull; {{invoice.ledger_items.first.enrolment.module}}
+                </a>
+            </div>
+            <div class="item-info">
+                Raised {{ invoice.date | date:'d M Y' }} &bull; £{% amount_refactored invoice.amount %}
+                {% if not invoice.balance %}
+                    {% if invoice.written_off %}
+                    <span class="label label-primary">Written off</span>
+                    {% else %}
+                    <span class="label label-success">Paid</span>
+                    {% endif %}
+                {% elif invoice.balance < 0 %}
+                <span class="label label-warning">£{{invoice.balance | floatformat }} In credit</span>
+                {% elif invoice.payment_plan.id %}
+                    <span class="label label-warning">£{{invoice.balance | floatformat }} Outstanding</span>
+                    <span class="label label-primary">Payment plan</span>
+                {% elif invoice.duedate and invoice.duedate < now %}
+                    <span class="label label-danger">£{{invoice.balance | floatformat }} Overdue</span>
+                {% else %}
+                    <span class="label label-warning">£{{invoice.balance | floatformat }} Outstanding</span>
+                {% endif %}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+
+<div class="section">
+    <div class="pull-right top-right-button">
+        <a href="" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add login</a>
+    </div>
+
+    <a id='login' class='nav-anchor'></a>
+    <h2>Login</h2>
+
+    {% if website_accounts %}
+    <ul class="item-list hide-items" data-max-item=1>
+        {% for login in website_accounts %}
+        <li class="item">
+            <div class="item-title">
+                <div class="pull-right">
+                    <a href="/login/edit/{{ login.id }}" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                </div>
+                {{ login.username }}
+                {% if login.is_disabled %}
+                <span class="label label-danger">Disabled</span>
+                {% endif %}
+
+            </div>
+            <div class="item-info">
+                Last logged in
+                <span class="timeago" datetime="{{ login.last_login | date:'j M Y H:i' }}" data-toggle="tooltip" placement="bottom" title="" data-tid="4" data-original-title="{{ login.last_login }}">{{ login.last_login }}</span>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+
+
+<div class="section">
+    <div class="pull-right top-right-button">
+        <a href="other_id/new/{{ student.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add Other ID</a>
+    </div>
+    <a id='other_ids' class='nav-anchor'></a>
+    <h2>Other IDs</h2>
+    {% if other_ids %}
+    <table class="table table-condensed table-striped table-hover hide-rows" data-display='3'>
+        <thead><tr><th>ID</th><th>Type</th><th>End date</th></th><th></th></tr></thead>
+        <tbody>
+        {% for other_id in other_ids %}
+            <tr>
+                <td>{{ other_id.number }}</td>
+                <td>{{ other_id.type.description }}</td>
+                <td>{% if other_id.end_date %}{{ other_id.end_date  }}{% else %}{% endif %}</td>
+                <td class="col-xs-1">
+                    <a href="/other-id/edit/{{ other_id.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                    {% comment %} {% if auth.has_membership('dev') %} {% endcomment %}
+                    <a href="/other-id/delete/{{ other_id.id }}"><span class="fas fa-times"></span></a>
+                    {% comment %} {% endif %} {% endcomment %}
+                </td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <dl class='dl-horizontal'><dt> Moodle ID</dt>
+    {% if moodle_id %}
+        <dd>{{ moodle_id.id }} <a href="/moodle-id/edit/{{ moodle_id.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a></dd>
+    {% else %}
+        <dd>N/A <a href="/moodle-id/new/{{ student.id }}"><span class="fa fa-plus"></span></a></dd>
+    {% endif %}
+    </dl>
+
+</div>
+
+<div class="section">
+    <div class="pull-right top-right-button">
+        <a href="/enquiry/new/{{ student.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add Enquiries</a>
+    </div>
+    <a id='enquiries' class='nav-anchor'></a>
+    <h2>Enquiries</h2>
+    {% if enquiries %}
+    <table class="table table-condensed table-striped table-hover hide-rows" data-display='3'>
+    <thead><tr><th width=11>Date</th><th>Module</th><th>Title</th><th>Details</th><th></th></tr></thead>
+    <tbody>
+    {% for enquiry in enquiries %}
+        <tr>
+            <td>{{ enquiry.date | date:'SHORT_DATE_FORMAT' }}</td>
+            <td><a href="/redpot/module/view/{{ enquiry.module.id }}">{{ enquiry.module.code }}</a></td>
+            <td>{{ enquiry.module.title }}</td>
+            <td><a class="set-default-hover" data-content="{{ enquiry.module.title }} ({{ enquiry.module.code }}): Please add me to the waiting list for spaces on this course" data-html="true" data-placement="left" data-toggle="popover" data-trigger="hover" data-original-title="" title=""><span class="fa fa-ellipsis-h"></span></a></td>
+            <td class="col-xs-1"><a href="/redpot/enquiry/edit/{{ enquiry.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    {% endif %}
+</div>
+
+{% if tutor.id %}
+<div class="section">
+    <!-- TODO: Implement the tutor page -->
+    <a class="btn btn-default btn-lg pull-right" data-title="Edit details" data-toggle="tooltip" href="/tutor/edit/{{tutor.id}}" target="" data-original-title="" title=""><span class="fas fa-fw fa-pencil-alt"></span></a>
+    {% if tutor.rtw_end_date %}
+    {% if tutor.expiredRTW %}
+    <div class="section-alert-header alert-danger">
+            <span class="fa fa-exclamation-circle"></span>
+            <b>This tutor's right to work has expired</b>
+    </div>
+    {% elif tutor.expiresSoonRTW %}
+    <div class="section-alert-header alert-danger">
+        <span class="fa fa-exclamation-circle"></span>
+        <b>This tutor's right to work will expire within 6 months</b>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <a id='tutor' class='nav-anchor'></a>
+    <h2>Tutor details</h2>
+    <dl class="dl-horizontal wide">
+        <div class="row" style="padding-top: 20px">
+            <div class='col-xs-9'>
+                <dt>Qualifications</dt><dd>{{ tutor.qualifications }}</dd>
+                <dt>Affiliation</dt><dd>{{ tutor.affiliation }}</dd>
+                {% comment %} if has_membership('tutor_banking'): {% endcomment %}
+                <dt>National Insurance # </dt><dd>{{tutor.nino}}</dd>
+                <dt>Employee #</dt><dd><span class="text-danger"><b>{{tutor.employee_no}}</b></span></dd>
+                <dt>Appointment ID</dt><dd><span class="text-danger"><b>{{tutor.appointment_id}}</b></span></dd>
+                {% comment %} {% endif %} {% endcomment %}
+                <dt>Oracle supplier number</dt><dd>{{tutor.oracle_supplier_number}}</dd>
+                <br>
+                <h4>Bank details</h4>
+                <dt>Bank name</dt><dd>{{tutor.bankname}}</dd>
+                <dt>Branch address</dt><dd>{{tutor.branchaddress}}</dd>
+                <dt>Account name</dt><dd>{{tutor.accountname}}</dd>
+                <dt>Sort code</dt><dd>{{tutor.sortcode}}</dd>
+                <dt>Account # </dt><dd>{{tutor.accountno}}</dd>
+                <dt>SWIFT</dt><dd>{{tutor.swift}}</dd>
+                <dt>IBAN</dt><dd>{{tutor.iban}}</dd>
+                <dt>Other bank details</dt><dd>{{tutor.other_bank_details}}</dd>
+            </div>
+            {% if tutor.image %}
+            <div class='col-xs-3' style="width:100px; height:85px; max-width:100px; overflow:hidden; margin: 0 10px 0 0;">
+                <img src="/mnt/images/tutors/{{tutor.image}}" width="100px" align="left">
+            </div>
+            {% endif %}
+            <br>
+        </div>
+        <h4>Biography</h4>
+        <div class='panel panel-default panel-body'>
+            {{tutor.custom_biography}}
+        </div>
+    </dl>
+
+    <!-- TODO: Implement the tutor subject page-->
+    <h4>Subjects <small><a href="/tutor/subject/{{tutor.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a></small></h4>
+    {% if tutor.tutorsubjects.all %}
+    {% for tutor_subject in tutor.tutorsubjects.all %}
+    <span class="label label-warning">{{ tutor_subject.subject.name }}</span>
+    {% endfor %}
+    {% else %}
+    none
+    {% endif %}
+    <p></p>
+    <!-- TODO: Implment the membership feature-->
+    {% comment %}{{ if has_membership('tutor_banking'):}} {% endcomment %}
+    <h4>Right to work <small><a href="/tutor/right-to-work/{{tutor.id}}">
+        <span class="fas fa-fw fa-pencil-alt"></span></a></small>
+    </h4>
+    <dl class="dl-horizontal">
+        <dt>List</dt><dd>{{tutor.rtw_type}}</dd>
+        <dt>Document type</dt><dd>{{tutor.rtw_document_type}}</dd>
+        <dt>Document issued on</dt><dd>{{tutor.rtw_start_date}}</dd>
+        <dt>Document valid until</dt><dd>{{tutor.rtw_end_date}}</dd>
+        <dt>Date check done</dt><dd>{{tutor.rtw_check_on}}</dd>
+        <dt>Check done by</dt><dd>{{tutor.rtw_check_by}}</dd>
+    </dl>
+    {% comment %} {{ pass}} {% endcomment %}
+
+    {% timestamp tutor %}
+</div>
+
+<div class="section">
+    <div class="pull-right top-right-button">
+        <!-- TODO: create page for link-->
+        <a href="/tutor-module/new?_next=%2Fstudent%2Fview%2F{{student.id}}%23tutor-modules&amp;tutor={tutor.id}}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add module</a>
+    </div>
+    <a id='tutor-modules' class='nav-anchor' data-badge-text='{{tutor_modules.count}}'></a>
+    <h2>Tutor modules</h2>
+    {% if tutor_roles %}
+    <form class="form-inline" type="get">
+      <div class="form-group">
+        <select class="form-control generic-widget" id="search_modules_by_roles_tutor_role" name="tutor_role">
+            {% for role in tutor_roles %}
+            <option {% if role == tutor_module_role %} selected{% endif %} >{{role}}</option>
+            {% endfor %}
+          </select>
+      </div>
+      <button type="submit" class="btn btn-default">Filter by Roles</button>
+    </form>
+    {% endif %}
+    <div class="pull-right">Showing {{tutor_modules_query.count}} results out of {{tutor_modules.count}}</div>
+    <br>
+    <br>
+    <ul class="item-list hide-items" id="tutor-list" data-max-item=4>
+
+    {% for tutor_module in tutor_modules_query %}
+    <li class="item" data-created-on="{{.tutor_module.created_on}}">
+        <div class="item-title">
+            <div class='row'>
+                <div class="col-xs-5">
+                    <a href="/module/view/{{tutor_module.module.id}}">{{tutor_module.module.title}}</a>
+                </div>
+                <div class="col-xs-4">
+                    {% if tutor_module.role %}
+                    <span class="label label-primary">{{tutor_module.role}}</span>
+                    {% endif %}
+                    {% if tutor_module.is_published %}
+                    <span class="label label-success" data-toggle="tooltip" data-title="This tutor is visible on the course webpage">Published</span>
+                    {% endif %}
+                </div>
+                <div class="col-xs-2">
+                    {% if not tutor_module.module.is_cancelled %}
+                        {{tutor_module.module.enrolments.count}}/{{ tutor_module.module.max_size | default:'∞' }}
+                    {% else %}
+                        <span class="label label-danger">Cancelled</span>
+                    {% endif %}
+                </div>
+                <div class="col-xs-1">
+                    <div class="pull-right">
+                        {% tutor_module_menu tutor_module %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="item-info">
+            <div class='row'>
+                <div class="col-xs-5">
+                    <a href="/redpot/module/view/{{tutor_module.module.id}}">{{tutor_module.module.code}}</a> &bull;
+                    {% if tutor_module.module.start_date == tutor_module.module.end_date %}
+                        {{tutor_module.module.start_date}}
+                    {% else %}
+                        {{tutor_module.module.start_date}} &ndash; {{tutor_module.module.end_date}}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</div>
+
+<div class="section">
+    <a id='tutor-activity' class='nav-anchor'></a>
+    <h2>Other tutor activity</h2>
+    <!-- TODO: Need to update the plus icon styles as new fontawesome icon used -->
+    <table class="table table-condensed table-striped table-hover hide-rows add-record" data-display='2' data-hide-after='2' data-add-url="/tutor-activity/new/{{tutor.id}}?_next=%2Fredpot%2Fstudent%2Fview%2F{{student.id}}%23tutor-activity">
+    <thead><tr><th>Type</th><th>Note</th><th>Date</th><th></th></tr></thead>
+    <tbody>
+    {% for tutor_activity in tutor_activities %}
+        <tr>
+            <td>{{tutor_activity.activity.description}}</td>
+            <td>{{tutor_activity.note}}</td>
+            <td>{{tutor_activity.date}}</td>
+            <td class="col-xs-1">
+                <a data-href="/tutor-activity/delete/{{tutor_activity.id}}?_next=%2Fredpot%2Fstudent%2Fview%2F{{student.id}}%23tutor-activity" data-target="#confirm-remove-activity" data-toggle="modal" href="#"><span class="fas fa-times"></span></a>
+                <a href="/tutor-activity/edit/{{tutor_activity.id}}?_next=%2Fredpot%2Fstudent%2Fview%2F{{student.id}}%23tutor-activity"><span class="fas fa-fw fa-pencil-alt"></span></a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+</div>
+
+{% else %}
+<div class="section">
+    <a id='tutor' class='nav-anchor'></a>
+    <h2>Tutor details</h2>
+    <p>This person is a not a tutor.</p>
+    <a class="btn btn-success" href="/tutor/edit/{{sudent.id}}"><span class="fa fa-plus"></span> Make tutor</a>
+</div>
+{% endif %}
+
+<!-- TODO : Does this remain here or do we move this elsewhere? -->
+<script>
+$(function () {
+    $('[data-toggle="popover"]').popover()
+  })
+
+  function copyToClipboard(copiedText) {
+      var newDocumentElement = document.createElement("input");
+      document.body.appendChild(newDocumentElement);
+      newDocumentElement.setAttribute('value', copiedText);
+      newDocumentElement.select();
+      document.execCommand("copy");
+      document.body.removeChild(newDocumentElement);
+  }
+
+  function copyToClipboardBreakLines(element) {
+      var text = $(element).clone().text();
+      text = text.replace(/  /g, "");
+      element = $('<textarea>').appendTo('body').val(text).select();
+      document.execCommand('copy');
+      element.remove();
+  }
+
+  </script>
+
+  <script>
+    function ajaxUpdateEmail(emailID) {
+
+      //If any emails exist on the page, update the current view with the most recent values
+      if( $('.slidingOutEmailEditing_' + emailID).length ) {
+          $(".slidingOutEmailEditing_" + emailID).toggle();
+
+          var emailInput = $("#email_email").val();
+              noteInput = $("#email_note").val();
+
+          $("#dynamicUpdateEmailField_" + emailID).html(emailInput);
+          $("#dynamicUpdateEmailField_" + emailID).attr('href','mailto:' + emailInput);
+          $("#dynamicUpdateNoteBox_" + emailID).attr("data-title", noteInput);
+      }
+
+      //Update the database in the back-end with AJAX
+      // TODO: add the ajax stuff
+
+      //Removing the email if delete checkbox has been selected
+      if ($('input#delete_record').is(':checked')) {
+          $(".slidingOutEmailEditing_" + emailID).closest(".item").remove();
+      }
+
+      //Updating 'default' label if a user has changed the email address
+      if ($('input#email_is_default').is(':checked')) {
+          $("span.label-primary:contains('Default')").empty();
+          $("#dynamicUpdateEmailField_" + emailID).after("<span class='label label-primary'>Default</span>");
+      }
+
+      //Stopping from reloading the page
+      return false;
+  }
+  </script>
+
+  <script>
+  function toggleTheBox(emailID) {
+
+      //Hiding and removing all the forms of updating email, except the selected one by user
+      $("[class*=slidingOutEmailEditing]").not(".slidingOutEmailEditing_" + emailID).hide();
+      $("[id*=target_]").not(".slidingOutEmailEditing_" + emailID).empty();
+
+      //Togling the selected form
+      $(".slidingOutEmailEditing_" + emailID).toggle();
+
+  }
+  </script>
+
+  <script>
+    // When an expand/collapse icon is pressed, switch it from down to up (or left to right?  Might as well use the same setup)
+    $('.collapse').on('shown.bs.collapse', function () {
+        $(this).prev().find(".fa-chevron-down").removeClass("fa-chevron-down").addClass("fa-chevron-up");
+    }).on('hidden.bs.collapse', function () {
+        $(this).prev().find(".fa-chevron-up").removeClass("fa-chevron-up").addClass("fa-chevron-down");
+    });
+  </script>
+
+
+{% endblock %}

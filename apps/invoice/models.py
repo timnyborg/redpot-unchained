@@ -27,6 +27,9 @@ class InvoiceQuerySet(models.QuerySet):
         # Overdue only applies to outstanding
         return self.outstanding().filter(due_date__lt=date.today())
 
+    def written_off(self) -> bool:
+        return self.allocated_ledger_items.non_cash().total() == 0
+
 
 class Invoice(SignatureModel):
     number = models.IntegerField(unique=True, editable=False)

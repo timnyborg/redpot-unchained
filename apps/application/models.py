@@ -8,7 +8,7 @@ class CourseApplication(SignatureModel):
         'module.Module',
         models.DO_NOTHING,
         db_column='module',
-        related_name='applications',
+        related_name='course_applications',
         related_query_name='application',
     )
     student = models.ForeignKey(
@@ -16,7 +16,7 @@ class CourseApplication(SignatureModel):
         models.DO_NOTHING,
         db_column='student',
         null=True,
-        related_name='applications',
+        related_name='course_applications',
         related_query_name='application',
     )
 

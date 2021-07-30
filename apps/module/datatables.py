@@ -8,7 +8,7 @@ import django.forms as forms
 
 from apps.core.utils.datatables import DeleteLinkColumn, EditLinkColumn, LinkColumn, ViewLinkColumn
 
-from .models import Book, Module, ModuleWaitlist
+from .models import Book, Module, Waitlist
 
 
 class ModuleSearchFilter(django_filters.FilterSet):
@@ -62,7 +62,7 @@ class WaitlistTable(tables.Table):
     delete = DeleteLinkColumn('', title='Remove from waiting list')
 
     class Meta:
-        model = ModuleWaitlist
+        model = Waitlist
         template_name = "django_tables2/bootstrap.html"
         fields = ('id', 'student', 'listed_on', 'emailed_on')
 

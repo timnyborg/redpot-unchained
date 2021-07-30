@@ -1,8 +1,14 @@
+from datetime import date
+
+from dateutil.relativedelta import relativedelta
+
 from django.core import validators
 from django.db import models
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from apps.core.models import SignatureModel
+from apps.module.models import Module, Subject
 
 
 class TutorManager(models.Manager):
@@ -111,17 +117,33 @@ class Tutor(SignatureModel):
         if self.iban:
             self.iban = self.iban.upper()
 
+    def custom_biography(self):
+        if self.biography:
+            return mark_safe(self.biography)
+        else:
+            return mark_safe(
+                """
+            <span class="text-danger">Error: Invalid HTML in biography</span>
+            """
+            )
+
+    def rtw_expired(self) -> bool:
+        return self.rtw_end_date and self.rtw_end_date < date.today()
+
+    def rtw_expires_soon(self) -> bool:
+        return self.rtw_end_date and self.rtw_end_date < date.today() + relativedelta(months=6)
+
 
 class TutorModule(SignatureModel):
     module = models.ForeignKey(
-        'module.Module',
+        Module,
         models.DO_NOTHING,
         db_column='module',
         related_name='tutor_modules',
         related_query_name='tutor_module',
     )
     tutor = models.ForeignKey(
-        'Tutor', models.DO_NOTHING, db_column='tutor', related_name='tutor_modules', related_query_name='tutor_module'
+        Tutor, models.DO_NOTHING, db_column='tutor', related_name='tutor_modules', related_query_name='tutor_module'
     )
     role = models.CharField(max_length=64, blank=True, help_text="e.g. 'Tutor' or 'Speaker'")
     biography = models.TextField(
@@ -167,3 +189,40 @@ class RightToWorkDocumentType(models.Model):
 
     def __str__(self) -> str:
         return str(self.name)
+
+
+class TutorSubject(SignatureModel):
+    tutor = models.ForeignKey(
+        Tutor, models.DO_NOTHING, db_column='tutor', blank=True, null=True, related_name='tutorsubjects'
+    )
+    subject = models.ForeignKey(
+        Subject, models.DO_NOTHING, db_column='subject', blank=True, null=True, related_name='tutorsubjects'
+    )
+
+    class Meta:
+        # managed = False
+        db_table = 'tutor_subject'
+
+
+class ActivityType(models.Model):
+    description = models.CharField(max_length=128, blank=True, null=True)
+    is_active = models.BooleanField()
+
+    class Meta:
+        # managed = False
+        db_table = 'activity'
+
+
+class TutorActivity(SignatureModel):
+    tutor = models.ForeignKey(
+        Tutor, models.DO_NOTHING, db_column='tutor', related_name='tutor_activities', blank=True, null=True
+    )
+    activity = models.ForeignKey(
+        ActivityType, models.DO_NOTHING, db_column='activity', related_name='tutor_activities', blank=True, null=True
+    )
+    date = models.DateField(blank=True, null=True)
+    note = models.TextField(blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'tutor_activity'

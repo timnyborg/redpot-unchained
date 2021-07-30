@@ -5,16 +5,18 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import models
-from django.db.models import Q
+from django.db.models import Prefetch, Q
 from django.forms import Form
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
 
 from apps.core.utils.views import PageTitleMixin
+from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
+from apps.website_account.models import WebsiteAccount
 
 from . import datatables, forms
-from .models import Email, Student
+from .models import DietType, Email, Student, StudentArchive
 
 
 class Create(LoginRequiredMixin, generic.View):
@@ -118,6 +120,79 @@ class CreateEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, gener
 
     def get_success_url(self) -> str:
         return self.object.student.get_absolute_url() + '#email'
+
+
+class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
+    queryset = Student.objects.defer(None)  # Get all fields
+    template_name = 'student/view.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        course_applications = self.object.course_applications.select_related('module').all()
+        addresses = self.object.addresses.order_by('-is_default', '-is_billing', 'type', '-modified_on')
+        emails = self.object.emails.order_by('-is_default', '-modified_on')
+        enquiries = self.object.enquiries.select_related('module').order_by('-date')
+        diet_type = DietType.objects.filter(id=self.object.id).last()
+        last_merger = StudentArchive.objects.filter(target=self.object.id).last()
+        phones = self.object.phones.order_by('-is_default', '-modified_on')
+        waitlists = self.object.waitlists.select_related('module').all()
+        website_accounts = WebsiteAccount.objects.filter(student=self.object.id)
+        other_ids = self.object.other_ids.all()
+        suspension = self.object.suspensions.order_by('-start_date')
+        invoices = self.object.get_invoices()
+        emergency_contact = getattr(self.object, 'emergency_contact', None)
+        diet = getattr(self.object, 'diet', None)
+        moodle_id = getattr(self.object, 'moodle_id', None)
+        tutor = Tutor.objects.filter(student=self.object.id).prefetch_related('tutorsubjects').first()
+        tutor_activities = tutor_modules = tutor_roles = tutor_modules_query = None
+        if tutor:
+            tutor_activities = tutor.tutor_activities.select_related('activity').order_by('-id')
+            tutor_modules = tutor.tutor_modules.select_related('module').order_by('-module__start_date')
+            tutor_roles = tutor.tutor_modules.values_list('role', flat=True).exclude(role=None).distinct
+            tutor_modules_query = tutor.tutor_modules.select_related('module').order_by('-module__start_date')
+
+        tutor_module_role = self.request.GET.get('tutor_role', '')
+        if tutor_module_role:
+            tutor_modules_query &= tutor_modules_query.filter(role__contains=tutor_module_role)
+
+        qa_list = self.object.qualification_aims.select_related('programme').prefetch_related(
+            Prefetch('enrolments', queryset=Enrolment.objects.filter().order_by('-module__start_date', 'module__code'))
+        )
+        qa_list.total_enrolments = sum(qa.enrolments.count() for qa in qa_list)
+        qa_list.qa_certhe = any(qa.programme.is_certhe for qa in qa_list)
+
+        for qa in qa_list:
+            if qa.programme.qualification.id == 1:
+                qa.non_accredited = True
+                qa.qa_warning = any(enrolment.module.credit_points for enrolment in qa.enrolments.all())
+
+            qa.points_awarded = sum(enrolment.points_awarded or 0 for enrolment in qa.enrolments.all())
+
+        return {
+            'addresses': addresses,
+            'course_applications': course_applications,
+            'emails': emails,
+            'enquiries': enquiries,
+            'diet': diet,
+            'diet_type': diet_type,
+            'invoices': invoices,
+            'last_merger': last_merger,
+            'emergency_contact': emergency_contact,
+            'phones': phones,
+            'waitlists': waitlists,
+            'website_accounts': website_accounts,
+            'moodle_id': moodle_id,
+            'other_ids': other_ids,
+            'qa_list': qa_list,
+            'suspension': suspension,
+            'tutor': tutor,
+            'tutor_activities': tutor_activities,
+            'tutor_modules': tutor_modules,
+            'tutor_roles': tutor_roles,
+            'tutor_modules_query': tutor_modules_query,
+            'tutor_module_role': tutor_module_role,
+            **context,
+        }
 
 
 class MakeTutor(LoginRequiredMixin, generic.View):

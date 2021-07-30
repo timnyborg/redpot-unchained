@@ -527,9 +527,11 @@ class Location(SignatureModel):
         return 'Invalid: no city or building'
 
 
-class ModuleWaitlist(models.Model):
-    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', related_name='waitlist')
-    student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student')
+class Waitlist(models.Model):
+    """A student's spot on a module waitlist"""
+
+    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', related_name='waitlists')
+    student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student', related_name='waitlists')
     listed_on = models.DateTimeField(default=datetime.now)
     emailed_on = models.DateTimeField(blank=True, null=True)
 

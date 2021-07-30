@@ -1,3 +1,4 @@
+import math
 import socket
 from typing import Union
 
@@ -127,3 +128,46 @@ def watermark(text=socket.gethostname()):
         <div id='watermark'>{(text + ' ')*150}</div>
     """
     )
+
+
+@register.simple_tag
+def enrolment_label(enrolment_status_id, text):
+
+    enrolment_label_class = {
+        # Confirmed
+        10: 'text-success',
+        11: 'text-success',
+        90: 'text-success',
+        # Provisional
+        20: 'text-default',
+        # Withdrawn, deferred
+        70: 'text-danger',
+        71: 'text-danger',
+        76: 'text-danger',
+        77: 'text-danger',
+        # Transferred
+        75: 'text-warning',
+    }
+
+    return mark_safe(
+        f"""
+        <span class="bordered {enrolment_label_class.get(enrolment_status_id)} text-default">{text}</span>
+    """
+    )
+
+
+@register.simple_tag
+def icon_text(text, icon_type):
+    return mark_safe(
+        f"""
+        <span class="fa {icon_type}"></span> {text}
+    """
+    )
+
+
+@register.simple_tag
+def amount_refactored(amount):
+    if amount % 1 == 0:
+        return math.trunc(amount)
+    else:
+        return '%.2f' % amount

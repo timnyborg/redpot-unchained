@@ -1,0 +1,72 @@
+- model: student.ethnicity
+  pk: 10
+  fields:
+    name: White
+- model: student.ethnicity
+  pk: 15
+  fields:
+    name: Gypsy or Traveller
+- model: student.ethnicity
+  pk: 21
+  fields:
+    name: Black Caribbean
+- model: student.ethnicity
+  pk: 22
+  fields:
+    name: Black African
+- model: student.ethnicity
+  pk: 29
+  fields:
+    name: Black Other
+- model: student.ethnicity
+  pk: 31
+  fields:
+    name: Asian Indian
+- model: student.ethnicity
+  pk: 32
+  fields:
+    name: Asian Pakistani
+- model: student.ethnicity
+  pk: 33
+  fields:
+    name: Asian Bangladeshi
+- model: student.ethnicity
+  pk: 34
+  fields:
+    name: Chinese
+- model: student.ethnicity
+  pk: 39
+  fields:
+    name: Asian Other
+- model: student.ethnicity
+  pk: 41
+  fields:
+    name: Mixed White & Black Caribbean
+- model: student.ethnicity
+  pk: 42
+  fields:
+    name: Mixed White & Black African
+- model: student.ethnicity
+  pk: 43
+  fields:
+    name: Mixed White & Asian
+- model: student.ethnicity
+  pk: 49
+  fields:
+    name: Other Mixed background
+- model: student.ethnicity
+  pk: 50
+  fields:
+    name: Arab
+- model: student.ethnicity
+  pk: 80
+  fields:
+    name: Other Ethnic background
+- model: student.ethnicity
+  pk: 90
+  fields:
+    name: Not known
+- model: student.ethnicity
+  pk: 98
+  fields:
+    name: Information Refused
