@@ -6,10 +6,13 @@ from django.db import models
 from django.urls import reverse
 
 from apps.core.models import SignatureModel
+from apps.invoice.models import Invoice
+from apps.module.models import Module
 
 NOT_KNOWN_DOMICILE = 181
 NOT_KNOWN_NATIONALITY = 181
-NOT_KNOWN_ETHNICITY = 99
+NOT_KNOWN_ETHNICITY = 90
+# TODO: Make default
 NOT_KNOWN_RELIGION = 99
 
 
@@ -26,9 +29,8 @@ class Student(SignatureModel):
     nationality = models.ForeignKey(
         'Nationality', models.DO_NOTHING, db_column='nationality', default=NOT_KNOWN_NATIONALITY
     )
-    ethnicity = models.IntegerField(blank=True, null=True)
+    ethnicity = models.ForeignKey('Ethnicity', models.DO_NOTHING, db_column='ethnicity', default=NOT_KNOWN_ETHNICITY)
     religion_or_belief = models.IntegerField(default=99)
-    disability = models.IntegerField(blank=True, null=True)
     occupation = models.CharField(max_length=128, blank=True, null=True)
     termtime_postcode = models.CharField(max_length=32, blank=True, null=True)
     note = models.CharField(max_length=1024, blank=True, null=True)
@@ -36,6 +38,7 @@ class Student(SignatureModel):
     is_flagged = models.BooleanField(default=False)
     is_eu = models.BooleanField(blank=True, null=True)
     deceased = models.BooleanField(db_column='Deceased', blank=True, null=True)  # Field name made lowercase.
+    disability = models.ForeignKey('Disability', models.DO_NOTHING, db_column='disability', null=True, blank=True)
     disability_detail = models.CharField(max_length=2048, blank=True, null=True)
     disability_action = models.CharField(max_length=256, blank=True, null=True)
     dars_optout = models.BooleanField(default=True)
@@ -79,14 +82,35 @@ class Student(SignatureModel):
         }
         return gender_to_sex_map.get(self.gender)
 
+    @property
+    def formatdate(self):
+        if self.start_date:
+            return f'{self.start_date:%d %b %Y}'
+
     def get_absolute_url(self) -> str:
         return reverse('student-view', args=[self.id])
+
+    def get_edit_url(self):
+        return reverse('student:edit', args=[self.id])
 
     def get_default_address(self) -> Optional[Address]:
         return self.addresses.default().first()
 
     def get_billing_address(self) -> Optional[Address]:
         return self.addresses.billing().first() or self.get_default_address()
+
+    def get_invoices(self):
+        return Invoice.objects.filter(invoice_ledger__ledger__enrolment__qa__student=self).distinct()
+
+
+class StudentArchive(SignatureModel):
+    husid = models.BigIntegerField(blank=True, null=True)
+    source = models.IntegerField(blank=True, null=True)
+    target = models.IntegerField(blank=True, null=True)
+    json = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'student_archive'
 
 
 class AddressQuerySet(models.QuerySet):
@@ -126,7 +150,6 @@ class Address(SignatureModel):
     objects = AddressQuerySet.as_manager()
 
     class Meta:
-        # managed = False
         db_table = 'address'
 
 
@@ -172,7 +195,6 @@ class MoodleID(SignatureModel):
     first_module_code = models.CharField(max_length=12)
 
     class Meta:
-        # managed = False
         db_table = 'moodle_id'
 
 
@@ -191,14 +213,20 @@ class OtherID(SignatureModel):
         related_query_name='other_id',
     )
     number = models.CharField(max_length=64, blank=True, null=True)
-    type = models.IntegerField(choices=Types.choices)
+    type = models.OneToOneField('OtherIdType', models.DO_NOTHING, db_column='type')
     note = models.CharField(max_length=64, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'other_id'
+
+
+class OtherIdType(models.Model):
+    description = models.CharField(max_length=64)
+
+    class Meta:
+        db_table = 'other_id_type'
 
 
 class Nationality(models.Model):
@@ -231,6 +259,98 @@ class Domicile(models.Model):
     def is_uk(self) -> bool:
         # Todo: make a UK column
         return self.pk in [240, 241, 242, 243]
+
+
+class Ethnicity(models.Model):
+    name = models.CharField(max_length=32)
+
+    class Meta:
+        db_table = 'ethnicity'
+
+
+class Disability(models.Model):
+    description = models.CharField(max_length=64, blank=True, null=True)
+    created_by = models.CharField(max_length=16, blank=True, null=True)
+    created_on = models.DateTimeField(blank=True, null=True)
+    modified_by = models.CharField(max_length=16, blank=True, null=True)
+    modified_on = models.DateTimeField(blank=True, null=True)
+    web_publish = models.BooleanField()
+    display_order = models.IntegerField(blank=True, null=True)
+    custom_description = models.CharField(max_length=64, blank=True, null=True)
+
+    class Meta:
+        db_table = 'disability'
+        unique_together = (('id', 'description', 'custom_description'),)
+
+
+class Diet(models.Model):
+    student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student')
+    type = models.ForeignKey('DietType', models.DO_NOTHING, db_column='type', blank=True, null=True)
+    note = models.CharField(max_length=512, blank=True, null=True)
+
+    class Meta:
+        db_table = 'diet'
+
+
+class DietType(models.Model):
+    id = models.IntegerField(primary_key=True)
+    description = models.CharField(max_length=64, blank=True, null=True)
+
+    class Meta:
+        db_table = 'diet_type'
+
+
+class EmergencyContact(SignatureModel):
+    student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student', related_name='emergency_contact')
+    name = models.CharField(max_length=128, blank=True, null=True)
+    phone = models.CharField(max_length=32, blank=True, null=True)
+    email = models.CharField(max_length=128, blank=True, null=True)
+
+    class Meta:
+        db_table = 'emergency_contact'
+
+
+class Phone(SignatureModel):
+    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student', related_name="phones")
+    type = models.ForeignKey('PhoneType', models.DO_NOTHING, db_column='type')
+    number = models.CharField(max_length=64, blank=True, null=True)
+    note = models.CharField(max_length=128, blank=True, null=True)
+    is_default = models.BooleanField()
+
+    class Meta:
+        db_table = 'phone'
+
+
+class PhoneType(models.Model):
+    id = models.IntegerField(primary_key=True)
+    description = models.CharField(max_length=32, blank=True, null=True)
+
+    class Meta:
+        db_table = 'phone_type'
+
+
+class Enquiry(SignatureModel):
+    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student', related_name='enquiries')
+    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', related_name='enquiries')
+    date = models.DateTimeField(blank=True, null=True)
+    detail = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'enquiry'
+
+
+class Suspension(SignatureModel):
+    student = models.ForeignKey(
+        'Student', models.DO_NOTHING, db_column='student', related_name="suspensions", blank=True, null=True
+    )
+    start_date = models.DateField()
+    expected_return_date = models.DateField(blank=True, null=True)
+    actual_return_date = models.DateField(blank=True, null=True)
+    reason = models.IntegerField(blank=True, null=True)
+    note = models.CharField(max_length=256, blank=True, null=True)
+
+    class Meta:
+        db_table = 'suspension'
 
     def __str__(self) -> str:
         return str(self.name)

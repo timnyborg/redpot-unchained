@@ -1,3 +1,4 @@
+from apps.hesa.models.staging_tables import INSTITUTION_CODE
 from django.db import models
 from django.urls import reverse
 
@@ -6,7 +7,6 @@ from apps.core.models import PhoneField, SignatureModel
 AT_PROVIDER_STUDY_LOCATION = 1
 
 CERT_HE_SITS_CODE = 'UR_9A1'
-
 
 class Programme(SignatureModel):
     FUNDING_LEVELS = [

@@ -137,7 +137,7 @@ class HESAReturn:
                 fnames=row.firstname.upper() + (' ' + row.middlename.upper() if row.middlename else ''),
                 sexid=row.sex,
                 nation=row.nationality.hesa_code,
-                ethnic=str(row.ethnicity).zfill(2),
+                ethnic=str(row.ethnicity_id).zfill(2),
                 disable=str(row.disability or 0).zfill(2),  # todo: default 0 for disability in the table itself?
                 ttaccom=row.termtime_accommodation,
                 ttpcode=_correct_postcode(row.termtime_postcode or row.postcode or ''),
