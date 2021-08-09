@@ -44,7 +44,6 @@ class Discount(SignatureModel):
     objects = DiscountQuerySet.as_manager()
 
     class Meta:
-        # managed = False
         db_table = 'discount'
 
     def __str__(self):
@@ -61,5 +60,4 @@ class DiscountStudent(models.Model):
     email = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'discount_student'

@@ -31,6 +31,7 @@ class Create(LoginRequiredMixin, SuccessMessageMixin, AutoTimestampMixin, PageTi
 
 
 class Edit(LoginRequiredMixin, PageTitleMixin, generic.UpdateView):
+    # todo: recent login history (may belong elsewhere)
     model = models.WebsiteAccount
     form_class = forms.EditForm
     template_name = 'core/form.html'
@@ -51,15 +52,3 @@ class Edit(LoginRequiredMixin, PageTitleMixin, generic.UpdateView):
 
     def get_success_url(self) -> str:
         return self.object.student.get_absolute_url() + '#login'
-
-
-#
-#     # Display login history
-#     recent_logins = idb(
-#         idb.public_auth_event.description.contains(login.id)
-#     ).select(
-#         limitby=(0, 20),
-#         orderby=~idb.public_auth_event.time_stamp
-#     )
-#
-#     return dict(login=login, login_form=login_form, new_password_form=new_password_form, recent_logins=recent_logins)

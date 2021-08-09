@@ -12,7 +12,6 @@ class HECoSSubject(models.Model):
     )
 
     class Meta:
-        # managed = False
         db_table = 'hecos_subject'
         ordering = ('name',)
 
@@ -26,7 +25,6 @@ class ModuleHECoSSubject(SignatureModel):
     percentage = models.IntegerField()
 
     class Meta:
-        # managed = False
         db_table = 'module_hecos_subject'
 
 
@@ -36,7 +34,6 @@ class ProgrammeHecosSubject(models.Model):
     percentage = models.IntegerField()
 
     class Meta:
-        # managed = False
         db_table = 'programme_hecos_subject'
 
 
@@ -45,5 +42,4 @@ class HESACostCentre(models.Model):
     price_group = models.CharField(max_length=2, blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'hesa_cost_centre'

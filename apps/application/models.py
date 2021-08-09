@@ -79,5 +79,4 @@ class CourseApplication(SignatureModel):
     further_details = models.CharField(max_length=4000, blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'course_application'

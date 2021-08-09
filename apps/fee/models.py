@@ -100,7 +100,6 @@ class FeeType(models.Model):
 
     def __str__(self):
         return f'{self.narrative}'
-        # return f'{self.narrative} ({self.account})'
 
 
 class Accommodation(SignatureModel):

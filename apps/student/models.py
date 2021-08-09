@@ -60,7 +60,6 @@ class Student(SignatureModel):
     email_optin_on = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'student'
 
     def __str__(self):
@@ -122,6 +121,7 @@ class AddressQuerySet(models.QuerySet):
 
 
 class Address(SignatureModel):
+    # todo: remove the address_type table and convert Address.type to a TextChoice
     class TypeChoices(models.IntegerChoices):
         PERMANENT = 100, "Permanent"
         HOME = 110, 'Home'
@@ -153,18 +153,6 @@ class Address(SignatureModel):
         db_table = 'address'
 
 
-# todo: remove this table and convert Address.type to a TextChoice
-# class AddressType(models.Model):
-#     description = models.CharField(max_length=128)
-#
-#     class Meta:
-#         # managed = False
-#         db_table = 'address_type'
-#
-#     def __str__(self):
-#         return self.description
-
-
 class Email(SignatureModel):
     student = models.ForeignKey(
         'Student', models.DO_NOTHING, db_column='student', related_name='emails', related_query_name='email'
@@ -174,7 +162,6 @@ class Email(SignatureModel):
     is_default = models.BooleanField(default=True)
 
     class Meta:
-        # managed = False
         db_table = 'email'
 
 
@@ -185,7 +172,6 @@ class NextHUSID(models.Model):
     next = models.IntegerField(default=0)
 
     class Meta:
-        # managed = False
         db_table = 'next_husid'
 
 
@@ -237,7 +223,6 @@ class Nationality(models.Model):
     is_active = models.BooleanField()
 
     class Meta:
-        # managed = False
         db_table = 'nationality'
 
     def __str__(self) -> str:
@@ -252,7 +237,6 @@ class Domicile(models.Model):
     is_active = models.BooleanField()
 
     class Meta:
-        # managed = False
         db_table = 'domicile'
 
     @property
