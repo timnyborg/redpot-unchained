@@ -20,7 +20,9 @@ class HECoSSubject(models.Model):
 
 
 class ModuleHECoSSubject(SignatureModel):
-    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module')
+    module = models.ForeignKey(
+        'module.Module', models.DO_NOTHING, db_column='module', related_name='module_hecos_subjects'
+    )
     hecos_subject = models.ForeignKey('HECoSSubject', models.DO_NOTHING, db_column='hecos_subject')
     percentage = models.IntegerField()
 

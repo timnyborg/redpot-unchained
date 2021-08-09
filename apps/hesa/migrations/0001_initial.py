@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('modified_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
                 ('percentage', models.IntegerField()),
                 ('hecos_subject', models.ForeignKey(db_column='hecos_subject', on_delete=django.db.models.deletion.DO_NOTHING, to='hesa.HECoSSubject')),
-                ('module', models.ForeignKey(db_column='module', on_delete=django.db.models.deletion.DO_NOTHING, to='module.Module')),
+                ('module', models.ForeignKey(db_column='module', on_delete=django.db.models.deletion.DO_NOTHING, to='module.Module', related_name='module_hecos_subjects')),
             ],
             options={
                 'db_table': 'module_hecos_subject',
