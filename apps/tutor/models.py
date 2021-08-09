@@ -95,7 +95,6 @@ class Tutor(SignatureModel):
     objects = TutorManager()
 
     class Meta:
-        # managed = False
         db_table = 'tutor'
         permissions = [('edit_bank_details', 'Can view and edit a tutor\'s banking details')]
 
@@ -128,10 +127,10 @@ class Tutor(SignatureModel):
             )
 
     def rtw_expired(self) -> bool:
-        return self.rtw_end_date and self.rtw_end_date < date.today()
+        return self.rtw_end_date is not None and self.rtw_end_date < date.today()
 
     def rtw_expires_soon(self) -> bool:
-        return self.rtw_end_date and self.rtw_end_date < date.today() + relativedelta(months=6)
+        return self.rtw_end_date is not None and self.rtw_end_date < date.today() + relativedelta(months=6)
 
 
 class TutorModule(SignatureModel):
@@ -163,7 +162,6 @@ class TutorModule(SignatureModel):
     )
 
     class Meta:
-        # managed = False
         db_table = 'tutor_module'
         verbose_name = 'Tutor on module'
 
@@ -200,7 +198,6 @@ class TutorSubject(SignatureModel):
     )
 
     class Meta:
-        # managed = False
         db_table = 'tutor_subject'
 
 
@@ -209,7 +206,6 @@ class ActivityType(models.Model):
     is_active = models.BooleanField()
 
     class Meta:
-        # managed = False
         db_table = 'activity'
 
 
@@ -224,5 +220,4 @@ class TutorActivity(SignatureModel):
     note = models.TextField(blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'tutor_activity'

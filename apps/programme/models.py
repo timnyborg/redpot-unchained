@@ -1,4 +1,3 @@
-from apps.hesa.models.staging_tables import INSTITUTION_CODE
 from django.db import models
 from django.urls import reverse
 
@@ -7,6 +6,7 @@ from apps.core.models import PhoneField, SignatureModel
 AT_PROVIDER_STUDY_LOCATION = 1
 
 CERT_HE_SITS_CODE = 'UR_9A1'
+
 
 class Programme(SignatureModel):
     FUNDING_LEVELS = [
@@ -65,9 +65,7 @@ class Programme(SignatureModel):
         (64, 'Dormant- previously part-time'),
     ]
 
-    title = models.CharField(max_length=96, null=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
+    title = models.CharField(max_length=96)
     # todo: replace with is_active
     division = models.ForeignKey(
         'core.Division',
@@ -104,7 +102,6 @@ class Programme(SignatureModel):
     )
 
     class Meta:
-        # managed = False
         db_table = 'programme'
         ordering = ('title',)
         permissions = [
@@ -141,7 +138,6 @@ class ProgrammeModule(models.Model):
     )
 
     class Meta:
-        # managed = False
         db_table = 'programme_module'
         unique_together = ('programme', 'module')
 
@@ -157,7 +153,6 @@ class Qualification(SignatureModel):
     is_matriculated = models.BooleanField()
 
     class Meta:
-        # managed = False
         db_table = 'qualification'
         ordering = ['elq_rank']
 
@@ -175,7 +170,6 @@ class StudyLocation(SignatureModel):
     is_active = models.BooleanField()
 
     class Meta:
-        # managed = False
         db_table = 'study_location'
 
     def __str__(self):

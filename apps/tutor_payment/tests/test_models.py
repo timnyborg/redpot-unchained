@@ -1,11 +1,15 @@
-from django.test import SimpleTestCase
+from django import test
+
+from apps.tutor.models import RightToWorkType
 
 from . import factories
 
 
-class TestPaymentApprovalCheck(SimpleTestCase):
+class TestPaymentApprovalCheck(test.SimpleTestCase):
     def setUp(self) -> None:
-        self.object = factories.TutorFeeFactory.build()
+        self.object = factories.TutorFeeFactory.build(
+            tutor_module__tutor__rtw_type=RightToWorkType.PERMANENT,
+        )
 
     def test_success(self):
         self.assertTrue(self.object.approvable())
@@ -25,4 +29,7 @@ class TestPaymentApprovalCheck(SimpleTestCase):
         self.assertFalse(self.object.approvable())
         self.assertTrue(self.object.approval_errors())
 
-    # todo: RTW test once implemented
+    def test_missing_right_to_work(self):
+        self.object.tutor_module.tutor.rtw_type = None
+        self.assertFalse(self.object.approvable())
+        self.assertTrue(self.object.approval_errors())

@@ -12,7 +12,6 @@ class HECoSSubject(models.Model):
     )
 
     class Meta:
-        # managed = False
         db_table = 'hecos_subject'
         ordering = ('name',)
 
@@ -21,12 +20,13 @@ class HECoSSubject(models.Model):
 
 
 class ModuleHECoSSubject(SignatureModel):
-    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module')
+    module = models.ForeignKey(
+        'module.Module', models.DO_NOTHING, db_column='module', related_name='module_hecos_subjects'
+    )
     hecos_subject = models.ForeignKey('HECoSSubject', models.DO_NOTHING, db_column='hecos_subject')
     percentage = models.IntegerField()
 
     class Meta:
-        # managed = False
         db_table = 'module_hecos_subject'
 
 
@@ -36,7 +36,6 @@ class ProgrammeHecosSubject(models.Model):
     percentage = models.IntegerField()
 
     class Meta:
-        # managed = False
         db_table = 'programme_hecos_subject'
 
 
@@ -45,5 +44,4 @@ class HESACostCentre(models.Model):
     price_group = models.CharField(max_length=2, blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'hesa_cost_centre'

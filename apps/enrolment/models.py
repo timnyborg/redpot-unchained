@@ -61,7 +61,6 @@ class Enrolment(SignatureModel):
     objects = EnrolmentQuerySet.as_manager()
 
     class Meta:
-        # managed = False
         db_table = 'enrolment'
 
     def get_absolute_url(self):
@@ -87,7 +86,6 @@ class EnrolmentResult(SignatureModel):
     allow_certificate = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'enrolment_result'
 
     def __str__(self):
@@ -102,7 +100,6 @@ class EnrolmentStatus(models.Model):
     on_hesa_return = models.BooleanField()
 
     class Meta:
-        # managed = False
         db_table = 'enrolment_status'
 
     def __str__(self):

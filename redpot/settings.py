@@ -317,7 +317,6 @@ PUBLIC_WEBSITE_URL = get_secret('PUBLIC_WEBSITE_URL', 'https://conted.ox.ac.uk')
 
 # These may be unnecessary if passed into coverage from command line
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
-# TEST_OUTPUT_DIR = BASE_DIR
 TEST_OUTPUT_FILE_NAME = 'test_results.xml'
 
 # WPM Credentials

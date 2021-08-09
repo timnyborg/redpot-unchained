@@ -72,7 +72,6 @@ class Invoice(SignatureModel):
     objects = InvoiceQuerySet.as_manager()
 
     class Meta:
-        # managed = False
         db_table = 'invoice'
 
     def __str__(self):
@@ -119,7 +118,6 @@ class InvoiceLedger(models.Model):
     item_no = models.IntegerField()  # fees at the time of invoicing are given values 1, 2, 3...  Payments are given 0
 
     class Meta:
-        # managed = False
         db_table = 'invoice_ledger'
 
 
@@ -141,7 +139,6 @@ class PaymentPlan(SignatureModel):
     amount = models.DecimalField(max_digits=19, decimal_places=4)
 
     class Meta:
-        # managed = False
         db_table = 'payment_plan'
 
     def is_pending_activation(self):
@@ -164,7 +161,6 @@ class ScheduledPayment(SignatureModel):
     is_deposit = models.BooleanField()  # todo: investigate if this has value
 
     class Meta:
-        # managed = False
         db_table = 'payment_plan_schedule'
         ordering = ('due_date',)
 
@@ -174,7 +170,6 @@ class PaymentPlanStatus(models.Model):
     description = models.CharField(max_length=64)
 
     class Meta:
-        # managed = False
         db_table = 'payment_plan_status'
 
     def __str__(self):
@@ -194,7 +189,6 @@ class PaymentPlanType(SignatureModel):
     start_month = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'payment_plan_type'
         ordering = ('payments_due', 'deposit', 'payments')
 
@@ -206,9 +200,5 @@ class ModulePaymentPlan(models.Model):
     module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module')
     plan_type = models.ForeignKey('PaymentPlanType', models.DO_NOTHING, db_column='plan_type')
 
-    # Obsolete
-    # deposit = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
-
     class Meta:
-        # managed = False
         db_table = 'module_payment_plan'

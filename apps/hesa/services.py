@@ -2,7 +2,6 @@ import itertools
 import os
 import re
 from datetime import date
-from time import time
 from typing import Iterable, Optional
 
 from celery_progress.backend import ProgressRecorder
@@ -35,15 +34,15 @@ FEE_TRANSACTION_TYPE = 1
 
 
 # todo: determine if we need both the task and services
-def create_return(academic_year, created_by, *, recorder: Optional[ProgressRecorder] = None, run_xml=False):
-    start = time()
+def create_return(
+    academic_year, created_by, *, recorder: Optional[ProgressRecorder] = None, run_xml=False
+) -> models.Batch:
     """The schedulable routine which call the magic below"""
-
     hesa = HESAReturn(academic_year, created_by, recorder=recorder)
     batch = hesa.create()
     if run_xml:
-        print(f'Generating XML ({str(time()-start)[:5]} seconds)')
-        # generate_xml(batch)
+        # Todo: figure out adding to recorder progress here
+        save_xml(batch.id, 'TODO')  # todo: pathing
     return batch
 
 

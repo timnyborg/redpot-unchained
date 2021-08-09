@@ -15,7 +15,11 @@ NON_UK_DISTANCE_STUDY_LOCATION = 9
 
 class QualificationAim(SignatureModel):
     student = models.ForeignKey(
-        'student.Student', models.DO_NOTHING, db_column='student', related_name='qualification_aims', related_query_name='qa'
+        'student.Student',
+        models.DO_NOTHING,
+        db_column='student',
+        related_name='qualification_aims',
+        related_query_name='qa',
     )
     programme = models.ForeignKey(
         'programme.Programme',
@@ -43,14 +47,18 @@ class QualificationAim(SignatureModel):
         limit_choices_to=models.Q(web_publish=True) | models.Q(id__in=['X00', 'X06']),  # Todo: should be a column
     )
     reason_for_ending = models.ForeignKey(
-        'ReasonForEnding', models.DO_NOTHING, db_column='reason_for_ending', blank=True, null=True, related_name='qualification_aims',
+        'ReasonForEnding',
+        models.DO_NOTHING,
+        db_column='reason_for_ending',
+        blank=True,
+        null=True,
+        related_name='qualification_aims',
     )
     sits_code = models.CharField(
         max_length=12, blank=True, null=True, verbose_name='SITS code', help_text="Maps to SITS' enrolment code"
     )
 
     class Meta:
-        # managed = False
         db_table = 'qa'
         verbose_name = 'Qualification aim'
 
@@ -105,7 +113,6 @@ class EntryQualification(models.Model):
     display_order = models.IntegerField()
 
     class Meta:
-        # managed = False
         db_table = 'entry_qualification'
         ordering = ('display_order', 'elq_rank')
 

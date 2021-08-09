@@ -9,7 +9,6 @@ class StudentFactory(factory.django.DjangoModelFactory):
 
     firstname = factory.Faker('first_name')
     surname = factory.Faker('last_name')
-    ethnicity = factory.Iterator(models.Ethnicity.objects.all())
 
 
 class AddressFactory(factory.django.DjangoModelFactory):

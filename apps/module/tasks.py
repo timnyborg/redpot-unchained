@@ -39,7 +39,11 @@ def update_module_statuses() -> int:
         result = module.update_status()
         if result['changed'] and module.email and 'conted' in module.email:  # Don't email non-departmental addresses
             # Email the update
-            context = dict(module=module, new_status=module.status.description, canonical_url=settings.CANONICAL_URL)
+            context = {
+                'module': module,
+                'new_status': module.status.description,
+                'canonical_url': settings.CANONICAL_URL,
+            }
             body = render_to_string('email/module_status_change.html', context=context)
 
             message = EmailMessage(

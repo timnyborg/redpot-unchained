@@ -26,9 +26,7 @@ class Migration(migrations.Migration):
                 ('created_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
                 ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
                 ('modified_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
-                ('title', models.CharField(max_length=96, null=True)),
-                ('start_date', models.DateField(blank=True, null=True)),
-                ('end_date', models.DateField(blank=True, null=True)),
+                ('title', models.CharField(max_length=96)),
                 (
                     'student_load',
                     models.DecimalField(

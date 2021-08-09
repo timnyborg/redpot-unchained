@@ -122,13 +122,14 @@ def copy_web_fields(*, source: Module, target: Module, user: User) -> None:
     target.modified_on = datetime.now()
 
 
-def copy_children(*, source: Module, target: Module, user: User):
+def copy_children(*, source: Module, target: Module, user: User) -> None:
     """Copy all of a module's child records (subjects, programmes, marketing_types, tutors)"""
+    timestamp = datetime.now()  # identical timing
     signature_fields: dict[str, Any] = {
         'created_by': user.username,
         'modified_by': user.username,
-        'created_on': datetime.now(),
-        'modified_on': datetime.now(),
+        'created_on': timestamp,
+        'modified_on': timestamp,
     }
 
     target.subjects.add(*source.subjects.all())
@@ -147,11 +148,12 @@ def copy_children(*, source: Module, target: Module, user: User):
             },
         )
 
-    # todo: implement copying once hecos_subjects in-system
-    # for record in src_module.module_hecos_subject.select():
-    #     idb.module_hecos_subject.insert(
-    #         module=new_id, hecos_subject=record.hecos_subject, percentage=record.percentage
-    #     )
+    for record in source.module_hecos_subjects.all():
+        target.module_hecos_subjects.create(
+            hecos_subject=record.hecos_subject,
+            percentage=record.percentage,
+            **signature_fields,
+        )
 
 
 def assign_moodle_ids(*, module: Module, created_by: str):

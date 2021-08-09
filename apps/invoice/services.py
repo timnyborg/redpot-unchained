@@ -51,8 +51,8 @@ def add_repeating_payments_from_file(*, file: IO[bytes]) -> int:
 
     FIELDNAMES = ['invoice_no', 'blank_1', 'blank_2', 'name', 'digits', 'card', 'amount', 'trans_id', 'date', 'status']
     # convert BytesIO objects (which file uploads and ftp provide) to return strings, which csv requires
-    file = io.TextIOWrapper(file)
-    payments = csv.DictReader(file, delimiter=',', fieldnames=FIELDNAMES)
+    str_file = io.TextIOWrapper(file)
+    payments = csv.DictReader(str_file, delimiter=',', fieldnames=FIELDNAMES)
 
     valid_payments = list(filter(_is_valid_repeating_payment, payments))
     for payment in valid_payments:
@@ -117,12 +117,12 @@ class NoValidEnrolmentsError(Exception):
     """Raised when trying to create a financial transaction without a valid enrolment"""
 
 
-def _split_by_owing(*, owing: Decimal, total_owing: Decimal, payment_amount: Decimal):
+def _split_by_owing(*, owing: Decimal, total_owing: Decimal, payment_amount: Decimal) -> Decimal:
     """Allocate payment by enrolment, in proportion to their amount, rounding to the penny"""
     return Decimal(owing / total_owing * payment_amount).quantize(Decimal('.01'))
 
 
-def _split_evenly(*, payment_amount: Decimal, split_by: int):
+def _split_evenly(*, payment_amount: Decimal, split_by: int) -> Decimal:
     """Distribute evently.  For rare cases where we're allocating to a settled invoice (e.g. finance amendments)
     Rounds to the penny
     """
@@ -156,12 +156,12 @@ def add_payment(
     total_owing = invoice.balance()
 
     allocations: dict[int, Decimal] = {}
-    for enrolment in enrolments:
+    for enr in enrolments:
         if total_owing:
-            allocated = _split_by_owing(owing=enrolment.balance, total_owing=total_owing, payment_amount=amount)
+            allocated = _split_by_owing(owing=enr.balance, total_owing=total_owing, payment_amount=amount)
         else:
             allocated = _split_evenly(payment_amount=amount, split_by=len(enrolments))
-        allocations[enrolment.id] = allocated
+        allocations[enr.id] = allocated
 
     # Check for a difference due to rounding
     diff = sum(allocations.values()) - amount

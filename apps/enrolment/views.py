@@ -69,7 +69,7 @@ class Create(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.Fo
         module = self.enrolment.module
         if module.portfolio == 32:
             querystring = urlencode({'next': self.enrolment.get_absolute_url()})
-            return reverse('module:syllabus', args=module.id) + f'?{querystring}'
+            return reverse('module:syllabus', args=[module.id]) + f'?{querystring}'
         return self.enrolment.get_absolute_url()
 
 
@@ -94,9 +94,9 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
     def get_subtitle(self):
         return f'View – {self.object.qa.student} on {self.object.module}'
 
-    def has_payment_of_type(self, type: int) -> bool:
+    def has_payment_of_type(self, trans_type: int) -> bool:
         """Checks whether any of the enrolment's payments match a given type, for determining amendment options"""
-        return any(item.type_id == type for item in self.object.ledger_set.all())
+        return any(item.type_id == trans_type for item in self.object.ledger_set.all())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

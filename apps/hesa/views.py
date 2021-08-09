@@ -37,33 +37,3 @@ class TaskStatus(generic.View):
             response_data['details'] = repr(response_data['details'])
 
         return JsonResponse(json.dumps(response_data), content_type='application/json', safe=False)
-
-    #
-    # options = [
-    #     ('hesa_institution', 'Institution'),
-    #     ('hesa_programme', 'Programme (course)'),
-    #     ('hesa_programme_subject', 'Programme subject'),
-    #     ('hesa_module', 'Module'),
-    #     ('hesa_module-subject', 'Module subject'),
-    #     ('hesa_student', 'Student'),
-    #     ('hesa_qa', 'Qualification aim (instance)'),
-    #     ('hesa_entry-profile', 'Entry profile'),
-    #     ('hesa_award', 'Qualification awarded'),
-    #     ('hesa_enrolment', 'Enrolment (student on module)'),
-    # ]
-    #
-    # batches = idb().select(idb.hesa_batch.ALL, orderby=~idb.hesa_batch.id, limitby=(0, 10))
-    #
-
-    # if form.process().accepted:
-    #     # Schedule the job, and redirect to the job-status page
-    #     task = scheduler.queue_task(
-    #         'create_return',
-    #         [int(form.vars.year), auth.user.username, True],
-    #         timeout=300,
-    #         sync_output=2,
-    #         group_name=LOCAL_SERVER if STAGING else 'main'
-    #     )
-    #     redirect(URL(status, args=task.id))
-    #
-    # return dict(form=form, options=options, batches=batches)
