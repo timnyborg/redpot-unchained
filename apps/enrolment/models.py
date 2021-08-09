@@ -24,7 +24,10 @@ class EnrolmentQuerySet(models.QuerySet):
         return self.with_balance().filter(balance__gt=0)
 
     def with_balance(self):
-        """Add an outstanding `balance` attribute to each row"""
+        """Add an outstanding `balance` attribute to each row.
+        If the ledger items are filtered in another way (e.g. connected to a given invoice),
+        the balance will reflect that filtered set
+        """
         return self.annotate(balance=models.Sum('ledger__amount', filter=models.Q(ledger__account=Accounts.DEBTOR)))
 
 

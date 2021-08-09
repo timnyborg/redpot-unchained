@@ -16,7 +16,7 @@ class TestInsertLedger(test.TestCase):
 
     def test_dual_insert(self):
         services.insert_ledger(
-            account_id=models.Accounts.TUITION,
+            account_code=models.Accounts.TUITION,
             amount=Decimal(500),
             user=self.user,
             finance_code='ABCDE',
@@ -83,3 +83,23 @@ class TestDistributedPayment(test.TestCase):
         ledger_items = models.Ledger.objects.all()
         self.assertEqual(len(ledger_items), 4)
         self.assertEqual(ledger_items.total(), 0)
+
+
+class TestTransferFunds(test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+
+    def test_transfer(self):
+        """Check for correct outstanding balances"""
+        source, target = EnrolmentFactory.create_batch(size=2)
+        services.transfer_funds(
+            source_enrolment=source,
+            target_enrolment=target,
+            amount=Decimal(100),
+            narrative='Test',
+            type_id=models.TransactionTypes.CREDIT_CARD,
+            user=self.user,
+        )
+        self.assertEqual(source.get_balance(), 100)
+        self.assertEqual(target.get_balance(), -100)

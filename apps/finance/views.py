@@ -53,7 +53,7 @@ class AddFees(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleTab
 
     def form_valid(self, form):
         services.insert_ledger(
-            account_id=form.cleaned_data['account'].code,
+            account_code=form.cleaned_data['account'].code,
             amount=form.cleaned_data['amount'],
             user=self.request.user,
             finance_code=self.enrolment.module.finance_code,
@@ -87,7 +87,7 @@ class AddPayment(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generi
 
     def form_valid(self, form):
         services.insert_ledger(
-            account_id=models.Accounts.CASH,
+            account_code=models.Accounts.CASH,
             amount=-form.cleaned_data['amount'],
             user=self.request.user,
             finance_code=self.enrolment.module.finance_code,
@@ -191,3 +191,35 @@ class MultipleEnrolmentPayment(LoginRequiredMixin, PageTitleMixin, SuccessMessag
 
     def get_success_url(self):
         return next_url_if_safe(self.request) or '/'  # todo: where should this go if no next?
+
+
+class Transfer(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.FormView):
+    form_class = forms.TransferForm
+    template_name = 'core/form.html'
+    title = 'Finance'
+    success_message = '£%(amount).2f transferred'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.source_enrolment = get_object_or_404(Enrolment, pk=self.kwargs['enrolment_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_subtitle(self):
+        return f'Transfer – from {self.source_enrolment.qa.student} – {self.source_enrolment.module}'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        return {**kwargs, 'source_enrolment': self.source_enrolment}
+
+    def form_valid(self, form):
+        services.transfer_funds(
+            source_enrolment=self.source_enrolment,
+            target_enrolment=form.cleaned_data['target_enrolment'],
+            amount=form.cleaned_data['amount'],
+            type_id=form.cleaned_data['type'].id,
+            narrative=form.cleaned_data['narrative'],
+            user=self.request.user,
+        )
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.source_enrolment.get_absolute_url()

@@ -17,7 +17,7 @@ def create_enrolment(
     """
 
     # Create/Lookup HUSID number for student
-    if not qa.student.husid:  # None (enquirer)
+    if not qa.student.husid:
         qa.student.husid = next_husid(academic_year=academic_year(module.start_date))
         qa.student.save()
 
@@ -27,11 +27,10 @@ def create_enrolment(
         qa.start_date = module.start_date
         qa.save()
 
-    enrolment = models.Enrolment.objects.create(
+    return models.Enrolment.objects.create(
         qa=qa,
         module=module,
         status=status,
         created_by=user.username,
         modified_by=user.username,
     )
-    return enrolment
