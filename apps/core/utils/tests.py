@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
 
 
 class LoggedInMixin:
-    user: get_user_model()
+    user: AbstractUser
     superuser: bool = False
 
     @classmethod

@@ -4,13 +4,16 @@ import csv
 import io
 from datetime import datetime
 from decimal import Decimal
-from typing import IO, Iterable
+from typing import IO, Iterable, Optional
 
+from django.contrib import auth
 from django.db import transaction
 from django.db.models import Max
 
 from apps.core.models import User
-from apps.finance.models import Ledger
+from apps.enrolment.models import Enrolment
+from apps.finance import services as finance_services
+from apps.finance.models import Ledger, TransactionTypes
 
 from . import models
 
@@ -73,18 +76,119 @@ def _add_repeating_payment(payment: dict) -> None:
     narrative = (
         f"{payment['name']}, card: {payment['card']}, digits: {payment['digits']}, trans: {payment['trans_id']}"[:128]
     )
-    invoice = models.Invoice.objects.filter(  # noqa: F841 # todo: remove when complete
-        number=payment['invoice_no']
-    ).first()
+    invoice = models.Invoice.objects.get(number=payment['invoice_no'])
+    service_user = auth.get_user_model().objects.get(username='service_user')
 
-    # todo: implement invoice payment
-    # insert_invoice_payment(
-    #     invoice.id,
-    #     amount,
-    #     17,  # RCP
-    #     narrative,
-    #     date=payment_date
-    # )
+    add_payment(
+        invoice=invoice,
+        amount=payment['amount'],
+        type_id=TransactionTypes.RCP,
+        narrative=narrative,
+        timestamp=payment_date,
+        user=service_user,
+    )
 
-    # debugging while above not implemented
-    print(narrative)
+
+@transaction.atomic
+def add_credit(
+    *,
+    invoice: models.Invoice,
+    enrolment: Enrolment,
+    account_code: str,
+    type_id: int,
+    amount: Decimal,
+    narrative: str,
+    user: User,
+) -> None:
+    """Add a credit to an invoice (on a specific enrolment)"""
+    ledger_transaction = finance_services.insert_ledger(
+        account_code=account_code,
+        finance_code=enrolment.module.finance_code,
+        narrative=narrative,
+        amount=-amount,
+        type_id=type_id,
+        enrolment_id=enrolment.id,
+        user=user,
+    )
+    attach_transaction_to_invoice(transaction=ledger_transaction, invoice=invoice)
+
+
+class NoValidEnrolmentsError(Exception):
+    """Raised when trying to create a financial transaction without a valid enrolment"""
+
+
+def _split_by_owing(*, owing: Decimal, total_owing: Decimal, payment_amount: Decimal):
+    """Allocate payment by enrolment, in proportion to their amount, rounding to the penny"""
+    return Decimal(owing / total_owing * payment_amount).quantize(Decimal('.01'))
+
+
+def _split_evenly(*, payment_amount: Decimal, split_by: int):
+    """Distribute evently.  For rare cases where we're allocating to a settled invoice (e.g. finance amendments)
+    Rounds to the penny
+    """
+    return Decimal(payment_amount / split_by).quantize(Decimal('.01'))  # Round to the nearest penny
+
+
+# todo: test that this will allocate correctly if an invoiced enrolment contains non-invoiced fees/balance
+@transaction.atomic
+def add_payment(
+    invoice: models.Invoice,
+    amount: Decimal,
+    type_id: int,
+    user: User,
+    narrative: str,
+    enrolment: Optional[Enrolment] = None,
+    timestamp: Optional[datetime] = None,
+):
+    """
+    Automatically distribute a payment to enrolments on an invoice according to balance
+    Specifying `enrolment` allows the payment to be applied to only one part of an invoice (typically when
+    finance moves money about)
+    """
+
+    queryset = Enrolment.objects.filter(ledger__invoice=invoice).with_balance()
+    if enrolment:
+        queryset = queryset.filter(id=enrolment.id)
+    enrolments = list(queryset)
+    if not enrolments:
+        raise NoValidEnrolmentsError('Invoice has no enrolments')
+
+    total_owing = invoice.balance()
+
+    allocations: dict[int, Decimal] = {}
+    for enrolment in enrolments:
+        if total_owing:
+            allocated = _split_by_owing(owing=enrolment.balance, total_owing=total_owing, payment_amount=amount)
+        else:
+            allocated = _split_evenly(payment_amount=amount, split_by=len(enrolments))
+        allocations[enrolment.id] = allocated
+
+    # Check for a difference due to rounding
+    diff = sum(allocations.values()) - amount
+    # And allocate the difference to the first enrolment
+    allocations[enrolments[0].id] -= diff
+
+    ledger_transaction = finance_services.add_distributed_payment(
+        narrative=narrative,
+        amount=amount,
+        type_id=type_id,
+        user=user,
+        enrolments=allocations,
+        timestamp=timestamp,
+    )
+    attach_transaction_to_invoice(transaction=ledger_transaction, invoice=invoice)
+
+
+def attach_transaction_to_invoice(
+    *,
+    transaction: finance_services.Transaction,
+    invoice: models.Invoice,
+):
+    """Attach a credit or payment transaction to an invoice"""
+    invoice.ledger_items.add(
+        *transaction.debtor_lines,
+        through_defaults={
+            'allocation': invoice,
+            'item_no': 0,  # payment/credit, not an invoiced line
+        },
+    )

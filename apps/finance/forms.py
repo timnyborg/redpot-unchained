@@ -77,3 +77,31 @@ class MultipleEnrolmentPaymentForm(forms.Form):
                 help_text=f'£{enrolment.get_balance():.2f} owing • {enrolment.module.title}',
                 widget=PoundInput(),
             )
+
+
+class TransferForm(forms.Form):
+    submit_label = 'Transfer'
+
+    target_enrolment = forms.ModelChoiceField(
+        queryset=Enrolment.objects.all(),
+        label='Transfer to',
+    )
+    amount = forms.DecimalField(
+        min_value=0,
+        error_messages={'min_value': 'Amount must be positive'},
+        widget=PoundInput(),
+    )
+    narrative = forms.CharField()
+    type = forms.ModelChoiceField(queryset=models.TransactionType.objects.filter(is_cash=True, is_active=True))
+
+    def __init__(self, source_enrolment: Enrolment, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Limit target field to the student's other enrolments
+        self.fields['target_enrolment'].queryset = (
+            Enrolment.objects.filter(qa__student=source_enrolment.qa.student)
+            .exclude(id=source_enrolment.id)
+            .order_by('-module__start_date')
+            .select_related('module')
+        )
+        # Easier than subclassing ModelChoiceField solely for this
+        self.fields['target_enrolment'].label_from_instance = lambda obj: f'{obj.module} ({obj.module.code})'

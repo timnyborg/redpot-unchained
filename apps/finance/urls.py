@@ -14,4 +14,5 @@ urlpatterns = [
         name='choose-multiple-enrolments',
     ),
     path('add-payment/pay-enrolments', views.MultipleEnrolmentPayment.as_view(), name='pay-multiple-enrolments'),
+    path('transfer/<int:enrolment_id>', views.Transfer.as_view(), name='transfer'),
 ]

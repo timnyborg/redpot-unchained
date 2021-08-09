@@ -1,7 +1,10 @@
 from django import forms
 from django.core import validators
+from django.forms.models import fields_for_model
 
 from apps.core.utils.widgets import DatePickerInput, PoundInput
+from apps.enrolment.models import Enrolment
+from apps.finance.models import Ledger, TransactionType
 
 from . import models
 
@@ -62,3 +65,44 @@ class PaymentPlanForm(forms.ModelForm):
         fields = ('invoice', 'type', 'status', 'amount')
         help_texts = {'status': "If plan already exists, choose 'Payment schedule active'"}
         widgets = {'amount': PoundInput()}
+
+
+class CreditForm(forms.Form):
+    submit_label = 'Add credit'
+    enrolment = forms.ModelChoiceField(queryset=Enrolment.objects.all())
+    account = fields_for_model(Ledger)['account']
+    amount = forms.DecimalField(widget=PoundInput(), help_text='Positive values decrease debt, negative increase debt')
+    narrative = forms.CharField()
+    type = forms.ModelChoiceField(queryset=TransactionType.objects.filter(is_cash=False, is_active=True))
+
+    def __init__(self, invoice: models.Invoice, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Limit the enrolments to those connected with the invoice
+        self.fields['enrolment'].queryset = (
+            Enrolment.objects.filter(ledger__invoice=invoice).distinct().select_related('module').order_by('-id')
+        )
+        # Dropdown options display the module title
+        self.fields['enrolment'].label_from_instance = lambda obj: obj.module
+
+
+class PaymentForm(forms.Form):
+    submit_label = 'Add payment'
+    enrolment = forms.ModelChoiceField(
+        queryset=Enrolment.objects.all(),
+        required=False,
+        empty_label=' – All – ',
+    )
+    amount = forms.DecimalField(widget=PoundInput())
+    narrative = forms.CharField()
+    type = forms.ModelChoiceField(queryset=TransactionType.objects.filter(is_cash=True, is_active=True))
+
+    def __init__(self, invoice: models.Invoice, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Limit the enrolments to those connected with the invoice
+        self.fields['enrolment'].queryset = (
+            Enrolment.objects.filter(ledger__invoice=invoice).distinct().select_related('module').order_by('-id')
+        )
+        # Dropdown options display the module title
+        self.fields[
+            'enrolment'
+        ].label_from_instance = lambda obj: f'{obj.module.code} - {obj.module} (£{obj.get_balance():.2f})'

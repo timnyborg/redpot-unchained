@@ -31,9 +31,13 @@
         <div class='col-xs-12 col-md-2' >
             <a class='btn btn-default btn-block'>Buttons</a>
             <a class='btn btn-default btn-block'>Go</a>
-            <a class='btn btn-success btn-block'>Here</a>
-            {% if perms.invoice.add_credit %}
-                <a class='btn btn-warning btn-block'>Permission-limited</a>
+            <a href="{% url 'invoice:payment' invoice.id %}" class='btn btn-success btn-block'>
+                <i class="fas fa-fw fa-pound-sign"></i> Payment
+            </a>
+            {% if perms.invoice.credit_invoice %}
+                <a href="{% url 'invoice:credit' invoice.id %}" class='btn btn-warning btn-block'>
+                    <i class="fas fa-fw fa-minus"></i> Credit
+                </a>
             {% endif %}
             <a class='btn btn-info btn-block'>Another button</a>
         </div>

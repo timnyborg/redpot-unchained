@@ -80,7 +80,7 @@ class Student(SignatureModel):
             'F': 2,
             'I': 3,
         }
-        return gender_to_sex_map.get(self.gender)
+        return gender_to_sex_map.get(self.gender or '')
 
     @property
     def formatdate(self):

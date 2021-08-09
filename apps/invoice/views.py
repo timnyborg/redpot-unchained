@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.views import generic
 from django.views.generic.edit import FormMixin
 
+from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.finance.models import Ledger
@@ -289,3 +290,70 @@ class EditSchedule(PermissionRequiredMixin, PageTitleMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         context['schedule'] = list(self.object.scheduled_payments.values('due_date', 'amount', 'is_deposit'))
         return context
+
+
+class Credit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.FormView):
+    """Form to credit an invoice on a single enrolment"""
+
+    permission_required = 'invoice.credit_invoice'
+    title = 'Invoice'
+    subtitle = 'Credit'
+    form_class = forms.CreditForm
+    template_name = 'core/form.html'
+    success_message = 'Invoice credited £%(amount).2f'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.invoice = get_object_or_404(models.Invoice, pk=kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        return {**kwargs, 'invoice': self.invoice}
+
+    def form_valid(self, form):
+        services.add_credit(
+            invoice=self.invoice,
+            enrolment=form.cleaned_data['enrolment'],
+            narrative=form.cleaned_data['narrative'],
+            amount=form.cleaned_data['amount'],
+            account_code=form.cleaned_data['account'].code,
+            type_id=form.cleaned_data['type'].id,
+            user=self.request.user,
+        )
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return next_url_if_safe(self.request) or self.invoice.get_absolute_url()
+
+
+class Payment(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.FormView):
+    """Form to credit an invoice on a single enrolment"""
+
+    permission_required = 'invoice.pay_invoice'
+    title = 'Invoice'
+    subtitle = 'Add payment'
+    form_class = forms.PaymentForm
+    template_name = 'core/form.html'
+    success_message = ''  # todo
+
+    def dispatch(self, request, *args, **kwargs):
+        self.invoice = get_object_or_404(models.Invoice, pk=kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        return {**kwargs, 'invoice': self.invoice}
+
+    def form_valid(self, form):
+        services.add_payment(
+            invoice=self.invoice,
+            enrolment=form.cleaned_data['enrolment'],
+            narrative=form.cleaned_data['narrative'],
+            amount=form.cleaned_data['amount'],
+            type_id=form.cleaned_data['type'].id,
+            user=self.request.user,
+        )
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return next_url_if_safe(self.request) or self.invoice.get_absolute_url()
