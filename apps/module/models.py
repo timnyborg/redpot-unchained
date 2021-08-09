@@ -88,7 +88,7 @@ class Module(SignatureModel):
 
     image = models.ImageField(upload_to='uploads/%Y/%m/%d/', max_length=512, blank=True, null=True)
 
-    # type = models.ForeignKey('ModuleType', models.DO_NOTHING, db_column='type', blank=True, null=True)
+    # type = models.ForeignKey('ModuleType', models.DO_NOTHING, db_column='type', blank=True, null=True)  # noqa: E800
 
     start_time = models.TimeField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
@@ -109,7 +109,7 @@ class Module(SignatureModel):
     auto_publish = models.BooleanField(default=False)
 
     is_published = models.BooleanField(default=False)
-    # finance_code = models.CharField(max_length=64, blank=True, null=True)
+    # finance_code = models.CharField(max_length=64, blank=True, null=True)  # noqa: E800 # todo: should this be used?
     email = models.CharField(max_length=256, blank=True, null=True)
     phone = models.CharField(max_length=256, blank=True, null=True)
 
@@ -147,11 +147,11 @@ class Module(SignatureModel):
     default_non_credit = models.BooleanField(blank=True, null=True)
     note = models.CharField(max_length=512, blank=True, null=True)
     terms_and_conditions = models.IntegerField(default=1)  # placeholder
-    # terms_and_conditions = models.ForeignKey(
-    #     'TermsAndConditions',
-    #     models.DO_NOTHING,
-    #     db_column='terms_and_conditions'
-    # )
+    # terms_and_conditions = models.ForeignKey(    # noqa: E800
+    #     'TermsAndConditions',                    # noqa: E800
+    #     models.DO_NOTHING,                       # noqa: E800
+    #     db_column='terms_and_conditions'         # noqa: E800
+    # )                                            # noqa: E800
     apply_url = models.CharField(max_length=512, blank=True, null=True)
     further_details = models.TextField(blank=True, null=True)
     is_repeat = models.BooleanField(default=False)
@@ -198,7 +198,6 @@ class Module(SignatureModel):
     objects = ModuleManager()
 
     class Meta:
-        # managed = False
         db_table = 'module'
         base_manager_name = 'objects'
 
@@ -208,11 +207,7 @@ class Module(SignatureModel):
     def save(self, *args, **kwargs):
         if not self.url:
             self.url = slugify(self.title)
-        # if self.status == 33: # cancelled
-        # self.is_cancelled = True
-        # self.auto_publish = False
-        # self.update_status()  # Date changes may alter auto-status.
-
+        # todo: setting is_cancelled, auto_publish on cancelled status.  Consider running update_status
         super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
@@ -415,8 +410,8 @@ class Module(SignatureModel):
 
                 # Notify weeklyclasses if a course isn't published ONLY because of a proposal being incomplete
                 # todo: determine usefulness of this check
-                # if not self.is_published and idb.module_status(self.status_id).publish:
-                #     _check_ongoing_proposal(self.id)
+                # if not self.is_published and idb.module_status(self.status_id).publish:  # noqa: E800
+                #     _check_ongoing_proposal(self.id)  # noqa: E800
             else:
                 # Lacks required fields for auto
                 self.is_published = False
@@ -488,7 +483,6 @@ class ModuleStatus(models.Model):
     waiting_list = models.BooleanField()
 
     class Meta:
-        # managed = False
         db_table = 'module_status'
         ordering = ['id']
 
@@ -500,7 +494,6 @@ class ModuleFormat(models.Model):
     description = models.CharField(max_length=50)
 
     class Meta:
-        # managed = False
         db_table = 'module_format'
 
     def __str__(self) -> str:
@@ -516,7 +509,6 @@ class Location(SignatureModel):
     building = models.CharField(max_length=64, blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'location'
 
     def __str__(self) -> str:
@@ -536,7 +528,6 @@ class Waitlist(models.Model):
     emailed_on = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'module_waitlist'
 
     def get_absolute_url(self) -> str:
@@ -562,7 +553,6 @@ class Book(models.Model):
     status = models.ForeignKey('BookStatus', models.DO_NOTHING, db_column='status')
 
     class Meta:
-        # managed = False
         db_table = 'book'
 
     def get_absolute_url(self) -> str:
@@ -580,7 +570,6 @@ class BookStatus(models.Model):
     status = models.TextField()
 
     class Meta:
-        # managed = False
         db_table = 'book_status'
 
     def __str__(self) -> str:
@@ -592,7 +581,6 @@ class Subject(models.Model):
     area = models.CharField(max_length=64)
 
     class Meta:
-        # managed = False
         db_table = 'subject'
 
     def __str__(self) -> str:
@@ -607,7 +595,6 @@ class ModuleSubject(models.Model):
     subject = models.ForeignKey('Subject', models.DO_NOTHING, db_column='subject')
 
     class Meta:
-        # managed = False
         db_table = 'module_subject'
         unique_together = (('module', 'subject'),)
 
@@ -617,7 +604,6 @@ class MarketingType(models.Model):
     name = models.CharField(max_length=64)
 
     class Meta:
-        # managed = False
         db_table = 'marketing_type'
 
     def __str__(self) -> str:
@@ -629,6 +615,5 @@ class ModuleMarketingType(models.Model):
     module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
 
     class Meta:
-        # managed = False
         db_table = 'module_marketing_type'
         unique_together = (('module', 'marketing_type'),)

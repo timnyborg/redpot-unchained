@@ -102,25 +102,6 @@ class AddModule(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic
         return self.programme.get_absolute_url()
 
 
-# @login_required
-# def remove_module(request, programme_id, module_id):
-#     try:
-#         programme = Programme.objects.get(id=programme_id)
-#         module = Module.objects.get(id=module_id)
-#     except (Programme.DoesNotExist, Module.DoesNotExist):
-#         raise Http404
-#
-#     # programme.modules.remove(module)
-#     messages.success(request, 'Module removed from programme')
-#
-#     # Example of a safe 'next' redirect (checked against an empty host list to prevent open redirect vulnerability)
-#     # could be wrapped into a helper function (safe_next_redirect, which takes next and a fallback if null
-#       or invalid)
-#     if url_has_allowed_host_and_scheme(request.GET.get('next'), allowed_hosts=None):
-#         return redirect(request.GET.get('next'))
-#     return redirect(module)
-
-
 class RemoveModule(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
     model = ProgrammeModule
     template_name = 'programme/remove_module.html'
