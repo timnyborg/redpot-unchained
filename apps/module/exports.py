@@ -45,9 +45,7 @@ class StudentListExport(resources.ModelResource):
         return enrolment.qa.student.first_or_nickname
 
     def dehydrate_phone_numbers(self, enrolment: Enrolment):
-        # todo: implement phone numbers once modelled
-        # return ', '.join(enrolment.qa.student.phones)
-        return 'TODO: PHONES'
+        return ', '.join(map(str, enrolment.qa.student.phones.all()))
 
     class Meta:
         model = Enrolment
@@ -103,9 +101,7 @@ class MoodleListExport(resources.ModelResource):
             return ''
 
     def dehydrate_paid(self, enrolment: Enrolment) -> str:
-        # todo: implement once enrolment has a balance / outstanding method or manager method
-        return 'TODO: PAID'
-        # return 'No' if enrolment.balance() else 'Yes'
+        return 'No' if enrolment.get_balance() else 'Yes'
 
     class Meta:
         model = Enrolment

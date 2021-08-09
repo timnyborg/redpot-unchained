@@ -297,12 +297,15 @@ class EmergencyContact(SignatureModel):
 class Phone(SignatureModel):
     student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student', related_name="phones")
     type = models.ForeignKey('PhoneType', models.DO_NOTHING, db_column='type')
-    number = models.CharField(max_length=64, blank=True, null=True)
+    number = models.CharField(max_length=64)
     note = models.CharField(max_length=128, blank=True, null=True)
     is_default = models.BooleanField()
 
     class Meta:
         db_table = 'phone'
+
+    def __str__(self) -> str:
+        return str(self.number)
 
 
 class PhoneType(models.Model):

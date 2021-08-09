@@ -94,7 +94,7 @@ class Migration(migrations.Migration):
             name='Phone',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number', models.CharField(blank=True, max_length=64, null=True)),
+                ('number', models.CharField(max_length=64)),
                 ('note', models.CharField(blank=True, max_length=128, null=True)),
                 ('is_default', models.BooleanField()),
                 ('created_by', models.CharField(blank=True, max_length=16, null=True)),
