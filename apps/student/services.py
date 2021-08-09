@@ -63,7 +63,7 @@ def assign_moodle_id(*, student: models.Student, created_by: str, first_module_c
     )
 
 
-EMPTY_ATTRIBUTE_VALUES = {
+EMPTY_ATTRIBUTE_VALUES: dict[str, list] = {
     'birthdate': [],
     'gender': [],
     'nationality': [models.NOT_KNOWN_NATIONALITY],

@@ -145,15 +145,15 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         moodle_id = getattr(self.object, 'moodle_id', None)
         tutor = Tutor.objects.filter(student=self.object.id).prefetch_related('tutorsubjects').first()
         tutor_activities = tutor_modules = tutor_roles = tutor_modules_query = None
+
+        tutor_module_role = self.request.GET.get('tutor_role', '')
         if tutor:
             tutor_activities = tutor.tutor_activities.select_related('activity').order_by('-id')
             tutor_modules = tutor.tutor_modules.select_related('module').order_by('-module__start_date')
             tutor_roles = tutor.tutor_modules.values_list('role', flat=True).exclude(role=None).distinct
             tutor_modules_query = tutor.tutor_modules.select_related('module').order_by('-module__start_date')
-
-        tutor_module_role = self.request.GET.get('tutor_role', '')
-        if tutor_module_role:
-            tutor_modules_query &= tutor_modules_query.filter(role__contains=tutor_module_role)
+            if tutor_module_role:
+                tutor_modules_query &= tutor_modules_query.filter(role__contains=tutor_module_role)
 
         qa_list = self.object.qualification_aims.select_related('programme').prefetch_related(
             Prefetch('enrolments', queryset=Enrolment.objects.filter().order_by('-module__start_date', 'module__code'))

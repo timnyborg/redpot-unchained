@@ -17,9 +17,9 @@ class LegacyPasswordHasher(hashers.PBKDF2PasswordHasher):
         assert password is not None
         assert salt and '$' not in salt
         iterations = iterations or self.iterations
-        hash = pbkdf2(password, salt, iterations, digest=self.digest)
-        hash = hash.hex()[:40]
-        return "%s(%d,20,sha512)$%s$%s" % (self.algorithm, iterations, salt, hash)
+        hash_ = pbkdf2(password, salt, iterations, digest=self.digest)
+        hash_hex = hash_.hex()[:40]
+        return "%s(%d,20,sha512)$%s$%s" % (self.algorithm, iterations, salt, hash_hex)
 
     def salt(self) -> str:
         # w2p expects 16-char salt, so we use django's salt-generator with limited characters
@@ -47,9 +47,9 @@ class PBKDF2SHA512PasswordHasherW2P(hashers.PBKDF2PasswordHasher):
         assert password is not None
         assert salt and '$' not in salt
         iterations = iterations or self.iterations
-        hash = pbkdf2(password, salt, iterations, digest=self.digest)
-        hash = hash.hex()[:40]
-        return "%s$%d$%s$%s" % (self.algorithm, iterations, salt, hash)
+        hash_ = pbkdf2(password, salt, iterations, digest=self.digest)
+        hash_hex = hash_.hex()[:40]
+        return "%s$%d$%s$%s" % (self.algorithm, iterations, salt, hash_hex)
 
 
 def validate_password(password: str) -> None:
