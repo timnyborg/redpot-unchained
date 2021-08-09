@@ -56,6 +56,7 @@ class TestCreateView(LoggedInViewTestMixin, test.TestCase):
                 # unchanged values
                 'domicile': self.qa.student.domicile_id,
                 'religion_or_belief': self.qa.student.religion_or_belief,
+                'ethnicity': self.qa.student.ethnicity_id,
             },
         )
         self.qa.student.refresh_from_db()

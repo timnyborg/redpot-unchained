@@ -46,7 +46,6 @@ class TutorFee(models.Model):
     transferred_on = models.DateTimeField(blank=True, null=True, editable=False)
 
     class Meta:
-        # managed = False
         db_table = 'tutor_fee'
         permissions = [
             ('raise', 'Can raise tutor payments'),
@@ -128,9 +127,9 @@ class TutorFee(models.Model):
             errors.append('Tutor missing an appointment ID.')
         if not tutor.employee_no:
             errors.append('Tutor missing an employee number.')
-        # todo: enable when rtw_type implemented
-        # if not tutor.rtw_type:
-        #     errors.append('Tutor missing Right to Work data.')
+        if not tutor.rtw_type:
+            # todo: consider more extensive rules re. end-dates
+            errors.append('Tutor missing Right to Work data.')
 
         # Result and error messages
         return {
@@ -200,7 +199,6 @@ class TutorFeeRate(models.Model):
     objects = TutorFeeRateQuerySet.as_manager()
 
     class Meta:
-        # managed = False
         db_table = 'tutor_fee_rate'
 
     def __str__(self):
@@ -212,7 +210,6 @@ class TutorFeeStatus(models.Model):
     paid = models.BooleanField()
 
     class Meta:
-        # managed = False
         db_table = 'tutor_fee_status'
 
     def __str__(self):
@@ -226,7 +223,6 @@ class TutorFeeType(models.Model):
     is_active = models.BooleanField(blank=True, null=True)
 
     class Meta:
-        # managed = False
         db_table = 'tutor_fee_type'
 
     def __str__(self):
