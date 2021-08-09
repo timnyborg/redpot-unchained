@@ -1,6 +1,6 @@
 import math
 import socket
-from typing import Union
+from typing import Optional, Union
 
 from django import template
 from django.core.cache import cache
@@ -92,47 +92,28 @@ def bootstrap4modal(
 
 @register.simple_tag
 def bootstrap3submit(text: str = 'Submit', btn_type: str = 'primary'):
-    return mark_safe(
-        f"""
-        <button type="submit" class="btn btn-{btn_type}">
-            {text}
-        </button>'
-        """
-    )
+    return mark_safe(f"<button type='submit' class='btn btn-{btn_type}'>{text}</button>")
 
 
 @register.simple_tag
 def bootstrap3delete(url: str, btn_type: str = 'danger', text: str = 'Delete'):
-    return mark_safe(
-        f"""
-        <a href="{url}" class="pull-right btn btn-{btn_type}">
-            {text}
-        </a>
-        """
-    )
+    return mark_safe(f"<a href='{url}' class='pull-right btn btn-{btn_type}'>{text}</a>")
 
 
 @register.simple_tag
 def bootstrap3backbutton(text='Back', btn_type='default'):
-    return mark_safe(
-        f"""
-        <a class='btn btn-{btn_type}' href="javascript:history.back()">{text}</a>
-    """
-    )
+    return mark_safe(f"<a class='btn btn-{btn_type}' href='javascript:history.back()'>{text}</a>")
 
 
 @register.simple_tag
-def watermark(text=socket.gethostname()):
-    return mark_safe(
-        f"""
-        <div id='watermark'>{(text + ' ')*150}</div>
-    """
-    )
+def watermark(text: Optional[str] = None):
+    if not text:
+        text = socket.gethostname()
+    return mark_safe(f"<div id='watermark'>{(text + ' ')*150}</div>")
 
 
 @register.simple_tag
 def enrolment_label(enrolment_status_id, text):
-
     enrolment_label_class = {
         # Confirmed
         10: 'text-success',
@@ -148,11 +129,8 @@ def enrolment_label(enrolment_status_id, text):
         # Transferred
         75: 'text-warning',
     }
-
     return mark_safe(
-        f"""
-        <span class="bordered {enrolment_label_class.get(enrolment_status_id)} text-default">{text}</span>
-    """
+        f"<span class='bordered {enrolment_label_class.get(enrolment_status_id)} text-default'>{text}</span>"
     )
 
 
