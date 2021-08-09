@@ -24,5 +24,11 @@ repos:
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.2
     hooks:
-    - id: flake8
-      additional_dependencies: [flake8-django==1.1.2]
+      - id: flake8
+        additional_dependencies:
+          - flake8-bugbear==21.4.3
+          - flake8-builtins==1.5.3
+          - flake8-comprehensions==3.5.0
+          - flake8-django==1.1.2
+          - flake8-eradicate==1.1.0
+          - flake8-print==4.0.0
