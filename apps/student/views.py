@@ -16,7 +16,7 @@ from apps.tutor.models import Tutor
 from apps.website_account.models import WebsiteAccount
 
 from . import datatables, forms
-from .models import DietType, Email, Student, StudentArchive
+from .models import Email, Student, StudentArchive
 
 
 class Create(LoginRequiredMixin, generic.View):
@@ -123,7 +123,7 @@ class CreateEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, gener
 
 
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
-    queryset = Student.objects.defer(None)  # Get all fields
+    model = Student
     template_name = 'student/view.html'
 
     def get_context_data(self, **kwargs):
@@ -132,7 +132,6 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         addresses = self.object.addresses.order_by('-is_default', '-is_billing', 'type', '-modified_on')
         emails = self.object.emails.order_by('-is_default', '-modified_on')
         enquiries = self.object.enquiries.select_related('module').order_by('-date')
-        diet_type = DietType.objects.filter(id=self.object.id).last()
         last_merger = StudentArchive.objects.filter(target=self.object.id).last()
         phones = self.object.phones.order_by('-is_default', '-modified_on')
         waitlists = self.object.waitlists.select_related('module').all()
@@ -174,7 +173,6 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
             'emails': emails,
             'enquiries': enquiries,
             'diet': diet,
-            'diet_type': diet_type,
             'invoices': invoices,
             'last_merger': last_merger,
             'emergency_contact': emergency_contact,

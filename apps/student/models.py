@@ -164,6 +164,9 @@ class Email(SignatureModel):
     class Meta:
         db_table = 'email'
 
+    def get_edit_url(self):
+        return '#'  # todo: implement once email edit in place
+
 
 class NextHUSID(models.Model):
     """Tracks how many HUSIDs have been allocated in a given year, acting as a seed for their generation"""
@@ -278,10 +281,13 @@ class Diet(models.Model):
 
 class DietType(models.Model):
     id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
+    description = models.CharField(max_length=64)
 
     class Meta:
         db_table = 'diet_type'
+
+    def __str__(self) -> str:
+        return str(self.description)
 
 
 class EmergencyContact(SignatureModel):

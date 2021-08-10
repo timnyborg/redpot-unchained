@@ -1,4 +1,3 @@
-import math
 import socket
 from typing import Optional, Union
 
@@ -141,11 +140,3 @@ def icon_text(text, icon_type):
         <span class="fa {icon_type}"></span> {text}
     """
     )
-
-
-@register.simple_tag
-def amount_refactored(amount):
-    if amount % 1 == 0:
-        return math.trunc(amount)
-    else:
-        return '%.2f' % amount
