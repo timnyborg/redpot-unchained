@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='DietType',
             fields=[
                 ('id', models.IntegerField(primary_key=True, serialize=False)),
-                ('description', models.CharField(blank=True, max_length=64, null=True)),
+                ('description', models.CharField(max_length=64)),
             ],
             options={
                 'db_table': 'diet_type',

@@ -96,7 +96,7 @@
                 </h4>
                 <dl class="dl-horizontal collapse" id="collapse-diet">
                     {% if diet %}
-                    <dt>Special diet</dt><dd>{{ diet_type }}</dd>
+                    <dt>Special diet</dt><dd>{{ diet.type }}</dd>
                     <dt>Details</dt><dd>{{ diet.note }}</dd>
                     {% else %}
                     None
@@ -159,7 +159,7 @@
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="/address/new/{{ student.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add address</a>
+        <a href="/address/new/{{ student.id }}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add address</a>
     </div>
     <a id='address' class='nav-anchor'></a>
         <h2>Address</h2>
@@ -232,7 +232,7 @@
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="/edit/request.args(0)/email/new" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add email</a>
+        <a href="/edit/request.args(0)/email/new" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add email</a>
     </div>
 
     <a id='email' class='nav-anchor'></a>
@@ -254,10 +254,9 @@
                             <span class="label label-warning">SITS</span>
                         {% endif %}
                         {% if email.note %}
-                            <span id="dynamicUpdateNoteBox_{{ email.id }}" class="far fa-comment"
-                                data-toggle="tooltip"
-                                data-title="{{ email.note }}"
-                            ></span>
+                            <span data-toggle="tooltip" data-title="{{ email.note }}">
+                                <i class="far fa-comment"></i>
+                            </span>
                         {% endif %}
                     </div>
                 </div>
@@ -274,7 +273,7 @@
                             </a>
                         {% endif %}
                         <a data-toggle="tooltip" placement="top" data-title="Copy email to clipboard" class="btn btn-default" onclick="copyToClipboard('{{email.email}}')"><span class="far fa-copy"></span></a>
-                        <a onclick="toggleTheBox({{email.id}}); ajax('/student/get_email_editing_form/?email_id{{email.id}}', ['email_id'], 'target_{{email.id}}');" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                        <a href="{{ email.get_edit_url }}" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
                     </div>
                 </div>
                 <div style="display:none;" class="slidingOutEmailEditing_{{email.id}}">
@@ -289,7 +288,7 @@
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="/edit/{{ student.id }}/phone/new" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add phone</a>
+        <a href="/edit/{{ student.id }}/phone/new" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add phone</a>
     </div>
 
     <a id='phone' class='nav-anchor'></a>
@@ -311,12 +310,10 @@
                         {% if phone.created_by == 'SITS' or phone.modified_by == 'SITS' %}
                             <span class="label label-warning">SITS</span>
                         {% endif %}
-                        <!-- TODO: Tooltip not working for comment -->
                         {% if phone.note %}
-                            <span class="far fa-comment"
-                                data-toggle="tooltip"
-                                data-title="{{phone.note}}"
-                            ></span>
+                            <span data-toggle="tooltip" data-title="{{ phone.note }}">
+                                <i class="far fa-comment"></i>
+                            </span>
                         {% endif %}
                     </div>
                 </div>
@@ -349,7 +346,7 @@
     <div class='panel panel-default'>
         <div class="panel-heading">
             <div class="pull-right">
-                <a href="/enrolment/new/{{ qa.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add enrolment</a>
+                <a href="{% url 'enrolment:create' qa.id %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add enrolment</a>
             </div>
             <div class="panel-title">
                 {% if qa.qa_warning %}
@@ -358,8 +355,8 @@
                 </span>
                 {% endif %}
 
-                <a href="/redpot/qa/view/{{ qa.id }}"><b>{{ qa.title }}</b></a>
-                <small> &bull; {{ qa.enrolments.count }} course{{qa.enrolments.count|pluralize}}</small>
+                <a href="{{ qa.get_absolute_url }}"><b>{{ qa.title }}</b></a>
+                <small> &bull; {{ qa.enrolments.count }} course{{ qa.enrolments.count|pluralize }}</small>
 
                 {% if qa.programme.qualification.is_award and qa.end_date and qa.reason_for_ending %}
                     {% if qa.reason_for_ending.id == 1 %}
@@ -378,19 +375,18 @@
             {% for enrolment in qa.enrolments.all %}
             <li class="item" data-created-on="{{ enrolment.created_on}}">
                 <div class="pull-right">
-                    <a href="/enrolment/{{enrolment.id}}" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                    <a href="{{ enrolment.get_absolute_url }}" class="btn btn-default"><i class="fas fa-fw fa-search"></i></a>
                 </div>
                 <div class="item-title">
-
                     {% if enrolment.module.credit_points and qa.non_accredited %}
                         <span title="Credit-bearing module within a non-credit-bearing programme" class="text-danger">
                             <span class="fa fa-exclamation-circle"></span>
                         </span>
                     {% endif %}
-                    <a href="/module/view/{{ enrolment.module.id }}">{{ enrolment.module.title }}</a>
+                    <a href="{{ enrolment.module.get_absolute_url }}">{{ enrolment.module.title }}</a>
                 </div>
                 <div class="item-info">
-                    <a href="/module/view/{{ enrolment.module.id }}">{{ enrolment.module.code }}</a> &bull; {{ enrolment.module.start_date }}
+                    <a href="{{ enrolment.module.get_absolute_url }}">{{ enrolment.module.code }}</a> &bull; {{ enrolment.module.start_date }}
                     {% if enrolment.module.end_date and enrolment.module.end_date != enrolment.module.start_date %}
                         &ndash; {{enrolment.module.end_date}}
                     {% endif %}
@@ -401,7 +397,7 @@
         </ul>
     </div>
     {% endfor %}
-    <a class="btn btn-success" href="/qa/new/{{student.id}}">{% icon_text 'Add programme' 'fa-plus' %}</a>
+    <a class="btn btn-success" href="{% url 'qualification_aim:new' student.id %}">{% icon_text 'Add programme' 'fa-plus' %}</a>
     <a class="btn btn-primary" href="/waitlist/add/{{student.id}}">{% icon_text 'Add to waiting list' 'fa-list' %}</a>
 
     <div class="btn-group pull-right">
@@ -418,7 +414,7 @@
             <li class="dropdown-header">Transcripts</li>
             <li><a href="/student/transcript/{{student.id}}/undergraduate" target="_blank">{% icon_text 'Undergraduate' 'fa-graduation-cap' %}</a></li>
             <li><a href="/student/transcript/{{student.id}}/undergraduate/True" target="_blank">{% icon_text 'Undergraduate (with header)' 'fa-graduation-cap' %}</a></li>
-            <li><a href="student/transcript/{{student.id}}/postgraduate" target="_blank">{% icon_text 'Postgraduate' 'fa-graduation-cap' %}</li>
+            <li><a href="student/transcript/{{student.id}}/postgraduate" target="_blank">{% icon_text 'Postgraduate' 'fa-graduation-cap' %}</a></li>
             <li><a href="/student/transcript/{{student.id}}/postgraduate/True" target="_blank">{% icon_text 'Postgraduate (with header)' 'fa-graduation-cap' %}</a></li>
             {% comment %} {% endif %} {% endcomment %}
         </ul>
@@ -433,8 +429,8 @@
         <thead><tr><th>Module</th><th>Title</th><th>Listed on</th></tr></thead>
         {% for waitlist in waitlists %}
         <tr>
-            <td><a href="/module/view/{{ waitlist.module.code }}">{{ waitlist.module.code }}</a></td>
-            <td><a href="/module/view/{{ waitlist.module.code }}">Contemporary Irish Fiction</a></td>
+            <td><a href="{{ waitlist.module.get_absolute_url }}">{{ waitlist.module.code }}</a></td>
+            <td><a href="{{ waitlist.module.get_absolute_url }}">Contemporary Irish Fiction</a></td>
             <td>{{ waitlist.listed_on | date:'d M Y H:i' }}</td>
         </tr>
         {% endfor %}
@@ -468,25 +464,24 @@
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="/invoice/choose_enrolments/{{student.id}}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add invoice</a>
+        <a href="/invoice/choose_enrolments/{{student.id}}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add invoice</a>
     </div>
     <a id='invoices' class='nav-anchor' data-badge-text='' data-badge-class='warning'></a>
     <h2>Invoices</h2>
     {% if invoices %}
     <ul class="item-list hide-items" data-max-item=2>
         {% for invoice in invoices %}
-        <li class="item" data-created-on="{{invoice.created_on}}">
+        <li class="item" data-created-on="{{ invoice.created_on }}">
             <div class="item-title">
                 <div class="pull-right">
-                    <a href="invoice/view/{{invoice.id}}" class="btn btn-default"><span class="fa fa-search"></span></a>
+                    <a href="{{ invoice.get_absolute_url }}" class="btn btn-default"><span class="fa fa-search"></span></a>
                 </div>
-                <a href="/invoice/view/{{invoice.id}}">
-                {{invoice}}
-                &bull; {{invoice.ledger_items.first.enrolment.module}}
+                <a href="{{ invoice.get_absolute_url }}">
+                {{invoice}} &bull; {{invoice.ledger_items.first.enrolment.module}}
                 </a>
             </div>
             <div class="item-info">
-                Raised {{ invoice.date | date:'d M Y' }} &bull; £{% amount_refactored invoice.amount %}
+                Raised {{ invoice.date | date:'d M Y' }} &bull; £{{ invoice.amount | floatformat:-2 }}
                 {% if not invoice.balance %}
                     {% if invoice.written_off %}
                     <span class="label label-primary">Written off</span>
@@ -494,14 +489,14 @@
                     <span class="label label-success">Paid</span>
                     {% endif %}
                 {% elif invoice.balance < 0 %}
-                <span class="label label-warning">£{{invoice.balance | floatformat }} In credit</span>
+                <span class="label label-warning">£{{ invoice.balance | floatformat:-2 }} In credit</span>
                 {% elif invoice.payment_plan.id %}
-                    <span class="label label-warning">£{{invoice.balance | floatformat }} Outstanding</span>
+                    <span class="label label-warning">£{{ invoice.balance | floatformat:-2 }} Outstanding</span>
                     <span class="label label-primary">Payment plan</span>
                 {% elif invoice.duedate and invoice.duedate < now %}
-                    <span class="label label-danger">£{{invoice.balance | floatformat }} Overdue</span>
+                    <span class="label label-danger">£{{ invoice.balance | floatformat:-2 }} Overdue</span>
                 {% else %}
-                    <span class="label label-warning">£{{invoice.balance | floatformat }} Outstanding</span>
+                    <span class="label label-warning">£{{ invoice.balance | floatformat:-2 }} Outstanding</span>
                 {% endif %}
             </div>
         </li>
@@ -512,7 +507,9 @@
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add login</a>
+        <a href="{% url 'website_account:create' student.id %}" class="btn btn-success btn-xs">
+            <i class="fas fa-plus"></i> Add login
+        </a>
     </div>
 
     <a id='login' class='nav-anchor'></a>
@@ -524,17 +521,25 @@
         <li class="item">
             <div class="item-title">
                 <div class="pull-right">
-                    <a href="/login/edit/{{ login.id }}" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                    <a href="{% url 'website_account:edit' login.id %}" class="btn btn-default">
+                        <i class="fas fa-fw fa-pencil-alt"></i>
+                    </a>
                 </div>
                 {{ login.username }}
                 {% if login.is_disabled %}
                 <span class="label label-danger">Disabled</span>
                 {% endif %}
-
             </div>
             <div class="item-info">
                 Last logged in
-                <span class="timeago" datetime="{{ login.last_login | date:'j M Y H:i' }}" data-toggle="tooltip" placement="bottom" title="" data-tid="4" data-original-title="{{ login.last_login }}">{{ login.last_login }}</span>
+                <span class="timeago"
+                      datetime="{{ login.last_login}}"
+                      data-toggle="tooltip"
+                      data-placement="bottom"
+                      data-title="{{ login.last_login | date:'j M Y H:i' }}"
+                >
+                    {{ login.last_login }}
+                </span>
             </div>
         </li>
         {% endfor %}
@@ -545,13 +550,13 @@
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="other_id/new/{{ student.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add Other ID</a>
+        <a href="other_id/new/{{ student.id }}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add other ID</a>
     </div>
     <a id='other_ids' class='nav-anchor'></a>
     <h2>Other IDs</h2>
     {% if other_ids %}
     <table class="table table-condensed table-striped table-hover hide-rows" data-display='3'>
-        <thead><tr><th>ID</th><th>Type</th><th>End date</th></th><th></th></tr></thead>
+        <thead><tr><th>ID</th><th>Type</th><th>End date</th><th></th></tr></thead>
         <tbody>
         {% for other_id in other_ids %}
             <tr>
@@ -565,7 +570,6 @@
                     {% comment %} {% endif %} {% endcomment %}
                 </td>
             </tr>
-
         {% endfor %}
         </tbody>
     </table>
@@ -575,7 +579,7 @@
     {% if moodle_id %}
         <dd>{{ moodle_id.id }} <a href="/moodle-id/edit/{{ moodle_id.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a></dd>
     {% else %}
-        <dd>N/A <a href="/moodle-id/new/{{ student.id }}"><span class="fa fa-plus"></span></a></dd>
+        <dd>N/A <a href="/moodle-id/new/{{ student.id }}"><i class="fas fa-plus"></i></a></dd>
     {% endif %}
     </dl>
 
@@ -583,13 +587,13 @@
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="/enquiry/new/{{ student.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add Enquiries</a>
+        <a href="/enquiry/new/{{ student.id }}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add enquiries</a>
     </div>
     <a id='enquiries' class='nav-anchor'></a>
     <h2>Enquiries</h2>
     {% if enquiries %}
     <table class="table table-condensed table-striped table-hover hide-rows" data-display='3'>
-    <thead><tr><th width=11>Date</th><th>Module</th><th>Title</th><th>Details</th><th></th></tr></thead>
+    <thead><tr><th>Date</th><th>Module</th><th>Title</th><th>Details</th><th></th></tr></thead>
     <tbody>
     {% for enquiry in enquiries %}
         <tr>
@@ -625,9 +629,9 @@
 
     <a id='tutor' class='nav-anchor'></a>
     <h2>Tutor details</h2>
-    <dl class="dl-horizontal wide">
-        <div class="row" style="padding-top: 20px">
-            <div class='col-xs-9'>
+    <div class="row" style="padding-top: 20px">
+        <div class='col-xs-9'>
+            <dl class="dl-horizontal wide">
                 <dt>Qualifications</dt><dd>{{ tutor.qualifications }}</dd>
                 <dt>Affiliation</dt><dd>{{ tutor.affiliation }}</dd>
                 {% comment %} if has_membership('tutor_banking'): {% endcomment %}
@@ -636,8 +640,10 @@
                 <dt>Appointment ID</dt><dd><span class="text-danger"><b>{{tutor.appointment_id}}</b></span></dd>
                 {% comment %} {% endif %} {% endcomment %}
                 <dt>Oracle supplier number</dt><dd>{{tutor.oracle_supplier_number}}</dd>
-                <br>
-                <h4>Bank details</h4>
+            </dl>
+
+            <h4>Bank details</h4>
+            <dl class="dl-horizontal">
                 <dt>Bank name</dt><dd>{{tutor.bankname}}</dd>
                 <dt>Branch address</dt><dd>{{tutor.branchaddress}}</dd>
                 <dt>Account name</dt><dd>{{tutor.accountname}}</dd>
@@ -646,19 +652,20 @@
                 <dt>SWIFT</dt><dd>{{tutor.swift}}</dd>
                 <dt>IBAN</dt><dd>{{tutor.iban}}</dd>
                 <dt>Other bank details</dt><dd>{{tutor.other_bank_details}}</dd>
-            </div>
-            {% if tutor.image %}
+            </dl>
+        </div>
+        {% if tutor.image %}
             <div class='col-xs-3' style="width:100px; height:85px; max-width:100px; overflow:hidden; margin: 0 10px 0 0;">
                 <img src="/mnt/images/tutors/{{tutor.image}}" width="100px" align="left">
             </div>
-            {% endif %}
-            <br>
-        </div>
-        <h4>Biography</h4>
-        <div class='panel panel-default panel-body'>
-            {{tutor.custom_biography}}
-        </div>
-    </dl>
+        {% endif %}
+        <br>
+    </div>
+    <h4>Biography</h4>
+    <div class='panel panel-default panel-body'>
+        {{tutor.custom_biography}}
+    </div>
+
 
     <!-- TODO: Implement the tutor subject page-->
     <h4>Subjects <small><a href="/tutor/subject/{{tutor.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a></small></h4>
@@ -669,11 +676,11 @@
     {% else %}
     none
     {% endif %}
-    <p></p>
+
     <!-- TODO: Implment the membership feature-->
     {% comment %}{{ if has_membership('tutor_banking'):}} {% endcomment %}
-    <h4>Right to work <small><a href="/tutor/right-to-work/{{tutor.id}}">
-        <span class="fas fa-fw fa-pencil-alt"></span></a></small>
+    <h4>Right to work <small><a href="{% url 'tutor:right-to-work' tutor.id %}">
+        <i class="fas fa-fw fa-pencil-alt"></i></a></small>
     </h4>
     <dl class="dl-horizontal">
         <dt>List</dt><dd>{{tutor.rtw_type}}</dd>
@@ -690,8 +697,9 @@
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <!-- TODO: create page for link-->
-        <a href="/tutor-module/new?_next=%2Fstudent%2Fview%2F{{student.id}}%23tutor-modules&amp;tutor={tutor.id}}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add module</a>
+        <a href="{% url 'tutor:module:new' %}?tutor={{ tutor.id }}&next={{ request.path }}#tutor-modules" class="btn btn-success btn-xs">
+            <i class="fas fa-plus"></i> Add module
+        </a>
     </div>
     <a id='tutor-modules' class='nav-anchor' data-badge-text='{{tutor_modules.count}}'></a>
     <h2>Tutor modules</h2>
@@ -713,11 +721,11 @@
     <ul class="item-list hide-items" id="tutor-list" data-max-item=4>
 
     {% for tutor_module in tutor_modules_query %}
-    <li class="item" data-created-on="{{.tutor_module.created_on}}">
+    <li class="item" data-created-on="{{ tutor_module.created_on }}">
         <div class="item-title">
             <div class='row'>
                 <div class="col-xs-5">
-                    <a href="/module/view/{{tutor_module.module.id}}">{{tutor_module.module.title}}</a>
+                    <a href="{{ tutor_module.module.get_absolute_url }}">{{tutor_module.module.title}}</a>
                 </div>
                 <div class="col-xs-4">
                     {% if tutor_module.role %}
@@ -744,7 +752,7 @@
         <div class="item-info">
             <div class='row'>
                 <div class="col-xs-5">
-                    <a href="/redpot/module/view/{{tutor_module.module.id}}">{{tutor_module.module.code}}</a> &bull;
+                    <a href="{{ tutor_module.module.get_absolute_url }}">{{tutor_module.module.code}}</a> &bull;
                     {% if tutor_module.module.start_date == tutor_module.module.end_date %}
                         {{tutor_module.module.start_date}}
                     {% else %}
@@ -755,6 +763,8 @@
         </div>
     </li>
     {% endfor %}
+
+    </ul>
 </div>
 
 <div class="section">
@@ -784,16 +794,14 @@
     <a id='tutor' class='nav-anchor'></a>
     <h2>Tutor details</h2>
     <p>This person is a not a tutor.</p>
-    <a class="btn btn-success" href="/tutor/edit/{{sudent.id}}"><span class="fa fa-plus"></span> Make tutor</a>
+    <a class="btn btn-success" href="{% url 'student:make-tutor' student.id %}">
+        <i class="fas fa-plus"></i> Make tutor
+    </a>
 </div>
 {% endif %}
 
 <!-- TODO : Does this remain here or do we move this elsewhere? -->
 <script>
-$(function () {
-    $('[data-toggle="popover"]').popover()
-  })
-
   function copyToClipboard(copiedText) {
       var newDocumentElement = document.createElement("input");
       document.body.appendChild(newDocumentElement);
@@ -811,53 +819,6 @@ $(function () {
       element.remove();
   }
 
-  </script>
-
-  <script>
-    function ajaxUpdateEmail(emailID) {
-
-      //If any emails exist on the page, update the current view with the most recent values
-      if( $('.slidingOutEmailEditing_' + emailID).length ) {
-          $(".slidingOutEmailEditing_" + emailID).toggle();
-
-          var emailInput = $("#email_email").val();
-              noteInput = $("#email_note").val();
-
-          $("#dynamicUpdateEmailField_" + emailID).html(emailInput);
-          $("#dynamicUpdateEmailField_" + emailID).attr('href','mailto:' + emailInput);
-          $("#dynamicUpdateNoteBox_" + emailID).attr("data-title", noteInput);
-      }
-
-      //Update the database in the back-end with AJAX
-      // TODO: add the ajax stuff
-
-      //Removing the email if delete checkbox has been selected
-      if ($('input#delete_record').is(':checked')) {
-          $(".slidingOutEmailEditing_" + emailID).closest(".item").remove();
-      }
-
-      //Updating 'default' label if a user has changed the email address
-      if ($('input#email_is_default').is(':checked')) {
-          $("span.label-primary:contains('Default')").empty();
-          $("#dynamicUpdateEmailField_" + emailID).after("<span class='label label-primary'>Default</span>");
-      }
-
-      //Stopping from reloading the page
-      return false;
-  }
-  </script>
-
-  <script>
-  function toggleTheBox(emailID) {
-
-      //Hiding and removing all the forms of updating email, except the selected one by user
-      $("[class*=slidingOutEmailEditing]").not(".slidingOutEmailEditing_" + emailID).hide();
-      $("[id*=target_]").not(".slidingOutEmailEditing_" + emailID).empty();
-
-      //Togling the selected form
-      $(".slidingOutEmailEditing_" + emailID).toggle();
-
-  }
   </script>
 
   <script>
