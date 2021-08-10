@@ -433,8 +433,7 @@
         <table class="table table-condensed table-striped table-hover hide-rows">
         <thead>
             <tr>
-                <th>Surname</th>
-                <th>Firstname</th>
+                <th>Name</th>
                 <th>Status</th>
                 {% if not module.non_credit_bearing %}
                 <th>Result</th>
@@ -446,8 +445,7 @@
     {% endif %}
     {% for enrolment in enrolments %}
         <tr>
-            <td><a href="">{{ enrolment.qa.student.surname }}</a></td>
-            <td><a href="">{{ enrolment.qa.student.firstname }}</a></td>
+            <td><a href="{{ enrolment.qa.student.get_absolute_url }}">{{ enrolment.qa.student }}</a></td>
             <td>{{ enrolment.status.description }}</td>
             {% if not module.non_credit_bearing %}
             <td>{{ enrolment.result.description }}</td>
@@ -552,7 +550,7 @@
                     <tr>
                         <td>{{ fee.description }}</td>
                         <td></td>
-                        <td>£{{ fee.amount | floatformat:2 }}</td>
+                        <td>£{{ fee.amount | floatformat:-2 }}</td>
                         <td class="quick-icons">
                             <a href="{% url 'fee:edit' fee.pk %}"><i class="fas fa-pencil-alt"></i></a>
                         </td>
@@ -569,7 +567,7 @@
                             {% endif %}
                         </td>
                         <td>{{ fee.type.narrative }}</td>
-                        <td>£{{ fee.amount | floatformat:2 }}</td>
+                        <td>£{{ fee.amount | floatformat:-2 }}</td>
                         <td class="quick-icons">
                             <a href="{% url 'fee:edit' fee.pk %}"><i class="fas fa-pencil-alt"></i></a>
                         </td>
