@@ -335,7 +335,6 @@ CKEDITOR_CONFIGS = {
     # todo: implement old config features where still required:
     #       - image upload (django-ckeditor's inbuilt handling may be preferable)
     #       - website css rules
-    #       - wordcount plugin
     #       - basehref
     #       - default image alignment (config.js)
     'default': {
@@ -353,6 +352,7 @@ CKEDITOR_CONFIGS = {
             ['Maximize'],
         ],
         'format_tags': 'p;h3;h4',
+        'extraPlugins': 'wordcount',
         'extraAllowedContent': ';'.join(
             [
                 # element[attributes]{styles}(classes)

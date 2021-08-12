@@ -110,6 +110,7 @@ class TutorModuleEditForm(forms.ModelForm):
             'director_of_studies',
             'biography',
         ]
+        widgets = {'biography': CKEditorWidget()}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -141,6 +142,7 @@ class TutorModuleCreateForm(forms.ModelForm):
                 url='autocomplete:tutor',
                 attrs={'data-minimum-input-length': 3},
             ),
+            'biography': CKEditorWidget(),
         }
 
     def __init__(self, *args, **kwargs):

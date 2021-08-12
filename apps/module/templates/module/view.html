@@ -550,7 +550,11 @@
             {% for fee in fees %}
                 {% if fee.type.narrative == 'Programme fee' %}
                     <tr>
-                        <td>{{ fee.description }}</td>
+                        <td>{{ fee.description }}
+                            {% if fee.is_catering %}
+                                ({{ fee.catering_booking_count }}/{{ fee.allocation | default:'∞' }})
+                            {% endif %}
+                        </td>
                         <td></td>
                         <td>£{{ fee.amount | floatformat:2 }}</td>
                         <td class="quick-icons">
