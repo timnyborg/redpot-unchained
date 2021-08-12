@@ -582,6 +582,7 @@ class Subject(models.Model):
 
     class Meta:
         db_table = 'subject'
+        ordering = ('name',)
 
     def __str__(self) -> str:
         return str(self.name)

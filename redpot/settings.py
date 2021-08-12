@@ -80,7 +80,9 @@ PREREQ_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 3rd party apps
+    'ckeditor',  # django-ckeditor
     'menu',  # django-simple-menu
+    'django_select2',
     'django_tables2',
     'django_filters',
     'widget_tweaks',  # django-widget-tweaks
@@ -242,13 +244,12 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 STATIC_ROOT = BASE_DIR / 'static'
-
+STATICFILES_DIRS = [BASE_DIR / 'redpot' / 'assets']
 MEDIA_URL = get_secret('MEDIA_URL', '/media/')
 MEDIA_ROOT = get_secret('MEDIA_ROOT', BASE_DIR / 'media')
 
@@ -329,3 +330,46 @@ WPM_FTP = get_secret(
         'DIRECTORY': '',
     },
 )
+
+CKEDITOR_CONFIGS = {
+    # todo: implement old config features where still required:
+    #       - image upload (django-ckeditor's inbuilt handling may be preferable)
+    #       - website css rules
+    #       - wordcount plugin
+    #       - basehref
+    #       - default image alignment (config.js)
+    'default': {
+        'toolbar': 'custom',
+        'toolbar_custom': [
+            ['Format'],
+            ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord'],
+            ['Undo', 'Redo'],
+            ['Scayt'],
+            ['Link', 'Unlink', 'Anchor'],
+            ['Image', 'SpecialChar'],
+            ['Italic', 'Blockquote', 'RemoveFormat'],
+            ['NumberedList', 'BulletedList', 'Indent', 'Outdent'],
+            ['Source'],
+            ['Maximize'],
+        ],
+        'format_tags': 'p;h3;h4',
+        'extraAllowedContent': ';'.join(
+            [
+                # element[attributes]{styles}(classes)
+                # See: https://ckeditor.com/docs/ckeditor4/latest/guide/dev_allowed_content_rules.html
+                # Todo: triage these rules and make them stricter (esp. attributes)
+                'audio[*]',
+                'video[*]',
+                'source[*]',
+                'iframe[*]',
+                'div[*](*)',
+                'address[*]',
+                'i[*]',
+                'span[*](*)',
+                'p[*](*)',
+                'a[*](*)',
+            ]
+        ),
+    }
+    # todo: notification field toolbar (legacy redpot's custom_link_editor.js)
+}

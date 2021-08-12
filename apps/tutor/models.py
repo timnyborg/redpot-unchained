@@ -91,6 +91,11 @@ class Tutor(SignatureModel):
         related_name='tutors',
         through='TutorModule',
     )
+    subjects = models.ManyToManyField(
+        to='module.Subject',
+        through='TutorSubject',
+        blank=True,  # Don't require in forms
+    )
 
     objects = TutorManager()
 
@@ -190,6 +195,8 @@ class RightToWorkDocumentType(models.Model):
 
 
 class TutorSubject(SignatureModel):
+    """Records a tutor's subjects of expertise, for reporting/admin purposes"""
+
     tutor = models.ForeignKey(
         Tutor, models.DO_NOTHING, db_column='tutor', blank=True, null=True, related_name='tutorsubjects'
     )
