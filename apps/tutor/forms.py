@@ -1,6 +1,8 @@
+from ckeditor.widgets import CKEditorWidget
 from dal import autocomplete
+from django_select2.forms import Select2MultipleWidget
 
-from django.forms import ModelForm
+from django import forms
 from django.utils.safestring import mark_safe
 
 from apps.core.utils.widgets import DatePickerInput, ReadOnlyModelWidget
@@ -9,7 +11,7 @@ from apps.module.models import Module
 from .models import RightToWorkType, Tutor, TutorModule
 
 
-class BasicEdit(ModelForm):
+class BasicEdit(forms.ModelForm):
     """Basic form for users lacking bank details rights"""
 
     class Meta:
@@ -19,10 +21,15 @@ class BasicEdit(ModelForm):
             'affiliation',
             'biography',
             'image',
+            'subjects',
         ]
+        widgets = {
+            'biography': CKEditorWidget(),
+            'subjects': Select2MultipleWidget(),
+        }
 
 
-class Edit(ModelForm):
+class Edit(forms.ModelForm):
     """Full form for users with bank details rights"""
 
     class Meta:
@@ -41,13 +48,18 @@ class Edit(ModelForm):
             'swift',
             'iban',
             'other_bank_details',
+            'oracle_supplier_number',
             'biography',
             'image',
-            'oracle_supplier_number',
+            'subjects',
         ]
+        widgets = {
+            'biography': CKEditorWidget(),
+            'subjects': Select2MultipleWidget(),
+        }
 
 
-class RightToWork(ModelForm):
+class RightToWork(forms.ModelForm):
     # todo: document_type as an autocomplete
     # (https://django-autocomplete-light.readthedocs.io/en/master/tutorial.html#filtering-results-based-on-the-value-of-other-fields-in-the-form)
     class Meta:
@@ -88,7 +100,7 @@ class RightToWork(ModelForm):
             self.cleaned_data['rtw_end_date'] = None
 
 
-class TutorModuleEditForm(ModelForm):
+class TutorModuleEditForm(forms.ModelForm):
     class Meta:
         model = TutorModule
         fields = [
@@ -108,7 +120,7 @@ class TutorModuleEditForm(ModelForm):
         )
 
 
-class TutorModuleCreateForm(ModelForm):
+class TutorModuleCreateForm(forms.ModelForm):
     class Meta:
         model = TutorModule
         fields = [

@@ -26,6 +26,9 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestam
             return forms.Edit
         return forms.BasicEdit
 
+    def get_success_url(self):
+        return self.object.get_absolute_url() + '#tutor'
+
 
 class RightToWork(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
     model = Tutor

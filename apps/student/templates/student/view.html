@@ -611,20 +611,17 @@
 
 {% if tutor.id %}
 <div class="section">
-    <!-- TODO: Implement the tutor page -->
-    <a class="btn btn-default btn-lg pull-right" data-title="Edit details" data-toggle="tooltip" href="/tutor/edit/{{tutor.id}}" target="" data-original-title="" title=""><span class="fas fa-fw fa-pencil-alt"></span></a>
-    {% if tutor.rtw_end_date %}
-    {% if tutor.expiredRTW %}
+    {% edit_button tutor %}
+    {% if tutor.rtw_expired %}
     <div class="section-alert-header alert-danger">
             <span class="fa fa-exclamation-circle"></span>
             <b>This tutor's right to work has expired</b>
     </div>
-    {% elif tutor.expiresSoonRTW %}
+    {% elif tutor.rtw_expires_soon %}
     <div class="section-alert-header alert-danger">
         <span class="fa fa-exclamation-circle"></span>
         <b>This tutor's right to work will expire within 6 months</b>
     </div>
-    {% endif %}
     {% endif %}
 
     <a id='tutor' class='nav-anchor'></a>
@@ -632,27 +629,38 @@
     <div class="row" style="padding-top: 20px">
         <div class='col-xs-9'>
             <dl class="dl-horizontal wide">
-                <dt>Qualifications</dt><dd>{{ tutor.qualifications }}</dd>
-                <dt>Affiliation</dt><dd>{{ tutor.affiliation }}</dd>
-                {% comment %} if has_membership('tutor_banking'): {% endcomment %}
-                <dt>National Insurance # </dt><dd>{{tutor.nino}}</dd>
-                <dt>Employee #</dt><dd><span class="text-danger"><b>{{tutor.employee_no}}</b></span></dd>
-                <dt>Appointment ID</dt><dd><span class="text-danger"><b>{{tutor.appointment_id}}</b></span></dd>
-                {% comment %} {% endif %} {% endcomment %}
-                <dt>Oracle supplier number</dt><dd>{{tutor.oracle_supplier_number}}</dd>
+                <dt>Qualifications</dt><dd>{{ tutor.qualifications | default:'–'  }}</dd>
+                <dt>Affiliation</dt><dd>{{ tutor.affiliation | default:'–'  }}</dd>
+                {% if perms.tutor.edit_bank_details %}
+                    <dt>National Insurance # </dt><dd>{{ tutor.nino | default:'–' }}</dd>
+                    <dt>Employee #</dt>
+                    {% if tutor.employee_no %}
+                        <dd>{{tutor.employee_no}}</dd>
+                    {% else %}
+                        <dd><span class="text-danger"><b>None</b></span></dd>
+                    {% endif %}
+                    <dt>Appointment ID</dt>
+                    {% if tutor.appointment_id %}
+                        <dd>{{tutor.appointment_id}}</dd>
+                    {% else %}
+                        <dd><span class="text-danger"><b>None</b></span></dd>
+                    {% endif %}
+                {% endif %}
+                <dt>Oracle supplier number</dt><dd>{{ tutor.oracle_supplier_number | default:'–' }}</dd>
             </dl>
-
-            <h4>Bank details</h4>
-            <dl class="dl-horizontal">
-                <dt>Bank name</dt><dd>{{tutor.bankname}}</dd>
-                <dt>Branch address</dt><dd>{{tutor.branchaddress}}</dd>
-                <dt>Account name</dt><dd>{{tutor.accountname}}</dd>
-                <dt>Sort code</dt><dd>{{tutor.sortcode}}</dd>
-                <dt>Account # </dt><dd>{{tutor.accountno}}</dd>
-                <dt>SWIFT</dt><dd>{{tutor.swift}}</dd>
-                <dt>IBAN</dt><dd>{{tutor.iban}}</dd>
-                <dt>Other bank details</dt><dd>{{tutor.other_bank_details}}</dd>
-            </dl>
+            {% if perms.tutor.edit_bank_details %}
+                <h4>Bank details</h4>
+                <dl class="dl-horizontal">
+                    <dt>Bank name</dt><dd>{{ tutor.bankname | default:'–' }}</dd>
+                    <dt>Branch address</dt><dd>{{ tutor.branchaddress | default:'–' }}</dd>
+                    <dt>Account name</dt><dd>{{ tutor.accountname | default:'–' }}</dd>
+                    <dt>Sort code</dt><dd>{{ tutor.sortcode | default:'–' }}</dd>
+                    <dt>Account # </dt><dd>{{ tutor.accountno | default:'–' }}</dd>
+                    <dt>SWIFT</dt><dd>{{ tutor.swift | default:'–' }}</dd>
+                    <dt>IBAN</dt><dd>{{ tutor.iban | default:'–' }}</dd>
+                    <dt>Other bank details</dt><dd>{{ tutor.other_bank_details | default:'–' }}</dd>
+                </dl>
+            {% endif %}
         </div>
         {% if tutor.image %}
             <div class='col-xs-3' style="width:100px; height:85px; max-width:100px; overflow:hidden; margin: 0 10px 0 0;">
@@ -666,31 +674,28 @@
         {{tutor.custom_biography}}
     </div>
 
-
-    <!-- TODO: Implement the tutor subject page-->
-    <h4>Subjects <small><a href="/tutor/subject/{{tutor.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a></small></h4>
     {% if tutor.tutorsubjects.all %}
-    {% for tutor_subject in tutor.tutorsubjects.all %}
-    <span class="label label-warning">{{ tutor_subject.subject.name }}</span>
-    {% endfor %}
-    {% else %}
-    none
+        <h4>Subjects</h4>
+        {% for tutor_subject in tutor.tutorsubjects.all %}
+            <span class="label label-warning">{{ tutor_subject.subject }}</span>
+        {% endfor %}
     {% endif %}
 
-    <!-- TODO: Implment the membership feature-->
-    {% comment %}{{ if has_membership('tutor_banking'):}} {% endcomment %}
-    <h4>Right to work <small><a href="{% url 'tutor:right-to-work' tutor.id %}">
-        <i class="fas fa-fw fa-pencil-alt"></i></a></small>
-    </h4>
-    <dl class="dl-horizontal">
-        <dt>List</dt><dd>{{tutor.rtw_type}}</dd>
-        <dt>Document type</dt><dd>{{tutor.rtw_document_type}}</dd>
-        <dt>Document issued on</dt><dd>{{tutor.rtw_start_date}}</dd>
-        <dt>Document valid until</dt><dd>{{tutor.rtw_end_date}}</dd>
-        <dt>Date check done</dt><dd>{{tutor.rtw_check_on}}</dd>
-        <dt>Check done by</dt><dd>{{tutor.rtw_check_by}}</dd>
-    </dl>
-    {% comment %} {{ pass}} {% endcomment %}
+    {% if perms.tutor.edit_bank_details %}
+        <h4>Right to work
+            <small><a href="{% url 'tutor:right-to-work' tutor.id %}">
+                <i class="fas fa-fw fa-pencil-alt"></i>
+            </a></small>
+        </h4>
+        <dl class="dl-horizontal">
+            <dt>List</dt><dd>{{ tutor.get_rtw_type_display | default:'–' }}</dd>
+            <dt>Document type</dt><dd>{{ tutor.rtw_document_type | default:'–'}}</dd>
+            <dt>Document issued on</dt><dd>{{ tutor.rtw_start_date | default:'–' }}</dd>
+            <dt>Document valid until</dt><dd>{{ tutor.rtw_end_date | default:'–' }}</dd>
+            <dt>Date check done</dt><dd>{{ tutor.rtw_check_on | default:'–' }}</dd>
+            <dt>Check done by</dt><dd>{{ tutor.rtw_check_by | default:'–' }}</dd>
+        </dl>
+    {% endif %}
 
     {% timestamp tutor %}
 </div>
@@ -768,10 +773,15 @@
 </div>
 
 <div class="section">
+    <div class="pull-right top-right-button">
+        <a href="/activity/new/{{ tutor.id }}&next={{ request.path }}#tutor-activity" class="btn btn-success btn-xs">
+            <i class="fas fa-plus"></i> Add activity
+        </a>
+    </div>
+
     <a id='tutor-activity' class='nav-anchor'></a>
     <h2>Other tutor activity</h2>
-    <!-- TODO: Need to update the plus icon styles as new fontawesome icon used -->
-    <table class="table table-condensed table-striped table-hover hide-rows add-record" data-display='2' data-hide-after='2' data-add-url="/tutor-activity/new/{{tutor.id}}?_next=%2Fredpot%2Fstudent%2Fview%2F{{student.id}}%23tutor-activity">
+    <table class="table table-condensed table-striped table-hover hide-rows" data-display='2' data-hide-after='2'>
     <thead><tr><th>Type</th><th>Note</th><th>Date</th><th></th></tr></thead>
     <tbody>
     {% for tutor_activity in tutor_activities %}
