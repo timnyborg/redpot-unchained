@@ -2,8 +2,10 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from apps.core.utils.tests import LoggedInViewTestMixin
 from apps.enrolment.tests.factories import EnrolmentFactory
 from apps.fee.tests.factories import FeeFactory
+from apps.hesa.models import HECoSSubject
 from apps.programme.models import ProgrammeModule
 from apps.programme.tests.factories import ProgrammeFactory
 
@@ -254,3 +256,29 @@ class TestCopyWebFields(TestCase):
         self.assertEqual(response.status_code, 302)
         self.target_module.refresh_from_db(fields=['overview'])  # `fields` works around defer()
         self.assertEqual(self.target_module.overview, 'Details!')
+
+
+class TestHESASubjectEditView(LoggedInViewTestMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        # todo: replace with subject fixtures
+        HECoSSubject.objects.create(id=100003, name='Ceramics')
+        HECoSSubject.objects.create(id=100005, name='Clinical engineering')
+        cls.module = factories.ModuleFactory(non_credit_bearing=False)
+        cls.url = reverse('module:edit-hesa-subjects', kwargs={'pk': cls.module.pk})
+
+    def test_post(self):
+        response = self.client.post(
+            self.url,
+            data={
+                'module_hecos_subjects-TOTAL_FORMS': 2,
+                'module_hecos_subjects-INITIAL_FORMS': 0,
+                'module_hecos_subjects-0-hecos_subject': 100003,
+                'module_hecos_subjects-0-percentage': 25,
+                'module_hecos_subjects-1-hecos_subject': 100005,
+                'module_hecos_subjects-1-percentage': 75,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.module.hecos_subjects.count(), 2)

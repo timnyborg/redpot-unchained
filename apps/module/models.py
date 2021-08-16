@@ -187,13 +187,17 @@ class Module(SignatureModel):
         to='invoice.PaymentPlanType',
         through='invoice.ModulePaymentPlan',
     )
+    hecos_subjects = models.ManyToManyField(to='hesa.HECoSSubject', through='hesa.ModuleHECoSSubject')
     subjects = models.ManyToManyField(
         to='Subject',
         through='ModuleSubject',
+        verbose_name='Subjects (marketing)',
+        help_text='These decide how the course is displayed in the website search results, and in print material',
     )
     marketing_types = models.ManyToManyField(
         to='MarketingType',
         through='ModuleMarketingType',
+        help_text='These decide how the course is displayed in the website search results, and in print material',
     )
     objects = ModuleManager()
 

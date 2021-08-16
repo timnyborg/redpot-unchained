@@ -65,25 +65,27 @@
                 {% endif %}
             </dl>
 
-            <h4>Marketing types <small>
-                <a href="/marketing_type/{{ module.id }}"><i class="fas fa-pencil-alt"></i></a>
-            </small></h4>
+            <h4>Marketing types</h4>
             {% for marketing_type in marketing_types %}
                 <span class='label label-info'>{{ marketing_type }}</span>
             {% endfor %}
 
-            <h4>Subjects
-                <small><a href="/subject/{{ module.id }}">
-                    <i class="fas fa-pencil-alt"></i>
-                </a></small>
-            </h4>
-            <p>
+            <h4>Marketing subjects</h4>
             {% for subject in subjects %}
                 <span class='label label-warning'>{{ subject }}</span>
             {% endfor %}
-            </p>
-            {% if not module.non_credit_bearing and not module.hecos_subjects %}
-                <p><span class="text-danger fa fa-exclamation-triangle"></span> <b>This module has no HESA-reporting subjects set</b></p>
+            {% if not module.non_credit_bearing %}
+                <h4>HESA subjects
+                    <small><a href="{% url 'module:edit-hesa-subjects' module.id %}">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a></small>
+                </h4>
+                {% for subject in hecos_subjects %}
+                    <span class='label label-warning'>{{ subject }}</span>
+                {% empty %}
+                    <span class="text-danger fa fa-exclamation-triangle"></span>
+                    <b>This module has no HESA-reporting subjects set</b>
+                {% endfor %}
             {% endif %}
         </div>
 

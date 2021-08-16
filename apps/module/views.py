@@ -190,6 +190,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
 
         applications = self.object.course_applications.select_related('student')
         subjects = self.object.subjects.all()
+        hecos_subjects = self.object.hecos_subjects.all()
         payment_plans = self.object.payment_plans.all()
         marketing_types = self.object.marketing_types.all()
 
@@ -210,6 +211,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
             'statuses': statuses,
             'applications': applications,
             'subjects': subjects,
+            'hecos_subjects': hecos_subjects,
             'marketing_types': marketing_types,
             **context,
         }
@@ -277,3 +279,28 @@ class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
         count = services.assign_moodle_ids(module=module, created_by=request.user.username)
         messages.success(request, f'{count} moodle ID(s) generated')
         return http.HttpResponseRedirect(module.get_absolute_url())
+
+
+class EditHESASubjects(
+    LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.detail.SingleObjectMixin, generic.FormView
+):
+    model = Module
+    form_class = forms.HESASubjectFormSet
+    template_name = 'module/edit_hesa_subjects.html'
+    subtitle = 'HESA subjects'
+    success_message = 'Subjects updated'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        return {**kwargs, 'instance': self.object}
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()

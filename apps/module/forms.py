@@ -1,16 +1,19 @@
 from dal import autocomplete
+from django_select2.forms import Select2MultipleWidget, Select2Widget
 
 from django import forms
 from django.core import exceptions
 from django.forms import fields
 
 from apps.core.utils import widgets
+from apps.hesa.models import ModuleHECoSSubject
 from apps.programme.models import ProgrammeModule
 
 from . import models
 
 
 class EditForm(forms.ModelForm):  # noqa: DJ06
+    # todo: replace exclude
     class Meta:
         model = models.Module
         exclude = ['payment_plans']
@@ -23,7 +26,13 @@ class EditForm(forms.ModelForm):  # noqa: DJ06
             'unpublish_date': widgets.DatePickerInput(),
             'michaelmas_end': widgets.DatePickerInput(),
             'hilary_start': widgets.DatePickerInput(),
+            'subjects': Select2MultipleWidget(),
+            'marketing_types': Select2MultipleWidget(),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['subjects'].label_from_instance = lambda obj: f'{obj.name} ({obj.area})'
 
 
 class LookupForm(forms.Form):
@@ -118,3 +127,35 @@ class AddProgrammeForm(forms.ModelForm):
         error_messages = {
             exceptions.NON_FIELD_ERRORS: {'unique_together': 'The module is already attached to the programme'}
         }
+
+
+class HESASubjectForm(forms.ModelForm):
+    class Meta:
+        model = ModuleHECoSSubject
+        fields = ['hecos_subject', 'percentage']
+        widgets = {'hecos_subject': Select2Widget()}
+
+
+class BaseHESASubjectFormSet(forms.BaseInlineFormSet):
+    """Adds validation to the HESA subject formset"""
+
+    def clean(self):
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        total_percentage = sum(
+            form.cleaned_data.get('percentage', 0) for form in self.forms if not self._should_delete_form(form)
+        )
+        # Don't raise an error if the total is 0 (all rows deleted)
+        if total_percentage not in (0, 100):
+            raise exceptions.ValidationError(f"Percentages add to {total_percentage}, not 100")
+
+
+HESASubjectFormSet = forms.inlineformset_factory(
+    parent_model=models.Module,
+    model=ModuleHECoSSubject,
+    form=HESASubjectForm,
+    formset=BaseHESASubjectFormSet,
+    max_num=3,
+    validate_max=True,
+)
