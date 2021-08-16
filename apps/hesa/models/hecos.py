@@ -1,3 +1,4 @@
+from django.core import validators
 from django.db import models
 
 from apps.core.models import SignatureModel
@@ -20,11 +21,13 @@ class HECoSSubject(models.Model):
 
 
 class ModuleHECoSSubject(SignatureModel):
+    """Records the subject makeup of a module for HESA-reporting purposes"""
+
     module = models.ForeignKey(
         'module.Module', models.DO_NOTHING, db_column='module', related_name='module_hecos_subjects'
     )
     hecos_subject = models.ForeignKey('HECoSSubject', models.DO_NOTHING, db_column='hecos_subject')
-    percentage = models.IntegerField()
+    percentage = models.IntegerField(validators=[validators.MinValueValidator(1), validators.MaxValueValidator(100)])
 
     class Meta:
         db_table = 'module_hecos_subject'
