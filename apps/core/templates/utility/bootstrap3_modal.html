@@ -9,8 +9,11 @@
                 <p>{{ body }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">{{ cancel_text }}</button>
-                <a class="btn btn-{{ confirm_class }} modal-confirm-action" onclick="$($(this).closest('.modal')).modal('hide');">{{ confirm_text }}</a>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ cancel_text }}</button>
+                    <input type="submit" class="btn btn-{{ confirm_class }} modal-confirm-action" value="{{ confirm_text }}">
+                </form>
             </div>
         </div>
     </div>

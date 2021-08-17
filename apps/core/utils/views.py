@@ -79,10 +79,7 @@ class PageTitleMixin:
 class DeletionFailedMessageMixin:
     """
     Causes a DeleteView to display an error message if deletion fails due to protected child records
-    Also displays a success message if defined
     """
-
-    success_message: str = ''
 
     def delete(self, request, *args, **kwargs) -> http.HttpResponse:
         try:

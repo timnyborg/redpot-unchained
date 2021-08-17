@@ -1,5 +1,6 @@
 # Adapted from https://www.caktusgroup.com/blog/2017/03/14/production-ready-dockerfile-your-python-django-app/
-FROM python:3.7-slim
+# Specify debian version to avoid breaking on new version releases (needs syncing with microsoft packages)
+FROM python:3.7-slim-buster
 
 # Create a group and user to run our app
 ARG APP_USER=appuser

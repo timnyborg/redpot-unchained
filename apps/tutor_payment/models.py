@@ -22,7 +22,7 @@ class Statuses(models.IntegerChoices):
 class TutorFee(models.Model):
     tutor_module = models.ForeignKey(
         'tutor.TutorModule',
-        models.DO_NOTHING,
+        models.PROTECT,
         db_column='tutor_module',
         related_name='payments',
         related_query_name='payment',

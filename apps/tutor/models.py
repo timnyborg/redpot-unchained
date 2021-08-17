@@ -147,7 +147,7 @@ class TutorModule(SignatureModel):
         related_query_name='tutor_module',
     )
     tutor = models.ForeignKey(
-        Tutor, models.DO_NOTHING, db_column='tutor', related_name='tutor_modules', related_query_name='tutor_module'
+        Tutor, models.PROTECT, db_column='tutor', related_name='tutor_modules', related_query_name='tutor_module'
     )
     role = models.CharField(max_length=64, blank=True, help_text="e.g. 'Tutor' or 'Speaker'")
     biography = models.TextField(
