@@ -6,9 +6,10 @@ app_name = 'tutor'
 
 tutor_module_patterns = (
     [
-        path('view/<int:pk>', views.TutorOnModuleView.as_view(), name='view'),  # tutor:module:view
+        path('delete/<int:pk>', views.TutorOnModuleDelete.as_view(), name='delete'),  # tutor:module:delete
         path('edit/<int:pk>', views.TutorOnModuleEdit.as_view(), name='edit'),  # tutor:module:edit
         path('new/', views.TutorOnModuleCreate.as_view(), name='new'),  # tutor:module:new
+        path('view/<int:pk>', views.TutorOnModuleView.as_view(), name='view'),  # tutor:module:view
     ],
     'module',
 )

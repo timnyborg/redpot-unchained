@@ -1,14 +1,15 @@
 import os
 import pathlib
 
+from django import http
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
 
 from apps.core.utils.urls import next_url_if_safe
-from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.module.models import Module
 
 from . import forms
@@ -94,10 +95,27 @@ class TutorOnModuleCreate(
         elif tutor_id:
             self.tutor = get_object_or_404(Tutor, pk=tutor_id)
             return {'tutor': self.tutor}
-        raise Http404('Requires a module or tutor')
+        raise http.Http404('Requires a module or tutor')
 
     def get_success_url(self) -> str:
         return next_url_if_safe(self.request) or self.object.module.get_absolute_url() + '#tutor-modules'
+
+
+class TutorOnModuleDelete(PageTitleMixin, DeletionFailedMessageMixin, LoginRequiredMixin, generic.DeleteView):
+    model = TutorModule
+    template_name = 'core/delete_form.html'
+
+    def get_success_url(self) -> str:
+        return next_url_if_safe(self.request) or self.object.module.get_absolute_url() + '#tutor-modules'
+
+    def on_success(self) -> http.HttpResponse:
+        messages.success(self.request, f'{self.object.tutor} removed from module {self.object.module}')
+        return super().on_success()
+
+    def on_failure(self, request, *args, **kwargs) -> http.HttpResponse:
+        if 'next' in request.GET:
+            return redirect(next_url_if_safe(request))
+        return super().on_failure(request, *args, **kwargs)
 
 
 """

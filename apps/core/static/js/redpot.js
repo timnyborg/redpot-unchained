@@ -1,3 +1,5 @@
+/*jshint esversion: 6, strict: true */
+/*global jQuery, $ */
 //Handy decorator system for truncating tables.  Any table with class .hide-rows will have a 'More >' row appended, and hide everything
 //  beyond 10 rows (provided there are 13+), or a number set by data-display (and optionally data-hide-after)
 
@@ -81,13 +83,11 @@ jQuery(function(){
 
 //Contextual action links for bs3 modals
 $('.modal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget); // Button that triggered the modal
-    var target = button.data('href'); // Extract info from data-* attributes
-
-    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-    var modal = $(this);
-    modal.find('.modal-confirm-action').attr('href', target);
+    const button = $(event.relatedTarget); // Button that triggered the modal
+    const target = button.data('href'); // Extract info from data-* attributes
+    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods
+    const modal = $(this);
+    modal.find('.modal-confirm-action').attr('formaction', target);
 });
 
 //jTruncate, adapted from http://www.jeremymartin.name/projects.php?project=jTruncate

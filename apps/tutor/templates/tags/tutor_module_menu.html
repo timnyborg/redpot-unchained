@@ -1,3 +1,4 @@
+{% load redpot_tags %}
 <div class="dropdown pull-right">
     <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
         <span class="fa fa-ellipsis-h fa-lg"></span>
@@ -42,7 +43,7 @@
             <a href="#"
                data-toggle='modal'
                data-target='#confirm-remove-tutor'
-               data-href="tutor_module/delete/{{ tutor_module.id }}?next={{ request.get_full_path }}"
+               data-href="{% url 'tutor:module:delete' tutor_module.id %}?next={{ request.get_full_path }}#tutor-modules"
             >
                 <div class="text-danger">
                     <i class="fas fa-times fa-fw"></i> Remove
