@@ -6,7 +6,6 @@
 
     <div class="section">
         <div class="row">
-            <div class="col-xs-12">
                 <div class="col-xs-12 col-md-2 pull-right">
                     {% if course_completion_certificate_visible %}
                         <a href="certificate" target="_blank" class="btn btn-default btn-block">
@@ -26,7 +25,9 @@
                     </a>
                 </div>
 
+            <div class="col-xs-12 col-md-10">
                 <dl class="dl-horizontal">
+                    {% edit_button enrolment %}
                     <dt>Student</dt><dd><a href="{{ student.get_absolute_url }}">{{ student }}</a></dd>
                     <dt>Qualification aim</dt><dd><a href="{{ enrolment.qa.get_absolute_url }}">{{ enrolment.qa.title }}</a></dd>
                     <dt>Status</dt><dd>{{ enrolment.status }}</dd>

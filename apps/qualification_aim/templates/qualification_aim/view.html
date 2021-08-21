@@ -109,8 +109,8 @@
                 <td class="col-xs-1">{{ row.points_awarded | default:'–' }}</td>
                 <td class="col-xs-2">{{ row.module.start_date }}</td>
                 <td class="col-xs-1">
-                    <a href="{{ row.get_edit_url }}">
-                        <i class="fas fa-pencil-alt"></i>
+                    <a href="{{ row.get_absolute_url }}">
+                        <i class="fas fa-search"></i>
                     </a>
                 </td>
             </tr>

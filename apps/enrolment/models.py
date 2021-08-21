@@ -6,16 +6,22 @@ from django.urls import reverse
 from apps.core.models import SignatureModel
 from apps.finance.models import Accounts
 
-# Constants used as defaults.  If used more extensively, we may need to use enums
-NOT_CODED_RESULT = 7
+
+class Results(models.TextChoices):
+    PASSED = '1'
+    NOT_CODED = '7'
 
 
-class Statuses(models.IntegerField):
+class Statuses(models.IntegerChoices):
     """Non-exhaustive list of statuses used in business logic"""
 
     CONFIRMED = 10
+    CONFIRMED_RETROSPECTIVE_CREDIT = 11  # todo: consider ditching this retro. option
     PROVISIONAL = 20
     CONFIRMED_NON_CREDIT = 90
+
+
+FOR_CREDIT_STATUSES = {Statuses.CONFIRMED, Statuses.CONFIRMED_RETROSPECTIVE_CREDIT}
 
 
 class EnrolmentQuerySet(models.QuerySet):
@@ -38,6 +44,7 @@ class Enrolment(SignatureModel):
         db_column='qa',
         related_name='enrolments',
         related_query_name='enrolment',
+        verbose_name='Qualification aim',
     )
     module = models.ForeignKey(
         'module.Module',
@@ -52,7 +59,7 @@ class Enrolment(SignatureModel):
         models.DO_NOTHING,
         db_column='result',
         limit_choices_to={'is_active': True},
-        default=NOT_CODED_RESULT,
+        default=Results.NOT_CODED,
     )
     points_awarded = models.IntegerField(blank=True, null=True)
     mark = models.IntegerField(blank=True, null=True)
@@ -62,9 +69,26 @@ class Enrolment(SignatureModel):
 
     class Meta:
         db_table = 'enrolment'
+        permissions = [('edit_mark', "User can edit enrolments' marks")]
 
-    def get_absolute_url(self):
+    def __str__(self) -> str:
+        return f'{self.qa.student} on {self.module}'
+
+    def get_absolute_url(self) -> str:
         return reverse('enrolment:view', args=[self.pk])
+
+    def get_edit_url(self) -> str:
+        return reverse('enrolment:edit', args=[self.pk])
+
+    def get_delete_url(self) -> str:
+        return reverse('enrolment:delete', args=[self.pk])
+
+    def save(self, *args, **kwargs) -> None:
+        # Update points awarded if student has 'Passed' and Status is 'Confirmed' or 'Confirmed - retrospective credit'
+        self.points_awarded = (
+            self.module.credit_points if self.result == Results.PASSED and self.status in FOR_CREDIT_STATUSES else 0
+        )
+        super().save(*args, **kwargs)
 
     def get_balance(self) -> Decimal:
         ledger_balance = self.ledger_set.debts().total()
@@ -79,14 +103,15 @@ class EnrolmentResult(SignatureModel):
     """
 
     id = models.CharField(primary_key=True, max_length=4)
-    description = models.CharField(max_length=128, blank=True, null=True)
+    description = models.CharField(max_length=128)
     is_active = models.BooleanField(default=True)
-    display_order = models.IntegerField(blank=True, null=True)
+    display_order = models.IntegerField()
     hesa_code = models.CharField(max_length=1)
-    allow_certificate = models.BooleanField(blank=True, null=True)
+    allow_certificate = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'enrolment_result'
+        ordering = ('display_order', 'id')
 
     def __str__(self):
         return str(self.description)
@@ -94,9 +119,8 @@ class EnrolmentResult(SignatureModel):
 
 class EnrolmentStatus(models.Model):
     id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
+    description = models.CharField(max_length=64)
     takes_place = models.BooleanField()
-    is_debtor = models.BooleanField()
     on_hesa_return = models.BooleanField()
 
     class Meta:

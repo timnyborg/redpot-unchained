@@ -63,3 +63,36 @@ class TestCreateView(LoggedInViewTestMixin, test.TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.qa.student.gender, 'F')
         self.assertEqual(self.qa.student.nationality_id, 270)
+
+
+class TestEditView(LoggedInViewTestMixin, test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.enrolment = factories.EnrolmentFactory()
+        cls.url = reverse('enrolment:edit', kwargs={'pk': cls.enrolment.pk})
+
+    def test_post(self):
+        response = self.client.post(
+            self.url,
+            data={
+                'status': models.Statuses.PROVISIONAL,
+                'result': models.Results.PASSED,
+                'module': self.enrolment.module_id,
+                'qa': self.enrolment.qa_id,
+            },
+        )
+        self.assertRedirects(response, self.enrolment.get_absolute_url())
+
+
+class TestDeleteView(LoggedInViewTestMixin, test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.enrolment = factories.EnrolmentFactory()
+        cls.url = reverse('enrolment:delete', kwargs={'pk': cls.enrolment.pk})
+
+    def test_delete(self):
+        self.client.post(self.url)
+        with self.assertRaises(models.Enrolment.DoesNotExist):
+            self.enrolment.refresh_from_db()

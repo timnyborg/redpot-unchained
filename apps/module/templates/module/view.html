@@ -33,7 +33,7 @@
                 <dt>End time</dt>
                 <dd>{{ module.end_time | default:'–'  }}</dd>
                 {% if module.meeting_time %}
-                    <dt>meeting_time</dt>
+                    <dt>Meeting time</dt>
                     <dd>{{ module.meeting_time }}</dd>
                 {% endif %}
                 <dt>Open date</dt>
@@ -68,11 +68,15 @@
             <h4>Marketing types</h4>
             {% for marketing_type in marketing_types %}
                 <span class='label label-info'>{{ marketing_type }}</span>
+            {% empty %}
+                <p>None</p>
             {% endfor %}
 
             <h4>Marketing subjects</h4>
             {% for subject in subjects %}
                 <span class='label label-warning'>{{ subject }}</span>
+            {% empty %}
+                <p>None</p>
             {% endfor %}
             {% if not module.non_credit_bearing %}
                 <h4>HESA subjects
@@ -455,7 +459,7 @@
             <td>{{ enrolment.result.description }}</td>
             <td>{{ enrolment.points_awarded | default:'–'}}</td>
             {% endif %}
-            <td><a href=""><i class="fas fa-pencil-alt"></i></a></td>
+            <td><a href="{{ enrolment.get_absolute_url }}"><i class="fas fa-search"></i></a></td>
         </tr>
     {% endfor %}
 
