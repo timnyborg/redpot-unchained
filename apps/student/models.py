@@ -344,6 +344,3 @@ class Suspension(SignatureModel):
 
     class Meta:
         db_table = 'suspension'
-
-    def __str__(self) -> str:
-        return str(self.name)

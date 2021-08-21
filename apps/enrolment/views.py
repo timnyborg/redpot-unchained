@@ -2,6 +2,7 @@ from urllib.parse import urlencode
 
 from django_tables2 import RequestConfig
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Prefetch
@@ -10,7 +11,7 @@ from django.urls import reverse
 from django.views import generic
 
 import apps.student.services as student_services
-from apps.core.utils.views import PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.finance.models import Ledger, TransactionTypes
 from apps.qualification_aim.models import QualificationAim
 
@@ -118,3 +119,32 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         amendment_options['any'] = any(amendment_options.values())
         context['amendment_options'] = amendment_options
         return context
+
+
+class Edit(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
+    model = models.Enrolment
+    template_name = 'core/form.html'
+    form_class = forms.EditForm
+
+    def get_form_kwargs(self) -> dict:
+        kwargs = super().get_form_kwargs()
+        edit_mark = self.request.user.has_perm('enrolment.edit_mark')
+        return {**kwargs, 'edit_mark': edit_mark}
+
+    def form_valid(self, form):
+        # Update module, in case it is now full/not-full
+        form.instance.module.update_status()
+        return super().form_valid(form)
+
+
+class Delete(LoginRequiredMixin, PageTitleMixin, DeletionFailedMessageMixin, generic.DeleteView):
+    model = models.Enrolment
+    template_name = 'core/delete_form.html'
+    success_message = 'Enrolment deleted'
+
+    def on_success(self):
+        messages.success(self.request, self.success_message)  # DeleteViews don't do this automatically
+        return super().on_success()
+
+    def get_success_url(self) -> str:
+        return self.object.qa.get_absolute_url()

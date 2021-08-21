@@ -11,6 +11,7 @@ from datetime import datetime
 import bootstrap_datepicker_plus
 
 from django.conf import settings
+from django.db import models
 from django.forms import widgets
 
 
@@ -55,16 +56,23 @@ class PoundInput(widgets.NumberInput):
 
 
 class ReadOnlyModelWidget(widgets.Widget):
-    """A readonly widget for displaying a single model with bootstrap styling"""
+    """A readonly widget for displaying a single model with bootstrap styling
+    if `link=True`, the text will be a hyperlink to the instance's get_absolute_url()
+    """
 
-    def __init__(self, model, *args, **kwargs):
+    def __init__(self, model: models.Model, link: bool = False, *args, **kwargs):
         self.model = model
+        self.link = link
         super().__init__(*args, **kwargs)
 
-    def render(self, name, value, attrs=None, renderer=None):
+    def render(self, name, value, attrs=None, renderer=None) -> str:
         instance = self.model.objects.get(pk=value)
         # -static for b2, -plaintext for bs4.  todo: consider how to move that into the form rendering
+        if self.link:
+            text = f'<a href="{instance.get_absolute_url()}">{instance}</a>'
+        else:
+            text = str(instance)
         return f"""
             <input type="hidden" name="{name}" value="{value}">
-            <div class='form-control-static form-control-plaintext'>{instance}</div>
+            <div class='form-control-static form-control-plaintext'>{text}</div>
         """

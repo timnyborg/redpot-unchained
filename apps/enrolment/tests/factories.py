@@ -12,4 +12,4 @@ class EnrolmentFactory(factory.django.DjangoModelFactory):
 
     module = factory.SubFactory(ModuleFactory)
     qa = factory.SubFactory(QualificationAimFactory)
-    status_id = 10  # todo: enum
+    status_id = models.Statuses.CONFIRMED

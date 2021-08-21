@@ -81,7 +81,7 @@ class Programme(SignatureModel):
     funding_level = models.IntegerField(blank=True, null=True, choices=FUNDING_LEVELS)
     funding_source = models.IntegerField(blank=True, null=True, choices=FUNDING_SOURCES)
     study_mode = models.IntegerField(blank=True, null=True, choices=STUDY_MODES)
-    study_location = models.ForeignKey(
+    study_location = models.ForeignKey(  # Todo: enforce null constraint on prod db
         'StudyLocation',
         models.DO_NOTHING,
         db_column='study_location',

@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from django import forms
 from django.utils.safestring import mark_safe
 
-from apps.core.utils.widgets import DatePickerInput
+from apps.core.utils.widgets import DatePickerInput, ReadOnlyModelWidget
 from apps.module.models import Module
 from apps.qualification_aim.models import QualificationAim
 from apps.student.models import Student
@@ -54,3 +54,21 @@ class CreateForm(forms.Form):
         module = self.cleaned_data.get('module')
         if module and module.portfolio_id == 32 and module.is_full():
             self.add_error('module', 'Module is full')
+
+
+class EditForm(forms.ModelForm):
+    class Meta:
+        model = models.Enrolment
+        fields = ['module', 'qa', 'status', 'result', 'mark']
+        widgets = {'module': ReadOnlyModelWidget(model=Module, link=True)}
+        help_texts = {'qa': 'Change to move the enrolment to another programme'}
+
+    def __init__(self, edit_mark: bool = False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Allow moving enrolments between a student's QAs
+        self.fields['qa'].queryset = self.instance.qa.student.qualification_aims
+        # Mark only appears on PG enrolments, with limited editing rights
+        self.fields['mark'].disabled = not edit_mark
+        if not self.instance.qa.programme.qualification.is_postgraduate:
+            # Todo: consider whether module level is a better check
+            del self.fields['mark']
