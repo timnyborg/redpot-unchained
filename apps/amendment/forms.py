@@ -38,7 +38,6 @@ class TransferForm(BaseForm):
     or between invoices.  todo: consider splitting this up"""
 
     source_invoice = forms.TypedChoiceField(coerce=int, widget=forms.Select(), required=False, empty_value=None)
-    transfer_invoice = forms.TypedChoiceField(coerce=int, widget=forms.Select(), required=False, empty_value=None)
     transfer_enrolment = forms.ModelChoiceField(
         queryset=Enrolment.objects.all(),
         widget=ModelSelect2('autocomplete:enrolment'),
@@ -88,18 +87,19 @@ class TransferForm(BaseForm):
 
         # Populate invoices and payments
         invoices = Invoice.objects.filter(ledger_items__enrolment=enrolment).distinct()
-        payments = enrolment.ledger_set.debts().cash().filter(amount__lt=0).select_related('type')
+        self.fields['transfer_invoice'].queryset = invoices
+        self.fields['transfer_invoice'].empty_label = '– Choose one –'
 
-        target_set = [(invoice.id, str(invoice)) for invoice in invoices]
+        payments = enrolment.ledger_set.debts().cash().filter(amount__lt=0).select_related('type')
+        invoice_set = [(invoice.id, str(invoice)) for invoice in invoices]
         source_set = (
-            target_set
+            invoice_set
             + [  # todo: this mixed foreign key is madness.  Attaching payments to invoices should be handled elsewhere
                 (payment.id, f'{payment.narrative} ({payment.type.description}, £{-payment.amount:.2f})')
                 for payment in payments
             ]
         )
         self.fields['source_invoice'].choices = [(None, '– Choose one –')] + source_set
-        self.fields['transfer_invoice'].choices = [(None, '– Choose one –')] + target_set
 
     def clean(self):
         super().clean()

@@ -59,7 +59,7 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
     def form_valid(self, form):
         form.instance.requested_on = datetime.now()
         form.instance.requested_by = self.request.user.username
-        # services.set_narrative(amendment=form.instance)  # noqa
+        form.instance.narrative = services.get_narrative(amendment=form.instance)
         # services._email_request_status(form.instance)  # noqa
         return super().form_valid(form)
 
