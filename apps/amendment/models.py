@@ -59,6 +59,12 @@ class AmendmentReason(models.Model):
         return str(self.reason)
 
 
+class AmendmentStatuses(models.IntegerChoices):
+    RAISED = 1
+    APPROVED = 2
+    COMPLETE = 3
+
+
 class AmendmentStatus(models.Model):
     id = models.IntegerField(primary_key=True)
     status = models.TextField()
@@ -69,6 +75,16 @@ class AmendmentStatus(models.Model):
 
     def __str__(self) -> str:
         return str(self.status)
+
+
+class AmendmentTypes(models.IntegerChoices):
+    TRANSFER = 1
+    AMENDMENT = 2
+    ONLINE_REFUND = 3
+    CREDIT_CARD_REFUND = 4
+    RCP_REFUND = 5
+    OTHER_REFUND = 6
+    BANK_REFUND = 7
 
 
 class AmendmentType(models.Model):

@@ -103,7 +103,7 @@ class TransferForm(BaseForm):
 
     def clean(self):
         super().clean()
-        # Ensure a the right details are set for a given reason
+        # Ensure a the right details are set for a given reason.  # todo: rework to avoid hardcoded IDs
         if self.cleaned_data['reason'].id == 19 and not self.cleaned_data['transfer_module']:
             self.add_error('transfer_module', 'Required')
         if self.cleaned_data['reason'].id == 20 and not self.cleaned_data['transfer_enrolment']:

@@ -22,10 +22,13 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
         self.enrolment = get_object_or_404(Enrolment, pk=self.kwargs['enrolment_id'])
         self.amendment_type = get_object_or_404(models.AmendmentType, pk=self.kwargs['type_id'])
 
-        if self.amendment_type == '6':  # BACS refund - unsupported type.  # Todo - handle this elsewhere - service?
+        if self.amendment_type == models.AmendmentTypes.OTHER_REFUND:
+            # Refunds requiring paper forms (BACS?) # Todo - handle this elsewhere - service?  Standalone view?
             amendment = models.Amendment.objects.create(
                 details='See printed form for details',
-                status=2,
+                status=models.AmendmentStatuses.APPROVED,
+                raised_by=request.user.username,
+                raised_on=datetime.now(),
                 approved_by=request.user.username,
                 approved_on=datetime.now(),
             )
@@ -38,12 +41,12 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
 
     def get_form_class(self) -> ModelForm:
         form_classes = {
-            1: forms.TransferForm,
-            2: forms.AmendmentForm,
-            3: forms.RefundForm,
-            4: forms.RefundForm,
-            5: forms.RefundForm,
-            7: forms.RefundForm,
+            models.AmendmentTypes.TRANSFER: forms.TransferForm,
+            models.AmendmentTypes.AMENDMENT: forms.AmendmentForm,
+            models.AmendmentTypes.ONLINE_REFUND: forms.RefundForm,
+            models.AmendmentTypes.CREDIT_CARD_REFUND: forms.RefundForm,
+            models.AmendmentTypes.RCP_REFUND: forms.RefundForm,
+            models.AmendmentTypes.BANK_REFUND: forms.RefundForm,
         }
         return form_classes[self.amendment_type.id]
 
