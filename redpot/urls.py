@@ -28,6 +28,7 @@ urlpatterns = [
     path('login/', apps.core.views.CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='registration/logout.html'), name='logout'),
     path('admin/', admin.site.urls),
+    path('amendment/', include('apps.amendment.urls')),
     path('', apps.core.views.index, name='home'),
     path('index/', apps.core.views.index),
     path('enrolment/', include('apps.enrolment.urls')),

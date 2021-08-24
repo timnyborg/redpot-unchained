@@ -41,6 +41,7 @@ class Amendment(models.Model):
     class Meta:
         db_table = 'amendment'
         permissions = [('approve', 'Approve finance change requests')]
+        verbose_name = 'Finance change request'
 
     def get_edit_url(self):
         return '#'
