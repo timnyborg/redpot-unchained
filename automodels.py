@@ -26,66 +26,6 @@ class TutorActivity(models.Model):
         db_table = 'activity'
 
 
-class Amendment(models.Model):
-    type = models.ForeignKey('AmendmentType', models.DO_NOTHING, db_column='type')
-    status = models.ForeignKey('AmendmentStatus', models.DO_NOTHING, db_column='status')
-    enrolment = models.IntegerField()
-    requested_on = models.DateTimeField()
-    requested_by = models.TextField()
-    approved_on = models.DateTimeField(blank=True, null=True)
-    approved_by = models.TextField(blank=True, null=True)
-    executed_on = models.DateTimeField(blank=True, null=True)
-    executed_by = models.TextField(blank=True, null=True)
-    amount = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
-    details = models.TextField(blank=True, null=True)
-    approver = models.CharField(max_length=16, blank=True, null=True)
-    transfer_module = models.TextField(blank=True, null=True)
-    transfer_enrolment = models.IntegerField(blank=True, null=True)
-    invoice = models.IntegerField(blank=True, null=True)
-    source_invoice = models.IntegerField(blank=True, null=True)
-    transfer_invoice = models.IntegerField(blank=True, null=True)
-    reason = models.ForeignKey('AmendmentReason', models.DO_NOTHING, db_column='reason', blank=True, null=True)
-    batch = models.IntegerField(blank=True, null=True)
-    narrative = models.CharField(max_length=128, blank=True, null=True)
-    is_complete = models.BooleanField()
-    actioned_online = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'amendment'
-
-
-class AmendmentReason(models.Model):
-    id = models.IntegerField(primary_key=True)
-    type = models.IntegerField()
-    reason = models.TextField()
-
-    class Meta:
-        managed = False
-        db_table = 'amendment_reason'
-
-
-class AmendmentStatus(models.Model):
-    id = models.IntegerField(primary_key=True)
-    status = models.TextField()
-    icon = models.TextField()
-
-    class Meta:
-        managed = False
-        db_table = 'amendment_status'
-
-
-class AmendmentType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    type = models.TextField()
-    action = models.TextField()
-    supported = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'amendment_type'
-
-
 class AuthCas(models.Model):
     user_id = models.IntegerField(blank=True, null=True)
     created_on = models.DateTimeField(blank=True, null=True)
