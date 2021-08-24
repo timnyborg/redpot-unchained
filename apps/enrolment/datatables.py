@@ -1,6 +1,7 @@
 import django_tables2 as tables
 
-from apps.core.utils.datatables import PoundsColumn
+from apps.amendment.models import Amendment
+from apps.core.utils.datatables import EditLinkColumn, PoundsColumn
 from apps.finance.models import Ledger
 
 
@@ -29,5 +30,10 @@ class FinanceTable(tables.Table):
 
 
 class AmendmentTable(tables.Table):
-    # Todo: implement
-    pass
+    amount = PoundsColumn()
+    edit = EditLinkColumn(verbose_name='')
+
+    class Meta:
+        model = Amendment
+        fields = ['type', 'amount', 'requested_by', 'requested_on', 'approved_by', 'approved_on', 'status', 'edit']
+        template_name = 'django_tables2/bootstrap.html'
