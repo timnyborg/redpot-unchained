@@ -1,7 +1,12 @@
-from datetime import datetime
+from __future__ import annotations
 
+from datetime import datetime
+from typing import Type
+
+from django import http
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.forms import ModelForm
 from django.shortcuts import get_object_or_404, redirect
@@ -12,10 +17,19 @@ from apps.enrolment.models import Enrolment
 
 from . import forms, models, services
 
+FORM_CLASSES = {
+    models.AmendmentTypes.TRANSFER: forms.TransferForm,
+    models.AmendmentTypes.AMENDMENT: forms.AmendmentForm,
+    models.AmendmentTypes.ONLINE_REFUND: forms.RefundForm,
+    models.AmendmentTypes.CREDIT_CARD_REFUND: forms.RefundForm,
+    models.AmendmentTypes.RCP_REFUND: forms.RefundForm,
+    models.AmendmentTypes.BANK_REFUND: forms.RefundForm,
+}
+
 
 class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+    model = models.Amendment
     success_message = 'Request submitted for approval'
-    title = 'Finance change request'
     template_name = 'core/form.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -40,15 +54,7 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
         return f'New – {self.enrolment.qa.student} on {self.enrolment.module}'
 
     def get_form_class(self) -> ModelForm:
-        form_classes = {
-            models.AmendmentTypes.TRANSFER: forms.TransferForm,
-            models.AmendmentTypes.AMENDMENT: forms.AmendmentForm,
-            models.AmendmentTypes.ONLINE_REFUND: forms.RefundForm,
-            models.AmendmentTypes.CREDIT_CARD_REFUND: forms.RefundForm,
-            models.AmendmentTypes.RCP_REFUND: forms.RefundForm,
-            models.AmendmentTypes.BANK_REFUND: forms.RefundForm,
-        }
-        return form_classes[self.amendment_type.id]
+        return FORM_CLASSES[self.amendment_type.id]
 
     def get_initial(self):
         return {
@@ -58,10 +64,79 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
 
     def form_valid(self, form):
         form.instance.requested_on = datetime.now()
-        form.instance.requested_by = self.request.user.username
+        form.instance.requested_by = self.request.user
         form.instance.narrative = services.get_narrative(amendment=form.instance)
-        # services._email_request_status(form.instance)  # noqa
+        services.send_request_created_email(amendment=form.instance)
         return super().form_valid(form)
 
     def get_success_url(self):
         return self.enrolment.get_absolute_url() + '#finances'
+
+
+class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
+    model = models.Amendment
+    template_name = 'core/form.html'
+    permission_denied_message = 'You do not have permission to edit this change request'
+    success_message = 'Change request updated'
+
+    def has_permission(self) -> bool:
+        return services.user_can_edit(user=self.request.user, amendment=self.get_object())
+
+    def get_subtitle(self) -> str:
+        return f'Edit – {self.object.enrolment.qa.student} on {self.object.enrolment.module}'
+
+    def get_form_class(self) -> Type[ModelForm]:
+        return FORM_CLASSES[self.object.type_id]
+
+    def get_form_kwargs(self) -> dict:
+        kwargs = super().get_form_kwargs()
+        edit_finance_fields = self.request.user.has_perm('amendment.edit_finance')
+        return {**kwargs, 'edit_finance_fields': edit_finance_fields}
+
+    def get_success_url(self):
+        return self.object.enrolment.get_absolute_url() + '#finances'
+
+    def form_valid(self, form):
+        if not form.cleaned_data.get('narrative'):
+            # Update narrative if it wasn't part of the form submission
+            form.instance.narrative = services.get_narrative(amendment=form.instance)
+
+        if form.instance.is_complete:
+            form.instance.status_id = models.AmendmentStatuses.COMPLETE
+            form.instance.executed_by = self.request.user.username
+            form.instance.executed_on = datetime.now()
+            services.send_request_complete_email(amendment=form.instance)
+            self.success_message = 'Change request complete'
+        return super().form_valid(form)
+
+
+class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = models.Amendment
+    template_name = 'core/delete_form.html'
+    permission_denied_message = 'You do not have permission to edit this amendment'
+
+    def has_permission(self) -> bool:
+        return services.user_can_edit(user=self.request.user, amendment=self.get_object())
+
+    def get_subtitle(self) -> str:
+        return f'Delete – {self.object.enrolment.qa.student} on {self.object.enrolment.module}'
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Change request cancelled')
+        # todo: put notification email here (or in def delete) if still useful (_email_request_cancellation)
+        return self.object.enrolment.get_absolute_url() + '#finances'
+
+
+class Approve(PermissionRequiredMixin, generic.View):
+    permission_required = 'amendment.approve'
+
+    http_method_names = ['post']
+
+    def post(self, request, *args, **kwargs) -> http.HttpResponse:
+        ids: list[int] = request.POST.getlist('id')
+        update_count = services.approve_amendments(amendment_ids=ids, username=request.user.username)
+        if update_count:
+            messages.success(request, f'{update_count} requests approved')
+        else:
+            messages.error(request, 'No requests approved')
+        return http.HttpResponseRedirect('#')  # todo: url
