@@ -274,11 +274,11 @@ class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
 
     # todo: convert to POST once we have a good POST-link solution,
     #  or even better, that link is ajax'ed and handles message popups!
-    def get(self, request, module_id: int):
+    def get(self, request, module_id: int) -> http.HttpResponse:
         module = get_object_or_404(Module, pk=module_id)
         count = services.assign_moodle_ids(module=module, created_by=request.user.username)
         messages.success(request, f'{count} moodle ID(s) generated')
-        return http.HttpResponseRedirect(module.get_absolute_url())
+        return redirect(module)
 
 
 class EditHESASubjects(

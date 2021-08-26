@@ -1,7 +1,5 @@
 from urllib.parse import urlencode
 
-from django_tables2 import RequestConfig
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -105,8 +103,8 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
             data=self.object.ledger_set.debts().select_related('invoice_ledger__invoice'),
             display_finance_columns=self.request.user.has_perm('finance'),  # todo: real permission
             prefix='finances-',
+            request=self.request,
         )
-        RequestConfig(self.request).configure(context['finance_table'])  # for pagination/sorting
         context['student'] = self.object.qa.student  # for brevity in template
         context['catering'] = self.object.catering.select_related('fee')
         context['accommodation'] = self.object.accommodation.select_related('limit')
@@ -121,8 +119,8 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
             .select_related('type', 'status')
             .order_by('status', 'requested_on'),
             prefix='amendments-',
+            request=self.request,
         )
-        RequestConfig(self.request).configure(context['amendment_table'])  # for pagination/sorting
         amendment_options['any'] = any(amendment_options.values())
         context['amendment_options'] = amendment_options
         return context
