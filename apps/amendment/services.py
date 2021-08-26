@@ -1,5 +1,14 @@
-import re
+from __future__ import annotations
 
+import re
+from datetime import datetime
+
+from django.conf import settings
+from django.core import mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
+from apps.core.models import User
 from apps.finance.models import Ledger, TransactionTypes
 from apps.invoice.models import Invoice
 from apps.module.models import Module
@@ -66,3 +75,79 @@ def get_narrative(*, amendment: models.Amendment) -> str:
         raise Exception(f'Invalid amendment type: {amendment.type}')
 
     return narrative
+
+
+def user_can_edit(*, user: User, amendment: models.Amendment) -> bool:
+    """Determine if a user can edit (or delete) an amendment, given their rights and its status"""
+    return (
+        user.has_perm('amendment.edit_finance')
+        or user.has_perm('amendment.approve')
+        and user.username == amendment.approver
+        and amendment.status_id in (models.AmendmentStatuses.RAISED, models.AmendmentStatuses.APPROVED)
+        or user.username == amendment.requested_by
+        and amendment.status_id == models.AmendmentStatuses.RAISED
+    )
+
+
+def approve_amendments(*, amendment_ids: list[int], username: str) -> int:
+    """Approve a set of amendments, provided their approver matches the provided username"""
+    amendments = models.Amendment.objects.filter(
+        status_id=models.AmendmentStatuses.RAISED,
+        approver=username,
+        id__in=amendment_ids,
+    )
+    return amendments.update(
+        status=models.AmendmentStatuses.APPROVED, approved_by=username, approved_on=datetime.now()
+    )
+
+
+def send_request_created_email(*, amendment: models.Amendment) -> None:
+    """Email the approver when a change request is raised"""
+    recipient: str = amendment.approver.email
+    context = {
+        'student': amendment.enrolment.qa.student,
+        'module': amendment.enrolment.module,
+        'canonical_url': settings.CANONICAL_URL,
+    }
+    message = render_to_string('email/change_request_created.html', context=context)
+    mail.send_mail(
+        recipient_list=[settings.SUPPORT_EMAIL if settings.DEBUG else recipient],
+        from_email=settings.SUPPORT_EMAIL,
+        subject=f'Finance change request from {amendment.requested_by} awaits your approval',
+        message=strip_tags(message),
+        html_message=message,
+    )
+
+
+def send_request_approved_email(*, amendment: models.Amendment) -> None:
+    """Email the requester when a change request is approved"""
+    recipient: str = amendment.requested_by.email
+    context = {
+        'student': amendment.enrolment.qa.student,
+        'module': amendment.enrolment.module,
+    }
+    message = render_to_string('email/change_request_approved.html', context=context)
+    mail.send_mail(
+        recipient_list=[settings.SUPPORT_EMAIL if settings.DEBUG else recipient],
+        from_email=settings.SUPPORT_EMAIL,
+        subject='Finance change request approved and sent for execution',
+        message=strip_tags(message),
+        html_message=message,
+    )
+
+
+def send_request_complete_email(*, amendment: models.Amendment) -> None:
+    """Email the requester when a change request is completed"""
+    recipient: str = amendment.requested_by.email
+    context = {
+        'student': amendment.enrolment.qa.student,
+        'module': amendment.enrolment.module,
+    }
+    message = render_to_string('email/change_request_complete.html', context=context)
+    mail.send_mail(
+        recipient_list=[settings.SUPPORT_EMAIL if settings.DEBUG else recipient],
+        from_email=settings.SUPPORT_EMAIL,
+        subject='Finance change request completed successfully',
+        message=strip_tags(message),
+        html_message=message,
+    )

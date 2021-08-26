@@ -1,0 +1,4 @@
+<html lang="">
+    <p>This request regards the enrolment of {{ student.firstname }} {{ student.surname }} on {{ module.code }} - {{ module.title }}.</p>
+    <p>Please review and approve the request <a href="{{ canonical_url }}{% url 'amendment:approve' %}">on Redpot</a></p>
+</html>
