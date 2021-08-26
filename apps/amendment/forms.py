@@ -18,19 +18,31 @@ class BaseForm(forms.ModelForm):
     approver = ApproverChoiceField('amendment.approve', help_text='Your default approver can be set in your profile')
 
     class Meta:
-        first_fields, last_fields = ['enrolment', 'type', 'amount', 'reason'], ['details', 'approver']
+        first_fields, last_fields = ['enrolment', 'type', 'status', 'amount', 'reason'], [
+            'details',
+            'approver',
+            'batch',
+            'narrative',
+            'is_complete',
+        ]
         model = models.Amendment
         fields = first_fields + last_fields
         widgets = {
             'amount': PoundInput(),
             'enrolment': forms.HiddenInput(),
             'type': ReadOnlyModelWidget(model=models.AmendmentType),
+            'status': ReadOnlyModelWidget(model=models.AmendmentStatus),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, edit_finance_fields: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['reason'].queryset = models.AmendmentReason.objects.filter(type=self.initial['type'])
         self.fields['reason'].empty_label = '– Choose one –'
+        # Batch and narrative only editable by Finance (and when editing, in practice)
+        if not edit_finance_fields:
+            del self.fields['batch']
+            del self.fields['narrative']
+            del self.fields['is_complete']
 
 
 class TransferForm(BaseForm):
@@ -64,7 +76,7 @@ class TransferForm(BaseForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Only allow modules the student is already enrolled on
-        enrolment = self.initial['enrolment']
+        enrolment: Enrolment = self.instance.enrolment if self.instance.pk else self.initial['enrolment']
         other_modules = (
             Module.objects.filter(enrolment__qa__student=enrolment.qa.student)
             .exclude(enrolment__id=enrolment.id)
@@ -136,8 +148,14 @@ class RefundForm(BaseForm):
 
     class Meta(BaseForm.Meta):
         model = models.Amendment
+        fields = BaseForm.Meta.fields + ['actioned_online']
         labels = {
             'reason': 'Refund reason',
             'details': 'Additional details',
         }
         help_texts = {'details': 'Reminder: only pass credit card details to the finance officer by phone'}
+
+    def __init__(self, edit_actioned_online=False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not edit_actioned_online:
+            del self.fields['actioned_online']
