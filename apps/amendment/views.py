@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Type
 
 import django_tables2 as tables
+from django_filters.views import FilterView
 
 from django import http
 from django.conf import settings
@@ -132,13 +133,15 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
 
 
 class Approve(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableView):
+    """List of amendments assigned to the current user"""
+
     model = models.Amendment
     permission_required = 'amendment.approve'
     table_class = datatables.ApprovalTable
     template_name = 'amendment/approve.html'
     subtitle = 'Approve'
 
-    def get_table_data(self) -> QuerySet:
+    def get_queryset(self) -> QuerySet:
         return self.request.user.approver_change_requests.filter(
             status=models.AmendmentStatuses.RAISED
         ).select_related('enrolment__qa__student', 'enrolment__module', 'requested_by', 'type')
@@ -151,3 +154,13 @@ class Approve(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableView):
         else:
             messages.error(request, 'No requests approved')
         return redirect(self.request.path_info)
+
+
+class Search(LoginRequiredMixin, PageTitleMixin, tables.SingleTableMixin, FilterView):
+    """Filterable list of change requests"""
+
+    queryset = models.Amendment.objects.select_related('type', 'status', 'requested_by')
+    table_class = datatables.SearchTable
+    filterset_class = datatables.SearchFilter
+    template_name = 'core/search.html'
+    subtitle = 'Search'

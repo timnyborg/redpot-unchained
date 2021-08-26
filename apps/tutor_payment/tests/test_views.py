@@ -19,8 +19,8 @@ class TestCreatePayment(TestCase):
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
         permissions = [
-            Permission.objects.get(codename='raise'),
-            Permission.objects.get(codename='approve'),
+            Permission.objects.get(content_type__app_label='tutor_payment', codename='raise'),
+            Permission.objects.get(content_type__app_label='tutor_payment', codename='approve'),
         ]
         cls.user.user_permissions.add(*permissions)
         cls.tutor_on_module = TutorModuleFactory()
@@ -53,8 +53,8 @@ class TestEditPayment(TestCase):
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
         permissions = [
-            Permission.objects.get(codename='raise'),
-            Permission.objects.get(codename='approve'),
+            Permission.objects.get(content_type__app_label='tutor_payment', codename='raise'),
+            Permission.objects.get(content_type__app_label='tutor_payment', codename='approve'),
         ]
         cls.user.user_permissions.add(*permissions)
         cls.payment = factories.TutorFeeFactory(raised_by=cls.user.username, amount=50)

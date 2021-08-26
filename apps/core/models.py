@@ -81,9 +81,6 @@ class User(SignatureModel, AbstractUser):
         if self.phone:
             return self.phone.replace('+44 (0)1865 2', '')
 
-    def __str__(self) -> str:
-        return self.get_full_name()
-
 
 class Portfolio(models.Model):
     name = models.CharField(max_length=128)
