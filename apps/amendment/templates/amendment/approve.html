@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% load django_tables2 %}
+{% load redpot_tags %}
+
+{% block center %}
+    <div class="section">
+        {% if table.rows %}
+            <form action="" method="post">
+                {% render_table table %}
+                {% csrf_token %}
+                {% bootstrap3submit 'Approve' %}
+            </form>
+        {% else %}
+            <div class="empty-state">
+                <span class="fa fa-ban empty-state-icon"></span>
+                <h4>No change requests</h4>
+                <h5>
+                    There are no finance change requests pending your approval
+                </h5>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

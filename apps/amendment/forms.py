@@ -14,7 +14,6 @@ from . import models
 class BaseForm(forms.ModelForm):
     """Base class for common aspects of all amendment forms"""
 
-    submit_label = 'Submit for approval'
     approver = ApproverChoiceField('amendment.approve', help_text='Your default approver can be set in your profile')
 
     class Meta:

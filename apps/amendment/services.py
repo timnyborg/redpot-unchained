@@ -96,9 +96,12 @@ def approve_amendments(*, amendment_ids: list[int], username: str) -> int:
         approver=username,
         id__in=amendment_ids,
     )
-    return amendments.update(
+    count = amendments.update(
         status=models.AmendmentStatuses.APPROVED, approved_by=username, approved_on=datetime.now()
     )
+    for amendment in amendments:
+        send_request_approved_email(amendment=amendment)
+    return count
 
 
 def send_request_created_email(*, amendment: models.Amendment) -> None:

@@ -3,19 +3,23 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Type
 
+import django_tables2 as tables
+
 from django import http
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import QuerySet
 from django.forms import ModelForm
 from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
 
+from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import PageTitleMixin
 from apps.enrolment.models import Enrolment
 
-from . import forms, models, services
+from . import datatables, forms, models, services
 
 FORM_CLASSES = {
     models.AmendmentTypes.TRANSFER: forms.TransferForm,
@@ -32,7 +36,7 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
     success_message = 'Request submitted for approval'
     template_name = 'core/form.html'
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
         self.enrolment = get_object_or_404(Enrolment, pk=self.kwargs['enrolment_id'])
         self.amendment_type = get_object_or_404(models.AmendmentType, pk=self.kwargs['type_id'])
 
@@ -53,23 +57,23 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
     def get_subtitle(self) -> str:
         return f'New – {self.enrolment.qa.student} on {self.enrolment.module}'
 
-    def get_form_class(self) -> ModelForm:
+    def get_form_class(self) -> Type[ModelForm]:
         return FORM_CLASSES[self.amendment_type.id]
 
-    def get_initial(self):
+    def get_initial(self) -> dict:
         return {
             'type': self.amendment_type,
             'enrolment': self.enrolment,
         }
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> http.HttpResponse:
         form.instance.requested_on = datetime.now()
         form.instance.requested_by = self.request.user
         form.instance.narrative = services.get_narrative(amendment=form.instance)
         services.send_request_created_email(amendment=form.instance)
         return super().form_valid(form)
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return self.enrolment.get_absolute_url() + '#finances'
 
 
@@ -93,10 +97,10 @@ class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic
         edit_finance_fields = self.request.user.has_perm('amendment.edit_finance')
         return {**kwargs, 'edit_finance_fields': edit_finance_fields}
 
-    def get_success_url(self):
-        return self.object.enrolment.get_absolute_url() + '#finances'
+    def get_success_url(self) -> str:
+        return next_url_if_safe(self.request) or self.object.enrolment.get_absolute_url() + '#finances'
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> http.HttpResponse:
         if not form.cleaned_data.get('narrative'):
             # Update narrative if it wasn't part of the form submission
             form.instance.narrative = services.get_narrative(amendment=form.instance)
@@ -127,16 +131,23 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
         return self.object.enrolment.get_absolute_url() + '#finances'
 
 
-class Approve(PermissionRequiredMixin, generic.View):
+class Approve(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableView):
+    model = models.Amendment
     permission_required = 'amendment.approve'
+    table_class = datatables.ApprovalTable
+    template_name = 'amendment/approve.html'
+    subtitle = 'Approve'
 
-    http_method_names = ['post']
+    def get_table_data(self) -> QuerySet:
+        return self.request.user.approver_change_requests.filter(
+            status=models.AmendmentStatuses.RAISED
+        ).select_related('enrolment__qa__student', 'enrolment__module', 'requested_by', 'type')
 
     def post(self, request, *args, **kwargs) -> http.HttpResponse:
-        ids: list[int] = request.POST.getlist('id')
+        ids: list[int] = request.POST.getlist('amendment')
         update_count = services.approve_amendments(amendment_ids=ids, username=request.user.username)
         if update_count:
             messages.success(request, f'{update_count} requests approved')
         else:
             messages.error(request, 'No requests approved')
-        return http.HttpResponseRedirect('#')  # todo: url
+        return redirect(self.request.path_info)

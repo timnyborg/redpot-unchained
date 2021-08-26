@@ -38,6 +38,7 @@ Menu.add_item("main", MenuItem("Tutors", '#', children=tutor_children))
 
 finance_children = [
     MenuItem("Invoices", reverse("invoice:search"), icon="search"),
+    MenuItem("Approve change requests", reverse("amendment:approve"), icon="pound-sign"),
 ]
 
 Menu.add_item("main", MenuItem("Finance", '#', children=finance_children))
