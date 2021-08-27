@@ -22,7 +22,7 @@ from apps.enrolment.models import Enrolment
 
 from . import datatables, forms, models, services
 
-FORM_CLASSES = {
+FORM_CLASSES: dict[int, Type[ModelForm]] = {
     models.AmendmentTypes.TRANSFER: forms.TransferForm,
     models.AmendmentTypes.AMENDMENT: forms.AmendmentForm,
     models.AmendmentTypes.ONLINE_REFUND: forms.RefundForm,
@@ -45,13 +45,14 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
             # Refunds requiring paper forms (BACS?) # Todo - handle this elsewhere - service?  Standalone view?
             amendment = models.Amendment.objects.create(
                 details='See printed form for details',
-                status=models.AmendmentStatuses.APPROVED,
-                raised_by=request.user.username,
-                raised_on=datetime.now(),
+                status_id=models.AmendmentStatuses.APPROVED,
+                requested_by=request.user.username,
+                requested_on=datetime.now(),
                 approved_by=request.user.username,
                 approved_on=datetime.now(),
             )
-            services.set_narrative(amendment=amendment)
+            amendment.narrative = services.get_narrative(amendment=amendment)
+            amendment.save()
             return redirect(settings.STATIC_URL + 'templates/bacs_refund_form_r12.xls')
         return super().dispatch(request, *args, **kwargs)
 

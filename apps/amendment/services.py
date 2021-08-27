@@ -26,7 +26,7 @@ def get_narrative(*, amendment: models.Amendment) -> str:
             if amendment.transfer_module == 'multiple':
                 transfer_module = 'multiple'
             else:
-                module = Module.objects.filter(pk=amendment.transfer_module).first()
+                module = Module.objects.get(pk=amendment.transfer_module)
                 transfer_module = module.code
             code = amendment.enrolment.module.code
             narrative = f'INF {amendment.id} - Transfer from {code} to {transfer_module}'
@@ -42,7 +42,7 @@ def get_narrative(*, amendment: models.Amendment) -> str:
             if invoice:
                 source = f'invoice {invoice}'
             else:
-                ledger = Ledger.objects.filter(pk=amendment.source_invoice).first()
+                ledger = Ledger.objects.get(pk=amendment.source_invoice)
                 source = f'payment {ledger.narrative}'
             narrative = f'INF {amendment.id} - Transfer from {source} to {amendment.transfer_invoice}'
         else:
@@ -107,6 +107,7 @@ def approve_amendments(*, amendment_ids: list[int], username: str) -> int:
 
 def send_request_created_email(*, amendment: models.Amendment) -> None:
     """Email the approver when a change request is raised"""
+    assert amendment.approver is not None, 'Approver is not set'  # todo: remove once approver is notnull
     recipient: str = amendment.approver.email
     context = {
         'student': amendment.enrolment.qa.student,
