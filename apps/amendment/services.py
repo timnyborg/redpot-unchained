@@ -19,6 +19,14 @@ from . import models
 
 def get_narrative(*, amendment: models.Amendment) -> str:
     """Populate default value for narrative field"""
+    narrative_strings: dict[int:str] = {
+        models.AmendmentTypes.AMENDMENT: 'INF {amendment.id} - Write off - {amendment.reason}',
+        models.AmendmentTypes.CREDIT_CARD_REFUND: 'REF {amendment.id} - Refund (cc) - {amendment.reason}',
+        models.AmendmentTypes.OTHER_REFUND: 'REF {amendment.id} - Refund (paper form) - {amendment.reason}',
+        models.AmendmentTypes.BANK_REFUND: 'REF {amendment.id} - Refund (bank return) - {amendment.reason}',
+    }
+    if amendment.type_id in narrative_strings:
+        return narrative_strings[amendment.type_id].format(amendment=amendment)
 
     # Todo: this method is a piece of work, and needs rethinking.  Replace with strategy pattern?
     if amendment.type_id == models.AmendmentTypes.TRANSFER:  # Transfer
@@ -48,11 +56,9 @@ def get_narrative(*, amendment: models.Amendment) -> str:
         else:
             raise Exception('Amendment lacks an enrolment, student, or invoice to transfer to')
 
-    elif amendment.type_id == models.AmendmentTypes.AMENDMENT:
-        narrative = f'INF {amendment.id} - Write off - {amendment.reason}'
-
     elif amendment.type_id == models.AmendmentTypes.ONLINE_REFUND:
         narrative = f'REF {amendment.id} - Refund - {amendment.reason}'
+        # todo: investigate the point of this
         ledger_narratives = (
             amendment.enrolment.ledger_set.debts()
             .filter(amount__lt=0, type=TransactionTypes.ONLINE, narrative__like='%contCPG%')
@@ -61,17 +67,12 @@ def get_narrative(*, amendment: models.Amendment) -> str:
         if len(ledger_narratives) == 1:  # Only if there's only one
             online_payment = re.findall(r'contCPG\d*', ledger_narratives[0])[0]
             narrative += f' - {online_payment}'
-    elif amendment.type_id == models.AmendmentTypes.CREDIT_CARD_REFUND:
-        narrative = f'REF {amendment.id} - Refund (cc) - {amendment.reason}'
     elif amendment.type_id == models.AmendmentTypes.RCP_REFUND:
         narrative = f'REF {amendment.id} - Refund (rcp) - {amendment.reason}'
+        # todo: investigate the point of this
         ledger = amendment.enrolment.ledger_set.debts().filter(amount__lt=0, type=TransactionTypes.RCP).first()
         if ledger:
             narrative += f" - …{ledger.narrative[-80:-10]}"
-    elif amendment.type_id == models.AmendmentTypes.OTHER_REFUND:
-        narrative = f'REF {amendment.id} - Refund (paper form)'
-    elif amendment.type_id == models.AmendmentTypes.BANK_REFUND:
-        narrative = f'REF {amendment.id} - Refund (bank return) - {amendment.reason}'
     else:
         raise Exception(f'Invalid amendment type: {amendment.type}')
 
@@ -97,12 +98,11 @@ def approve_amendments(*, amendment_ids: list[int], username: str) -> int:
         approver=username,
         id__in=amendment_ids,
     )
-    count = amendments.update(
-        status=models.AmendmentStatuses.APPROVED, approved_by=username, approved_on=datetime.now()
-    )
     for amendment in amendments:
         send_request_approved_email(amendment=amendment)
-    return count
+    return amendments.update(
+        status=models.AmendmentStatuses.APPROVED, approved_by=username, approved_on=datetime.now()
+    )
 
 
 def send_request_created_email(*, amendment: models.Amendment) -> None:
