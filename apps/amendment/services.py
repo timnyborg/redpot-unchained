@@ -8,8 +8,9 @@ from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
+import apps.finance.services as finance_services
 from apps.core.models import User
-from apps.finance.models import Ledger, TransactionTypes
+from apps.finance.models import Accounts, Ledger, TransactionTypes
 from apps.invoice.models import Invoice
 from apps.module.models import Module
 
@@ -153,4 +154,28 @@ def send_request_complete_email(*, amendment: models.Amendment) -> None:
         subject='Finance change request completed successfully',
         message=strip_tags(message),
         html_message=message,
+    )
+
+
+def apply_online_refund(*, amendment: models.Amendment, user: User) -> None:
+    """Automatically creates fee lines for an online refund"""
+    # Subtract cash
+    finance_services.insert_ledger(
+        account_code=Accounts.CASH,
+        finance_code=amendment.enrolment.module.finance_code,
+        narrative=amendment.narrative,
+        amount=amendment.amount,
+        type_id=TransactionTypes.ONLINE,
+        enrolment_id=amendment.enrolment.id,
+        user=user,
+    )
+    # Writeoff fee
+    finance_services.insert_ledger(
+        account_code=Accounts.TUITION,
+        finance_code=amendment.enrolment.module.finance_code,
+        narrative=amendment.narrative,
+        amount=-amendment.amount,
+        type_id=TransactionTypes.WRITEOFF,
+        enrolment_id=amendment.enrolment.id,
+        user=user,
     )

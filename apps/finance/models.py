@@ -23,6 +23,7 @@ class TransactionTypes(models.IntegerChoices):
     CREDIT_CARD = 13, 'Credit card'
     ONLINE = 16, 'Online'
     RCP = 17, 'Repeating card payment'
+    WRITEOFF = 99, 'Write-off'
 
 
 class LedgerQuerySet(models.QuerySet):

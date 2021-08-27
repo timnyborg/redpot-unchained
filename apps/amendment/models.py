@@ -77,6 +77,11 @@ class Amendment(models.Model):
     def get_delete_url(self) -> str:
         return reverse('amendment:delete', kwargs={'pk': self.pk})
 
+    @property
+    def can_apply_refund(self) -> bool:
+        """Indicates if the amendment can have a refund automatically generated"""
+        return self.type_id == AmendmentTypes.ONLINE_REFUND and self.status_id == AmendmentStatuses.APPROVED
+
 
 class AmendmentReason(models.Model):
     id = models.IntegerField(primary_key=True)

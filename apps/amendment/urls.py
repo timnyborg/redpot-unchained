@@ -11,4 +11,5 @@ urlpatterns = [
     path('approval', views.Approve.as_view()),  # legacy url
     path('search', views.Search.as_view(), name='search'),
     path('requests', views.Search.as_view()),  # legacy url
+    path('apply-online-refund/<int:pk>', views.ApplyOnlineRefund.as_view(), name='apply-online-refund'),
 ]

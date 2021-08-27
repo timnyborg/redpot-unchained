@@ -80,7 +80,7 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
 
 class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
     model = models.Amendment
-    template_name = 'core/form.html'
+    template_name = 'amendment/edit.html'
     permission_denied_message = 'You do not have permission to edit this change request'
     success_message = 'Change request updated'
 
@@ -89,6 +89,13 @@ class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic
 
     def get_subtitle(self) -> str:
         return f'Edit – {self.object.enrolment.qa.student} on {self.object.enrolment.module}'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['can_apply_refund'] = self.object.can_apply_refund and self.request.user.has_perm(
+            'amendment.edit_finance'
+        )
+        return context
 
     def get_form_class(self) -> Type[ModelForm]:
         return FORM_CLASSES[self.object.type_id]
@@ -164,3 +171,15 @@ class Search(LoginRequiredMixin, PageTitleMixin, tables.SingleTableMixin, Filter
     filterset_class = datatables.SearchFilter
     template_name = 'core/search.html'
     subtitle = 'Search'
+
+
+class ApplyOnlineRefund(PermissionRequiredMixin, generic.View):
+    """Automatically creates fee lines for an online refund"""
+
+    permission_required = 'amendment.edit_finance'
+
+    def post(self, request, pk, *args, **kwargs):
+        amendment = get_object_or_404(models.Amendment, pk=pk)
+        services.apply_online_refund(amendment=amendment, user=request.user)
+        messages.success(request, 'Refund applied')
+        return redirect(next_url_if_safe(request) or amendment.enrolment.get_absolute_url() + '#finances')
