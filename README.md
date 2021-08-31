@@ -22,7 +22,7 @@ pip3 install -r requirements.txt
 
 Get a copy of the secrets file, containing dev database login details, etc.
 ```bash
-scp <your_username>@deltamap:/home/www-data/django/redpot/secrets.json .
+scp <your_username>@deltamap:/home/www-data/django/redpot/secrets.env .
 ```
 
 Start up the server
@@ -52,7 +52,7 @@ cd redpot-unchained
 ### Option 1: connecting to existing services (database, redis, etc.)
 Get a copy of the secrets file, containing dev database login details, etc.
 ```bash
-scp <your_username>@deltamap:/home/www-data/django/redpot/secrets.json .
+scp <your_username>@deltamap:/home/www-data/django/redpot/secrets.env .
 ```
 
 Build and start the container
@@ -61,11 +61,6 @@ sudo docker-compose up --build -d django
 ```
 
 ### Option 2: a standalone dev stack (running mssql, redis, etc. as containers)
-Create a basic secrets file (we'll create a default soon enough)
-```bash
-echo '{"REDIS_HOST": "redis"}' > secrets.json
-```
-
 Build and start the containers
 ```bash
 sudo docker-compose up --build -d
