@@ -1,0 +1,180 @@
+- model: amendment.amendmentreason
+  pk: 1
+  fields:
+    type: 3
+    reason: Course cancelled
+- model: amendment.amendmentreason
+  pk: 2
+  fields:
+    type: 3
+    reason: Student withdrawn
+- model: amendment.amendmentreason
+  pk: 3
+  fields:
+    type: 3
+    reason: Student’s request
+- model: amendment.amendmentreason
+  pk: 4
+  fields:
+    type: 3
+    reason: Health issues
+- model: amendment.amendmentreason
+  pk: 5
+  fields:
+    type: 3
+    reason: Other (specify below)
+- model: amendment.amendmentreason
+  pk: 6
+  fields:
+    type: 2
+    reason: Course cancelled
+- model: amendment.amendmentreason
+  pk: 7
+  fields:
+    type: 2
+    reason: Student withdrawn
+- model: amendment.amendmentreason
+  pk: 8
+  fields:
+    type: 2
+    reason: Student’s request
+- model: amendment.amendmentreason
+  pk: 9
+  fields:
+    type: 2
+    reason: Student has intermitted
+- model: amendment.amendmentreason
+  pk: 10
+  fields:
+    type: 2
+    reason: Student suspended
+- model: amendment.amendmentreason
+  pk: 11
+  fields:
+    type: 2
+    reason: Student didn’t pay/attend
+- model: amendment.amendmentreason
+  pk: 12
+  fields:
+    type: 2
+    reason: Health issues
+- model: amendment.amendmentreason
+  pk: 13
+  fields:
+    type: 2
+    reason: Free tutor/staff place
+- model: amendment.amendmentreason
+  pk: 14
+  fields:
+    type: 2
+    reason: Invoice created in error
+- model: amendment.amendmentreason
+  pk: 15
+  fields:
+    type: 2
+    reason: Write off course
+- model: amendment.amendmentreason
+  pk: 16
+  fields:
+    type: 2
+    reason: Write off minor balance
+- model: amendment.amendmentreason
+  pk: 17
+  fields:
+    type: 2
+    reason: Bank charges
+- model: amendment.amendmentreason
+  pk: 18
+  fields:
+    type: 2
+    reason: Other (specify below)
+- model: amendment.amendmentreason
+  pk: 19
+  fields:
+    type: 1
+    reason: Transfer to another course
+- model: amendment.amendmentreason
+  pk: 20
+  fields:
+    type: 1
+    reason: Transfer to another student
+- model: amendment.amendmentreason
+  pk: 21
+  fields:
+    type: 1
+    reason: Transfer to another invoice
+- model: amendment.amendmentreason
+  pk: 22
+  fields:
+    type: 4
+    reason: Course cancelled
+- model: amendment.amendmentreason
+  pk: 23
+  fields:
+    type: 4
+    reason: Student withdrawn
+- model: amendment.amendmentreason
+  pk: 24
+  fields:
+    type: 4
+    reason: Student’s request
+- model: amendment.amendmentreason
+  pk: 25
+  fields:
+    type: 4
+    reason: Health issues
+- model: amendment.amendmentreason
+  pk: 26
+  fields:
+    type: 4
+    reason: Other (specify below)
+- model: amendment.amendmentreason
+  pk: 27
+  fields:
+    type: 5
+    reason: Course cancelled
+- model: amendment.amendmentreason
+  pk: 28
+  fields:
+    type: 5
+    reason: Student withdrawn
+- model: amendment.amendmentreason
+  pk: 29
+  fields:
+    type: 5
+    reason: Student’s request
+- model: amendment.amendmentreason
+  pk: 30
+  fields:
+    type: 5
+    reason: Health issues
+- model: amendment.amendmentreason
+  pk: 31
+  fields:
+    type: 5
+    reason: Other (specify below)
+- model: amendment.amendmentreason
+  pk: 32
+  fields:
+    type: 7
+    reason: Course cancelled
+- model: amendment.amendmentreason
+  pk: 33
+  fields:
+    type: 7
+    reason: Student withdrawn
+- model: amendment.amendmentreason
+  pk: 34
+  fields:
+    type: 7
+    reason: Student’s request
+- model: amendment.amendmentreason
+  pk: 35
+  fields:
+    type: 7
+    reason: Health issues
+- model: amendment.amendmentreason
+  pk: 36
+  fields:
+    type: 7
+    reason: Other (specify below)

@@ -1,0 +1,15 @@
+- model: amendment.amendmentstatus
+  pk: 1
+  fields:
+    status: Pending approval
+    icon: pencil
+- model: amendment.amendmentstatus
+  pk: 2
+  fields:
+    status: Pending execution
+    icon: exclamation-circle
+- model: amendment.amendmentstatus
+  pk: 3
+  fields:
+    status: Complete
+    icon: check

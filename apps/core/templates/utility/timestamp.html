@@ -1,5 +1,6 @@
 {% load redpot_tags %}
 {# don't render if passed record=None #}
+{# todo: make generic, maybe through use of a 'timestamp_fields' property on models? #}
 {% if record %}
 <div class="section-footer">
     <div class="timestamp">
@@ -22,6 +23,16 @@
             datetime="{{ record.raised_on | date:'DATETIME_FORMAT' }}"
         >
             {{ record.raised_on }}
+        </span>
+        {% elif record.requested_by %}
+        Requested by {{ record.requested_by | user_name }}
+        <span class="timeago"
+            data-placement="bottom"
+            data-title="{{ record.requested_on | date:'DATETIME_FORMAT' }}"
+            data-toggle="tooltip"
+            datetime="{{ record.requested_on | date:'DATETIME_FORMAT' }}"
+        >
+            {{ record.requested_on }}
         </span>
         {% endif %}
         {% if record.modified_by %}

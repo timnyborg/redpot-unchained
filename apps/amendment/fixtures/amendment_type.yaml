@@ -1,0 +1,35 @@
+- model: amendment.amendmenttype
+  pk: 1
+  fields:
+    type: Transfer
+    action: Transfer
+- model: amendment.amendmenttype
+  pk: 2
+  fields:
+    type: Amendment
+    action: Amendment
+- model: amendment.amendmenttype
+  pk: 3
+  fields:
+    type: Refund (online)
+    action: Refund
+- model: amendment.amendmenttype
+  pk: 4
+  fields:
+    type: Refund (credit card)
+    action: Refund
+- model: amendment.amendmenttype
+  pk: 5
+  fields:
+    type: Refund (scheduled payment)
+    action: Refund
+- model: amendment.amendmenttype
+  pk: 6
+  fields:
+    type: Refund (other)
+    action: Refun
+- model: amendment.amendmenttype
+  pk: 7
+  fields:
+    type: Refund (bank return)
+    action: Refund

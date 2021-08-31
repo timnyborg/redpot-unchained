@@ -3,7 +3,7 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 from django_filters.views import FilterView
-from django_tables2.views import RequestConfig, SingleTableMixin
+from django_tables2.views import SingleTableMixin
 
 from django import http
 from django.contrib import messages
@@ -62,19 +62,18 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
         fees = self.object.get_fees().select_related('enrolment__module', 'type')
-        fee_table = datatables.InvoiceFeesTable(fees, prefix="fees-")
+        fee_table = datatables.InvoiceFeesTable(fees, prefix="fees-", request=self.request)
 
         credits = self.object.get_payments().non_cash().select_related('enrolment__module', 'type')
-        credit_table = datatables.InvoicePaymentsTable(credits, prefix="credits-")
+        credit_table = datatables.InvoicePaymentsTable(credits, prefix="credits-", request=self.request)
 
         payments = self.object.get_payments().cash().select_related('enrolment__module', 'type')
-        payment_table = datatables.InvoicePaymentsTable(payments, prefix="payments-")
+        payment_table = datatables.InvoicePaymentsTable(payments, prefix="payments-", request=self.request)
 
         credit_notes = self.object.get_credit_note_items().non_cash().select_related('enrolment__module', 'type')
-        credit_note_table = datatables.InvoiceCreditNoteTable(credit_notes, prefix="credit-notes-")
-
-        for table in (fee_table, credit_table, payment_table, credit_note_table):
-            RequestConfig(self.request).configure(table)  # enable independent sorting
+        credit_note_table = datatables.InvoiceCreditNoteTable(
+            credit_notes, prefix="credit-notes-", request=self.request
+        )
 
         try:
             plan = self.object.payment_plan

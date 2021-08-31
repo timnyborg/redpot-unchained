@@ -95,6 +95,7 @@ PREREQ_APPS = [
 
 PROJECT_APPS = [
     'apps.core',
+    'apps.amendment',
     'apps.application',
     'apps.discount',
     'apps.enrolment',
