@@ -222,8 +222,14 @@ LOGGING = {
     "disable_existing_loggers": False,
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "loggers": {
-        "django_auth_ldap": {"level": "DEBUG", "handlers": ["console"]},
-        'django.db.backends': {"level": "DEBUG", "handlers": ["console"]},
+        "django_auth_ldap": {
+            "level": "ERROR",
+            "handlers": ["console"],
+        },
+        'django.db.backends': {
+            "level": get_secret("db_logging_level", "ERROR"),
+            "handlers": ["console"],
+        },
     },
 }
 
