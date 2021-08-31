@@ -37,6 +37,9 @@ class BaseForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['reason'].queryset = models.AmendmentReason.objects.filter(type=self.initial['type'])
         self.fields['reason'].empty_label = '– Choose one –'
+        # Disable non-editable inputs
+        for name in ('type', 'status', 'enrolment'):
+            self.fields[name].disabled = True
         # Batch and narrative only editable by Finance (and when editing, in practice)
         if not edit_finance_fields:
             del self.fields['batch']

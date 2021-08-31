@@ -57,7 +57,8 @@ class PoundInput(widgets.NumberInput):
 
 class ReadOnlyModelWidget(widgets.Widget):
     """A readonly widget for displaying a single model with bootstrap styling
-    if `link=True`, the text will be a hyperlink to the instance's get_absolute_url()
+    Ensure the formfield has `disabled=True`, or you may see errors when posting null data in testing
+    If `link=True`, the text will be a hyperlink to the instance's get_absolute_url()
     """
 
     def __init__(self, model: models.Model, link: bool = False, *args, **kwargs):

@@ -106,6 +106,8 @@ class TestEmails(test.TestCase):
 
 
 class TestApplyOnlineRefund(test.TestCase):
+    """Check that the refund routine applies the right adjustments"""
+
     def test_enrolment_refunded(self):
         amendment = factories.AmendmentFactory(amount=Decimal(100))
         services.apply_online_refund(amendment=amendment, user=amendment.requested_by)

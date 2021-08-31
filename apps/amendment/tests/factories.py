@@ -18,3 +18,4 @@ class AmendmentFactory(factory.django.DjangoModelFactory):
     requested_on = factory.LazyFunction(datetime.now)
     requested_by = factory.SubFactory(UserFactory)
     amount = factory.Faker('pydecimal', min_value=1, left_digits=4, right_digits=2)
+    narrative = factory.Faker('paragraph', nb_sentences=1)
