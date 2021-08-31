@@ -8,7 +8,7 @@ services:
       dockerfile: ./Dockerfile
     secrets:
       - source: app_config
-        target: /code/secrets.json
+        target: /code/secrets.env
     ports:
       - "8000:8000"
     restart: always
@@ -17,7 +17,7 @@ services:
     image: redpot:latest
     secrets:
       - source: app_config
-        target: /code/secrets.json
+        target: /code/secrets.env
     restart: always
     command: celery -A redpot worker -n redpot-worker
 
@@ -33,4 +33,4 @@ services:
 
 secrets:
   app_config:
-    file: ./secrets.json
+    file: ./secrets.env

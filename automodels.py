@@ -26,90 +26,6 @@ class TutorActivity(models.Model):
         db_table = 'activity'
 
 
-class AuthCas(models.Model):
-    user_id = models.IntegerField(blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    service = models.CharField(max_length=512, blank=True, null=True)
-    ticket = models.CharField(max_length=512, blank=True, null=True)
-    renew = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_cas'
-
-
-class AuthEvent(models.Model):
-    time_stamp = models.DateTimeField(blank=True, null=True)
-    client_ip = models.CharField(max_length=512, blank=True, null=True)
-    user_id = models.IntegerField(blank=True, null=True)
-    origin = models.CharField(max_length=512, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_event'
-
-
-class AuthGroup(models.Model):
-    role = models.CharField(max_length=256, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group'
-
-
-class AuthMembership(models.Model):
-    id = models.AutoField()
-    user = models.ForeignKey('AuthUser', models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_membership'
-        unique_together = (('user', 'group'),)
-
-
-class AuthPermission(models.Model):
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING, blank=True, null=True)
-    name = models.CharField(max_length=512, blank=True, null=True)
-    table_name = models.CharField(max_length=512, blank=True, null=True)
-    record_id = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_permission'
-
-
-class AuthUser(models.Model):
-    first_name = models.CharField(max_length=128, blank=True, null=True)
-    last_name = models.CharField(max_length=128, blank=True, null=True)
-    full_name = models.CharField(max_length=256, blank=True, null=True)
-    username = models.CharField(unique=True, max_length=16, blank=True, null=True)
-    password = models.CharField(max_length=16)
-    registration_id = models.CharField(max_length=512, blank=True, null=True)
-    division = models.ForeignKey('Division', models.DO_NOTHING, db_column='division', blank=True, null=True)
-    email = models.CharField(max_length=512, blank=True, null=True)
-    reset_password_key = models.CharField(max_length=512, blank=True, null=True)
-    registration_key = models.CharField(max_length=512, blank=True, null=True)
-    date_format = models.IntegerField(blank=True, null=True)
-    default_approver = models.CharField(max_length=32, blank=True, null=True)
-    role = models.CharField(max_length=512, blank=True, null=True)
-    image = models.CharField(max_length=512, blank=True, null=True)
-    phone = models.CharField(max_length=512, blank=True, null=True)
-    room = models.CharField(max_length=512, blank=True, null=True)
-    is_active = models.BooleanField()
-    on_facewall = models.BooleanField()
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user'
-
-
 class AutoNumber(models.Model):
     id = models.AutoField()
     name = models.CharField(max_length=32)
@@ -143,89 +59,6 @@ class CourseApplicationAttachment(models.Model):
         db_table = 'course_application_attachment'
 
 
-class Diet(models.Model):
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
-    type = models.ForeignKey('DietType', models.DO_NOTHING, db_column='type', blank=True, null=True)
-    note = models.CharField(max_length=512, blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'diet'
-        unique_together = (('student', 'type'),)
-
-
-class DietType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'diet_type'
-
-
-class Disability(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    web_publish = models.BooleanField()
-    display_order = models.IntegerField(blank=True, null=True)
-    custom_description = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'disability'
-        unique_together = (('id', 'description', 'custom_description'),)
-
-
-class Division(models.Model):
-    name = models.CharField(max_length=64, blank=True, null=True)
-    shortname = models.CharField(max_length=8, blank=True, null=True)
-    email = models.CharField(max_length=256, blank=True, null=True)
-    finance_prefix = models.CharField(max_length=2, blank=True, null=True)
-    manager = models.ForeignKey(AuthUser, models.DO_NOTHING, db_column='manager', blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'division'
-
-
-class EmergencyContact(models.Model):
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student', blank=True, null=True)
-    name = models.CharField(max_length=128, blank=True, null=True)
-    phone = models.CharField(max_length=32, blank=True, null=True)
-    email = models.CharField(max_length=128, blank=True, null=True)
-    created_by = models.CharField(max_length=32, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=32, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'emergency_contact'
-
-
-class Enquiry(models.Model):
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student', blank=True, null=True)
-    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module', blank=True, null=True)
-    date = models.DateTimeField(blank=True, null=True)
-    detail = models.TextField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'enquiry'
-
-
 class Equipment(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
     ewert_cabs_code = models.CharField(max_length=10, blank=True, null=True)
@@ -235,23 +68,6 @@ class Equipment(models.Model):
     class Meta:
         managed = False
         db_table = 'equipment'
-
-
-class Ethnicity(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=32, blank=True, null=True)
-    is_active = models.BooleanField()
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    custom_description = models.CharField(max_length=64, blank=True, null=True)
-    display_order = models.IntegerField(blank=True, null=True)
-    web_publish = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'ethnicity'
 
 
 class Feedback(models.Model):
@@ -329,64 +145,12 @@ class ModuleEquipment(models.Model):
         db_table = 'module_equipment'
 
 
-class ModuleStatus(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
-    publish = models.BooleanField(blank=True, null=True)
-    short_desc = models.CharField(max_length=50, blank=True, null=True)
-    waiting_list = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'module_status'
-
-
 class ModuleType(models.Model):
     type = models.CharField(max_length=50)
 
     class Meta:
         managed = False
         db_table = 'module_type'
-
-
-class Nationality(models.Model):
-    name = models.CharField(max_length=64, blank=True, null=True)
-    fullname = models.CharField(max_length=64, blank=True, null=True)
-    is_in_eu = models.BooleanField(blank=True, null=True)
-    hesa_code = models.CharField(max_length=8, blank=True, null=True)
-    sort_order = models.IntegerField(blank=True, null=True)
-    is_active = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'nationality'
-
-
-class OtherId(models.Model):
-    id = models.AutoField()
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student', blank=True, null=True)
-    number = models.CharField(max_length=64, blank=True, null=True)
-    type = models.ForeignKey('OtherIdType', models.DO_NOTHING, db_column='type', blank=True, null=True)
-    note = models.CharField(max_length=64, blank=True, null=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'other_id'
-
-
-class OtherIdType(models.Model):
-    description = models.CharField(max_length=64, blank=True, null=True)
-    msaccess_mask = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'other_id_type'
 
 
 class OtherPayment(models.Model):
@@ -475,31 +239,6 @@ class PaymentItem(models.Model):
         db_table = 'payment_item'
 
 
-class Phone(models.Model):
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
-    type = models.ForeignKey('PhoneType', models.DO_NOTHING, db_column='type')
-    number = models.CharField(max_length=64, blank=True, null=True)
-    note = models.CharField(max_length=128, blank=True, null=True)
-    is_default = models.BooleanField()
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'phone'
-
-
-class PhoneType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=32, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'phone_type'
-
-
 class PointsLevel(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.CharField(max_length=255, blank=True, null=True)
@@ -517,17 +256,6 @@ class PolarPostcodes(models.Model):
     class Meta:
         managed = False
         db_table = 'polar_postcodes'
-
-
-class Portfolio(models.Model):
-    name = models.CharField(max_length=128, blank=True, null=True)
-    division = models.ForeignKey(Division, models.DO_NOTHING, db_column='division', blank=True, null=True)
-    email = models.CharField(max_length=256, blank=True, null=True)
-    phone = models.CharField(max_length=256, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'portfolio'
 
 
 class ProgrammeStaff(models.Model):
@@ -641,25 +369,6 @@ class ProposalStatus(models.Model):
         db_table = 'proposal_status'
 
 
-class Qualification(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=64, blank=True, null=True)
-    is_award = models.BooleanField(blank=True, null=True)
-    is_postgraduate = models.BooleanField()
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    on_hesa_return = models.BooleanField(blank=True, null=True)
-    hesa_code = models.CharField(max_length=8, blank=True, null=True)
-    elq_rank = models.IntegerField(blank=True, null=True)
-    is_matriculated = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'qualification'
-
-
 class ReligionOrBelief(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=64, blank=True, null=True)
@@ -682,85 +391,12 @@ class Room(models.Model):
         db_table = 'room'
 
 
-class Setting(models.Model):
-    name = models.TextField()
-    type = models.TextField()
-    value = models.TextField()
-    description = models.TextField(blank=True, null=True)
-    academic_year = models.IntegerField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'setting'
-
-
-class SitsNations(models.Model):
-    hesa_nation = models.CharField(max_length=64, blank=True, null=True)
-    sits_nation = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'sits_nations'
-        unique_together = (('hesa_nation', 'sits_nation'),)
-
-
 class StaffRole(models.Model):
     name = models.CharField(max_length=64)
 
     class Meta:
         managed = False
         db_table = 'staff_role'
-
-
-class StudentArchive(models.Model):
-    husid = models.BigIntegerField(blank=True, null=True)
-    source = models.IntegerField(blank=True, null=True)
-    target = models.IntegerField(blank=True, null=True)
-    json = models.TextField(blank=True, null=True)
-    created_by = models.CharField(max_length=32, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=32, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'student_archive'
-
-
-class StudyLocation(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64, blank=True, null=True)
-    hesa_code = models.CharField(max_length=8, blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    is_active = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'study_location'
-
-
-class Suspension(models.Model):
-    student = models.ForeignKey(Student, models.DO_NOTHING, db_column='student', blank=True, null=True)
-    start_date = models.DateField()
-    expected_return_date = models.DateField(blank=True, null=True)
-    actual_return_date = models.DateField(blank=True, null=True)
-    reason = models.IntegerField(blank=True, null=True)
-    note = models.CharField(max_length=256, blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'suspension'
 
 
 class TermsAndConditions(models.Model):
@@ -772,33 +408,6 @@ class TermsAndConditions(models.Model):
     class Meta:
         managed = False
         db_table = 'terms_and_conditions'
-
-
-class TransactionType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=32, blank=True, null=True)
-    is_cash = models.BooleanField()
-    is_active = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'transaction_type'
-
-
-class TutorActivity(models.Model):
-    id = models.AutoField()
-    tutor = models.ForeignKey(Tutor, models.DO_NOTHING, db_column='tutor', blank=True, null=True)
-    activity = models.ForeignKey(Activity, models.DO_NOTHING, db_column='activity', blank=True, null=True)
-    date = models.DateField(blank=True, null=True)
-    note = models.TextField(blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'tutor_activity'
 
 
 class TutorContract(models.Model):
@@ -844,16 +453,3 @@ class TutorContractStatus(models.Model):
     class Meta:
         managed = False
         db_table = 'tutor_contract_status'
-
-
-class TutorSubject(models.Model):
-    tutor = models.ForeignKey(Tutor, models.DO_NOTHING, db_column='tutor', blank=True, null=True)
-    subject = models.ForeignKey(Subject, models.DO_NOTHING, db_column='subject', blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    created_by = models.CharField(max_length=64, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'tutor_subject'
