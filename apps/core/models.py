@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from datetime import datetime
 
@@ -8,6 +10,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.deconstruct import deconstructible
 
+from .utils import postal
 from .utils.models import PhoneField
 
 
@@ -43,6 +46,46 @@ class SignatureModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class AddressModel(models.Model):
+    """A set of shared field definitions for models storing address data"""
+
+    line1 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Address line 1')
+    line2 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Line 2')
+    line3 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Line 3')
+    town = models.CharField(max_length=64, blank=True, null=True, verbose_name='City/town')
+    countystate = models.CharField(max_length=64, blank=True, null=True, verbose_name='County/state')
+    country = models.CharField(max_length=64, blank=True, null=True)
+    postcode = models.CharField(max_length=32, blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+    def get_formatted(self) -> str:
+        """Produced a formatted version of the address"""
+        return '\n'.join(postal.format_address(self))
+
+
+class SITSLockingModelMixin:
+    """Adds functionality for determining which instances and which fields are sits-managed"""
+
+    sits_managed_fields: list = []
+
+    @property
+    def is_sits_record(self) -> bool:
+        """Determine whether the object originates in SITS.  Must be overridden"""
+        raise NotImplementedError(f'{self.__class__.__name__} must implement an is_sits_record method')
+
+    @property
+    def locked_fields(self) -> set[str]:
+        """List which fields are locked for editing
+
+        Useful in model forms, which can dynamically lock fields in __init__ with:
+        for field in self.instance.locked_fields.intersection(self.fields):
+            self.fields[field].disabled = True
+        """
+        return set(self.sits_managed_fields) if self.is_sits_record else set()
 
 
 @deconstructible

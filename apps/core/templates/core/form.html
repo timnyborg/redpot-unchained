@@ -3,6 +3,7 @@
 {% block center %}
 
 <div class='section'>
+    {% block before-form %}{% endblock %}
     <div class='row'>
         <div class='col-xs-8'>
             <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
@@ -17,9 +18,9 @@
                     </div>
                 </div>
             </form>
-            {% block after-form %}{% endblock %}
         </div>
     </div>
+    {% block after-form %}{% endblock %}
     {% timestamp object %}
 </div>
 {% block after-section %}{% endblock %}

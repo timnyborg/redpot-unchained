@@ -5,7 +5,7 @@ from typing import Optional
 from django.db import models
 from django.urls import reverse
 
-from apps.core.models import SignatureModel
+from apps.core.models import SignatureModel, SITSLockingModelMixin
 from apps.core.utils.dates import academic_year
 
 AT_PROVIDER_STUDY_LOCATION = 1
@@ -13,7 +13,8 @@ UK_DISTANCE_STUDY_LOCATION = 6
 NON_UK_DISTANCE_STUDY_LOCATION = 9
 
 
-class QualificationAim(SignatureModel):
+class QualificationAim(SITSLockingModelMixin, SignatureModel):
+    sits_managed_fields = ['start_date', 'end_date', 'reason_for_ending', 'title', 'programme']
     student = models.ForeignKey(
         'student.Student',
         models.DO_NOTHING,
@@ -97,11 +98,9 @@ class QualificationAim(SignatureModel):
         return f'{self.student}: {self.title}'
 
     @property
-    def locked_fields(self) -> list[str]:
-        """Determine whether the object is managed by SITS, and thus has fields locked for editing"""
-        if self.created_by == 'SITS' or self.modified_by == 'SITS' or self.sits_code:
-            return ['start_date', 'end_date', 'reason_for_ending', 'title', 'programme']
-        return []
+    def is_sits_record(self) -> bool:
+        """Determine whether the object originates in SITS"""
+        return self.created_by == 'SITS' or self.modified_by == 'SITS' or self.sits_code is not None
 
 
 class EntryQualification(models.Model):

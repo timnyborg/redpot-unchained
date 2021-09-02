@@ -1,0 +1,9 @@
+{% extends 'core/form.html' %}
+{% block before-form %}
+    {% if form.instance.is_sits_record %}
+        <div class="section-alert-header alert-warning" role="alert">
+            <span class="fa fa-exclamation-circle"></span>
+            <b>This record was imported from SITS and some of it is read only.</b>
+        </div>
+    {% endif %}
+{% endblock %}

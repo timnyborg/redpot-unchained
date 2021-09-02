@@ -1319,14 +1319,6 @@
     sort_order: 2
     is_active: true
 - model: student.domicile
-  pk: 172
-  fields:
-    name: USSR/CIS
-    is_in_eu: false
-    hesa_code: RU
-    sort_order: 0
-    is_active: true
-- model: student.domicile
   pk: 173
   fields:
     name: Venezuela
@@ -1767,14 +1759,6 @@
     sort_order: 2
     is_active: true
 - model: student.domicile
-  pk: 237
-  fields:
-    name: United Kingdom
-    is_in_eu: true
-    hesa_code: GB
-    sort_order: 0
-    is_active: true
-- model: student.domicile
   pk: 238
   fields:
     name: Channel Islands
@@ -1877,14 +1861,6 @@
     is_in_eu: false
     hesa_code: EH
     sort_order: 2
-    is_active: true
-- model: student.domicile
-  pk: 257
-  fields:
-    name: Yugoslavia not otherwise specified
-    is_in_eu: false
-    hesa_code: XO
-    sort_order: 0
     is_active: true
 - model: student.domicile
   pk: 258

@@ -3,7 +3,7 @@ from datetime import date, datetime
 from django.db import models
 from django.urls import reverse
 
-from apps.core.models import SignatureModel
+from apps.core.models import AddressModel, SignatureModel
 
 CUSTOM_PLAN_TYPE = 16
 CUSTOM_PAYMENT_PENDING_STATUS = 2
@@ -27,24 +27,15 @@ class InvoiceQuerySet(models.QuerySet):
         # Overdue only applies to outstanding
         return self.outstanding().filter(due_date__lt=date.today())
 
-    def written_off(self) -> bool:
-        return self.allocated_ledger_items.non_cash().total() == 0
 
-
-class Invoice(SignatureModel):
+class Invoice(AddressModel, SignatureModel):
     number = models.IntegerField(unique=True, editable=False)
     prefix = models.CharField(max_length=32, default='XG', editable=False)
     date = models.DateField(default=datetime.now)
     due_date = models.DateField(null=True, db_column='duedate')
     fao = models.CharField(max_length=128, blank=True, null=True, verbose_name='FAO')
     invoiced_to = models.CharField(max_length=128, verbose_name='Invoice to')
-    line1 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Address line 1')
-    line2 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Line 2')
-    line3 = models.CharField(max_length=128, blank=True, null=True, verbose_name='Line 3')
-    town = models.CharField(max_length=64, blank=True, null=True, verbose_name='City/town')
-    countystate = models.CharField(max_length=64, blank=True, null=True, verbose_name='County/state')
-    country = models.CharField(max_length=64, blank=True, null=True)
-    postcode = models.CharField(max_length=32, blank=True, null=True)
+
     amount = models.DecimalField(max_digits=19, decimal_places=4, editable=False)
     custom_narrative = models.BooleanField(default=False)
     narrative = models.TextField(blank=True, null=True)
@@ -97,6 +88,9 @@ class Invoice(SignatureModel):
     def get_credit_note_items(self):
         """Get items on (legacy) credit notes, which are attached to a separate invoice but allocated to this one"""
         return self.allocated_ledger_items.exclude(invoice=self.pk)
+
+    def written_off(self) -> bool:
+        return self.allocated_ledger_items.non_cash().total() == 0
 
 
 class InvoiceLedger(models.Model):

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import Optional
 
-from django.db import models
+from django.db import models, transaction
 from django.urls import reverse
 
-from apps.core.models import SignatureModel
+from apps.core.models import AddressModel, SignatureModel, SITSLockingModelMixin
 from apps.invoice.models import Invoice
 from apps.module.models import Module
 
@@ -101,6 +101,32 @@ class Student(SignatureModel):
     def get_invoices(self):
         return Invoice.objects.filter(invoice_ledger__ledger__enrolment__qa__student=self).distinct()
 
+    @transaction.atomic
+    def set_billing_address(self, address: Address, *, save: bool = True) -> None:
+        """Mark a single address as billing
+        Set `save=False` if calling from address.save() to avoid a loop
+        """
+        if address.student != self:
+            raise ValueError('Address does not belong to the student')
+        # Cancel out all other addresses as billing
+        self.addresses.exclude(id=address.id).update(is_billing=False)
+        address.is_billing = True
+        if save:
+            address.save()
+
+    @transaction.atomic
+    def set_default_address(self, address: Address, *, save: bool = True) -> None:
+        """Mark a single address as default
+        Set `save=False` if calling from address.save() to avoid a loop
+        """
+        if address.student != self:
+            raise ValueError('Address does not belong to the student')
+        # Cancel out all other addresses as billing
+        self.addresses.exclude(id=address.id).update(is_default=False)
+        address.is_default = True
+        if save:
+            address.save()
+
 
 class StudentArchive(SignatureModel):
     husid = models.BigIntegerField(blank=True, null=True)
@@ -120,9 +146,11 @@ class AddressQuerySet(models.QuerySet):
         return self.filter(is_billing=True)
 
 
-class Address(SignatureModel):
+class Address(AddressModel, SITSLockingModelMixin, SignatureModel):
+    sits_managed_fields = ['line1', 'line2', 'line3', 'town', 'countystate', 'postcode', 'country']
+
     # todo: remove the address_type table and convert Address.type to a TextChoice
-    class TypeChoices(models.IntegerChoices):
+    class Types(models.IntegerChoices):
         PERMANENT = 100, "Permanent"
         HOME = 110, 'Home'
         NEXT_OF_KIN = 111, 'Next of Kin'
@@ -134,23 +162,53 @@ class Address(SignatureModel):
     student = models.ForeignKey(
         'Student', models.DO_NOTHING, db_column='student', related_name='addresses', related_query_name='address'
     )
-    type = models.IntegerField(db_column='type', choices=TypeChoices.choices, default=TypeChoices.PERMANENT)
-    line1 = models.CharField(max_length=128)
-    line2 = models.CharField(max_length=128, blank=True, null=True)
-    line3 = models.CharField(max_length=128, blank=True, null=True)
-    town = models.CharField(max_length=64, blank=True, null=True)
-    countystate = models.CharField(max_length=64, blank=True, null=True)
-    country = models.CharField(max_length=64, blank=True, null=True)
-    postcode = models.CharField(max_length=32, blank=True, null=True)
-    formatted = models.CharField(max_length=1024, blank=True, null=True)
-    is_default = models.BooleanField(default=True)  # todo: figure out default and billing logic.  db or save()?
-    is_billing = models.BooleanField(default=False)
+    type = models.IntegerField(db_column='type', choices=Types.choices, default=Types.PERMANENT)
+    formatted = models.CharField(max_length=1024, blank=True, null=True, editable=False)  # for queries -> print labels
+    is_default = models.BooleanField(
+        default=True, verbose_name='Default?'
+    )  # todo: figure out default and billing logic.  db or save()?
+    is_billing = models.BooleanField(default=False, verbose_name='Billing?')
     sits_type = models.CharField(max_length=1, blank=True, null=True, editable=False)
 
     objects = AddressQuerySet.as_manager()
 
     class Meta:
         db_table = 'address'
+
+    def __str__(self) -> str:
+        return f'{self.line1}, {self.town}'.strip(',')
+
+    def save(self, *args, **kwargs):
+        self.formatted = self.get_formatted()
+        # Enforce single-object-limit on billing and default addresses
+        if self.is_default:
+            self.student.set_default_address(address=self, save=False)
+        if self.is_billing:
+            self.student.set_billing_address(address=self, save=False)
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        """If deleting the default address, make the most recently updated the default"""
+        super().delete(*args, **kwargs)
+        if self.is_default:
+            new_default = self.student.addresses.order_by('-modified_on').first()
+            if new_default:
+                new_default.is_default = True
+                new_default.save()
+
+    def get_absolute_url(self) -> str:
+        return self.student.get_absolute_url() + '#addresses'
+
+    def get_edit_url(self) -> str:
+        return reverse('student:address:edit', kwargs={'pk': self.pk})
+
+    def get_delete_url(self) -> str:
+        return reverse('student:address:delete', kwargs={'pk': self.pk})
+
+    @property
+    def is_sits_record(self) -> bool:
+        """Determine whether the object originates in SITS"""
+        return self.created_by == 'SITS' or self.modified_by == 'SITS' or self.sits_type is not None
 
 
 class Email(SignatureModel):
@@ -241,6 +299,10 @@ class Domicile(models.Model):
 
     class Meta:
         db_table = 'domicile'
+        ordering = ('sort_order', 'name')
+
+    def __str__(self) -> str:
+        return str(self.name)
 
     @property
     def is_uk(self) -> bool:
