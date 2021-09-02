@@ -159,7 +159,7 @@
 
 <div class="section">
     <div class="pull-right top-right-button">
-        <a href="/address/new/{{ student.id }}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add address</a>
+        <a href="{% url 'student:address:new' student.id %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add address</a>
     </div>
     <a id='address' class='nav-anchor'></a>
         <h2>Address</h2>
@@ -215,11 +215,11 @@
                                 Set default
                                 </a>
                                 {% endif %}
-                                <a data-toggle="tooltip" placement="top" data-title="Copy address to clipboard" class="btn btn-default copyAddressButton" onclick="copyToClipboardBreakLines('#addressField{{ address.id}}')">
+                                <a data-toggle="tooltip" placement="top" title="Copy address to clipboard" class="btn btn-default copyAddressButton" onclick="copyToClipboardBreakLines('#addressField{{ address.id}}')">
                                     <span class="far fa-copy">
                                     </span>
                                 </a>
-                                <a href="/address/edit/{{ address.id }}" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                                {% edit_button address size='medium'%}
                             </div>
                         </div>
                     </div>

@@ -12,7 +12,13 @@ register = template.Library()
 
 
 @register.simple_tag
-def edit_button(url: Union[str, Model], icon: str = 'pencil-alt', target: str = '', tooltip: str = 'Edit details'):
+def edit_button(
+    url: Union[str, Model],
+    icon: str = 'pencil-alt',
+    target: str = '',
+    tooltip: str = 'Edit details',
+    size: str = 'large',
+):
     """Produces a standard edit button.  Can take a string url, or a Model that implements get_edit_url()"""
     if isinstance(url, Model):
         if hasattr(url, 'get_edit_url'):
@@ -20,12 +26,18 @@ def edit_button(url: Union[str, Model], icon: str = 'pencil-alt', target: str = 
         else:
             raise AttributeError(f'The model {url._meta.object_name} needs to define get_edit_url()')
 
+    sizes = {
+        'large': 'btn-lg',
+        'small': 'btn-sm',
+        'medium': '',
+    }
+
     button = f"""
         <a href="{url}"
-           class="btn btn-default btn-lg pull-right"
+           class="btn btn-default {sizes.get(size, '')} pull-right"
            target="{target}"
-           data-toggle': 'tooltip'
-           title='{tooltip}'
+           data-toggle="tooltip"
+           title="{tooltip}"
         ><span class='fas fa-{icon}'></span>
         </a>
     """

@@ -7,12 +7,13 @@ from django.test import TestCase
 from django.test.testcases import SimpleTestCase
 from django.urls import reverse
 
-from apps.qualification_aim.tests import factories
+from apps.core.utils.tests import LoggedInViewTestMixin
+from apps.qualification_aim.tests.factories import QualificationAimFactory
 from apps.tutor.models import Tutor
 from apps.tutor.tests.factories import TutorFactory, TutorModuleFactory
 
-from ..models import Student
-from .factories import StudentFactory
+from .. import models
+from . import factories
 
 
 class TestViewsWithoutLogin(TestCase):
@@ -27,7 +28,7 @@ class TestSearch(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.student = StudentFactory(
+        cls.student = factories.StudentFactory(
             firstname='Stephen',
             nickname='Steve',
         )
@@ -64,7 +65,7 @@ class TestCreateStudent(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.student = StudentFactory()
+        cls.student = factories.StudentFactory()
         cls.url = reverse('student:new')
 
     def setUp(self):
@@ -90,7 +91,7 @@ class TestCreateStudent(TestCase):
             data={'action': 'create'},
         )
         self.assertEqual(response.status_code, 302)
-        newest_student = Student.objects.last()
+        newest_student = models.Student.objects.last()
         self.assertEqual(newest_student.surname, 'smith')
         self.assertEqual(newest_student.emails.first().email, 'test@test.net')
 
@@ -99,7 +100,7 @@ class TestCreateEmail(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.student = StudentFactory()
+        cls.student = factories.StudentFactory()
         cls.url = reverse('student:email-create', kwargs={'student_id': cls.student.pk})
         cls.invalid_url = reverse('student:email-create', kwargs={'student_id': 0})
 
@@ -131,7 +132,7 @@ class TestMakeTutor(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.student = StudentFactory()
+        cls.student = factories.StudentFactory()
         cls.url = reverse('student:make-tutor', kwargs={'student_id': cls.student.pk})
 
     def setUp(self):
@@ -148,7 +149,7 @@ class TestStudentDetailsView(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.student = StudentFactory()
+        cls.student = factories.StudentFactory()
         cls.url = reverse('student:view', args=[cls.student.pk])
 
     def setUp(self):
@@ -165,7 +166,7 @@ class TestStudentIsATutor(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.student = StudentFactory()
+        cls.student = factories.StudentFactory()
         cls.student_tutor = TutorFactory(student=cls.student)
         cls.url = reverse('student:view', args=[cls.student.pk])
 
@@ -181,7 +182,7 @@ class TestStudentIsNotATutor(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.student = StudentFactory()
+        cls.student = factories.StudentFactory()
         cls.url = reverse('student:view', args=[cls.student.pk])
 
     def setUp(self):
@@ -261,7 +262,7 @@ class TestStudentEnrolment(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.qa = factories.QualificationAimFactory()
+        cls.qa = QualificationAimFactory()
         cls.url = reverse('student:view', args=[cls.qa.student.pk])
 
     def setUp(self):
@@ -272,3 +273,19 @@ class TestStudentEnrolment(TestCase):
         self.assertIsNotNone(response.context['qa_list'])
         self.assertEquals(response.context['qa_list'][0].programme.qualification.id, 1)
         self.assertTrue(response.context['qa_list'][0].non_accredited)
+
+
+class TestCreateAddress(LoggedInViewTestMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.student = factories.StudentFactory()
+        cls.url = reverse('student:address:new', kwargs={'student_id': cls.student.id})
+
+    def test_create(self):
+        response = self.client.post(
+            self.url, data={'line1': 'Place', 'type': models.Address.Types.PERMANENT, 'country': 'Canada'}
+        )
+        self.assertEqual(response.status_code, 302)
+        address = models.Address.objects.last()
+        self.assertEqual(address.student_id, self.student.id)

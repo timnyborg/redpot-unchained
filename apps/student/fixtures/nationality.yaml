@@ -1551,14 +1551,6 @@
     sort_order: 0
     is_active: true
 - model: student.nationality
-  pk: 209
-  fields:
-    name: Greenland
-    is_in_eu: false
-    hesa_code: GL
-    sort_order: 0
-    is_active: true
-- model: student.nationality
   pk: 210
   fields:
     name: British Indian Ocean Territory
@@ -1791,38 +1783,6 @@
     sort_order: 2
     is_active: true
 - model: student.nationality
-  pk: 240
-  fields:
-    name: United Kingdom (England)
-    is_in_eu: true
-    hesa_code: XF
-    sort_order: 0
-    is_active: true
-- model: student.nationality
-  pk: 241
-  fields:
-    name: United Kingdom (Wales)
-    is_in_eu: true
-    hesa_code: XI
-    sort_order: 0
-    is_active: true
-- model: student.nationality
-  pk: 242
-  fields:
-    name: United Kingdom (Scotland)
-    is_in_eu: true
-    hesa_code: XH
-    sort_order: 0
-    is_active: true
-- model: student.nationality
-  pk: 243
-  fields:
-    name: United Kingdom (Northern Ireland)
-    is_in_eu: true
-    hesa_code: XG
-    sort_order: 0
-    is_active: true
-- model: student.nationality
   pk: 244
   fields:
     name: Botswana
@@ -1877,14 +1837,6 @@
     is_in_eu: false
     hesa_code: EH
     sort_order: 2
-    is_active: true
-- model: student.nationality
-  pk: 257
-  fields:
-    name: Yugoslavia not otherwise specified
-    is_in_eu: false
-    hesa_code: XO
-    sort_order: 0
     is_active: true
 - model: student.nationality
   pk: 258
@@ -1989,20 +1941,4 @@
     is_in_eu: false
     hesa_code: AS
     sort_order: 2
-    is_active: true
-- model: student.nationality
-  pk: 271
-  fields:
-    name: French Guiana
-    is_in_eu: false
-    hesa_code: GF
-    sort_order: 0
-    is_active: true
-- model: student.nationality
-  pk: 272
-  fields:
-    name: Aruba
-    is_in_eu: false
-    hesa_code: AW
-    sort_order: 0
     is_active: true

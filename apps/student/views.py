@@ -1,6 +1,7 @@
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
+from django import http
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -16,7 +17,7 @@ from apps.tutor.models import Tutor
 from apps.website_account.models import WebsiteAccount
 
 from . import datatables, forms
-from .models import Email, Student, StudentArchive
+from .models import Address, Email, Student, StudentArchive
 
 
 class Create(LoginRequiredMixin, generic.View):
@@ -109,19 +110,6 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
         return {'exclude': exclude}
 
 
-class CreateEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
-    form_class = forms.CreateEmailForm
-    success_message = "Email address added: %(email)s"
-    template_name = 'core/form.html'
-    title = 'Email'
-
-    def get_initial(self) -> dict:
-        return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
-
-    def get_success_url(self) -> str:
-        return self.object.student.get_absolute_url() + '#email'
-
-
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
     model = Student
     template_name = 'student/view.html'
@@ -209,3 +197,51 @@ class MakeTutor(LoginRequiredMixin, generic.View):
         )
         messages.success(request, 'Tutor record created')
         return redirect(tutor.get_edit_url())
+
+
+# --- Email views ---
+
+
+class CreateEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+    form_class = forms.CreateEmailForm
+    success_message = "Email address added: %(email)s"
+    template_name = 'core/form.html'
+    title = 'Email'
+
+    def get_initial(self) -> dict:
+        return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
+
+    def get_success_url(self) -> str:
+        return self.object.student.get_absolute_url() + '#email'
+
+
+# --- Address views ---
+
+
+class CreateAddress(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+    model = Address
+    template_name = 'core/form.html'
+    form_class = forms.AddressForm
+
+    def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
+        self.student = get_object_or_404(Student, pk=self.kwargs['student_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form) -> http.HttpResponse:
+        form.instance.student = self.student
+        return super().form_valid(form)
+
+
+class EditAddress(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+    model = Address
+    template_name = 'student/edit_address.html'
+    form_class = forms.AddressForm
+
+
+class DeleteAddress(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = Address
+    template_name = 'core/delete_form.html'
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Address deleted')
+        return self.object.student.get_absolute_url()

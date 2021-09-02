@@ -274,7 +274,13 @@ DATETIME_INPUT_FORMATS = [
 EMAIL_HOST = env('EMAIL_HOST', default=None)
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='redpot-support@conted.ox.ac.uk')
 SUPPORT_EMAIL = env('SUPPORT_EMAIL', default='redpot-support@conted.ox.ac.uk')  # custom setting
-# custom setting - the hostname used in automated emails sent by celery tasks
+
+# custom url settings
+ANALYTICS_URL = env('ANALYTICS_URL', default=None)
+SENTRY_URL = env(
+    'SENTRY_URL', default='https://sentry.io/organizations/university-of-oxford-conted/projects/redpot-unchained/'
+)
+# hostname used in automated emails sent by celery tasks
 CANONICAL_URL = env('CANONICAL_URL', default='https://redpot-unchained.conted.ox.ac.uk')
 
 # Celery task queue - TODO: get this using the same settings as the cache
