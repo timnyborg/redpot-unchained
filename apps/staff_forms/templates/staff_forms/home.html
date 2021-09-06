@@ -1,0 +1,28 @@
+{% extends 'staff_forms_layout_bs4.html' %}
+
+{% block center %}
+    <div class="section">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fa fa-user-plus"></i> New starter</h5>
+                        <p class="card-text">Adds a new staff member to the department. Emails IT and other teams for
+                            systems access.</p>
+                        <a href="{% url 'staff_forms:starter' %}" class="btn btn-primary">Create a starter</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fa fa-user-times"></i> Leaver</h5>
+                        <p class="card-text">Removes a staff member from the department. Emails IT and other teams for
+                            processing.</p>
+                        <a href="{% url 'staff_forms:leaver' %}" class="btn btn-primary">Request leaver</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

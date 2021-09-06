@@ -1,0 +1,32 @@
+<html>
+    <body style="font-family: Calibri, Arial, sans-serif, 'Open Sans'">
+        <p>
+            <b>{{starter.firstname}} {{starter.lastname}}</b><br/>
+            {{starter.job_title}}, {{starter.section}}<br/>
+        </p>
+        <p>
+            Email: {{starter.email}}<br/>
+            SSO: {{starter.sso}}<br/>
+            TSS member: {{starter.is_a_member_of_TSS|yesno}}<br/>
+            Replacing: {{starter.replacing}}<br/>
+            Starting: {{starter.start_date}}<br/>
+            Leaving: {{starter.end_date}}<br/>
+            Telephone: {{starter.telephone}}{% if starter.overseas_calls %} (Please enable for overseas calls){% endif %}<br/>
+            <br>
+        </p>
+        <p>
+            Systems required: {{ starter.systems|join:", " }}
+            <br/>
+            University card: {{starter.uni_card_number}}<br/>
+            Mailing Lists:
+            {{ starter.mailing_lists|join:", " }}
+            <br/>
+            Shared Mailboxes: {{starter.shared_accounts}}<br/>
+            Folders: {{starter.shared_folders}}<br/>
+            Other requirements: {{starter.others}}<br>
+            <br>
+            View this request on the  <a href="#">Staff-Forms</a> application.
+{#            {{=URL('action', 'manage', host=True, scheme=True)}}#}
+        </p>
+    </body>
+</html>

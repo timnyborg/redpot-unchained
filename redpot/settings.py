@@ -66,6 +66,7 @@ PREREQ_APPS = [
     'django_celery_results',
     'bootstrap_datepicker_plus',
     'rest_framework',
+    'crispy_forms',
 ]
 
 PROJECT_APPS = [
@@ -86,6 +87,7 @@ PROJECT_APPS = [
     'apps.tutor_payment',
     'apps.user',
     'apps.staff_list',
+    'apps.staff_forms',
     'apps.website_account',
 ]
 
@@ -304,6 +306,7 @@ PUBLIC_WEBSITE_URL = env('PUBLIC_WEBSITE_URL', default='https://conted.ox.ac.uk'
 # These may be unnecessary if passed into coverage from command line
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
 TEST_OUTPUT_FILE_NAME = 'test_results.xml'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # WPM Credentials
 WPM_FTP = env.dict(
