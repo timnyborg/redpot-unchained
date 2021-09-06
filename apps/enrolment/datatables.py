@@ -3,9 +3,10 @@ from typing import Optional
 import django_tables2 as tables
 
 from django import http
+from django.urls import reverse
 
 from apps.amendment.models import Amendment
-from apps.core.utils.datatables import DeleteLinkColumn, EditLinkColumn, PoundsColumn
+from apps.core.utils.datatables import DeleteLinkColumn, EditLinkColumn, LinkColumn, PoundsColumn
 from apps.finance.models import Ledger
 
 
@@ -24,6 +25,25 @@ class LedgerDeleteColumn(DeleteLinkColumn):
         return None
 
 
+class PrintLinkColumn(LinkColumn):
+    """Display a print link if if a record is a payment"""
+
+    icon = 'print'
+    attrs = {"a": {"target": "_blank"}}  # new window.  todo: check if this is necessary once PDF rendering is in place
+
+    def linkify(self, record: Ledger) -> Optional[str]:
+        if record.type.is_cash:
+            return reverse(
+                'finance:receipt', kwargs={'allocation': record.allocation, 'enrolment_id': record.enrolment_id}
+            )
+        return None
+
+    def render(self, record) -> str:
+        if record.type.is_cash:
+            return super().render(record)
+        return ''
+
+
 class FinanceTable(tables.Table):
     """Display's an enrolment's financial history, with options to print or delete rows
     Requires `request=` to be passed, in order to dynamically display delete rows
@@ -38,6 +58,7 @@ class FinanceTable(tables.Table):
         linkify=True,
     )
     delete = LedgerDeleteColumn(verbose_name='')
+    print = PrintLinkColumn(verbose_name='')
 
     def render_batch(self, value, bound_column) -> str:
         return value or bound_column.default  # handle historic 0s

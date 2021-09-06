@@ -22,4 +22,5 @@ urlpatterns = [
         not_implemented,
         name='delete-allocation',
     ),
+    path('receipt/<int:allocation>/<int:enrolment_id>', not_implemented, name='receipt'),
 ]
