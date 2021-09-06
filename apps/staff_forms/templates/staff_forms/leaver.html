@@ -1,0 +1,18 @@
+{% extends 'staff_forms_layout_bs4.html' %}
+{% load crispy_forms_tags %}
+
+{% block center %}
+    <div class="section">
+        <h4>Leaver Form</h4>
+        <hr>
+        <p>FAO: IT Office and Personnel</p>
+        <p>A copy will be sent to your email</p>
+        <hr>
+
+        <form method="post">{% csrf_token %}
+            {{ form|crispy }}
+            <input class="btn btn-primary" type="submit" value="Submit">
+        </form>
+        {{ form.media }}
+    </div>
+{% endblock %}

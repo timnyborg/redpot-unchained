@@ -903,3 +903,6 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 .select2-selection__arrow {
     top: 4px !important;
 }
+
+/*Fix for django field self.errors message to appear*/
+p.invalid-feedback { display: block !important; }
