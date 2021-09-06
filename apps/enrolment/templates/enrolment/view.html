@@ -49,7 +49,7 @@
     <div class="section">
         <h2>Finances</h2>
         {% render_table finance_table %}
-        {% if amendment_table.rows or True %}
+        {% if amendment_table.rows %}
             <h4>Outstanding changes</h4>
             {% render_table amendment_table %}
         {% endif %}

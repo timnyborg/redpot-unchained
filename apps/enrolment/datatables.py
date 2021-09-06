@@ -29,6 +29,7 @@ class PrintLinkColumn(LinkColumn):
     """Display a print link if if a record is a payment"""
 
     icon = 'print'
+    title = 'Print'
     attrs = {"a": {"target": "_blank"}}  # new window.  todo: check if this is necessary once PDF rendering is in place
 
     def linkify(self, record: Ledger) -> Optional[str]:
@@ -59,9 +60,7 @@ class FinanceTable(tables.Table):
     )
     delete = LedgerDeleteColumn(verbose_name='')
     print = PrintLinkColumn(verbose_name='')
-
-    def render_batch(self, value, bound_column) -> str:
-        return value or bound_column.default  # handle historic 0s
+    batch = tables.Column(empty_values=(0, None))  # handle historical zeroes: todo: update DB once legacy's dead
 
     class Meta:
         model = Ledger
