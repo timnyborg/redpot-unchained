@@ -1,9 +1,11 @@
+from datetime import date
 from decimal import Decimal
 from typing import Optional
 
 from django.db import models
+from django.urls import reverse
 
-from apps.core.models import SignatureModel
+from apps.core.models import SignatureModel, User
 
 
 class Accounts(models.TextChoices):
@@ -70,6 +72,21 @@ class Ledger(SignatureModel):
 
     class Meta:
         db_table = 'ledger'
+
+    def get_delete_url(self) -> str:
+        return reverse('finance:delete-allocation', kwargs={'allocation': self.allocation})
+
+    def user_can_delete(self, *, user: User) -> bool:
+        """Determine if a user is allowed to remove an entry from the ledger"""
+        return (
+            # Devs can always delete
+            user.has_perm('finance.delete_ledger')
+            # Same-day, own-entry deletion for others
+            or self.created_by == user.username
+            and self.timestamp.date() == date.today()
+            # No deleting fee items attached to invoices
+            and not (hasattr(self, 'invoice_ledger') and not self.type.is_cash)
+        )
 
 
 class Account(models.Model):

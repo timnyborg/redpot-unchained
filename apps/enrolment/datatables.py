@@ -1,21 +1,46 @@
+from typing import Optional
+
 import django_tables2 as tables
 
+from django import http
+
 from apps.amendment.models import Amendment
-from apps.core.utils.datatables import EditLinkColumn, PoundsColumn
+from apps.core.utils.datatables import DeleteLinkColumn, EditLinkColumn, PoundsColumn
 from apps.finance.models import Ledger
 
 
+class LedgerDeleteColumn(DeleteLinkColumn):
+    """A customized delete column that links and renders based on a per-user check"""
+
+    def render(self, value: int, record: Ledger, table) -> str:
+        # todo: consider whether confirmation is better as a modal
+        if record.user_can_delete(user=table.request.user):
+            return super().render(value)
+        return ''
+
+    def linkify(self, value: int, record, table) -> Optional[str]:
+        if record.user_can_delete(user=table.request.user):
+            return super().linkify(record=record) + f'?next={table.request.path}'
+        return None
+
+
 class FinanceTable(tables.Table):
-    # todo: print-receipt and delete columns, w/ display logic
+    """Display's an enrolment's financial history, with options to print or delete rows
+    Requires `request=` to be passed, in order to dynamically display delete rows
+    """
+
+    request: http.HttpRequest
+    # todo: print-receipt column w/ display logic
     amount = PoundsColumn()
     invoice = tables.Column(
         verbose_name='Invoice',
         accessor='invoice_ledger__invoice',
         linkify=True,
     )
+    delete = LedgerDeleteColumn(verbose_name='')
 
-    def render_batch(self, value):
-        return value or '—'
+    def render_batch(self, value, bound_column) -> str:
+        return value or bound_column.default  # handle historic 0s
 
     class Meta:
         model = Ledger
