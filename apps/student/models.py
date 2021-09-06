@@ -81,11 +81,6 @@ class Student(SignatureModel):
         }
         return gender_to_sex_map.get(self.gender or '')
 
-    @property
-    def formatdate(self):
-        if self.start_date:
-            return f'{self.start_date:%d %b %Y}'
-
     def get_absolute_url(self) -> str:
         return reverse('student-view', args=[self.id])
 

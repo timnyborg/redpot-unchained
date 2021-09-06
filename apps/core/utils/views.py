@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.views import generic
+from django.views.defaults import page_not_found
 
 
 class AutoTimestampMixin:
@@ -141,3 +142,9 @@ class ExcelExportView(generic.View):
     def get_export_queryset(self) -> Optional[models.QuerySet]:
         """Return the queryset used in the exporter"""
         return self.queryset
+
+
+def not_implemented(request: http.HttpRequest, message: str = 'Not implemented', *args, **kwargs) -> http.HttpResponse:
+    """Stub view to indicate pages that haven't been implemented yet during development"""
+
+    return page_not_found(request, exception=http.Http404(message))

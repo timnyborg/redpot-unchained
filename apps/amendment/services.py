@@ -19,7 +19,7 @@ from . import models
 
 def get_narrative(*, amendment: models.Amendment) -> str:
     """Populate default value for narrative field"""
-    narrative_strings: dict[int:str] = {
+    narrative_strings: dict[int, str] = {
         models.AmendmentTypes.AMENDMENT: 'INF {amendment.id} - Write off - {amendment.reason}',
         models.AmendmentTypes.CREDIT_CARD_REFUND: 'REF {amendment.id} - Refund (cc) - {amendment.reason}',
         models.AmendmentTypes.OTHER_REFUND: 'REF {amendment.id} - Refund (paper form) - {amendment.reason}',

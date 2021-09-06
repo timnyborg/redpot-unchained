@@ -5,8 +5,8 @@ Contains:
     * Standard widgets with bootstrap prepends/appends (e.g. pound sign)
 
 """
-
 from datetime import datetime
+from typing import Type
 
 import bootstrap_datepicker_plus
 
@@ -61,7 +61,7 @@ class ReadOnlyModelWidget(widgets.Widget):
     If `link=True`, the text will be a hyperlink to the instance's get_absolute_url()
     """
 
-    def __init__(self, model: models.Model, link: bool = False, *args, **kwargs):
+    def __init__(self, model: Type[models.Model], link: bool = False, *args, **kwargs):
         self.model = model
         self.link = link
         super().__init__(*args, **kwargs)
