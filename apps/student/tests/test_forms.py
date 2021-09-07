@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from datetime import date
 
+from freezegun import freeze_time
 from parameterized import parameterized
 
 from django import test
@@ -49,3 +51,28 @@ class TestAddressForm(test.SimpleTestCase):
         address = factories.AddressFactory.build(sits_type=None)
         form = forms.AddressForm(instance=address)
         self.assertFalse(form.fields['line1'].disabled)
+
+
+@freeze_time(date(2020, 1, 1))
+class TestEditPersonForm(test.SimpleTestCase):
+    def test_too_recent_birthdate(self):
+        form = forms.EditForm()
+        form.cleaned_data = {'birthdate': date(2015, 1, 1)}
+        with self.assertRaises(ValidationError):
+            form.clean_birthdate()
+
+    def test_valid_birthdate(self):
+        form = forms.EditForm()
+        form.cleaned_data = {'birthdate': date(2000, 1, 1)}
+        try:
+            form.clean_birthdate()
+        except ValidationError:
+            self.fail('Valid birthdate failed validation')
+
+    def test_null_birthdate(self):
+        form = forms.EditForm()
+        form.cleaned_data = {'birthdate': None}
+        try:
+            form.clean_birthdate()
+        except ValidationError:
+            self.fail('Valid birthdate failed validation')
