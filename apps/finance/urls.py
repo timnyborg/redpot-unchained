@@ -17,10 +17,6 @@ urlpatterns = [
     ),
     path('add-payment/pay-enrolments', views.MultipleEnrolmentPayment.as_view(), name='pay-multiple-enrolments'),
     path('transfer/<int:enrolment_id>', views.Transfer.as_view(), name='transfer'),
-    path(
-        'delete-allocation/<int:allocation>',
-        not_implemented,
-        name='delete-allocation',
-    ),
+    path('delete-transaction/<int:allocation>', views.DeleteTransaction.as_view(), name='delete-transaction'),
     path('receipt/<int:allocation>/<int:enrolment_id>', not_implemented, name='receipt'),
 ]

@@ -123,6 +123,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         )
         amendment_options['any'] = any(amendment_options.values())
         context['amendment_options'] = amendment_options
+        context['payment_disabled'] = not self.object.ledger_set.cash().uninvoiced().exists()
         return context
 
 

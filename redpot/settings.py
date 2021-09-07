@@ -358,6 +358,17 @@ CKEDITOR_CONFIGS = {
                 'a[*](*)',
             ]
         ),
-    }
-    # todo: notification field toolbar (legacy redpot's custom_link_editor.js)
+    },
+    'links_only': {
+        'toolbar': 'custom',
+        'toolbar_custom': [
+            ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord'],
+            ['Undo', 'Redo'],
+            ['Scayt'],
+            ['Link', 'Unlink', 'Anchor'],
+            ['SpecialChar'],
+            ['Source'],
+        ],
+        'extraPlugins': 'wordcount',
+    },
 }

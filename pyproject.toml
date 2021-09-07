@@ -16,3 +16,12 @@ line-length = 119
 target-version = ['py37']
 skip-string-normalization = true
 force-exclude = 'migrations'  # ensures migrations ignored even during pre-commit hooks
+
+[tool.mypy]
+plugins = ['mypy_django_plugin.main']
+ignore_missing_imports = true
+exclude = '(migrations|tests|automodels.py)'
+check_untyped_defs = true
+
+[tool.django-stubs]
+django_settings_module = "redpot.settings"

@@ -4,9 +4,14 @@ from urllib.parse import urlencode
 from dateutil.relativedelta import relativedelta
 from django_tables2.views import SingleTableMixin
 
+from django import http
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core import mail
+from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_list_or_404, get_object_or_404, redirect
 from django.urls import reverse
@@ -223,3 +228,34 @@ class Transfer(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.
 
     def get_success_url(self):
         return self.source_enrolment.get_absolute_url()
+
+
+class DeleteTransaction(LoginRequiredMixin, PageTitleMixin, generic.TemplateView):
+    """Delete a transaction from the ledger (an allocation - both sides of the ledger)
+    Acts like a DeleteView, with get() providing a confirmation form
+    """
+
+    template_name = 'core/delete_form.html'
+    title = 'Finance'
+    subtitle = 'Delete transaction'
+
+    @transaction.atomic
+    def post(self, request: http.HttpRequest, allocation: int, *args, **kwargs) -> http.HttpResponse:
+        ledger_items = models.Ledger.objects.filter(allocation=allocation)
+        if not ledger_items.exists():
+            raise http.Http404
+        if not ledger_items[0].user_can_delete(user=request.user):
+            # Check permission to delete against one of the items (they will all have the same timestamp info)
+            raise PermissionDenied("You don't have permission to delete this transaction")
+        # dump the logging data before deletion
+        data = [item.__dict__ for item in ledger_items]
+        ledger_items.delete()
+        # todo: consider a better form of logging this
+        mail.send_mail(
+            subject='Deleted ledger rows',
+            from_email=settings.SUPPORT_EMAIL,
+            recipient_list=[settings.SUPPORT_EMAIL],
+            message=f'User {request.user.username} deleted rows with the following data: {data}',
+        )
+        messages.success(request, 'Transaction deleted')
+        return redirect(next_url_if_safe(request) or '')
