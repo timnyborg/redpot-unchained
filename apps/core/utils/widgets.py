@@ -101,3 +101,19 @@ class ToggleWidget(widgets.CheckboxInput):
         """
         _data-on':'Non-credit', '_data-off':'For credit    ', '_data-offstyle':'success', '_data-onstyle':'warning'}
         """
+
+
+class DatalistTextInput(widgets.TextInput):
+    """Text input with pre-defined selections (a datalist).  Takes a list of options"""
+
+    template_name = 'widgets/datalist_text_input.html'
+
+    def __init__(self, options: list, attrs=None):
+        self.options = options
+        super().__init__(attrs)
+
+    def get_context(self, name, value, attrs) -> dict:
+        context = super().get_context(name, value, attrs)
+        context['widget']['attrs']['list'] = f'datalist_{name}'
+        context['widget']['options'] = self.options
+        return context

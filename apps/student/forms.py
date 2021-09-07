@@ -59,6 +59,7 @@ class EditForm(SITSLockingFormMixin, forms.ModelForm):
             'note',
         ]
         widgets = {
+            'title': widgets.DatalistTextInput(options=['Miss', 'Mr', 'Mrs', 'Ms', 'Mx', 'Dr', 'Prof', 'Rev', 'Fr']),
             'gender': forms.RadioSelect(attrs={'div_class': 'radio-inline'}),
             'is_eu': forms.RadioSelect(
                 attrs={'div_class': 'radio-inline'},
