@@ -17,6 +17,12 @@ NOT_KNOWN_RELIGION = 99
 
 
 class Student(SignatureModel):
+    class Genders(models.TextChoices):
+        MALE = ('M', 'Male')
+        FEMALE = ('F', 'Female')
+        OTHER = ('I', 'Other')
+        UNKNOWN = ('', 'Unknown')
+
     husid = models.BigIntegerField(blank=True, null=True, verbose_name='HUSID')
     surname = models.CharField(max_length=40)
     firstname = models.CharField(max_length=40)
@@ -24,7 +30,7 @@ class Student(SignatureModel):
     middlename = models.CharField(max_length=40, blank=True, null=True)
     nickname = models.CharField(max_length=64, blank=True, null=True)
     birthdate = models.DateField(blank=True, null=True)
-    gender = models.CharField(max_length=1, blank=True, null=True)
+    gender = models.CharField(max_length=1, blank=True, null=True, choices=Genders.choices)
     domicile = models.ForeignKey('Domicile', models.DO_NOTHING, db_column='domicile', default=NOT_KNOWN_DOMICILE)
     nationality = models.ForeignKey(
         'Nationality', models.DO_NOTHING, db_column='nationality', default=NOT_KNOWN_NATIONALITY
