@@ -77,3 +77,27 @@ class ReadOnlyModelWidget(widgets.Widget):
             <input type="hidden" name="{name}" value="{value}">
             <div class='form-control-static form-control-plaintext'>{text}</div>
         """
+
+
+class ToggleWidget(widgets.CheckboxInput):
+    """A checkbox widget using the bootstraptoggle library"""
+
+    base_attrs = {
+        'togglewidget': True,  # Hack to override checkbox layout in bootstrap3_form.html.  todo: coherent approach
+        'data-toggle': 'toggle',
+        'data-on': 'On',
+        'data-off': 'Off',
+        'data-onstyle': "success",
+        'data-offstyle': "warning",
+    }
+
+    class Media:
+        css = {'all': ('https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css',)}
+        js = ('https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js', 'actions.js')
+
+    def __init__(self, attrs=None, check_test=None):
+        attrs = {**self.base_attrs, **(attrs or {})}
+        super().__init__(attrs, check_test)
+        """
+        _data-on':'Non-credit', '_data-off':'For credit    ', '_data-offstyle':'success', '_data-onstyle':'warning'}
+        """
