@@ -74,7 +74,7 @@ class Ledger(SignatureModel):
         db_table = 'ledger'
 
     def get_delete_url(self) -> str:
-        return reverse('finance:delete-allocation', kwargs={'allocation': self.allocation})
+        return reverse('finance:delete-transaction', kwargs={'allocation': self.allocation})
 
     def user_can_delete(self, *, user: User) -> bool:
         """Determine if a user is allowed to remove an entry from the ledger"""
