@@ -20,6 +20,7 @@ def load_fixture(apps, schema_editor):
     call_command('loaddata', 'payment_plan_type.yaml')
     call_command('loaddata', 'portfolio.yaml')
     call_command('loaddata', 'qualification.yaml')
+    call_command('loaddata', 'religion.yaml')
     call_command('loaddata', 'study_location.yaml')
     call_command('loaddata', 'transaction_type.yaml')
     call_command('loaddata', 'tutor_fee_type.yaml')
@@ -39,7 +40,7 @@ class Migration(migrations.Migration):
         ('finance', '0001_initial'),
         ('invoice', '0001_initial'),
         ('qualification_aim', '0001_initial'),
-        ('student', '0006_auto_20210722_1228'),
+        ('student', '0012_auto_20210907_2208'),
     ]
 
     operations = [migrations.RunPython(load_fixture)]
