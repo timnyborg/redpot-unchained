@@ -28,6 +28,22 @@
             {% endfor %}
             <p class="help-block">{{ field.help_text }}</p>
 		</div>
+	{% elif field.field.widget.input_type == 'radio' %}
+		<label class="col-sm-2 control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+		<div class="col-sm-10 ">
+            {# todo: this can be cleaned up in django 4, where uls are replaced by divs #}
+            {% for choice in field  %}
+                <div class="{{ field.field.widget.attrs.div_class|default:'radio' }}">
+                    {{ choice }}
+                </div>
+            {% endfor %}
+			{% for error in field.errors %}
+			  <span class="help-block">
+				{{ error }}
+			  </span>
+		      {% endfor %}
+			<p class="help-block">{{ field.help_text }}</p>
+		</div>
 	{% else %}
 		<label class="col-sm-2 control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
 		<div class="col-sm-10 ">
