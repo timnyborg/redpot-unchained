@@ -81,9 +81,7 @@ class SITSLockingModelMixin:
     def locked_fields(self) -> set[str]:
         """List which fields are locked for editing
 
-        Useful in model forms, which can dynamically lock fields in __init__ with:
-        for field in self.instance.locked_fields.intersection(self.fields):
-            self.fields[field].disabled = True
+        Useful in model forms, which can dynamically lock fields using SITSLockingFormMixin
         """
         return set(self.sits_managed_fields) if self.is_sits_record else set()
 

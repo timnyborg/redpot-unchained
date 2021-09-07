@@ -1,6 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
+from apps.core.utils.forms import SITSLockingFormMixin
+
 from . import models
 
 
@@ -16,7 +18,7 @@ class CreateForm(forms.ModelForm):
             raise ValidationError({'entry_qualification': "Required.  Choose 'Not known' if unknown"})
 
 
-class EditForm(forms.ModelForm):
+class EditForm(SITSLockingFormMixin, forms.ModelForm):
     # Todo: permissions-based field access
     class Meta:
         model = models.QualificationAim
@@ -28,12 +30,6 @@ class EditForm(forms.ModelForm):
             'reason_for_ending',
             'sits_code',
         )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Disable any SITS-managed fields
-        for field in self.instance.locked_fields.intersection(self.fields):
-            self.fields[field].disabled = True
 
 
 class CertHEMarksForm(forms.ModelForm):

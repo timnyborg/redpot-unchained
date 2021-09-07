@@ -8,6 +8,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from apps.core.utils import widgets
+from apps.core.utils.forms import SITSLockingFormMixin
 
 from . import models
 
@@ -28,7 +29,7 @@ class CreatePersonSearchForm(forms.ModelForm):
         fields = ['surname', 'firstname', 'birthdate', 'email']
 
 
-class EditForm(forms.ModelForm):
+class EditForm(SITSLockingFormMixin, forms.ModelForm):
     class Meta:
         model = models.Student
         fields = [
@@ -67,11 +68,6 @@ class EditForm(forms.ModelForm):
             'note': forms.Textarea(),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.instance.locked_fields.intersection(self.fields):
-            self.fields[field].disabled = True
-
     def clean_birthdate(self) -> None:
         """Prevent ages < 12 (arbitrary) to avoid common data entry errors (current date, 2067 instead of 1967, etc."""
         birthdate = self.cleaned_data['birthdate']
@@ -79,7 +75,7 @@ class EditForm(forms.ModelForm):
             raise ValidationError({'birthdate': 'Must be a bit older than that!'})
 
 
-class AddressForm(forms.ModelForm):
+class AddressForm(SITSLockingFormMixin, forms.ModelForm):
     country = forms.ModelChoiceField(
         queryset=models.Domicile.objects.all(),
         limit_choices_to={'is_active': True},
@@ -105,9 +101,6 @@ class AddressForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Disable any SITS-managed fields
-        for field in self.instance.locked_fields.intersection(self.fields):
-            self.fields[field].disabled = True
         # Unsetting 'is_default' doesn't make sense as an action
         if self.instance.is_default:
             del self.fields['is_default']
