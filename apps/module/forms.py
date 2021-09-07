@@ -1,9 +1,11 @@
+from ckeditor.widgets import CKEditorWidget
 from dal import autocomplete
 from django_select2.forms import Select2MultipleWidget, Select2Widget
 
 from django import forms
 from django.core import exceptions
 from django.forms import fields
+from django.forms.widgets import Textarea
 
 from apps.core.utils import widgets
 from apps.hesa.models import ModuleHECoSSubject
@@ -11,23 +13,130 @@ from apps.programme.models import ProgrammeModule
 
 from . import models
 
+HTML_FIELDS = [
+    'overview',
+    'accommodation',
+    'how_to_apply',
+    'assessment_methods',
+    'certification',
+    'course_aims',
+    'level_and_demands',
+    'libraries',
+    'payment',
+    'programme_details',
+    'recommended_reading',
+    'scholarships',
+    'snippet',
+    'teaching_methods',
+    'teaching_outcomes',
+    'selection_criteria',
+    'it_requirements',
+    'further_details',
+]
+DATE_FIELDS = [
+    'start_date',
+    'end_date',
+    'open_date',
+    'publish_date',
+    'unpublish_date',
+    'michaelmas_end',
+    'hilary_start',
+]
+
 
 class EditForm(forms.ModelForm):  # noqa: DJ06
     # todo: replace exclude
     class Meta:
         model = models.Module
-        exclude = ['payment_plans']
+        fields = [
+            'code',
+            'title',
+            'url',
+            'division',
+            'portfolio',
+            'format',
+            'phone',
+            'email',
+            'subjects',
+            'marketing_types',
+            'non_credit_bearing',
+            'default_non_credit',
+            'start_date',
+            'half_term',
+            'end_date',
+            'start_time',
+            'end_time',
+            'meeting_time',
+            'open_date',
+            'closed_date',
+            'publish_date',
+            'unpublish_date',
+            'location',
+            'max_size',
+            'single_places',
+            'twin_places',
+            'address',
+            'no_meetings',
+            'week_number',
+            'cost_centre',
+            'activity_code',
+            'source_of_funds',
+            'custom_fee',
+            'snippet',
+            'notification',
+            'overview',
+            'programme_details',
+            'selection_criteria',
+            'course_aims',
+            'certification',
+            'assessment_methods',
+            'it_requirements',
+            'level_and_demands',
+            'recommended_reading',
+            'teaching_methods',
+            'teaching_outcomes',
+            'accommodation',
+            'payment',
+            'scholarships',
+            'how_to_apply',
+            'further_details',
+            'terms_and_conditions',
+            'enrol_online',
+            'apply_url',
+            'no_search',
+            'mailing_list',
+            'image',
+            'credit_points',
+            'points_level',
+            'note',
+            'direct_enrolment',
+        ]
         widgets = {
-            'start_date': widgets.DatePickerInput(),
-            'end_date': widgets.DatePickerInput(),
-            'open_date': widgets.DatePickerInput(),
-            'closed_date': widgets.DatePickerInput(),
-            'publish_date': widgets.DatePickerInput(),
-            'unpublish_date': widgets.DatePickerInput(),
-            'michaelmas_end': widgets.DatePickerInput(),
-            'hilary_start': widgets.DatePickerInput(),
+            'closed_date': widgets.DateTimePickerInput(),
             'subjects': Select2MultipleWidget(),
             'marketing_types': Select2MultipleWidget(),
+            'non_credit_bearing': widgets.ToggleWidget(
+                attrs={
+                    'data-on': 'Non-credit',
+                    'data-off': 'For credit',
+                    'data-onstyle': 'warning',
+                    'data-offstyle': 'success',
+                }
+            ),
+            'default_non_credit': widgets.ToggleWidget(
+                attrs={
+                    'data-on': 'Non-credit',
+                    'data-off': 'For credit',
+                    'data-offstyle': 'success',
+                    'data-onstyle': 'warning',
+                }
+            ),
+            'enrol_online': widgets.ToggleWidget(attrs={'data-on': 'Allowed', 'data-off': 'Not allowed'}),
+            'direct_enrolment': widgets.ToggleWidget(attrs={'data-on': 'Allowed', 'data-off': 'Not allowed'}),
+            'note': Textarea(),
+            'notification': CKEditorWidget(config_name='links_only'),
+            **{field: CKEditorWidget() for field in HTML_FIELDS},
+            **{field: widgets.DatePickerInput() for field in DATE_FIELDS},
         }
 
     def __init__(self, *args, **kwargs):

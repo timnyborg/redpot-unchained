@@ -36,7 +36,7 @@ class ModuleManager(models.Manager):
     defer_fields = [
         'overview',
         'accommodation',
-        'application',
+        'how_to_apply',
         'assessment_methods',
         'certification',
         'course_aims',
@@ -66,7 +66,13 @@ class Module(SignatureModel):
         unique=True,
     )
     title = models.CharField(max_length=80)
-    url = models.SlugField(max_length=256, blank=True, null=True)
+    url = models.SlugField(
+        max_length=256,
+        blank=True,
+        null=True,
+        verbose_name='URL',
+        help_text='Leave empty to automatically generate from the title',
+    )
 
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
@@ -97,12 +103,13 @@ class Module(SignatureModel):
     closed_date = models.DateTimeField(blank=True, null=True)
     unpublish_date = models.DateField(blank=True, null=True)
 
-    single_places = models.IntegerField(blank=True, null=True)
-    twin_places = models.IntegerField(blank=True, null=True)
-    double_places = models.IntegerField(blank=True, null=True)
+    single_places = models.IntegerField(blank=True, null=True, verbose_name='Single rooms')
+    twin_places = models.IntegerField(blank=True, null=True, verbose_name='Twin rooms')
     location = models.ForeignKey('Location', models.DO_NOTHING, db_column='location', blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
-    meeting_time = models.CharField(max_length=32, blank=True, null=True)
+    meeting_time = models.CharField(
+        max_length=32, blank=True, null=True, verbose_name='Optional. It is better to provide start and end times'
+    )
     duration = models.FloatField(blank=True, null=True)
     no_meetings = models.IntegerField(blank=True, null=True)
 
@@ -125,26 +132,44 @@ class Module(SignatureModel):
     payment = models.TextField(blank=True, null=True)
     programme_details = models.TextField(blank=True, null=True)
     recommended_reading = models.TextField(blank=True, null=True)
-    scholarships = models.TextField(blank=True, null=True)
-    snippet = models.CharField(max_length=512, blank=True, null=True)
+    scholarships = models.TextField(blank=True, null=True, verbose_name='Funding')
+    snippet = models.CharField(
+        max_length=255, blank=True, null=True, help_text='Used in cards and search results. Maximum 255 characters'
+    )
     teaching_methods = models.TextField(blank=True, null=True)
-    teaching_outcomes = models.TextField(blank=True, null=True)
-    selection_criteria = models.TextField(blank=True, null=True)
+    teaching_outcomes = models.TextField(blank=True, null=True, verbose_name='Learning outcomes')
+    selection_criteria = models.TextField(blank=True, null=True, verbose_name='Entry requirements')
     it_requirements = models.TextField(blank=True, null=True)
     credit_points = models.IntegerField(blank=True, null=True)
     points_level = models.IntegerField(blank=True, null=True)
-    enrol_online = models.BooleanField(blank=True, null=True)
-    non_credit_bearing = models.BooleanField(default=True)
+    enrol_online = models.BooleanField(blank=True, null=True, verbose_name='Online enrolment')
+    non_credit_bearing = models.BooleanField(default=True, verbose_name='Credit bearing')
     auto_feedback = models.BooleanField(default=True)
     auto_reminder = models.BooleanField(default=True)
-    no_search = models.BooleanField(default=False)
-    week_number = models.IntegerField(blank=True, null=True)
+    no_search = models.BooleanField(default=False, verbose_name='Hide from search results')
+    week_number = models.IntegerField(blank=True, null=True, help_text='For multi-week summer schools')
 
-    custom_fee = models.CharField(max_length=1012, blank=True, null=True)
-    format = models.ForeignKey('ModuleFormat', models.DO_NOTHING, db_column='format', blank=True, null=True)
+    custom_fee = models.CharField(
+        max_length=1012,
+        blank=True,
+        null=True,
+        help_text='Only used in the course summary box (replaces the automatic fees section on the website)',
+    )
+    format = models.ForeignKey(
+        'ModuleFormat',
+        models.DO_NOTHING,
+        db_column='format',
+        blank=True,
+        null=True,
+        help_text='Tells the student how they will study',  # todo: help link
+    )
 
     is_cancelled = models.BooleanField(default=False)
-    default_non_credit = models.BooleanField(blank=True, null=True)
+    default_non_credit = models.BooleanField(
+        default=False,
+        verbose_name='Default status',
+        help_text='Online enrolments will have this status by default',
+    )
     note = models.CharField(max_length=512, blank=True, null=True)
     terms_and_conditions = models.IntegerField(default=1)  # placeholder
     # terms_and_conditions = models.ForeignKey(    # noqa: E800
@@ -160,8 +185,18 @@ class Module(SignatureModel):
     room_setup = models.CharField(max_length=12, blank=True, null=True)
 
     mailing_list = models.CharField(max_length=25, blank=True, null=True)
-    notification = models.CharField(max_length=512, blank=True, null=True)
-    cost_centre = models.CharField(max_length=6, blank=True, null=True)
+    notification = models.CharField(
+        max_length=512,
+        blank=True,
+        null=True,
+        help_text='A message that appears atop the page, announcing change of tutor, date, location, etc.',
+    )
+    cost_centre = models.CharField(
+        max_length=6,
+        blank=True,
+        null=True,
+        help_text='Cost centre, activity code and source of funds form the finance code',
+    )
     activity_code = models.CharField(
         max_length=2,
         blank=True,
@@ -179,9 +214,7 @@ class Module(SignatureModel):
     fee_code = models.CharField(max_length=1, blank=True, null=True)
 
     half_term = models.DateField(blank=True, null=True)
-
-    reading_list_url = models.TextField(blank=True, null=True)
-    reading_list_links = models.BooleanField(blank=True, null=True)
+    direct_enrolment = models.BooleanField(default=False)
 
     payment_plans = models.ManyToManyField(
         to='invoice.PaymentPlanType',
@@ -211,7 +244,6 @@ class Module(SignatureModel):
     def save(self, *args, **kwargs):
         if not self.url:
             self.url = slugify(self.title)
-        # todo: setting is_cancelled, auto_publish on cancelled status.  Consider running update_status
         super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
@@ -449,25 +481,15 @@ class Module(SignatureModel):
 
         # Check end_date is equal or later to start_date
         if self.end_date and not self.start_date:
-            raise ValidationError(
-                {
-                    'start_date': 'Please set a start date',
-                }
-            )
+            raise ValidationError({'start_date': 'Please set a start date'})
         elif self.start_date and self.end_date and self.end_date < self.start_date:
-            raise ValidationError(
-                {
-                    'end_date': 'End date cannot be earlier than start date',
-                }
-            )
+            raise ValidationError({'end_date': 'End date cannot be earlier than start date'})
 
         # Check if all components that make up the finance code are supplied, or none
         finance_components = [self.cost_centre, self.activity_code, self.source_of_funds]
         if any(finance_components) and not all(finance_components):
             raise ValidationError(
-                {
-                    'cost_centre': 'Please provide all of cost centre, activity code and source of funds, or none',
-                }
+                {'cost_centre': 'Please provide all of cost centre, activity code and source of funds, or none'}
             )
 
         if not all(finance_components) and self.enrol_online:
