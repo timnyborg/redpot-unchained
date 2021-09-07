@@ -24,6 +24,13 @@ class CreatePersonSearchForm(forms.ModelForm):
         fields = ['surname', 'firstname', 'birthdate', 'email']
 
 
+class EditForm(forms.ModelForm):
+    class Meta:
+        model = models.Student
+        exclude = []
+        widgets = {'gender': forms.RadioSelect(attrs={'div_class': 'radio-inline'})}
+
+
 class AddressForm(forms.ModelForm):
     country = forms.ModelChoiceField(
         queryset=models.Domicile.objects.all(),
