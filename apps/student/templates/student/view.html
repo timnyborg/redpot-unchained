@@ -3,9 +3,6 @@
 {% load tutor_module_tags %}
 {% load render_table from django_tables2 %}
 
-{% block title %}Person{% endblock %}
-{% block subtitle %}View - {{student.firstname}} {{student.surname }}{% endblock %}
-
 {% block right_sidebar %}
 <div class="hidden-xs affix-top" data-spy="affix" data-offset-top="105" id="sidebar">
     <ul class="nav sidenav">
@@ -23,21 +20,21 @@
     {% endif %}
 
     {% if student.is_flagged %}
-    <div class="alert alert-danger" role="alert">
+    <div class="section-alert-header alert-danger" role="alert">
         <span class="fa fa-exclamation-circle"></span>
-        <b>This person has been flagged {{ student.note }}</b>
+        <b>This person has been flagged: {{ student.note }}</b>
     </div>
     {% endif %}
 
     {% if student.deceased %}
-    <div class="alert alert-danger" role="alert">
+    <div class="section-alert-header alert-danger" role="alert">
         <span class="fa fa-exclamation-circle"></span>
         <b>This person is deceased</b>
     </div>
     {% endif %}
 
     {% if suspension and suspension.actual_return_date %}
-    <div class="alert alert-warning" role="alert">
+    <div class="section-alert-header alert-warning" role="alert">
         <span class="fa fa-exclamation-circle"></span>
         <b>This student has suspended their award bearing studies since {{ suspension.start_date }}</b>
     </div>
@@ -51,21 +48,21 @@
             <hr>
             <div class="col-xs-12 col-md-6">
                 <dl class="dl-horizontal">
-                    <dt>Title</dt><dd>{{ student.title }}</dd>
+                    <dt>Title</dt><dd>{{ student.title | default:'–'  }}</dd>
                     <dt>Surname</dt><dd>{{ student.surname }}</dd>
                     <dt>First name</dt><dd>{{ student.firstname }}</dd>
-                    <dt>Middle names</dt><dd>{{ student.middlename }}</dd>
-                    <dt>Nickname</dt><dd>{{ student.nickname }}</dd>
-                    <dt>Birthdate</dt><dd>{{ student.birthdate }}</dd>
-                    <dt>Gender</dt><dd>{{ student.gender }}</dd>
-                    <dt>HESA ID</dt><dd>{{ student.husid }}</dd>
-                    <dt>SITS ID</dt><dd>{{ student.sits_id }}</dd>
+                    <dt>Middle names</dt><dd>{{ student.middlename | default:'–' }}</dd>
+                    <dt>Nickname</dt><dd>{{ student.nickname | default:'–'  }}</dd>
+                    <dt>Birthdate</dt><dd>{{ student.birthdate | default:'–'  }}</dd>
+                    <dt>Gender</dt><dd>{{ student.get_gender_display }}</dd>
+                    <dt>HESA ID</dt><dd>{{ student.husid | default:'–'  }}</dd>
+                    <dt>SITS ID</dt><dd>{{ student.sits_id | default:'–'  }}</dd>
                     <dt>Nationality</dt><dd>{{ student.nationality.name }}</dd>
                     <dt>Domicile</dt><dd>{{ student.domicile.name }}</dd>
                     <dt>Ethnicity</dt><dd>{{ student.ethnicity.name }}</dd>
-                    <dt>Home/EU?</dt><dd>{{ student.is_eu }}</dd>
-                    <dt>Occupation</dt><dd>{{ student.occupation }}</dd>
-                    <dt>Note</dt><dd>{{ student.note }}</dd>
+                    <dt>Home/EU?</dt><dd>{{ student.is_eu | default:'Unknown'  }}</dd>
+                    <dt>Occupation</dt><dd>{{ student.occupation | default:'–'  }}</dd>
+                    <dt>Note</dt><dd>{{ student.note | default:'–' }}</dd>
                     {% if last_merger %}
                     <br>
                     <hr>
@@ -83,8 +80,8 @@
                 <h4>Disability <small><a data-toggle="collapse" href="#collapse-disability"><span class="fa fa-chevron-down"></span></a></small></h4>
                 <dl class="dl-horizontal collapse" id="collapse-disability">
                     <dt>Disability</dt><dd>{{ student.disability.description }}</dd>
-                    <dt>Detail</dt><dd>{{ student.disability_detail }}</dd>
-                    <dt>Action taken</dt><dd>{{ student.disability_action }}</dd>
+                    <dt>Detail</dt><dd>{{ student.disability_detail | default:'–'  }}</dd>
+                    <dt>Action taken</dt><dd>{{ student.disability_action | default:'–'  }}</dd>
                 </dl>
                 <h4>Dietary preferences
                     <small>
@@ -106,15 +103,15 @@
                     <!-- TODO: Create emergency contact page  -->
                     <a href="/edit/{{student.id}}/emergency_contact/{{emergency_contact.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a>
                 </h4>
-                <dl class="dl-horizontal collapse" id="collapse-emergency">
-                    {% if emergency_contact %}
+                {% if emergency_contact %}
+                    <dl class="dl-horizontal collapse" id="collapse-emergency">
                         <dt>Name</dt><dd>{{ emergency_contact.name }}</dd>
                         <dt>Email</dt><dd>{{ emergency_contact.email }}</dd>
                         <dt>Phone</dt><dd>{{ emergency_contact.phone }}</dd>
-                    {% else %}
+                    </dl>
+                {% else %}
                     None
-                    {% endif %}
-                </dl>
+                {% endif %}
                 <hr>
                 <h4>Marketing</h4>
                 <h5>Email</h5>
