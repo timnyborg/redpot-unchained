@@ -67,6 +67,11 @@ class EditForm(forms.ModelForm):
             'note': forms.Textarea(),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.instance.locked_fields.intersection(self.fields):
+            self.fields[field].disabled = True
+
     def clean_birthdate(self) -> None:
         """Prevent ages < 12 (arbitrary) to avoid common data entry errors (current date, 2067 instead of 1967, etc."""
         birthdate = self.cleaned_data['birthdate']

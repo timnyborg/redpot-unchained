@@ -16,7 +16,18 @@ NOT_KNOWN_ETHNICITY = 90
 NOT_KNOWN_RELIGION = 99
 
 
-class Student(SignatureModel):
+class Student(SITSLockingModelMixin, SignatureModel):
+    sits_managed_fields = [
+        'firstname',
+        'surname',
+        'middlename',
+        'gender',
+        'husid',
+        'birthdate',
+        'domicile',
+        'nationality',
+    ]
+
     class Genders(models.TextChoices):
         MALE = ('M', 'Male')
         FEMALE = ('F', 'Female')
@@ -156,6 +167,10 @@ class Student(SignatureModel):
         address.is_default = True
         if save:
             address.save()
+
+    @property
+    def is_sits_record(self) -> bool:
+        return self.sits_id is not None
 
 
 class StudentArchive(SignatureModel):
