@@ -1,9 +1,13 @@
 import re
+from datetime import datetime
 
+from dateutil.relativedelta import relativedelta
 from ukpostcodeutils import validation
 
 from django import forms
 from django.core.exceptions import ValidationError
+
+from apps.core.utils import widgets
 
 from . import models
 
@@ -27,8 +31,47 @@ class CreatePersonSearchForm(forms.ModelForm):
 class EditForm(forms.ModelForm):
     class Meta:
         model = models.Student
-        exclude = []
-        widgets = {'gender': forms.RadioSelect(attrs={'div_class': 'radio-inline'})}
+        fields = [
+            'title',
+            'firstname',
+            'surname',
+            'middlename',
+            'nickname',
+            'birthdate',
+            'gender',
+            'husid',
+            'sits_id',
+            'nationality',
+            'domicile',
+            'ethnicity',
+            'religion_or_belief',
+            'highest_qualification',
+            'is_eu',
+            'termtime_postcode',
+            'disability',
+            'disability_detail',
+            'disability_action',
+            'occupation',
+            'deceased',
+            'dars_optout',
+            'is_flagged',
+            'note',
+        ]
+        widgets = {
+            'gender': forms.RadioSelect(attrs={'div_class': 'radio-inline'}),
+            'is_eu': forms.RadioSelect(
+                attrs={'div_class': 'radio-inline'},
+                choices=((True, 'Yes'), (False, 'No'), (None, 'Unknown')),
+            ),
+            'birthdate': widgets.DatePickerInput(),
+            'note': forms.Textarea(),
+        }
+
+    def clean_birthdate(self) -> None:
+        """Prevent ages < 12 (arbitrary) to avoid common data entry errors (current date, 2067 instead of 1967, etc."""
+        birthdate = self.cleaned_data['birthdate']
+        if birthdate and birthdate > (datetime.today() - relativedelta(years=12)).date():
+            self.add_error('birthdate', 'Must be a bit older than that!')
 
 
 class AddressForm(forms.ModelForm):

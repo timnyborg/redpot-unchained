@@ -181,10 +181,11 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         }
 
 
-class Edit(generic.UpdateView):
+class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
     model = Student
     template_name = 'core/form.html'
     form_class = forms.EditForm
+    success_message = 'Record updated'
 
 
 class MakeTutor(LoginRequiredMixin, generic.View):
