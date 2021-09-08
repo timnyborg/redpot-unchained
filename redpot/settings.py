@@ -210,7 +210,7 @@ LOGGING = {
             "handlers": ["console"],
         },
         'django.db.backends': {
-            "level": env("db_logging_level", default="ERROR"),
+            "level": env("DB_LOGGING_LEVEL", default="ERROR"),
             "handlers": ["console"],
         },
     },
