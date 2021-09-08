@@ -1,10 +1,5 @@
-from datetime import date
-
-from freezegun import freeze_time
-
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from django.test.testcases import SimpleTestCase
 from django.urls import reverse
 
 from apps.core.utils.tests import LoggedInViewTestMixin
@@ -193,28 +188,6 @@ class TestStudentIsNotATutor(TestCase):
         self.assertIsNone(response.context['tutor'])
 
 
-@freeze_time('2020-01-01')
-class TestStudentRTWExpired(SimpleTestCase):
-    def test_expired(self):
-        tutor = TutorFactory.build(rtw_end_date=date(1999, 1, 1))
-        self.assertTrue(tutor.rtw_expired())
-
-    def test_not_expired(self):
-        tutor = TutorFactory.build(rtw_end_date=date(2025, 1, 1))
-        self.assertFalse(tutor.rtw_expired())
-
-
-@freeze_time('2020-01-01')
-class TestStudentRTWExpiresSoon(SimpleTestCase):
-    def test_expiring_soon(self):
-        tutor = TutorFactory.build(rtw_end_date=date(1999, 6, 1))
-        self.assertTrue(tutor.rtw_expires_soon())
-
-    def test_not_expiring_soon(self):
-        tutor = TutorFactory.build(rtw_end_date=date(2025, 1, 1))
-        self.assertFalse(tutor.rtw_expires_soon())
-
-
 class TestStudentModuleTutor(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -289,3 +262,34 @@ class TestCreateAddress(LoggedInViewTestMixin, TestCase):
         self.assertEqual(response.status_code, 302)
         address = models.Address.objects.last()
         self.assertEqual(address.student_id, self.student.id)
+
+
+class TestEditStudent(LoggedInViewTestMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.student = factories.StudentFactory(sits_id=None)
+        cls.url = cls.student.get_edit_url()
+
+    def test_sits_lock(self):
+        self.student.sits_id = 1
+        self.student.save()
+        response = self.client.get(self.get_url())
+        self.assertTrue(response.context['form'].fields['surname'].disabled)
+
+    def test_post(self):
+        response = self.client.post(
+            self.get_url(),
+            data={
+                'surname': 'newsurname',
+                # Unchanged values
+                'firstname': self.student.firstname,
+                'nationality': self.student.nationality_id,
+                'domicile': self.student.domicile_id,
+                'ethnicity': self.student.ethnicity_id,
+                'religion_or_belief': self.student.religion_or_belief_id,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.student.refresh_from_db()
+        self.assertEqual(self.student.surname, 'newsurname')
