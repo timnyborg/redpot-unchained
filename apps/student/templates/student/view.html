@@ -720,7 +720,7 @@
       <button type="submit" class="btn btn-default">Filter by Roles</button>
     </form>
     {% endif %}
-    <div class="pull-right">Showing {{tutor_modules_query.count}} results out of {{tutor_modules.count}}</div>
+    <div class="pull-right">Showing {{tutor_modules_query | length}} results out of {{tutor_modules.count}}</div>
     <br>
     <br>
     <ul class="item-list hide-items" id="tutor-list" data-max-item=4>

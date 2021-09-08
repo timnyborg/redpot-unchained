@@ -265,7 +265,7 @@ class CreatePaymentPlan(
     def get_initial(self):
         return {
             'invoice': self.invoice,
-            'amount': self.invoice.balance(),
+            'amount': self.invoice.balance,
             'type': models.PaymentPlan.CUSTOM_TYPE,
             'status': models.PaymentPlan.CUSTOM_PENDING_STATUS,
         }

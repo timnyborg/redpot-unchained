@@ -153,7 +153,7 @@ def add_payment(
     if not enrolments:
         raise NoValidEnrolmentsError('Invoice has no enrolments')
 
-    total_owing = invoice.balance()
+    total_owing = invoice.balance
 
     allocations: dict[int, Decimal] = {}
     for enr in enrolments:
