@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from . import views
+from . import api, views
 
 app_name = 'student'
 
@@ -21,4 +21,7 @@ urlpatterns = [
     path('view/<int:pk>', views.View.as_view(), name='view'),
     path('email/create/<int:student_id>', views.CreateEmail.as_view(), name='email-create'),
     path('address/', include(address_urls)),
+    # apis
+    path('api/update-address/<int:pk>', api.AddressUpdate.as_view(), name='address-api'),
+    path('api/update-email/<int:pk>', api.EmailUpdate.as_view(), name='email-api'),
 ]
