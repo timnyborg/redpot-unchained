@@ -24,4 +24,5 @@ urlpatterns = [
     # apis
     path('api/update-address/<int:pk>', api.AddressUpdate.as_view(), name='address-api'),
     path('api/update-email/<int:pk>', api.EmailUpdate.as_view(), name='email-api'),
+    path('api/update-phone/<int:pk>', api.PhoneUpdate.as_view(), name='phone-api'),
 ]

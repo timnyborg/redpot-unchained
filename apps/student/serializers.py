@@ -13,3 +13,9 @@ class EmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Email
         fields = ('is_default',)
+
+
+class PhoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Phone
+        fields = ('is_default',)
