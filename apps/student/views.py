@@ -181,6 +181,13 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         }
 
 
+class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+    model = Student
+    template_name = 'core/form.html'
+    form_class = forms.EditForm
+    success_message = 'Record updated'
+
+
 class MakeTutor(LoginRequiredMixin, generic.View):
     """Converts a person into a tutor record"""
 

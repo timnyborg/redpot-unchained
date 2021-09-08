@@ -43,3 +43,11 @@ class TestAddressFlags(test.TestCase):
         self.initial_default.delete()
         new_default.refresh_from_db()
         self.assertTrue(new_default.is_default)
+
+
+class TestStudentModel(test.TestCase):
+    def test_deceased_wipes_marketing_fields(self):
+        student = factories.StudentFactory.build(no_publicity=False, mail_optin=True, email_optin=True)
+        student.deceased = True
+        student.save()
+        self.assertTrue(student.no_publicity and not student.mail_optin and not student.email_optin)

@@ -141,7 +141,7 @@ class HESAReturn:
                 ttaccom=row.termtime_accommodation,
                 ttpcode=_correct_postcode(row.termtime_postcode or row.postcode or ''),
                 ssn=row.ssn,
-                relblf=str(row.religion_or_belief).zfill(2),
+                relblf=str(row.religion_or_belief_id).zfill(2),
             )
 
     def _instance(self) -> None:

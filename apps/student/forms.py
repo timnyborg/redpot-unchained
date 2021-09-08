@@ -1,9 +1,14 @@
 import re
+from datetime import datetime
 
+from dateutil.relativedelta import relativedelta
 from ukpostcodeutils import validation
 
 from django import forms
 from django.core.exceptions import ValidationError
+
+from apps.core.utils import widgets
+from apps.core.utils.forms import SITSLockingFormMixin
 
 from . import models
 
@@ -24,7 +29,54 @@ class CreatePersonSearchForm(forms.ModelForm):
         fields = ['surname', 'firstname', 'birthdate', 'email']
 
 
-class AddressForm(forms.ModelForm):
+class EditForm(SITSLockingFormMixin, forms.ModelForm):
+    class Meta:
+        model = models.Student
+        fields = [
+            'title',
+            'firstname',
+            'surname',
+            'middlename',
+            'nickname',
+            'birthdate',
+            'gender',
+            'husid',
+            'sits_id',
+            'nationality',
+            'domicile',
+            'ethnicity',
+            'religion_or_belief',
+            'highest_qualification',
+            'is_eu',
+            'termtime_postcode',
+            'disability',
+            'disability_detail',
+            'disability_action',
+            'occupation',
+            'deceased',
+            'dars_optout',
+            'is_flagged',
+            'note',
+        ]
+        widgets = {
+            'title': widgets.DatalistTextInput(options=['Miss', 'Mr', 'Mrs', 'Ms', 'Mx', 'Dr', 'Prof', 'Rev', 'Fr']),
+            'gender': forms.RadioSelect(attrs={'div_class': 'radio-inline'}),
+            'is_eu': forms.RadioSelect(
+                attrs={'div_class': 'radio-inline'},
+                choices=((True, 'Yes'), (False, 'No'), (None, 'Unknown')),
+            ),
+            'birthdate': widgets.DatePickerInput(),
+            'note': forms.Textarea(),
+        }
+
+    def clean_birthdate(self) -> None:
+        """Prevent ages < 12 (arbitrary) to avoid common data entry errors (current date, 2067 instead of 1967, etc."""
+        birthdate = self.cleaned_data['birthdate']
+        if birthdate and birthdate > (datetime.today() - relativedelta(years=12)).date():
+            raise ValidationError({'birthdate': 'Must be a bit older than that!'})
+
+
+class AddressForm(SITSLockingFormMixin, forms.ModelForm):
     country = forms.ModelChoiceField(
         queryset=models.Domicile.objects.all(),
         limit_choices_to={'is_active': True},
@@ -50,9 +102,6 @@ class AddressForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Disable any SITS-managed fields
-        for field in self.instance.locked_fields.intersection(self.fields):
-            self.fields[field].disabled = True
         # Unsetting 'is_default' doesn't make sense as an action
         if self.instance.is_default:
             del self.fields['is_default']

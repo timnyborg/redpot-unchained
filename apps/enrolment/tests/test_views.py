@@ -55,7 +55,7 @@ class TestCreateView(LoggedInViewTestMixin, test.TestCase):
                 'nationality': 270,
                 # unchanged values
                 'domicile': self.qa.student.domicile_id,
-                'religion_or_belief': self.qa.student.religion_or_belief,
+                'religion_or_belief': self.qa.student.religion_or_belief_id,
                 'ethnicity': self.qa.student.ethnicity_id,
             },
         )

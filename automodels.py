@@ -369,16 +369,6 @@ class ProposalStatus(models.Model):
         db_table = 'proposal_status'
 
 
-class ReligionOrBelief(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=64, blank=True, null=True)
-    web_publish = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'religion_or_belief'
-
-
 class Room(models.Model):
     id = models.CharField(primary_key=True, max_length=12)
     size = models.IntegerField()

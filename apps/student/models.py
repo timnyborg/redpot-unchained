@@ -16,34 +16,67 @@ NOT_KNOWN_ETHNICITY = 90
 NOT_KNOWN_RELIGION = 99
 
 
-class Student(SignatureModel):
-    husid = models.BigIntegerField(blank=True, null=True, verbose_name='HUSID')
+class Student(SITSLockingModelMixin, SignatureModel):
+    sits_managed_fields = [
+        'firstname',
+        'surname',
+        'middlename',
+        'gender',
+        'husid',
+        'birthdate',
+        'domicile',
+        'nationality',
+    ]
+
+    class Genders(models.TextChoices):
+        MALE = ('M', 'Male')
+        FEMALE = ('F', 'Female')
+        OTHER = ('I', 'Other')
+        UNKNOWN = ('', 'Unknown')
+
+    husid = models.BigIntegerField(blank=True, null=True, verbose_name='HESA ID')
     surname = models.CharField(max_length=40)
-    firstname = models.CharField(max_length=40)
+    firstname = models.CharField(max_length=40, verbose_name='First name')
     title = models.CharField(max_length=20, blank=True, null=True)
-    middlename = models.CharField(max_length=40, blank=True, null=True)
-    nickname = models.CharField(max_length=64, blank=True, null=True)
+    middlename = models.CharField(max_length=40, blank=True, null=True, verbose_name='Middle name(s)')
+    nickname = models.CharField(
+        max_length=64, blank=True, null=True, help_text='If called something other than first name'
+    )
     birthdate = models.DateField(blank=True, null=True)
-    gender = models.CharField(max_length=1, blank=True, null=True)
-    domicile = models.ForeignKey('Domicile', models.DO_NOTHING, db_column='domicile', default=NOT_KNOWN_DOMICILE)
+    gender = models.CharField(max_length=1, blank=True, null=True, choices=Genders.choices)
+    domicile = models.ForeignKey(
+        'Domicile',
+        models.DO_NOTHING,
+        db_column='domicile',
+        default=NOT_KNOWN_DOMICILE,
+        limit_choices_to={'is_active': True},
+    )
     nationality = models.ForeignKey(
-        'Nationality', models.DO_NOTHING, db_column='nationality', default=NOT_KNOWN_NATIONALITY
+        'Nationality',
+        models.DO_NOTHING,
+        db_column='nationality',
+        default=NOT_KNOWN_NATIONALITY,
+        limit_choices_to={'is_active': True},
     )
     ethnicity = models.ForeignKey('Ethnicity', models.DO_NOTHING, db_column='ethnicity', default=NOT_KNOWN_ETHNICITY)
-    religion_or_belief = models.IntegerField(default=99)
+    religion_or_belief = models.ForeignKey(
+        'Religion', models.DO_NOTHING, db_column='religion_or_belief', default=NOT_KNOWN_RELIGION
+    )
     occupation = models.CharField(max_length=128, blank=True, null=True)
     termtime_postcode = models.CharField(max_length=32, blank=True, null=True)
     note = models.CharField(max_length=1024, blank=True, null=True)
     no_publicity = models.BooleanField(blank=True, null=True)
-    is_flagged = models.BooleanField(default=False)
-    is_eu = models.BooleanField(blank=True, null=True)
-    deceased = models.BooleanField(db_column='Deceased', blank=True, null=True)  # Field name made lowercase.
+    is_flagged = models.BooleanField(
+        default=False, verbose_name='Student flagged', help_text="Put details in the 'note' field"
+    )
+    is_eu = models.BooleanField(blank=True, null=True, verbose_name='Home/EU?')
+    deceased = models.BooleanField(db_column='deceased', default=False)
     disability = models.ForeignKey('Disability', models.DO_NOTHING, db_column='disability', null=True, blank=True)
     disability_detail = models.CharField(max_length=2048, blank=True, null=True)
     disability_action = models.CharField(max_length=256, blank=True, null=True)
     dars_optout = models.BooleanField(default=True)
     termtime_accommodation = models.IntegerField(blank=True, null=True)
-    sits_id = models.IntegerField(blank=True, null=True)
+    sits_id = models.IntegerField(blank=True, null=True, verbose_name='SITS ID')
     highest_qualification = models.ForeignKey(
         'qualification_aim.EntryQualification',
         models.DO_NOTHING,
@@ -61,12 +94,31 @@ class Student(SignatureModel):
 
     class Meta:
         db_table = 'student'
+        verbose_name = 'Person'
 
     def __str__(self):
         return f'{self.first_or_nickname} {self.surname}'
 
+    def save(self, *args, **kwargs) -> None:
+        if self.deceased:
+            # Prevent any marketing
+            self.no_publicity = True
+            self.email_optin = False
+            self.email_optin_on = None
+            self.email_optin_method = None
+            self.mail_optin = False
+            self.mail_optin_on = None
+            self.mail_optin_method = None
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self) -> str:
+        return reverse('student-view', args=[self.id])
+
+    def get_edit_url(self):
+        return reverse('student:edit', args=[self.id])
+
     @property
-    def first_or_nickname(self):
+    def first_or_nickname(self) -> str:
         if self.nickname:
             return f'{self.nickname} ({self.firstname})'
         return self.firstname
@@ -80,12 +132,6 @@ class Student(SignatureModel):
             'I': 3,
         }
         return gender_to_sex_map.get(self.gender or '')
-
-    def get_absolute_url(self) -> str:
-        return reverse('student-view', args=[self.id])
-
-    def get_edit_url(self):
-        return reverse('student:edit', args=[self.id])
 
     def get_default_address(self) -> Optional[Address]:
         return self.addresses.default().first()
@@ -121,6 +167,10 @@ class Student(SignatureModel):
         address.is_default = True
         if save:
             address.save()
+
+    @property
+    def is_sits_record(self) -> bool:
+        return self.sits_id is not None
 
 
 class StudentArchive(SignatureModel):
@@ -272,6 +322,7 @@ class OtherIdType(models.Model):
 
 
 class Nationality(models.Model):
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=64)
     is_in_eu = models.BooleanField()
     hesa_code = models.CharField(max_length=8)
@@ -280,12 +331,14 @@ class Nationality(models.Model):
 
     class Meta:
         db_table = 'nationality'
+        ordering = ('sort_order', 'name')
 
     def __str__(self) -> str:
         return str(self.name)
 
 
 class Domicile(models.Model):
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=64)
     is_in_eu = models.BooleanField()
     hesa_code = models.CharField(max_length=8)
@@ -306,25 +359,30 @@ class Domicile(models.Model):
 
 
 class Ethnicity(models.Model):
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=32)
 
     class Meta:
         db_table = 'ethnicity'
+        ordering = ('name',)
+
+    def __str__(self) -> str:
+        return str(self.name)
 
 
-class Disability(models.Model):
+class Disability(SignatureModel):
     description = models.CharField(max_length=64, blank=True, null=True)
-    created_by = models.CharField(max_length=16, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=16, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
     web_publish = models.BooleanField()
     display_order = models.IntegerField(blank=True, null=True)
     custom_description = models.CharField(max_length=64, blank=True, null=True)
 
     class Meta:
         db_table = 'disability'
+        ordering = ('display_order', 'description')
         unique_together = (('id', 'description', 'custom_description'),)
+
+    def __str__(self) -> str:
+        return str(self.custom_description or self.description)
 
 
 class Diet(models.Model):
@@ -387,6 +445,19 @@ class Enquiry(SignatureModel):
 
     class Meta:
         db_table = 'enquiry'
+
+
+class Religion(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=64)
+    web_publish = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'religion_or_belief'
+        ordering = ('name',)
+
+    def __str__(self) -> str:
+        return str(self.name)
 
 
 class Suspension(SignatureModel):

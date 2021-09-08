@@ -28,3 +28,15 @@ class ApproverChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj: models.User) -> str:
         return obj.get_full_name()
+
+
+class SITSLockingFormMixin:
+    """ModelForm mixin which automatically disabled an instance's SITS fields if required"""
+
+    instance: models.SITSLockingModelMixin
+    fields: dict
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.instance.locked_fields.intersection(self.fields):
+            self.fields[field].disabled = True
