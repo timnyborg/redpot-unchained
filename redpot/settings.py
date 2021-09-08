@@ -16,6 +16,7 @@ import environs
 import ldap
 import sentry_sdk
 from django_auth_ldap.config import LDAPSearch
+from marshmallow import validate
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from django.contrib import messages
@@ -32,13 +33,17 @@ SECRET_KEY = env('SECRET_KEY', default=get_random_secret_key())
 DEBUG = env.bool('DEBUG', default=False)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'] if DEBUG else [])
 
+# In production, ensure SESSION_COOKIE_SECURE = True, and enforce https at the reverse-proxy or use SECURE_SSL_REDIRECT
+SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
+
 # Sentry integration
 sentry_sdk.init(
     dsn=env("SENTRY_DSN", default=None),
     integrations=[DjangoIntegration()],
     environment='dev' if DEBUG else 'prod',
     # You may wish to set the sample_rate to 1.0 in dev, but it should be scaled much lower in production
-    traces_sample_rate=env.int("SENTRY_SAMPLE_RATE", default=1),
+    traces_sample_rate=env.float("SENTRY_SAMPLE_RATE", default=1),
     # If you wish to associate users to errors (assuming you are using
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True,
@@ -174,13 +179,15 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",  # To enable groups & permissions
 ]
 
-AUTH_LDAP_SERVER_URI = env('LDAP_HOST', default='')
-AUTH_LDAP_BIND_DN = env('LDAP_BIND_DN', default='%s') % env('LDAP_USER', default='')
+AUTH_LDAP_SERVER_URI = env('LDAP_HOST', default='')  # this can be a comma separated list of URIs
+AUTH_LDAP_BIND_DN = env('LDAP_BIND_DN', default='')
 AUTH_LDAP_BIND_PASSWORD = env('LDAP_PASSWORD', default='')
 AUTH_LDAP_USER_SEARCH = LDAPSearch(env('LDAP_BASE_DN', default=''), ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)")
+AUTH_LDAP_START_TLS = env.bool('LDAP_START_TLS', default=True)
 
 AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
 AUTH_LDAP_ALWAYS_UPDATE_USER = False  # Only populate fields on the first login
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -274,16 +281,20 @@ DATETIME_INPUT_FORMATS = [
 ]
 # Email settings
 EMAIL_HOST = env('EMAIL_HOST', default=None)
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='redpot-support@conted.ox.ac.uk')
-SUPPORT_EMAIL = env('SUPPORT_EMAIL', default='redpot-support@conted.ox.ac.uk')  # custom setting
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='redpot-support@conted.ox.ac.uk', validate=validate.Email())
+SUPPORT_EMAIL = env(
+    'SUPPORT_EMAIL', default='redpot-support@conted.ox.ac.uk', validate=validate.Email()
+)  # custom setting
 
 # custom url settings
-ANALYTICS_URL = env('ANALYTICS_URL', default=None)
+ANALYTICS_URL = env('ANALYTICS_URL', default=None, validate=validate.URL())
 SENTRY_URL = env(
-    'SENTRY_URL', default='https://sentry.io/organizations/university-of-oxford-conted/projects/redpot-unchained/'
+    'SENTRY_URL',
+    default='https://sentry.io/organizations/university-of-oxford-conted/projects/redpot-unchained/',
+    validate=validate.URL(schemes=['https']),
 )
 # hostname used in automated emails sent by celery tasks
-CANONICAL_URL = env('CANONICAL_URL', default='https://redpot-unchained.conted.ox.ac.uk')
+CANONICAL_URL = env('CANONICAL_URL', default='https://redpot-unchained.conted.ox.ac.uk', validate=validate.URL())
 
 # Celery task queue - TODO: get this using the same settings as the cache
 redis_host = env('REDIS_HOST', default='redis')  # Maps to redis host.
@@ -299,9 +310,9 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 
 # Legacy redpot url for cross-app mapping
-W2P_REDPOT_URL = env('W2P_REDPOT_URL', default='https://redpot-staging.conted.ox.ac.uk')
+W2P_REDPOT_URL = env('W2P_REDPOT_URL', default='https://redpot-staging.conted.ox.ac.uk', validate=validate.URL())
 # Website url for outbound linking
-PUBLIC_WEBSITE_URL = env('PUBLIC_WEBSITE_URL', default='https://conted.ox.ac.uk')
+PUBLIC_WEBSITE_URL = env('PUBLIC_WEBSITE_URL', default='https://conted.ox.ac.uk', validate=validate.URL())
 
 # These may be unnecessary if passed into coverage from command line
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
