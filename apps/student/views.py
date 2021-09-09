@@ -106,6 +106,8 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
         exclude = []
         if not self.request.GET.get('email'):
             exclude.append('email_address')
+        if not self.request.GET.get('phone'):
+            exclude.append('phone_number')
         return {'exclude': exclude}
 
 

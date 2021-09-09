@@ -12,7 +12,6 @@ from apps.module.models import Module
 NOT_KNOWN_DOMICILE = 181
 NOT_KNOWN_NATIONALITY = 181
 NOT_KNOWN_ETHNICITY = 90
-# TODO: Make default
 NOT_KNOWN_RELIGION = 99
 
 

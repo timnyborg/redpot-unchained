@@ -43,7 +43,7 @@ sentry_sdk.init(
     integrations=[DjangoIntegration()],
     environment='dev' if DEBUG else 'prod',
     # You may wish to set the sample_rate to 1.0 in dev, but it should be scaled much lower in production
-    traces_sample_rate=env.float("SENTRY_SAMPLE_RATE", default=1),
+    traces_sample_rate=env.float("SENTRY_SAMPLE_RATE", default=0.01),
     # If you wish to associate users to errors (assuming you are using
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True,

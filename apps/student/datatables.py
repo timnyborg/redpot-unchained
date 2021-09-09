@@ -1,3 +1,5 @@
+import re
+
 import django_filters as filters
 import django_tables2 as tables
 
@@ -16,7 +18,7 @@ class SearchFilter(filters.FilterSet):
     contact details, unaccented filtering
     """
 
-    def filter_firstname(self, queryset, field_name, value):
+    def filter_firstname(self, queryset, field_name, value) -> models.QuerySet:
         """Filters on firstname or nickname, accent-insensitive"""
         return queryset.filter(
             models.Q(firstname__unaccent__startswith=value) | models.Q(nickname__unaccent__startswith=value)
@@ -32,12 +34,13 @@ class SearchFilter(filters.FilterSet):
 
     birthdate = filters.DateFilter(label='Birthdate', field_name='birthdate', widget=DatePickerInput())
 
-    def filter_postcode(self, queryset, field_name, value):
+    def filter_postcode(self, queryset, field_name, value) -> models.QuerySet:
         """Finds postcodes starting the same way, while removing spaces from the search and target"""
+        value = re.sub(r'\s+', '', value)
         return queryset.annotate(
             trimmed_postcode=Replace('default_address__postcode', models.Value(' '), models.Value(''))
         ).filter(
-            trimmed_postcode__startswith=value.replace(' ', ''),
+            trimmed_postcode__startswith=value,
         )
 
     postcode = filters.CharFilter(
@@ -45,7 +48,7 @@ class SearchFilter(filters.FilterSet):
         method='filter_postcode',
     )
 
-    def filter_email(self, queryset, field_name, value):
+    def filter_email(self, queryset, field_name, value) -> models.QuerySet:
         """Filters on (any) email address, and adds an extra column for the result table to use"""
         return (
             queryset.filter(email__email__contains=value)
@@ -60,9 +63,22 @@ class SearchFilter(filters.FilterSet):
         method='filter_email',
     )
 
-    # todo: phone filter
+    def filter_phone(self, queryset, field_name, value) -> models.QuerySet:
+        """Filters on (any) phone number, and adds an extra column for the result table to use"""
+        value = re.sub(r'\s+', '', value)
+        return (
+            queryset.annotate(phone_number=models.F('phones__number'))  # for table display
+            .alias(stripped_phone_number=Replace('phones__number', models.Value(' '), models.Value('')))
+            .filter(stripped_phone_number__contains=value)
+            .distinct()
+        )
 
-    def filter_tutors_only(self, queryset, field_name, value):
+    phone = filters.CharFilter(
+        label='Phone',
+        method='filter_phone',
+    )
+
+    def filter_tutors_only(self, queryset, field_name, value) -> models.QuerySet:
         if value:
             return queryset.filter(tutor__id__isnull=False)
         return queryset
@@ -75,7 +91,7 @@ class SearchFilter(filters.FilterSet):
 
     class Meta:
         model = Student
-        fields = ('firstname', 'surname', 'birthdate', 'postcode', 'email')
+        fields = ('firstname', 'surname', 'birthdate', 'postcode', 'phone', 'email', 'tutors_only')
 
 
 class SearchTable(tables.Table):
@@ -85,7 +101,7 @@ class SearchTable(tables.Table):
     class Meta:
         model = Student
         template_name = "django_tables2/bootstrap.html"
-        fields = ("first_or_nickname", "surname", "line1", "postcode", 'email_address', 'husid')
+        fields = ("first_or_nickname", "surname", "line1", "postcode", 'email_address', 'husid', 'phone_number')
         per_page = 10
 
 
