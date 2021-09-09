@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
-from apps.core.utils.tests import LoggedInViewTestMixin
+from apps.core.utils.tests import LoggedInMixin, LoggedInViewTestMixin
 from apps.qualification_aim.tests.factories import QualificationAimFactory
 from apps.tutor.models import Tutor
 from apps.tutor.tests.factories import TutorFactory, TutorModuleFactory
@@ -293,3 +293,24 @@ class TestEditStudent(LoggedInViewTestMixin, TestCase):
         self.assertEqual(response.status_code, 302)
         self.student.refresh_from_db()
         self.assertEqual(self.student.surname, 'newsurname')
+
+
+class TestLookup(LoggedInMixin, TestCase):
+    url = reverse_lazy('student:lookup')
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.student = factories.StudentFactory(sits_id=123, husid=456)
+
+    def test_lookup_by_sits_id(self):
+        response = self.client.post(self.url, data={'sits_id': 123})
+        self.assertRedirects(response, self.student.get_absolute_url())
+
+    def test_lookup_by_husid(self):
+        response = self.client.post(self.url, data={'husid': 456})
+        self.assertRedirects(response, self.student.get_absolute_url())
+
+    def test_failed_lookup(self):
+        response = self.client.post(self.url, data={'husid': 789})
+        self.assertRedirects(response, reverse('student:search'))
