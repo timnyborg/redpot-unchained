@@ -2,8 +2,35 @@
 {% block center %}
     <div class="section">
         <div class="row">
-            <div class="col-xs-12 col-md-8">
+            <div class="col-xs-5">
                 {% include 'core/components/search_form.html' %}
+            </div>
+            <div class="col-xs-2"></div>
+            <div class="col-xs-5">
+                <h4>HESA ID</h4>
+                <form method='POST' action="{% url 'student:lookup' %}" class='form-horizontal'>
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="husid" placeholder="e.g. 2011560123456" class="form-control" required>
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa fa-search"></i> Find
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <h4>SITS ID</h4>
+                <form method='POST' action="{% url 'student:lookup' %}" class='form-horizontal'>
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="sits_id" placeholder="e.g. 1234567" class="form-control" required>
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa fa-search"></i> Find
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

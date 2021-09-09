@@ -122,6 +122,24 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
         return redirect(url)
 
 
+class Lookup(LoginRequiredMixin, generic.View):
+    """Redirects to a student record matching the husid or sits_id
+    When not found, sends the user back to /search
+    """
+
+    def post(self, request) -> http.HttpResponse:
+        husid = request.POST.get('husid')
+        sits_id = request.POST.get('sits_id')
+        try:
+            student = Student.objects.get(
+                Q(husid=husid, husid__isnull=False) | Q(sits_id=sits_id, sits_id__isnull=False)
+            )
+            return redirect(student)
+        except Student.DoesNotExist:
+            messages.error(request, 'Student not found')
+            return redirect('student:search')
+
+
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
     queryset = Student.objects.select_related('nationality', 'domicile', 'diet', 'disability', 'ethnicity')
     template_name = 'student/view.html'
