@@ -155,8 +155,9 @@ class Approve(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableView):
         ).select_related('enrolment__qa__student', 'enrolment__module', 'requested_by', 'type')
 
     def post(self, request, *args, **kwargs) -> http.HttpResponse:
-        ids: list[int] = request.POST.getlist('amendment')
-        update_count = services.approve_amendments(amendment_ids=ids, username=request.user.username)
+        ids: list[str] = request.POST.getlist('amendment')
+        int_ids: list[int] = [int(i) for i in ids if i.isnumeric()]
+        update_count = services.approve_amendments(amendment_ids=int_ids, username=request.user.username)
         if update_count:
             messages.success(request, f'{update_count} requests approved')
         else:

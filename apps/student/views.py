@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
@@ -9,6 +11,7 @@ from django.db import models
 from django.db.models import Prefetch, Q
 from django.forms import Form
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views import generic
 
 from apps.core.utils.views import PageTitleMixin
@@ -101,14 +104,22 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     )
 
     def get_table_kwargs(self):
-        # Can also be used for hiding the merge column based on permissions
-        # Hide the email column unless we search by it
-        exclude = []
-        if not self.request.GET.get('email'):
-            exclude.append('email_address')
-        if not self.request.GET.get('phone'):
-            exclude.append('phone_number')
-        return {'exclude': exclude}
+        # Dynamically hide columns based on search criteria & permissions
+        visibility = {
+            'email_address': self.request.GET.get('email'),
+            'phone_number': self.request.GET.get('phone'),
+            'student': self.request.user.has_perm('student.merge_student'),
+        }
+        return {'exclude': [column for column, visible in visibility.items() if not visible]}
+
+    def post(self, request, *args, **kwargs):
+        ids: list[str] = request.POST.getlist('student')
+        int_ids: list[int] = [int(i) for i in ids if i.isnumeric()]
+        if not Student.objects.filter(id__in=int_ids).exists():
+            messages.error(request, 'No students selected')
+            return redirect(request.get_full_path())
+        url = reverse('student:merge') + '?' + urlencode({'student': int_ids}, doseq=True)
+        return redirect(url)
 
 
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
