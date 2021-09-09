@@ -84,7 +84,7 @@ class Create(LoginRequiredMixin, generic.View):
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     title = 'Person'
     subtitle = 'Search'
-    template_name = 'core/search.html'
+    template_name = 'student/search.html'
 
     table_class = datatables.SearchTable
     filterset_class = datatables.SearchFilter

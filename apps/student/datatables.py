@@ -95,13 +95,23 @@ class SearchFilter(filters.FilterSet):
 
 
 class SearchTable(tables.Table):
+    student = tables.CheckBoxColumn(accessor='id', attrs={'th__input': {'type': 'hidden'}})
     link = ViewLinkColumn('')
     first_or_nickname = tables.Column('First name', order_by='firstname')
 
     class Meta:
         model = Student
         template_name = "django_tables2/bootstrap.html"
-        fields = ("first_or_nickname", "surname", "line1", "postcode", 'email_address', 'husid', 'phone_number')
+        fields = (
+            'student',
+            "first_or_nickname",
+            "surname",
+            "line1",
+            "postcode",
+            'email_address',
+            'husid',
+            'phone_number',
+        )
         per_page = 10
 
 
