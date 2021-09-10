@@ -88,6 +88,7 @@ PROJECT_APPS = [
     'apps.programme',
     'apps.qualification_aim',
     'apps.student',
+    'apps.transcript',
     'apps.tutor',
     'apps.tutor_payment',
     'apps.user',
