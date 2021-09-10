@@ -20,7 +20,7 @@ class PDF(PermissionRequiredMixin, generic.View):
         student = get_object_or_404(Student, pk=student_id)
         enrolments = services.get_enrolments_for_transcript(student=student, level=level)
         address = student.get_default_address()
-        address_lines = postal.format_address(address) if address else []
+        address_lines = postal.FormattedAddress(address) if address else []
         document: str = pdfs.transcript(
             student=student, address_lines=address_lines, enrolments=list(enrolments), level=level, header=header
         )

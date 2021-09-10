@@ -64,7 +64,7 @@ class AddressModel(models.Model):
 
     def get_formatted(self) -> str:
         """Produced a formatted version of the address"""
-        return '\n'.join(postal.format_address(self))
+        return postal.FormattedAddress(self).as_string()
 
 
 class SITSLockingModelMixin:
