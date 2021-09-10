@@ -141,7 +141,7 @@ class Module(SignatureModel):
     selection_criteria = models.TextField(blank=True, null=True, verbose_name='Entry requirements')
     it_requirements = models.TextField(blank=True, null=True)
     credit_points = models.IntegerField(blank=True, null=True)
-    points_level = models.IntegerField(blank=True, null=True)
+    points_level = models.ForeignKey('PointsLevel', models.DO_NOTHING, db_column='points_level', blank=True, null=True)
     enrol_online = models.BooleanField(blank=True, null=True, verbose_name='Online enrolment')
     non_credit_bearing = models.BooleanField(default=True, verbose_name='Credit bearing')
     auto_feedback = models.BooleanField(default=True)
@@ -644,3 +644,14 @@ class ModuleMarketingType(models.Model):
     class Meta:
         db_table = 'module_marketing_type'
         unique_together = (('module', 'marketing_type'),)
+
+
+class PointsLevel(models.Model):
+    """HESA table for the level of credit points provided by a module (UG, Masters, Dphil...) plus a map to FHEQ"""
+
+    id = models.IntegerField(primary_key=True)  # hesa value
+    description = models.CharField(max_length=255)
+    fheq_level = models.IntegerField()
+
+    class Meta:
+        db_table = 'points_level'

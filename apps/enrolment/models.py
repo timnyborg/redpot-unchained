@@ -86,7 +86,9 @@ class Enrolment(SignatureModel):
     def save(self, *args, **kwargs) -> None:
         # Update points awarded if student has 'Passed' and Status is 'Confirmed' or 'Confirmed - retrospective credit'
         self.points_awarded = (
-            self.module.credit_points if self.result == Results.PASSED and self.status in FOR_CREDIT_STATUSES else 0
+            self.module.credit_points
+            if self.result_id == Results.PASSED and self.status_id in FOR_CREDIT_STATUSES
+            else 0
         )
         super().save(*args, **kwargs)
 

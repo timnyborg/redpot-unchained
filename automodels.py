@@ -239,16 +239,6 @@ class PaymentItem(models.Model):
         db_table = 'payment_item'
 
 
-class PointsLevel(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
-    fheq_level = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'points_level'
-
-
 class PolarPostcodes(models.Model):
     no_spaces = models.CharField(primary_key=True, max_length=10)
     quintile = models.SmallIntegerField(blank=True, null=True)
