@@ -409,14 +409,14 @@
             {% if qa_list.qa_certhe %}
             <li><a href="/student/certhe_progress/{{student.id}}" target="_blank">{% icon_text 'CertHE progress report' 'fa-certificate' %}</a></li>
             {% endif %}
-            {% comment %} {{if auth.has_permission('print_transcripts'):}} {% endcomment %}
+            {% if perms.transcript.print %}
             <li class="divider"></li>
             <li class="dropdown-header">Transcripts</li>
-            <li><a href="/student/transcript/{{student.id}}/undergraduate" target="_blank">{% icon_text 'Undergraduate' 'fa-graduation-cap' %}</a></li>
-            <li><a href="/student/transcript/{{student.id}}/undergraduate/True" target="_blank">{% icon_text 'Undergraduate (with header)' 'fa-graduation-cap' %}</a></li>
-            <li><a href="student/transcript/{{student.id}}/postgraduate" target="_blank">{% icon_text 'Postgraduate' 'fa-graduation-cap' %}</a></li>
-            <li><a href="/student/transcript/{{student.id}}/postgraduate/True" target="_blank">{% icon_text 'Postgraduate (with header)' 'fa-graduation-cap' %}</a></li>
-            {% comment %} {% endif %} {% endcomment %}
+            <li><a href="{% url 'transcript:undergraduate' student.id %}" target="_blank">{% icon_text 'Undergraduate' 'fa-graduation-cap' %}</a></li>
+            <li><a href="{% url 'transcript:undergraduate-headed' student.id %}" target="_blank">{% icon_text 'Undergraduate (with header)' 'fa-graduation-cap' %}</a></li>
+            <li><a href="{% url 'transcript:postgraduate' student.id %}" target="_blank">{% icon_text 'Postgraduate' 'fa-graduation-cap' %}</a></li>
+            <li><a href="{% url 'transcript:postgraduate-headed' student.id %}" target="_blank">{% icon_text 'Postgraduate (with header)' 'fa-graduation-cap' %}</a></li>
+            {% endif %}
         </ul>
     </div>
 </div>
