@@ -2,6 +2,7 @@ from datetime import date, datetime
 
 from django.db import models
 from django.urls import reverse
+from django.utils.functional import cached_property
 
 from apps.core.models import AddressModel, SignatureModel
 
@@ -74,6 +75,7 @@ class Invoice(AddressModel, SignatureModel):
     def get_edit_url(self):
         return reverse('invoice:edit', args=[self.id])
 
+    @cached_property
     def balance(self):
         return self.allocated_ledger_items.aggregate(sum=models.Sum('amount'))['sum']
 

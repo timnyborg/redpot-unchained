@@ -1,0 +1,13 @@
+{% load render_table from django_tables2 %}
+{% if table.rows %}
+    <h3>Search results ({{ table.rows|length }})</h3>
+    {% render_table table %}
+{% else %}
+    <div class="empty-state">
+        <span class="fa fa-ban empty-state-icon"></span>
+        <h4>No results found</h4>
+        <h5>
+            Try broadening your query and search again
+        </h5>
+    </div>
+{% endif %}

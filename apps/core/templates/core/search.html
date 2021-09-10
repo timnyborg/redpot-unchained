@@ -1,37 +1,15 @@
 {% extends 'layout.html' %}
-{% load redpot_tags %}
-{% load render_table from django_tables2 %}
-
 {% block center %}
     <div class="section">
         <div class="row">
             <div class="col-xs-12 col-md-8">
-                <form action="" class='form-horizontal'>
-                    {% bootstrap3form filter.form False %}
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            {% bootstrap3submit 'Search' %}
-                        </div>
-                    </div>
-                </form>
+                {% include 'core/components/search_form.html' %}
             </div>
         </div>
     </div>
     {% if request.GET %}
         <div class="section">
-            {% if table.rows %}
-                <h3>Search results ({{ table.rows|length }})</h3>
-                {% render_table table %}
-            {% else %}
-                <div class="empty-state">
-                    <span class="fa fa-ban empty-state-icon"></span>
-                    <h4>No results found</h4>
-                    <h5>
-                        Try broadening your query and search again
-                    </h5>
-                </div>
-            {% endif %}
+            {% include 'core/components/search_results_table.html' %}
         </div>
     {% endif %}
-    {{ filter.form.media }}
 {% endblock %}

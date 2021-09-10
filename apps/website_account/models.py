@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from django.db import models
+from django.utils.functional import cached_property
 
 from apps.core.models import SignatureModel
 
@@ -33,6 +34,7 @@ class WebsiteAccount(SignatureModel):
     def __str__(self) -> str:
         return str(self.username)
 
+    @cached_property
     def last_login(self) -> Optional[datetime]:
         """Returns the max value of field time_stamp from PublicAuthEvent with Logged-in description
         If null then take login created on date"""

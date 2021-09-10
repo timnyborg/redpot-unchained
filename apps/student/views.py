@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
@@ -9,12 +11,12 @@ from django.db import models
 from django.db.models import Prefetch, Q
 from django.forms import Form
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views import generic
 
 from apps.core.utils.views import PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
-from apps.website_account.models import WebsiteAccount
 
 from . import datatables, forms
 from .models import Address, Email, Student, StudentArchive
@@ -85,7 +87,7 @@ class Create(LoginRequiredMixin, generic.View):
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     title = 'Person'
     subtitle = 'Search'
-    template_name = 'core/search.html'
+    template_name = 'student/search.html'
 
     table_class = datatables.SearchTable
     filterset_class = datatables.SearchFilter
@@ -102,16 +104,44 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     )
 
     def get_table_kwargs(self):
-        # Can also be used for hiding the merge column based on permissions
-        # Hide the email column unless we search by it
-        exclude = []
-        if not self.request.GET.get('email'):
-            exclude.append('email_address')
-        return {'exclude': exclude}
+        # Dynamically hide columns based on search criteria & permissions
+        visibility = {
+            'email_address': self.request.GET.get('email'),
+            'phone_number': self.request.GET.get('phone'),
+            'student': self.request.user.has_perm('student.merge_student'),
+        }
+        return {'exclude': [column for column, visible in visibility.items() if not visible]}
+
+    def post(self, request, *args, **kwargs):
+        ids: list[str] = request.POST.getlist('student')
+        int_ids: list[int] = [int(i) for i in ids if i.isnumeric()]
+        if not Student.objects.filter(id__in=int_ids).exists():
+            messages.error(request, 'No students selected')
+            return redirect(request.get_full_path())
+        url = reverse('student:merge') + '?' + urlencode({'student': int_ids}, doseq=True)
+        return redirect(url)
+
+
+class Lookup(LoginRequiredMixin, generic.View):
+    """Redirects to a student record matching the husid or sits_id
+    When not found, sends the user back to /search
+    """
+
+    def post(self, request) -> http.HttpResponse:
+        husid = request.POST.get('husid')
+        sits_id = request.POST.get('sits_id')
+        try:
+            student = Student.objects.get(
+                Q(husid=husid, husid__isnull=False) | Q(sits_id=sits_id, sits_id__isnull=False)
+            )
+            return redirect(student)
+        except Student.DoesNotExist:
+            messages.error(request, 'Student not found')
+            return redirect('student:search')
 
 
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
-    model = Student
+    queryset = Student.objects.select_related('nationality', 'domicile', 'diet', 'disability', 'ethnicity')
     template_name = 'student/view.html'
 
     def get_context_data(self, **kwargs):
@@ -123,7 +153,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         last_merger = StudentArchive.objects.filter(target=self.object.id).last()
         phones = self.object.phones.order_by('-is_default', '-modified_on')
         waitlists = self.object.waitlists.select_related('module').all()
-        website_accounts = WebsiteAccount.objects.filter(student=self.object.id)
+        website_accounts = self.object.website_accounts.all()
         other_ids = self.object.other_ids.all()
         suspension = self.object.suspensions.order_by('-start_date')
         invoices = self.object.get_invoices()
@@ -136,14 +166,22 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         tutor_module_role = self.request.GET.get('tutor_role', '')
         if tutor:
             tutor_activities = tutor.tutor_activities.select_related('activity').order_by('-id')
+            # todo: annotate in the enrolment count, to avoid n+1
             tutor_modules = tutor.tutor_modules.select_related('module').order_by('-module__start_date')
-            tutor_roles = tutor.tutor_modules.values_list('role', flat=True).exclude(role=None).distinct
+            tutor_roles = tutor.tutor_modules.values_list('role', flat=True).exclude(role=None).distinct()
             tutor_modules_query = tutor.tutor_modules.select_related('module').order_by('-module__start_date')
             if tutor_module_role:
                 tutor_modules_query &= tutor_modules_query.filter(role__contains=tutor_module_role)
 
-        qa_list = self.object.qualification_aims.select_related('programme').prefetch_related(
-            Prefetch('enrolments', queryset=Enrolment.objects.filter().order_by('-module__start_date', 'module__code'))
+        qa_list = self.object.qualification_aims.select_related(
+            'programme', 'programme__qualification'
+        ).prefetch_related(
+            Prefetch(
+                'enrolments',
+                queryset=Enrolment.objects.select_related('module', 'status').order_by(
+                    '-module__start_date', 'module__code'
+                ),
+            )
         )
         qa_list.total_enrolments = sum(qa.enrolments.count() for qa in qa_list)
         qa_list.qa_certhe = any(qa.programme.is_certhe for qa in qa_list)

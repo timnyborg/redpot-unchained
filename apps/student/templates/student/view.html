@@ -192,24 +192,26 @@
                         <div class="col-xs-6">
                             <div class="pull-right">
                                 {% if not address.is_billing %}
-                                <a href="#"
-                                class="btn btn-default hide-until-hover"
-                                data-toggle="modal"
-                                data-target="#confirm-billing-address"
-                                data-href="set_billing_address/{{ address.id }}"
-                                >
-                                 Set billing
-                                </a>
+                                    <a
+                                       class="btn btn-default hide-until-hover"
+                                       data-href="{% url 'student:address-api' address.id %}"
+                                       data-api-field="is_billing"
+                                       data-api-value="true"
+                                       data-on-success="reload"
+                                    >
+                                        Set billing
+                                    </a>
                                 {% endif %}
                                 {% if not address.is_default %}
-                                <a href="#"
-                                class="btn btn-default hide-until-hover"
-                                data-toggle="modal"
-                                data-target="#confirm-default-address"
-                                data-href="/set_default_address/{{ address.id }}"
-                                >
-                                Set default
-                                </a>
+                                    <a
+                                       class="btn btn-default hide-until-hover"
+                                       data-href="{% url 'student:address-api' address.id %}"
+                                       data-api-field="is_default"
+                                       data-api-value="true"
+                                       data-on-success="reload"
+                                    >
+                                        Set default
+                                    </a>
                                 {% endif %}
                                 <a data-toggle="tooltip" placement="top" title="Copy address to clipboard" class="btn btn-default copyAddressButton" onclick="copyToClipboardBreakLines('#addressField{{ address.id}}')">
                                     <span class="far fa-copy">
@@ -259,11 +261,12 @@
                 <div class="col-xs-6">
                     <div class="pull-right" style="margin:-7px 0;">
                         {% if not email.is_default %}
-                            <a href="#"
+                            <a
                                class="btn btn-default hide-until-hover"
-                               data-toggle="modal"
-                               data-target="#confirm-default-email"
-                               data-href="set_default_email/{{ email.id }}"
+                               data-href="{% url 'student:email-api' email.id %}"
+                               data-api-field="is_default"
+                               data-api-value="true"
+                               data-on-success="reload"
                             >
                                 Set default
                             </a>
@@ -316,11 +319,12 @@
                 <div class="col-xs-3">
                     <div class="pull-right" style="margin:-7px 0;">
                         {% if not phone.is_default %}
-                            <a href="#"
+                            <a
                                class="btn btn-default hide-until-hover"
-                               data-toggle="modal"
-                               data-target="#confirm-default-phone"
-                               data-href="/set_default_phone/{{phone.id}}"
+                               data-href="{% url 'student:phone-api' phone.id %}"
+                               data-api-field="is_default"
+                               data-api-value="true"
+                               data-on-success="reload"
                             >
                                 Set default
                             </a>
@@ -716,7 +720,7 @@
       <button type="submit" class="btn btn-default">Filter by Roles</button>
     </form>
     {% endif %}
-    <div class="pull-right">Showing {{tutor_modules_query.count}} results out of {{tutor_modules.count}}</div>
+    <div class="pull-right">Showing {{tutor_modules_query | length}} results out of {{tutor_modules.count}}</div>
     <br>
     <br>
     <ul class="item-list hide-items" id="tutor-list" data-max-item=4>
@@ -808,33 +812,62 @@
 
 <!-- TODO : Does this remain here or do we move this elsewhere? -->
 <script>
-  function copyToClipboard(copiedText) {
-      var newDocumentElement = document.createElement("input");
-      document.body.appendChild(newDocumentElement);
-      newDocumentElement.setAttribute('value', copiedText);
-      newDocumentElement.select();
-      document.execCommand("copy");
-      document.body.removeChild(newDocumentElement);
-  }
+    function copyToClipboard(copiedText) {
+        var newDocumentElement = document.createElement("input");
+        document.body.appendChild(newDocumentElement);
+        newDocumentElement.setAttribute('value', copiedText);
+        newDocumentElement.select();
+        document.execCommand("copy");
+        document.body.removeChild(newDocumentElement);
+    }
 
-  function copyToClipboardBreakLines(element) {
-      var text = $(element).clone().text();
-      text = text.replace(/  /g, "");
-      element = $('<textarea>').appendTo('body').val(text).select();
-      document.execCommand('copy');
-      element.remove();
-  }
+    function copyToClipboardBreakLines(element) {
+        var text = $(element).clone().text();
+        text = text.replace(/  /g, "");
+        element = $('<textarea>').appendTo('body').val(text).select();
+        document.execCommand('copy');
+        element.remove();
+    }
 
-  </script>
+</script>
 
-  <script>
+<script>
     // When an expand/collapse icon is pressed, switch it from down to up (or left to right?  Might as well use the same setup)
     $('.collapse').on('shown.bs.collapse', function () {
         $(this).prev().find(".fa-chevron-down").removeClass("fa-chevron-down").addClass("fa-chevron-up");
     }).on('hidden.bs.collapse', function () {
         $(this).prev().find(".fa-chevron-up").removeClass("fa-chevron-up").addClass("fa-chevron-down");
     });
-  </script>
+</script>
 
+<script>
+    // todo: proper generic method
+    function api_update() {
+        const success_actions = {
+            'reload': (data) => {
+                window.location.reload();
+            },
+        }
+        const element = $(this)[0];
+        let val;
+        if (element.type === 'checkbox') {
+            val = $(this).prop('checked')
+        } else {
+            val = $(this).data('api-value');
+        }
+        let data = {};
+        data[$(this).data('api-field')] = val;
+        let url = $(this).data('href');
+        $.ajax({
+            type: "PATCH",
+            headers:{"X-CSRFToken": "{{ csrf_token }}"},
+            url: url,
+            data: data,
+            success: success_actions[$(this).data('on-success')]
+        });
+    }
+
+    $("[data-api-field]").change(api_update).click(api_update);
+</script>
 
 {% endblock %}

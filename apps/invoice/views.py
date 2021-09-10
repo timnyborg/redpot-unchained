@@ -33,14 +33,12 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FormMixin, Fi
     form_class = forms.LookupForm
 
 
-class Lookup(generic.View):
+class Lookup(LoginRequiredMixin, generic.View):
     """Redirects to an invoice matching `number` with or without EQ prefix.
     When not found, sends the user back to /search
     """
 
-    http_method_names = ['post']
-
-    def post(self, request):
+    def post(self, request) -> http.HttpResponse:
         try:
             # Extract the invoice number, ignoring the prefix and any trailing whitespace
             match = re.fullmatch(r'[A-z]{0,2}(\d+)\s*', request.POST['number'])
@@ -48,11 +46,10 @@ class Lookup(generic.View):
                 raise models.Invoice.DoesNotExist()
             invoice_number = match.group(1)
             invoice = models.Invoice.objects.get(number=invoice_number)
+            return redirect(invoice)
         except models.Invoice.DoesNotExist:
             messages.error(request, 'Invoice not found')
-            return redirect(reverse('invoice:search'))
-        else:
-            return redirect(invoice.get_absolute_url())
+            return redirect('invoice:search')
 
 
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
@@ -265,7 +262,7 @@ class CreatePaymentPlan(
     def get_initial(self):
         return {
             'invoice': self.invoice,
-            'amount': self.invoice.balance(),
+            'amount': self.invoice.balance,
             'type': models.PaymentPlan.CUSTOM_TYPE,
             'status': models.PaymentPlan.CUSTOM_PENDING_STATUS,
         }
