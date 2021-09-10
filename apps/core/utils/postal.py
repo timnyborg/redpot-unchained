@@ -152,7 +152,7 @@ ADDRESS_FORMATS = {
 
 def format_address(address: AddressModel) -> list[str]:
     """Takes a dictionary (or Row) and produces a list based on the country's correct mailing format"""
-    # todo: consider a parent class for invoice & address that allows them to share field defs
+    # todo: turn into a class with methods to return a list or \n-separated string
     # Find an entry in the format dictionary that contains the address' country, and get the format
 
     format_ = next(

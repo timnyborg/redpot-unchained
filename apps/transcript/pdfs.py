@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from datetime import datetime
 from itertools import cycle
 
-from apps.core.utils import postal, strings
+from apps.core.utils import strings
 from apps.core.utils.legacy.fpdf import ContedPDF
 from apps.enrolment.models import Enrolment
 from apps.student.models import Student
@@ -49,7 +51,7 @@ class TranscriptPDF(ContedPDF):
         self.cell(0, 3, 'Page %s/{nb}' % self.page_no(), align='R')
 
     cats_text = {
-        'pg': (
+        'postgraduate': (
             'CATS points are credit points as defined under the nationally-recognised Credit Accumulation and '
             'Transfer Scheme. '
             'CATS points at FHEQ Level 7 are awarded for work of a standard equivalent to that expected of students '
@@ -57,7 +59,7 @@ class TranscriptPDF(ContedPDF):
             'Two CATS points are equivalent to one ECTS credit.'
             '(180 CATS points at FHEQ Level 7 is equivalent to a Masters degree)'
         ),
-        'ug': (
+        'undergraduate': (
             'CATS points are credit points as defined under the nationally recognised Credit Accumulation and '
             'Transfer Scheme. '
             'You may be able to transfer these credit points to other higher education institutions.  '
@@ -69,46 +71,25 @@ class TranscriptPDF(ContedPDF):
     }
 
 
-def transcript_pdf(*, student: Student, level: str, header: bool, update: bool = False) -> str:
+def transcript(
+    *,
+    student: Student,
+    address_lines: list[str],
+    enrolments: list[Enrolment],
+    level: str,
+    header: bool,
+) -> str:
     """Legacy routine: produces a transcript of all credit at a given level
-    level takes 'ug' and 'pg' for undergraduate and postgraduate
+    level takes 'undergraduate' and 'postgraduate' for undergraduate and postgraduate
     """
 
-    address = student.get_default_address()
-
-    # todo: columns instead of ids for levels, enrolment_status, etc.
-    level_map = {
-        'ug': [61],
-        'pg': [62, 63],
-    }
-
-    # todo: this should be refactored out, into a service (get_enrolments_for_transcript)
-    enrolments = (
-        Enrolment.objects.filter(
-            qa__student=student,
-            status_id__in=(10, 11),  # confirmed for credit
-            result_id__in=('A', '1'),  # Passed.  'A' is historical
-            qa__programme__qualification_id__in=level_map[level],
-            points_awarded__gt=0,
-        )
-        .exclude(
-            module__start_date__isnull=True,  # Filter out old incomplete records
-        )
-        .exclude(
-            module__end_date__isnull=True,  # Filter out old incomplete records
-        )
-        .select_related('module', 'module__points_level')
-        .order_by('-module__start_date', 'module__code')
-    )
-
-    # Instantiation of inherited class
     pdf = TranscriptPDF(print_header=header, level=level)
 
     pdf.set_font('', 'B', 12)
     name = f"{student.title or ''} {student.firstname} {student.surname}".strip()
     pdf.cell(30, 4, name, ln=1)
 
-    pdf.address_block(postal.format_address(address) if address else '')
+    pdf.address_block(address_lines)
 
     pdf.ln(-8)
     pdf.set_font('', 'B', 10)
@@ -156,7 +137,7 @@ def transcript_pdf(*, student: Student, level: str, header: bool, update: bool =
             data=[
                 enrolment.module.code,
                 enrolment.module.title,
-                str(enrolment.mark or '') if level == 'PG' else 'Passed',
+                str(enrolment.mark or '') if level == 'postgraduate' else 'Passed',
                 str(enrolment.module.points_level.fheq_level),
                 enrolment.module.start_date.strftime(DATE_FORMAT),
                 enrolment.module.end_date.strftime(DATE_FORMAT),
@@ -165,13 +146,6 @@ def transcript_pdf(*, student: Student, level: str, header: bool, update: bool =
             draw_border=False,
             fill=next(fill),
         )
-
-        # Update transcript print date - we don't want to do this in a batch printing,
-        # which will do the whole set at the end
-        # todo: this should be refactored out, into the view or a service
-        if update:
-            enrolment.transcript_date = datetime.now()
-            enrolment.save()
 
     pdf.set_widths([130, 25, 15])
     pdf.improved_multi_cell_table(
