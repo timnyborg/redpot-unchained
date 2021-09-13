@@ -3,14 +3,28 @@ from __future__ import annotations
 from datetime import datetime
 from itertools import cycle
 
-from apps.core.utils import strings
+from apps.core.utils import postal, strings
 from apps.core.utils.legacy.fpdf import ContedPDF
 from apps.enrolment.models import Enrolment
 from apps.student.models import Student
+from apps.transcript import services
 
 DATE_FORMAT = '%-d %b %Y'
 
 # Todo: convert to weasyprint
+
+
+def create_transcript(*, header: bool, level: str, student: Student, mark_printed: str = False) -> str:
+    enrolments = services.get_enrolments_for_transcript(student=student, level=level)
+    if mark_printed:
+        enrolments.filter(transcript_date__isnull=True).update(transcript_date=datetime.now())
+
+    address = student.get_default_address()
+    address_lines = postal.FormattedAddress(address) if address else []
+    document: str = _render_transcript(
+        student=student, address_lines=address_lines, enrolments=list(enrolments), level=level, header=header
+    )
+    return document
 
 
 class TranscriptPDF(ContedPDF):
@@ -71,7 +85,7 @@ class TranscriptPDF(ContedPDF):
     }
 
 
-def transcript(
+def _render_transcript(
     *,
     student: Student,
     address_lines: list[str],

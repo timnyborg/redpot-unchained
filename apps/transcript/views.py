@@ -1,30 +1,23 @@
-from datetime import datetime
-
 from django import http
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.views import generic
 
-from apps.core.utils import postal, strings
+from apps.core.utils import strings
+from apps.core.utils.views import PageTitleMixin
 from apps.student.models import Student
 
-from . import pdfs, services
+from . import forms, pdfs, tasks
 
 
 class PDF(PermissionRequiredMixin, generic.View):
-    """Generate a"""
+    """Generate a transcript for a single student"""
 
     permission_required = 'transcript.print'
 
     def get(self, request, student_id: int, level: str, header: bool = False, *args, **kwargs):
         student = get_object_or_404(Student, pk=student_id)
-        enrolments = services.get_enrolments_for_transcript(student=student, level=level)
-        address = student.get_default_address()
-        address_lines = postal.FormattedAddress(address) if address else []
-        document: str = pdfs.transcript(
-            student=student, address_lines=address_lines, enrolments=list(enrolments), level=level, header=header
-        )
-        enrolments.filter(transcript_date__isnull=True).update(transcript_date=datetime.now())
+        document = pdfs.create_transcript(header=header, level=level, student=student)
 
         filename = strings.normalize(f'Transcript_{level}_{student.firstname}_{student.surname}.pdf').replace(' ', '_')
         return http.HttpResponse(
