@@ -1,6 +1,6 @@
 # Todo: put this somewhere sensible
 import re
-from io import BytesIO as StringIO
+from io import BytesIO
 
 from mailmerge import MailMerge
 
@@ -15,7 +15,7 @@ def mail_merge(docx_file, filename, records=None, **merge_fields):
     # Or a single record, which can include repeat rows: a=1, b=2, c=3, rows=[{...}]
 
     document = MailMerge(docx_file)
-    output = StringIO()
+    output = BytesIO()
 
     if records:
         # Multiple records & pages
@@ -78,7 +78,7 @@ class MailMergeView(MultipleObjectTemplateResponseMixin, View):
 
     def _merge(self, file, context):
         document = MailMerge(file)
-        output = StringIO()
+        output = BytesIO()
 
         if isinstance(context, (tuple, list)):
             # Multiple records & pages

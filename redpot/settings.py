@@ -237,10 +237,10 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT: Path = BASE_DIR / 'static'
 STATICFILES_DIRS = [BASE_DIR / 'redpot' / 'assets']
 MEDIA_URL = env('MEDIA_URL', default='/media/')
-MEDIA_ROOT = env('MEDIA_ROOT', default=BASE_DIR / 'media')
+MEDIA_ROOT: Path = env.path('MEDIA_ROOT', default=str(BASE_DIR / 'media'))
 
 DJANGORESIZED_DEFAULT_QUALITY = 75
 DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'PNG': ".png"}

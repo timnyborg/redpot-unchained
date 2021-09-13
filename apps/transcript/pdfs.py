@@ -14,7 +14,8 @@ DATE_FORMAT = '%-d %b %Y'
 # Todo: convert to weasyprint
 
 
-def create_transcript(*, header: bool, level: str, student: Student, mark_printed: str = False) -> str:
+def create_transcript(*, header: bool, level: str, student: Student, mark_printed: bool = False) -> bytes:
+    """Generate a pdf transcript for a single student"""
     enrolments = services.get_enrolments_for_transcript(student=student, level=level)
     if mark_printed:
         enrolments.filter(transcript_date__isnull=True).update(transcript_date=datetime.now())
@@ -92,7 +93,7 @@ def _render_transcript(
     enrolments: list[Enrolment],
     level: str,
     header: bool,
-) -> str:
+) -> bytes:
     """Legacy routine: produces a transcript of all credit at a given level
     level takes 'undergraduate' and 'postgraduate' for undergraduate and postgraduate
     """
