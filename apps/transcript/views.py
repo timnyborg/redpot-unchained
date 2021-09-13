@@ -28,7 +28,7 @@ class PDF(PermissionRequiredMixin, generic.View):
 class CreateBatch(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
     """View to generate a combined pdf of all unprinted transcripts"""
 
-    permission_required = 'transcript.batch print'
+    permission_required = 'transcript.batch_print'
     form_class = forms.BatchPrintForm
     template_name = 'transcript/create_batch.html'
     title = 'Transcripts'

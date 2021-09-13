@@ -1,9 +1,11 @@
 {% extends 'core/form.html' %}
 
 {% block before-form %}
-    <p>Transcripts will be produced for all newly-completed stand-aone credit-bearing enrolments.</p>
-    <p>Individual transcripts can be printed from students' personal records.</p>
-    <hr/>
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        Transcripts will be produced for <strong>all</strong> newly-completed stand-alone for-credit enrolments.
+        (Individual transcripts can be printed from students' personal records.)
+    </div>
 {% endblock %}
 
 {% block after-section %}
