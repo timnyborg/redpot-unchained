@@ -362,12 +362,7 @@ CKEDITOR_CONFIGS = {
                 'video[*]',
                 'source[*]',
                 'iframe[*]',
-                'div[*](*)',
-                'address[*]',
-                'i[*]',
-                'span[*](*)',
-                'p[*](*)',
-                'a[*](*)',
+                'span(fas,far,fad,fal,fab,fa,fa-*)[!class]',
             ]
         ),
     },

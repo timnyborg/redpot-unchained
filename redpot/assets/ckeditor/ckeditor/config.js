@@ -9,5 +9,3 @@ CKEDITOR.editorConfig = function( config ) {
 // Allows an element to have no content (fontawesome icons)
 // todo: may be possible to remove this upon implementing the FontAwesome5 plugin
 CKEDITOR.dtd.$removeEmpty['span'] = false;
-CKEDITOR.dtd.$removeEmpty['div'] = false;
-CKEDITOR.dtd.$removeEmpty['i'] = false;
