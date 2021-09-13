@@ -29,4 +29,5 @@ urlpatterns = [
         {'level': 'postgraduate', 'header': True},
         name='postgraduate-headed',
     ),
+    path('create-batch', views.CreateBatch.as_view(), name='create-batch'),
 ]
