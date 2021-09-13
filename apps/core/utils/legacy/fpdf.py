@@ -7,7 +7,7 @@ from fpdf import FPDF
 MODULE_DIRECTORY = os.path.dirname(__file__)
 
 
-class ExtendedFPDF(FPDF):
+class ExtendedFPDF(FPDF):  # pragma: no cover
     """A legacy tool from the php days, translated into python to support old pdf document generators
     NOTE: DO NOT build new pdfs on fpdf.  Instead use Weasyprint with Django's html template rendering.
     """
@@ -416,7 +416,7 @@ class ExtendedFPDF(FPDF):
             self._footer = footer
 
 
-class ContedPDF(ExtendedFPDF):
+class ContedPDF(ExtendedFPDF):  # pragma: no cover
     """A legacy tool providing common document layouts
     NOTE: DO NOT build new pdfs on fpdf.  Instead use Weasyprint with Django's html template rendering.
     """
