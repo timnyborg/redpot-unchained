@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
 
 if TYPE_CHECKING:
     from ..models import AddressModel
@@ -150,29 +150,46 @@ ADDRESS_FORMATS = {
 }
 
 
-def format_address(address: AddressModel) -> list[str]:
-    """Takes a dictionary (or Row) and produces a list based on the country's correct mailing format"""
-    # todo: consider a parent class for invoice & address that allows them to share field defs
-    # Find an entry in the format dictionary that contains the address' country, and get the format
+class FormattedAddress:
+    """Takes a dictionary (or Row) and produces a list based on the country's correct mailing format
+    Can produce a newline-separated string for print, or a list of strings for pdfs, html, etc.
+    """
 
-    format_ = next(
-        (format_ for (countries, format_) in ADDRESS_FORMATS.items() if (address.country or '').lower() in countries),
-        ADDRESS_FORMATS['default'],
-    )
-
-    # Create a set of rows from the format
-    raw_lines = [
-        line.format(
-            line1=address.line1 or '',
-            line2=address.line2 or '',
-            line3=address.line3 or '',
-            town=(address.town or '').upper(),
-            countystate=(address.countystate or '').upper(),
-            country=(address.country or '').upper(),
-            postcode=address.postcode or '',
+    def __init__(self, address: AddressModel):
+        # Find an entry in the format dictionary that contains the address' country, and get the format
+        format_ = next(
+            (
+                format_
+                for (countries, format_) in ADDRESS_FORMATS.items()
+                if (address.country or '').lower() in countries
+            ),
+            ADDRESS_FORMATS['default'],
         )
-        for line in format_
-    ]
-    # Filter out the empty rows
-    lines = [line for line in raw_lines if line]
-    return lines
+
+        # Create a set of rows from the format
+        raw_lines = [
+            line.format(
+                line1=address.line1 or '',
+                line2=address.line2 or '',
+                line3=address.line3 or '',
+                town=(address.town or '').upper(),
+                countystate=(address.countystate or '').upper(),
+                country=(address.country or '').upper(),
+                postcode=address.postcode or '',
+            )
+            for line in format_
+        ]
+        # Filter out the empty rows
+        self._lines = [line for line in raw_lines if line]
+
+    def as_list(self) -> list[str]:
+        return self._lines
+
+    def as_string(self) -> str:
+        return str(self)
+
+    def __str__(self, separator: str = '\n') -> str:
+        return separator.join(self._lines)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._lines)

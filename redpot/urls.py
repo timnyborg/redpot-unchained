@@ -40,6 +40,7 @@ urlpatterns = [
     path('module/', include('apps.module.urls')),
     path('qa/', include('apps.qualification_aim.urls')),
     path('student/', include('apps.student.urls')),
+    path('transcript/', include('apps.transcript.urls')),
     path('tutor/', include('apps.tutor.urls')),
     path('tutor-payment/', include('apps.tutor_payment.urls')),
     path('autocomplete/', include('apps.autocomplete.urls')),

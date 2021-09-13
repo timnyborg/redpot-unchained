@@ -173,9 +173,9 @@ other_children = (
     MenuItem("Staff listing", reverse('staff_list:home'), icon='users'),
     MenuItem(
         'Transcripts',
-        'not-implemented',
+        reverse('transcript:create-batch'),
         icon='graduation-cap',
-        check=lambda request: request.user.has_perm('registry.print_transcripts'),
+        check=lambda request: request.user.has_perm('transcript.batch_print'),
     ),
 )
 
