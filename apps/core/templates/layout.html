@@ -25,60 +25,60 @@
 
 <body>
 {% block banner %}{% endblock %}
-{% block jumbotron %}{% endblock %}
-
 {% watermark 'unchained' %}
 
 <!-- Navbar ================================================== -->
+<div class="sticky-top">
+    <nav class="navbar" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="brand navbar-brand redpotbrand" href="/">
+                    <img src="{% static 'images/redpot.svg' %}">redpot
+                </a>
+            </div>
 
-<nav class="navbar navbar navbar-fixed-top" role="navigation">
-    <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="brand navbar-brand redpotbrand" href="/">
-                <img src="{% static 'images/redpot.svg' %}">redpot
-            </a>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="app-navbar-collapse">
-            {% block mainmenu %}
-                {% with menu=menus.main %}
-                    {% include 'menu/bootstrap3_menu.html' %}
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="app-navbar-collapse">
+                {% block mainmenu %}
+                    {% with menu=menus.main %}
+                        {% include 'menu/bootstrap3_menu.html' %}
+                    {% endwith %}
+                {% endblock %}
+                <!-- Login (nav right) -->
+                {% with menu=menus.user %}
+                    {% include 'menu/bootstrap3_menu.html' with side='right' %}
                 {% endwith %}
-            {% endblock %}
-            <!-- Login (nav right) -->
-            {% with menu=menus.user %}
-                {% include 'menu/bootstrap3_menu.html' with side='right' %}
-            {% endwith %}
+            </div>
+        </div>
+    </nav>
+
+{% for message in messages %}
+    <div
+        class="alert-header alert-{{ message.level_tag }}"
+        onclick="$(this).addClass('alert-hidden');" role="navigation"
+    >
+        <div class="container">
+            <span class="alert-icon">
+                <i class="{% message_icon_class message.level_tag %}"></i>
+            </span>
+            <span class="alert-heading">{{ message.heading }}</span> {{ message }}
         </div>
     </div>
-</nav>
-
-
+{% endfor %}
+</div>
+{% block jumbotron %}{% endblock %}
 {% block top %}
     <div class='container'>
         <header class="row">
             <div class="col-sm-12">
                 <div class="page-header section">
-                    {% if messages %}
-                        <ul class="messages">
-                            {% for message in messages %}
-                                <div class="alert {% if message.tags %} alert-{{ message.tags }} {% else %} alert-warning {% endif %} alert-dismissible fade in" role="alert">
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">×</span>
-                                    </button>
-                                    <p>{{ message }}</p>
-                                </div>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
                     <h1>
                         {% block title %}{{ title }}{% endblock %}
                         <small>{% block subtitle %}{{ subtitle }}{% endblock %}</small>
@@ -89,7 +89,7 @@
     </div>
 {% endblock %}
 
-<div class="container" id="vue-mount">
+<div class="container main-body" id="vue-mount">
     <section class="row">
         {% block container %}
             <div class="col-xs-12">

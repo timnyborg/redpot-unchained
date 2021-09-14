@@ -152,3 +152,15 @@ def icon_text(text, icon_type):
         <span class="fa {icon_type}"></span> {text}
     """
     )
+
+
+@register.simple_tag
+def message_icon_class(level_tag):
+    """Converts the level_tag of a message to a font-awesome icon class"""
+    icon_map = {
+        'success': 'fa-check-circle',
+        'danger': 'fa-exclamation-triangle',
+        'warning': 'fa-exclamation-circle',
+        'info': 'fa-info-circle',
+    }
+    return f"fas fa-fw {icon_map.get(level_tag, 'fa-info-circle')}"

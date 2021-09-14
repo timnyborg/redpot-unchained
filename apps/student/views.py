@@ -103,7 +103,11 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
         line1=models.F('default_address__line1'),
     )
 
-    def get_table_kwargs(self):
+    def get_table_pagination(self, table) -> bool:
+        # prevent getting and counting a complete queryset if we don't display the results
+        return bool(self.request.GET)
+
+    def get_table_kwargs(self) -> dict:
         # Dynamically hide columns based on search criteria & permissions
         visibility = {
             'email_address': self.request.GET.get('email'),
@@ -112,7 +116,7 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
         }
         return {'exclude': [column for column, visible in visibility.items() if not visible]}
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> http.HttpResponse:
         ids: list[str] = request.POST.getlist('student')
         int_ids: list[int] = [int(i) for i in ids if i.isnumeric()]
         if not Student.objects.filter(id__in=int_ids).exists():
@@ -128,12 +132,15 @@ class Lookup(LoginRequiredMixin, generic.View):
     """
 
     def post(self, request) -> http.HttpResponse:
-        husid = request.POST.get('husid')
-        sits_id = request.POST.get('sits_id')
+        husid = request.POST.get('husid', '')
+        sits_id = request.POST.get('sits_id', '')
         try:
-            student = Student.objects.get(
-                Q(husid=husid, husid__isnull=False) | Q(sits_id=sits_id, sits_id__isnull=False)
-            )
+            if husid.isdigit():
+                student = Student.objects.get(husid=husid)
+            elif sits_id.isdigit():
+                student = Student.objects.get(sits_id=sits_id)
+            else:
+                raise Student.DoesNotExist
             return redirect(student)
         except Student.DoesNotExist:
             messages.error(request, 'Student not found')

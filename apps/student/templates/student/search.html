@@ -11,7 +11,7 @@
                 <form method='POST' action="{% url 'student:lookup' %}" class='form-horizontal'>
                     {% csrf_token %}
                     <div class="input-group">
-                        <input type="text" name="husid" placeholder="e.g. 2011560123456" class="form-control" required>
+                        <input type="number" name="husid" placeholder="e.g. 2011560123456" class="form-control" required>
                         <div class="input-group-btn">
                             <button class="btn btn-primary" type="submit">
                                 <i class="fa fa-search"></i> Find
@@ -23,7 +23,7 @@
                 <form method='POST' action="{% url 'student:lookup' %}" class='form-horizontal'>
                     {% csrf_token %}
                     <div class="input-group">
-                        <input type="text" name="sits_id" placeholder="e.g. 1234567" class="form-control" required>
+                        <input type="number" name="sits_id" placeholder="e.g. 1234567" class="form-control" required>
                         <div class="input-group-btn">
                             <button class="btn btn-primary" type="submit">
                                 <i class="fa fa-search"></i> Find

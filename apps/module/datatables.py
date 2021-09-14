@@ -36,7 +36,7 @@ class ModuleSearchFilter(django_filters.FilterSet):
         model = Module
         fields = {
             'title': ['unaccent__icontains'],
-            'code': ['startswith'],
+            'code': ['contains'],
             'division': ['exact'],
             'portfolio': ['exact'],
         }
