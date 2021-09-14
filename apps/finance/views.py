@@ -116,7 +116,7 @@ class AddModuleFees(LoginRequiredMixin, generic.View):
         fee_ids = request.POST.getlist('fee')
         fees = Fee.objects.filter(id__in=fee_ids, module_id=enrolment.module_id)
         if not fees:
-            messages.error(request, 'You must select a fee')
+            messages.warning(request, 'You must select a fee')
             return redirect(reverse('finance:add-fees', args=[enrolment.pk]))
 
         for fee in fees:

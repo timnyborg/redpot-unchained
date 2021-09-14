@@ -127,10 +127,11 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         return context
 
 
-class Edit(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
+class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
     model = models.Enrolment
     template_name = 'core/form.html'
     form_class = forms.EditForm
+    success_message = 'Enrolment updated'
 
     def get_form_kwargs(self) -> dict:
         kwargs = super().get_form_kwargs()
