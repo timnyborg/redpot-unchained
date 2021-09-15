@@ -8,7 +8,7 @@
         <li class="nav-item{% if item.selected %} active{% endif %} dropdown">
             <a
                 href="{{ item.url }}"
-                class="nav-link {% if item.children %}dropdown-toggle{% endif %}"
+                class="me-2 text-light nav-link"
                 {% if item.children %}
                     role="button"
                     data-bs-toggle="dropdown"
@@ -24,13 +24,3 @@
         </li>
     {% endif %}
 {% endfor %}
-
-<script>
-    let dropdowns = document.querySelectorAll('.dropdown-toggle')
-    dropdowns.forEach((dd)=>{
-        dd.addEventListener('click', function (e) {
-            var el = this.nextElementSibling
-            el.style.display = el.style.display==='block'?'none':'block'
-        })
-    })
-</script>

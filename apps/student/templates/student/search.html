@@ -7,7 +7,7 @@
             </div>
             <div class="col-2"></div>
             <div class="col-4">
-                <form method='POST' action="{% url 'student:lookup' %}" class='form-horizontal'>
+                <form method='POST' action="{% url 'student:lookup' %}">
                     {% csrf_token %}
                     <div class="form-group">
                         <label>HESA ID</label>
@@ -19,7 +19,7 @@
                         </div>
                     </div>
                 </form>
-                <form method='POST' action="{% url 'student:lookup' %}" class='form-horizontal'>
+                <form method='POST' action="{% url 'student:lookup' %}" >
                     {% csrf_token %}
                     <div class="form-group">
                         <label>SITS ID</label>

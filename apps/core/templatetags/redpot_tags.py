@@ -34,7 +34,7 @@ def edit_button(
 
     button = f"""
         <a href="{url}"
-           class="btn btn-default {sizes.get(size, '')} pull-right"
+           class="btn btn-default btn-outline-dark {sizes.get(size, '')} pull-right float-end"
            target="{target}"
            data-toggle="tooltip"
            title="{tooltip}"

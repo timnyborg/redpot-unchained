@@ -7,9 +7,9 @@
         {% if record.created_by %}
         Created by {{ record.created_by | user_name }}
         <span class="timeago"
-            data-placement="bottom"
-            data-title="{{ record.created_on | date:'DATETIME_FORMAT' }}"
-            data-toggle="tooltip"
+            data-placement="bottom" data-bs-placement="bottom"
+            title="{{ record.created_on | date:'DATETIME_FORMAT' }}"
+            data-toggle="tooltip" data-bs-toggle="tooltip"
             datetime="{{ record.created_on | date:'DATETIME_FORMAT' }}"
         >
             {{ record.created_on }}
@@ -17,9 +17,9 @@
         {% elif record.raised_by %}
         Raised by {{ record.raised_by | user_name }}
         <span class="timeago"
-            data-placement="bottom"
-            data-title="{{ record.raised_on | date:'DATETIME_FORMAT' }}"
-            data-toggle="tooltip"
+            data-placement="bottom" data-bs-placement="bottom"
+            title="{{ record.raised_on | date:'DATETIME_FORMAT' }}"
+            data-toggle="tooltip" data-bs-toggle="tooltip"
             datetime="{{ record.raised_on | date:'DATETIME_FORMAT' }}"
         >
             {{ record.raised_on }}
@@ -27,9 +27,9 @@
         {% elif record.requested_by %}
         Requested by {{ record.requested_by | user_name }}
         <span class="timeago"
-            data-placement="bottom"
-            data-title="{{ record.requested_on | date:'DATETIME_FORMAT' }}"
-            data-toggle="tooltip"
+            data-placement="bottom" data-bs-placement="bottom"
+            title="{{ record.requested_on | date:'DATETIME_FORMAT' }}"
+            data-toggle="tooltip" data-bs-toggle="tooltip"
             datetime="{{ record.requested_on | date:'DATETIME_FORMAT' }}"
         >
             {{ record.requested_on }}
@@ -39,9 +39,9 @@
             <span class="separator">&bull;</span>
             Edited by {{ record.modified_by | user_name }}
             <span class="timeago"
-                data-placement="bottom"
-                data-title="{{ record.modified_on | date:'DATETIME_FORMAT' }}"
-                data-toggle="tooltip"
+                data-placement="bottom" data-bs-placement="bottom"
+                title="{{ record.modified_on | date:'DATETIME_FORMAT' }}"
+                data-toggle="tooltip" data-bs-toggle="tooltip"
                 datetime="{{ record.modified_on | date:'DATETIME_FORMAT' }}"
             >
                 {{ record.modified_on }}
@@ -51,9 +51,9 @@
             <span class="separator">&bull;</span>
             Approved by {{ record.approved_by | user_name }}
             <span class="timeago"
-                data-placement="bottom"
-                data-title="{{ record.approved_on | date:'DATETIME_FORMAT' }}"
-                data-toggle="tooltip"
+                data-placement="bottom" data-bs-placement="bottom"
+                title="{{ record.approved_on | date:'DATETIME_FORMAT' }}"
+                data-toggle="tooltip" data-bs-toggle="tooltip"
                 datetime="{{ record.approved_on | date:'DATETIME_FORMAT' }}"
             >
                 {{ record.approved_on }}

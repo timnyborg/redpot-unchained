@@ -1,3 +1,6 @@
+/*jshint esversion: 6, strict: true */
+
+
 // Script to autohide long UL item lists
 $('ul.hide-items').each(function(){
   var max = ($(this).data('max-item') - 1) || 1;
@@ -32,5 +35,25 @@ $('.item[data-created-on]').each(function() {
 
     if (created > today.setHours(0,0,0,0)) {
         $(this).addClass('today');
+    }
+});
+
+// Autogenerate BS5 sidenav
+//Autogenerate sidenavs.  Any nav-anchor <a> will be added, with the following H3's title, overridable by giving the nav-anchor a data-title attr.
+document.addEventListener('DOMContentLoaded', () => {
+    let linklist = document.querySelector('#sidenav ul:first-child');
+    if (linklist) {
+        document.querySelectorAll('.section-title').forEach(function (anchor) {
+            let title = anchor.dataset.title || anchor.innerText;
+            let badge = '';
+            if (anchor.dataset.badgeText) {
+                let badge_class = anchor.dataset.badgeClass || 'bg-secondary';
+                badge = `<span class="badge rounded-pill ${badge_class} ms-1">${anchor.dataset.badgeText}</span>`;
+            }
+            linklist.insertAdjacentHTML(
+                'beforeend',
+                `<a href="#${anchor.id}" class="list-group-item list-group-item-action">${title}${badge}</a>`
+            );
+        });
     }
 });

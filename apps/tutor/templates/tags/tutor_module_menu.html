@@ -1,22 +1,22 @@
 {% load redpot_tags %}
 <div class="dropdown pull-right">
-    <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    <a class="text-dark" data-toggle="dropdown" aria-expanded="false">
         <span class="fa fa-ellipsis-h fa-lg"></span>
     </a>
     <ul class="dropdown-menu" role="menu">
         <li>
-            <a href="{% url 'tutor:module:edit' tutor_module.id %}?next={{ request.get_full_path }}#tutor-modules">
+            <a href="{% url 'tutor:module:edit' tutor_module.id %}?next={{ request.get_full_path }}#tutor-modules" class="dropdown-item">
                 <i class="fas fa-fw fa-pencil-alt"></i> Edit
             </a>
         </li>
         <li class="divider"></li>
         <li>
-            <a href="{% url 'tutor:module:view' tutor_module.id %}#fees">
+            <a href="{% url 'tutor:module:view' tutor_module.id %}#fees" class="dropdown-item">
                 <i class="fas fa-briefcase fa-fw"></i> Fees
             </a>
         </li>
         <li>
-            <a href="contract/view/{{ tutor_module.id }}">
+            <a href="contract/view/{{ tutor_module.id }}" class="dropdown-item">
                 <span class="fas fa-fw fa-file-alt"></span>
                 {% if contract.complete %}
                     View contract (complete)
@@ -29,7 +29,7 @@
         </li>
 
         <li class="dropdown-submenu">
-            <a style="cursor: pointer;"><span class="fa fa-fw fa-print"></span> Expense forms</a>
+            <a class="dropdown-item"><span class="fa fa-fw fa-print"></span> Expense forms</a>
             <ul class="dropdown-menu">
                 {% for key, title in expense_templates.items %}
                     <li><a href="{% url 'tutor:expense-form-single' tutor_module.id key %}">
@@ -38,9 +38,10 @@
                 {% endfor %}
             </ul>
         </li>
-        <li class="divider"></li>
+        <li class="divider dropdown-divider"></li>
         <li>
             <a href="#"
+               class="dropdown-item"
                data-toggle='modal'
                data-target='#confirm-remove-tutor'
                data-href="{% url 'tutor:module:delete' tutor_module.id %}?next={{ request.get_full_path }}#tutor-modules"
