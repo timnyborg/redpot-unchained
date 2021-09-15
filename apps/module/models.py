@@ -108,7 +108,7 @@ class Module(SignatureModel):
     location = models.ForeignKey('Location', models.DO_NOTHING, db_column='location', blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     meeting_time = models.CharField(
-        max_length=32, blank=True, null=True, verbose_name='Optional. It is better to provide start and end times'
+        max_length=32, blank=True, null=True, help_text='Optional. It is better to provide start and end times'
     )
     duration = models.FloatField(blank=True, null=True)
     no_meetings = models.IntegerField(blank=True, null=True)
@@ -655,3 +655,6 @@ class PointsLevel(models.Model):
 
     class Meta:
         db_table = 'points_level'
+
+    def __str__(self) -> str:
+        return str(self.description)

@@ -66,6 +66,20 @@ def bootstrap3form(form, status_classes=True):
     return {'form': form, 'status_classes': status_classes}
 
 
+@register.inclusion_tag('utility/bootstrap5_form.html')
+def bootstrap5form(form, status_classes=True, input_size='normal'):
+    form_control_classes = {
+        'normal': "form-control",
+        'small': "form-control form-control-sm",
+        'large': "form-control form-control-lg",
+    }
+    return {
+        'form': form,
+        'status_classes': status_classes,
+        'form_control_class': form_control_classes.get(input_size, "form-control"),
+    }
+
+
 @register.inclusion_tag('utility/bootstrap3_modal.html')
 def bootstrap3modal(
     modal_id, body, confirm_class='primary', confirm_text='Submit', cancel_text='Close', header='Confirm'

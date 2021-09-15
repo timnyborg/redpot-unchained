@@ -1,0 +1,36 @@
+{# See https://github.com/jazzband/django-simple-menu/tree/master/menu/templates for BS4 and a submodel #}
+{% for item in menu %}
+    {% if item.visible %}
+        {% if item.separator %}
+            <div class="dropdown-divider"></div>
+        {% endif %}
+
+        <li class="nav-item{% if item.selected %} active{% endif %} dropdown">
+            <a
+                href="{{ item.url }}"
+                class="nav-link {% if item.children %}dropdown-toggle{% endif %}"
+                {% if item.children %}
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                {% endif %}
+            >
+                {% if item.icon %}<i class="fas fa-{{ item.icon }}"></i> {% endif %}{{item.title}}
+            </a>
+            {% if item.children %}
+                {% include 'menu/bootstrap5_submenu.html' with items=item.children %}
+            {% endif %}
+        </li>
+    {% endif %}
+{% endfor %}
+
+<script>
+    let dropdowns = document.querySelectorAll('.dropdown-toggle')
+    dropdowns.forEach((dd)=>{
+        dd.addEventListener('click', function (e) {
+            var el = this.nextElementSibling
+            el.style.display = el.style.display==='block'?'none':'block'
+        })
+    })
+</script>
