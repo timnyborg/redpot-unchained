@@ -1,0 +1,155 @@
+{% load static %}
+{% load menu %}
+{% load redpot_tags %}
+{% generate_menu %}
+
+<!DOCTYPE html>
+<head>
+    <title>Redpot unchained{% if title %} – {{ title }} {% if subtitle %} – {{ subtitle }} {% endif %} {% endif %}</title>
+
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'images/favicon.png' %}">
+
+    {% block head %}{% endblock %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    ></script>
+
+    <script src="{% static 'js/tools.js' %}" type="text/javascript"></script>
+
+    <!-- Bootstrap 5 CDN: -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <!-- End of BS5 -->
+    <link href="{% static 'css/redpot_bs5.css' %}" rel="stylesheet" type="text/css" />
+
+    <script src="{% static 'js/fontawesome5/all.js' %}" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+</head>
+
+<body>
+{% block banner %}{% endblock %}
+{% block jumbotron %}{% endblock %}
+{% watermark 'unchained' %}
+
+<!-- Navbar ================================================== -->
+<div class="sticky-top">
+    <nav class="navbar navbar-expand-md bg-faded navbar-dark sticky-top">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                <img src="{% static 'images/redpot.svg' %}"> redpot
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse w-100" id="collapsingNavbar">
+                <ul class='navbar-nav justify-content-center me-auto'>
+                    {% block mainmenu %}
+                        <!-- Nav menu center -->
+                        {% with menu=menus.main %}
+                            {% include 'menu/bootstrap5_menu.html' %}
+                        {% endwith %}
+                    {% endblock %}
+                </ul>
+                <!-- Login (nav right) -->
+                <ul class='navbar-nav justify-content-right ms-auto'>
+                    {% with menu=menus.user %}
+                        {% include 'menu/bootstrap5_menu.html' %}
+                    {% endwith %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% for message in messages %}
+        <div
+            class="alert-header alert-{{ message.level_tag }}"
+            onclick="$(this).addClass('alert-hidden');" role="navigation"
+        >
+            <div class="container">
+            <span class="alert-icon">
+                <i class="{% message_icon_class message.level_tag %}"></i>
+            </span>
+                <span class="alert-heading">{{ message.heading }}</span> {{ message }}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% block top %}
+    <div class="container">
+        <header class="row">
+            <div class="col">
+                <div class="page-header section">
+                    <h1>
+                        {% block title %}{{ title }}{% endblock %}
+                        <small>{% block subtitle %}{{ subtitle }}{% endblock %}</small>
+                    </h1>
+                </div>
+            </div>
+        </header>
+    </div>
+{% endblock %}
+
+<main>
+    <div class="container">
+        <section class="row">
+            {% block container %}
+                <div class="col">
+                    {% block center %}
+                    {% endblock %}
+                </div>
+            {% endblock %}
+        </section>
+    </div>
+</main>
+
+<!-- Footer ================================================== -->
+<footer class="footer">
+    <div class="container">
+        <div class="d-flex justify-content-between">
+        <span class="small">
+            &copy; University of Oxford, Department for Continuing Education
+        </span>
+        <span>
+            <a href="/docs" class="text-decoration-none small ms-2">
+                <i class="fas fa-fw fa-book"></i> User guide
+            </a>
+            <a href="mailto:redpot-support@conted.ox.ac.uk" class="text-decoration-none small ms-2">
+                <i class="fas fa-fw fa-comment-dots"></i> Redpot support
+            </a>
+            <a href="/banner/view/" class="text-decoration-none small ms-2">
+                <i class="fas fa-fw fa-redo"></i> Updates
+            </a>
+            <a href="https://gitlab.conted.ox.ac.uk/django/redpot-unchained" target="_blank" class="text-decoration-none small ms-2">
+                <i class="fab fa-fw fa-gitlab"></i> View source code
+            </a>
+        </span>
+        </div>
+    </div>
+</footer>
+
+
+<!-- The javascript =============================================
+     Bootstrap.js (& redpot.js) must run after elements are defined -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="{% static 'js/redpot.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/tools.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/timeago.min.js' %}" type="text/javascript"></script>
+
+<script>
+    // Automatic timestamp formatting via timeago
+    var nodes = document.querySelectorAll('.timeago');
+    timeago().render(nodes, 'en-GB');
+    $(function () {
+        // Bootstrap tooltips and popovers
+        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="popover"]').popover();
+    })
+</script>
+
+</body>
+</html>

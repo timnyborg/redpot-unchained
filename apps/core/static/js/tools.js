@@ -25,13 +25,6 @@ $('ul.hide-items').each(function(){
   }
 });
 
-// Load custom ckeditor configs
-$('.ckeditor-custom').each(function() {
-    CKEDITOR.replace($(this).attr('id'), {
-        customConfig: '/redpot/static/js/ckeditor_config/' + $(this).data('ckeditor-config') + '.js?v=' + (new Date).getDay()
-    });
-});
-
 // Add 'today' styling to any list items with created-on data for today
 $('.item[data-created-on]').each(function() {
     var created = new Date($(this).data('created-on'));

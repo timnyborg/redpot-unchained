@@ -73,7 +73,7 @@ class EditForm(SITSLockingFormMixin, forms.ModelForm):
         """Prevent ages < 12 (arbitrary) to avoid common data entry errors (current date, 2067 instead of 1967, etc."""
         birthdate = self.cleaned_data['birthdate']
         if birthdate and birthdate > (datetime.today() - relativedelta(years=12)).date():
-            raise ValidationError({'birthdate': 'Must be a bit older than that!'})
+            raise ValidationError('Must be a bit older than that!')
 
 
 class AddressForm(SITSLockingFormMixin, forms.ModelForm):
