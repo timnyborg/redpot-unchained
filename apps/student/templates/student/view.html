@@ -399,7 +399,7 @@
             <li><a class="dropdown-item" href="/student/certhe_progress/{{student.id}}" target="_blank">{% icon_text 'CertHE progress report' 'fa-certificate' %}</a></li>
             {% endif %}
             {% if perms.transcript.print %}
-            <li class="divider"></li>
+            <li class="dropdown-divider"></li>
             <li class="dropdown-header">Transcripts</li>
             <li><a class="dropdown-item" href="{% url 'transcript:undergraduate' student.id %}" target="_blank">{% icon_text 'Undergraduate' 'fa-graduation-cap' %}</a></li>
             <li><a class="dropdown-item" href="{% url 'transcript:undergraduate-headed' student.id %}" target="_blank">{% icon_text 'Undergraduate (with header)' 'fa-graduation-cap' %}</a></li>
