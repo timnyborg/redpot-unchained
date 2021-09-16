@@ -29,8 +29,6 @@
 </head>
 
 <body>
-{% block banner %}{% endblock %}
-{% block jumbotron %}{% endblock %}
 {% watermark 'unchained' %}
 
 <!-- Navbar ================================================== -->
@@ -75,6 +73,8 @@
         </div>
     {% endfor %}
 </div>
+{% block banner %}{% endblock %}
+{% block jumbotron %}{% endblock %}
 
 {% block top %}
     <div class="container">
