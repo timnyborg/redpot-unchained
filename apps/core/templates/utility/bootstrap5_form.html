@@ -33,17 +33,15 @@
             <fieldset class="row mb-3">
                 <legend class="col-form-label col-sm-2 pt-0">{{ field.label }}</legend>
                 <div class="col-sm-10">
-                    <div class="form-check">
-                        {% for choice in field  %}
-                            <div class="{{ field.field.widget.attrs.div_class|default:'radio' }}">
-                                {{ choice }}
-                            </div>
-                        {% endfor %}
-                        {% for error in field.errors %}
-                            <span class="invalid-feedback">{{ error }}</span>
-                        {% endfor %}
-                        <p class="help-block">{{ field.help_text }}</p>
-                    </div>
+                    {% for choice in field %}
+                        <div class="{{ field.field.widget.attrs.div_class }}">
+                            {{ choice }}
+                        </div>
+                    {% endfor %}
+                    {% for error in field.errors %}
+                        <span class="invalid-feedback">{{ error }}</span>
+                    {% endfor %}
+                    <p class="help-block">{{ field.help_text }}</p>
                 </div>
             </fieldset>
         {% else %}

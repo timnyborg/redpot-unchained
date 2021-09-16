@@ -92,8 +92,8 @@ class ToggleWidget(widgets.CheckboxInput):
     }
 
     class Media:
-        css = {'all': ('https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css',)}
-        js = ('https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js', 'actions.js')
+        css = {'all': ('https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css',)}
+        js = ('https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js', 'actions.js')
 
     def __init__(self, attrs=None, check_test=None):
         attrs = {**self.base_attrs, **(attrs or {})}
