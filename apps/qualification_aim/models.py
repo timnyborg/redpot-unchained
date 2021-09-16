@@ -17,7 +17,7 @@ class QualificationAim(SITSLockingModelMixin, SignatureModel):
     sits_managed_fields = ['start_date', 'end_date', 'reason_for_ending', 'title', 'programme']
     student = models.ForeignKey(
         'student.Student',
-        models.DO_NOTHING,
+        models.PROTECT,
         db_column='student',
         related_name='qualification_aims',
         related_query_name='qa',

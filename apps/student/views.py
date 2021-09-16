@@ -11,10 +11,10 @@ from django.db import models
 from django.db.models import Prefetch, Q
 from django.forms import Form
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from apps.core.utils.views import PageTitleMixin
+from apps.core.utils.views import DeletionFailedMessageMixin, PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
 
@@ -231,6 +231,12 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Upda
     template_name = 'core/form.html'
     form_class = forms.EditForm
     success_message = 'Record updated'
+
+
+class Delete(LoginRequiredMixin, PageTitleMixin, DeletionFailedMessageMixin, generic.DeleteView):
+    model = Student
+    template_name = 'core/delete_form.html'
+    success_url = reverse_lazy('student:search')
 
 
 class MakeTutor(LoginRequiredMixin, generic.View):
