@@ -461,7 +461,7 @@
     <form method="post" action="/send-to-the-waiting-list">
         {% render_table waitlist_table %}
         <div class="btn-group float-end">
-            <a href="#" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown">
+            <a href="#" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
                 <i class="far fa-fw fa-envelope"></i> Email entire list
                 <span class="caret"></span>
             </a>
@@ -472,11 +472,11 @@
                 </li>
                 {% endif %}
 
-                <li><a href="/email-list/{{ module.id }}/online">Places available on course (enrol online)</a></li>
-                <li><a href="/email-list/{{ module.id }}/form">Places available on course (enrol by form)</a></li>
+                <li><a class="dropdown-item" href="/email-list/{{ module.id }}/online">Places available on course (enrol online)</a></li>
+                <li><a class="dropdown-item" href="/email-list/{{ module.id }}/form">Places available on course (enrol by form)</a></li>
             </ul>
         </div>
-        <button type="submit" value="Standard" class="btn btn-primary">
+        <button type="submit" value="Standard" class="btn btn-secondary">
             <i class="fa fa-fw fa-envelope"></i> Email selected students
         </button>
     </form>

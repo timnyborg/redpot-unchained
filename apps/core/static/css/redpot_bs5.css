@@ -6,6 +6,22 @@
     }
 }
 
+/* Table header sort arrows */
+th.orderable.asc a:after,
+th.orderable.desc a:after {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    color: var(--bs-primary);
+}
+
+th.orderable.asc a:after {
+    content: " \f0d7"; /* down caret */
+}
+
+th.orderable.desc a:after {
+    content: " \f0d8"; /* up caret */
+}
+
 /* No link underline by default in BS5 - may need narrowing */
 a {
     text-decoration: none;
