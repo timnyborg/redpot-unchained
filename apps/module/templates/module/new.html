@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layout_bs5.html' %}
 {% load redpot_tags %}
 {% load widget_tweaks %}
 
@@ -6,13 +6,13 @@
     <div class='section'>
         <h2>Clone an existing module</h2>
         <form action="{% url 'module:clone' %}" enctype="multipart/form-data" method="get" class="form-horizontal">
-            <div class="input-group col-xs-12 col-sm-6">
-                {% render_field lookup_form.module class+="form-control" %}
-                <span class="input-group-btn">
+            <div class="col-10">
+                <div class="input-group">
+                    {% render_field lookup_form.module class+="form-control" %}
                     <button class="btn btn-primary" type="submit">
                         <i class="fa fa-search"></i> Clone
                     </button>
-                </span>
+                </div>
             </div>
         </form>
         {{ lookup_form.media }}
@@ -21,15 +21,11 @@
 
         <h2>Start from scratch</h2>
         <div class='row'>
-            <div class='col-xs-8'>
+            <div class='col-8'>
                 <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
                     {% csrf_token %}
-                    {% bootstrap3form form False %}
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            {% bootstrap3submit %}
-                        </div>
-                    </div>
+                    {% bootstrap5form form status_classes=False %}
+                    {% bootstrap3submit %}
                 </form>
             </div>
         </div>

@@ -54,7 +54,7 @@ class Create(LoginRequiredMixin, generic.View):
             email_address=models.F('email__email'),
             default_address=models.FilteredRelation('address', condition=models.Q(address__is_default=True)),
             postcode=models.F('default_address__postcode'),
-        )
+        )[:30]
 
     def get(self, request):
         search_form = forms.CreatePersonSearchForm()
@@ -69,7 +69,7 @@ class Create(LoginRequiredMixin, generic.View):
         if search_form.is_valid():
             # Components of our search query
             queryset = self.get_queryset(search_form)
-            table = datatables.CreateMatchTable(data=queryset)
+            table = datatables.CreateMatchTable(data=queryset, request=request)
             # Store details for use by creation method
             self.request.session['new_student'] = search_form.cleaned_data
 

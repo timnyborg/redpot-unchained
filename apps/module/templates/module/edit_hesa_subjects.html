@@ -1,5 +1,5 @@
 {# todo: consider turning this into a generic (if generic formsets get much use) #}
-{% extends 'layout.html' %}
+{% extends 'layout_bs5.html' %}
 {% load redpot_tags %}
 {% block center %}
     <div class='section'>
@@ -18,7 +18,7 @@
 
                     {% for subform in form %}
                         {# todo: consider using inline form layout here #}
-                        {% bootstrap3form subform True %}
+                        {% bootstrap5form subform True %}
                         {% if not forloop.last %}<hr>{% endif %}
                     {% endfor %}
                     <div class="form-group">
@@ -30,5 +30,5 @@
             </div>
         </div>
     </div>
-    {{ formset.media }}
+    {{ form.media }}
 {% endblock %}

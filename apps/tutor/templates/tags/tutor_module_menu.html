@@ -1,6 +1,6 @@
 {% load redpot_tags %}
-<div class="dropdown pull-right">
-    <a class="text-dark" data-toggle="dropdown" aria-expanded="false">
+<div class="dropdown float-end">
+    <a class="text-dark" data-bs-toggle="dropdown" aria-expanded="false">
         <span class="fa fa-ellipsis-h fa-lg"></span>
     </a>
     <ul class="dropdown-menu" role="menu">
@@ -42,8 +42,8 @@
         <li>
             <a href="#"
                class="dropdown-item"
-               data-toggle='modal'
-               data-target='#confirm-remove-tutor'
+               data-bs-toggle='modal'
+               data-bs-target='#confirm-remove-tutor'
                data-href="{% url 'tutor:module:delete' tutor_module.id %}?next={{ request.get_full_path }}#tutor-modules"
             >
                 <div class="text-danger">

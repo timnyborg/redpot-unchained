@@ -275,7 +275,7 @@ class CreatePaymentPlan(
 
 
 class EditSchedule(PermissionRequiredMixin, PageTitleMixin, generic.DetailView):
-    queryset = models.PaymentPlan.objects.prefetch_related('schedule')
+    queryset = models.PaymentPlan.objects.prefetch_related('scheduled_payments')
     template_name = 'invoice/edit_schedule.html'
     permission_required = 'payment_plan.create'
 

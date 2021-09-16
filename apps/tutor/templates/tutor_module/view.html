@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layout_bs5.html' %}
 {% load redpot_tags %}
 {% load tutor_payment_tags %}
 {% block center %}
@@ -8,26 +8,29 @@
 <div class="section">
     {% edit_button object.get_edit_url %}
     <h2>Details</h2>
-    <dl class="dl-horizontal">
-        <dt>Tutor</dt>
-        <dd><a href="{% url 'student-view' object.tutor.student_id %}">
-            {{ object.tutor.student }}
-        </a></dd>
-        <dt>Module</dt>
-        <dd><a href="{% url 'module:view' object.module.id %}">
-            {{ object.module.long_form }}
-        </a></dd>
-        <dt>Role</dt>
-        <dd>{{ object.role }}</dd>
-        <dt>Teaching</dt>
-        <dd>{{ object.is_teaching | yesno | title }}</dd>
-        <dt>Director of studies</dt>
-        <dd>{{ object.director_of_studies | yesno | title }}</dd>
-        <dt>Published</dt>
-        <dd>{{ object.is_published | yesno | title }}</dd>
-        <dt>Biography</dt>
-        <dd>{{ object.biography | striptags | truncatewords:50 }}</dd>
-    </dl>
+    <hr>
+    <div class="col-7">
+        <dl class="row">
+            <dt class="col-3">Tutor</dt>
+            <dd class="col-9 mb-1"><a href="{% url 'student-view' object.tutor.student_id %}">
+                {{ object.tutor.student }}
+            </a></dd>
+            <dt class="col-3">Module</dt>
+            <dd class="col-9 mb-1"><a href="{% url 'module:view' object.module.id %}">
+                {{ object.module.long_form }}
+            </a></dd>
+            <dt class="col-3">Role</dt>
+            <dd class="col-9 mb-1">{{ object.role | default:'–' }}</dd>
+            <dt class="col-3">Teaching</dt>
+            <dd class="col-9 mb-1">{{ object.is_teaching | yesno | title }}</dd>
+            <dt class="col-3">Director of studies</dt>
+            <dd class="col-9 mb-1">{{ object.director_of_studies | yesno | title }}</dd>
+            <dt class="col-3">Published</dt>
+            <dd class="col-9 mb-1">{{ object.is_published | yesno | title }}</dd>
+            <dt class="col-3">Biography</dt>
+            <dd class="col-9 mb-1">{{ object.biography | striptags | truncatewords:50 }}</dd>
+        </dl>
+    </div>
     {% timestamp object %}
 </div>
 
@@ -55,7 +58,7 @@
                 <strong>This tutor needs valid Right to Work data before their fees can be paid.</strong>
             </div>
         {% endif %}
-        <table class="table table-hover table-striped table-condensed">
+        <table class="table table-hover table-striped">
             <thead>
             <tr>
                 <th>Status</th>

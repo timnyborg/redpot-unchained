@@ -21,7 +21,7 @@ class CreateEmailForm(forms.ModelForm):
 
 
 class CreatePersonSearchForm(forms.ModelForm):
-    birthdate = forms.DateField(required=False)
+    birthdate = forms.DateField(required=False, widget=widgets.DatePickerInput())
     email = forms.EmailField(required=False)
 
     class Meta:
@@ -60,9 +60,9 @@ class EditForm(SITSLockingFormMixin, forms.ModelForm):
         ]
         widgets = {
             'title': widgets.DatalistTextInput(options=['Miss', 'Mr', 'Mrs', 'Ms', 'Mx', 'Dr', 'Prof', 'Rev', 'Fr']),
-            'gender': forms.RadioSelect(attrs={'div_class': 'radio-inline'}),
+            'gender': forms.RadioSelect(attrs={'div_class': 'form-check-inline'}),
             'is_eu': forms.RadioSelect(
-                attrs={'div_class': 'radio-inline'},
+                attrs={'div_class': 'form-check-inline'},
                 choices=((True, 'Yes'), (False, 'No'), (None, 'Unknown')),
             ),
             'birthdate': widgets.DatePickerInput(),

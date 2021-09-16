@@ -1,13 +1,14 @@
-{% extends 'layout.html' %}
+{% extends 'layout_bs5.html' %}
 {% load redpot_tags %}
 {% block center %}
 
 <div class='section'>
+    {# todo: use generic delete template once it handles custom confirmation messages #}
     <p>Are you sure you want to remove <b>{{ programmemodule.module.long_form }}</b> from <b>{{ programmemodule.programme }}</b>?</p>
     <form action="" method="post" class="form-horizontal">
         {% csrf_token %}
         {% bootstrap3submit text='Remove' btn_type='danger' %}
-        {% bootstrap3backbutton %}
+        {% bootstrap3backbutton btn_type='secondary' %}
     </form>
 </div>
 {{ form.media }}

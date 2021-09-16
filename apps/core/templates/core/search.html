@@ -1,11 +1,7 @@
-{% extends 'layout.html' %}
+{% extends 'layout_bs5.html' %}
 {% block center %}
     <div class="section">
-        <div class="row">
-            <div class="col-xs-12 col-md-8">
-                {% include 'core/components/search_form.html' %}
-            </div>
-        </div>
+        {% include 'core/components/search_form.html' %}
     </div>
     {% if request.GET %}
         <div class="section">

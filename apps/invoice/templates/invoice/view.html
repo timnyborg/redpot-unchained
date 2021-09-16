@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layout_bs5.html' %}
 {% load redpot_tags %}
 {% load render_table from django_tables2 %}
 
@@ -10,27 +10,27 @@
             <h2>{{ invoice }}</h2>
 
             <div class="clearfix"></div>
-            <dl class="dl-horizontal">
-                <dt>Invoiced to</dt>
-                <dd>{{ invoice.invoiced_to }}</dd>
+            <dl class="row">
+                <dt class="col-4">Invoiced to</dt>
+                <dd class="col-8 mb-0">{{ invoice.invoiced_to }}</dd>
                 {% if invoice.fao %}
-                    <dt>FAO</dt>
-                    <dd>{{ invoice.fao }}</dd>
+                    <dt class="col-4">FAO</dt>
+                    <dd class="col-8 mb-0">{{ invoice.fao }}</dd>
                 {% endif %}
-                <dt>Amount</dt>
-                <dd>£{{ invoice.amount | floatformat:2 }}</dd>
-                <dt>Invoiced on</dt>
-                <dd>{{ invoice.date | date }}</dd>
-                <dt>Due date</dt>
-                <dd>{{ invoice.due_date | date }}</dd>
-                <dt>Balance</dt>
-                <dd>£{{ invoice.balance | floatformat:2 }}</dd>
+                <dt class="col-4">Amount</dt>
+                <dd class="col-8 mb-0">£{{ invoice.amount | floatformat:2 }}</dd>
+                <dt class="col-4">Invoiced on</dt>
+                <dd class="col-8 mb-0">{{ invoice.date | date }}</dd>
+                <dt class="col-4">Due date</dt>
+                <dd class="col-8 mb-0">{{ invoice.due_date | date }}</dd>
+                <dt class="col-4">Balance</dt>
+                <dd class="col-8 mb-0">£{{ invoice.balance | floatformat:2 }}</dd>
             </dl>
         </div>
         <div class="col-md-6 hidden-xs hidden-sm"></div>
-        <div class='col-xs-12 col-md-2' >
-            <a class='btn btn-default btn-block'>Buttons</a>
-            <a class='btn btn-default btn-block'>Go</a>
+        <div class='col-xs-12 col-md-2 d-grid gap-2 mb-auto'>
+            <a class='btn btn-secondary btn-block'>Buttons</a>
+            <a class='btn btn-secondary btn-block'>Go</a>
             <a href="{% url 'invoice:payment' invoice.id %}" class='btn btn-success btn-block'>
                 <i class="fas fa-fw fa-pound-sign"></i> Payment
             </a>
@@ -40,6 +40,7 @@
                 </a>
             {% endif %}
             <a class='btn btn-info btn-block'>Another button</a>
+            <div class="mb-auto"></div>
         </div>
     </div>
     {% timestamp invoice %}
@@ -82,7 +83,7 @@
     <div class='row'>
         <div class='col-sm-6'>
             {% if perms.finance %}
-            <div class="pull-right top-right-button">
+            <div class="float-end">
                 <a href="{% url 'invoice:edit-payment-plan' plan.pk %}" class="btn btn-success btn-xs"><span class="fas fa-fw fa-pencil-alt"></span> Edit plan</a>
             </div>
             {% endif %}
@@ -94,14 +95,14 @@
                 </div>
             {% endif %}
             <dl class='dl-horizontal'>
-                <dt>Amount</dt><dd>£{{ plan.amount | floatformat:2}}</dd>
-                <dt>Type</dt><dd>{{ plan.type.name }}</dd>
-                <dt>Status</dt><dd>{{ plan.status }}</dd>
+                <dt class="col-4">Amount</dt><dd class="col-8 mb-0">£{{ plan.amount | floatformat:2}}</dd>
+                <dt class="col-4">Type</dt><dd class="col-8 mb-0">{{ plan.type.name }}</dd>
+                <dt class="col-4">Status</dt><dd class="col-8 mb-0">{{ plan.status }}</dd>
             </dl>
         </div>
         <div class='col-sm-6'>
             {% if plan.is_custom and perms.finance %}
-                <div class="pull-right top-right-button">
+                <div class="float-end">
                     <a href="{% url 'invoice:edit-payment-schedule' plan.id %}" class="btn btn-success btn-xs">
                         <span class="fas fa-fw fa-plus"></span> Edit schedule
                     </a>
@@ -116,7 +117,7 @@
 </div>
 {% elif perms.finance %}
 <div class="section">
-    <div class="pull-right top-right-button">
+    <div class="float-end">
         <a href="{% url 'invoice:create-payment-plan' invoice.id %}" class="btn btn-success btn-xs">
             <span class="fas fa-fw fa-plus"></span> Add payment plan
         </a>

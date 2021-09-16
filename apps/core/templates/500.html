@@ -1,26 +1,16 @@
-{% extends 'layout.html' %}
+{% extends 'layout_bs5.html' %}
 {% block title %} Redpot {% endblock %}
 {% block subtitle %} Error {% endblock %}
 
 {% block center %}
-<div class="section">
-    <div class="not-found-message">
-        <h1><i class="far fa-frown"></i></h1>
-        <h2>Sorry, something <a href='http://en.wikipedia.org/wiki/Robert_Bork#Bork_as_verb' target='_blank'>Borked</a>!</h2>
-        <p>If this error persists, contact <b>Redpot support</b> (<a href="mailto:redpot-support@conted.ox.ac.uk">redpot-support@conted.ox.ac.uk</a>)</p>
-    </div>
+<div class="section text-center">
+    <span class="display-1"><i class="far fa-frown"></i></span>
+    <h2 class="mb-4">
+        Sorry, something <a href='http://en.wikipedia.org/wiki/Robert_Bork#Bork_as_verb' target='_blank'>Borked</a>!
+    </h2>
+    <p>
+        If this error persists, contact <b>Redpot support</b>
+        (<a href="mailto:redpot-support@conted.ox.ac.uk">redpot-support@conted.ox.ac.uk</a>)
+    </p>
 </div>
-<style>
-    {# todo: rename this styling, put into redpot.scss #}
-    .not-found-message {
-        text-align: center;
-    }
-    .not-found-message h1 {
-        font-size: 100px;
-    }
-    .not-found-message h2 {
-        font-size: 30px;
-        margin-bottom: 20px;
-    }
-</style>
 {% endblock %}

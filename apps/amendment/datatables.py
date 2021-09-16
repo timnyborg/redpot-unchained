@@ -27,7 +27,6 @@ class ApprovalTable(tables.Table):
 
     class Meta:
         model = models.Amendment
-        template_name = "django_tables2/bootstrap.html"
         fields = (
             'amendment',
             'type',
@@ -90,7 +89,6 @@ class SearchTable(tables.Table):
 
     class Meta:
         model = models.Amendment
-        template_name = "django_tables2/bootstrap.html"
         fields = (
             'type',
             'amount',

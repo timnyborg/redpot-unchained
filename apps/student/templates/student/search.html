@@ -3,10 +3,9 @@
     <div class="section">
         <div class="row">
             <div class="col-6">
-                {% include 'core/components/search_form_bs5.html' %}
+                {% include 'core/components/search_form.html' %}
             </div>
-            <div class="col-2"></div>
-            <div class="col-4">
+            <div class="col-4 offset-sm-2">
                 <form method='POST' action="{% url 'student:lookup' %}">
                     {% csrf_token %}
                     <div class="form-group">
@@ -39,7 +38,7 @@
             <form action="" method="post">
                 {% include 'core/components/search_results_table.html' %}
                 {% csrf_token %}
-                {% if perms.student.merge_student %}
+                {% if perms.student.merge_student and table.rows %}
                 <button type="submit" class="btn btn-secondary">
                     <i class="fas fa-fw fa-layer-group"></i> Merge selected
                 </button>

@@ -1,25 +1,11 @@
-{% extends 'layout.html' %}
+{% extends 'layout_bs5.html' %}
 {% block title %} Redpot {% endblock %}
 {% block subtitle %} Not found {% endblock %}
 
 {% block center %}
-<div class="section">
-    <div class="not-found-message">
-        <h1>404</h1>
-        <h2>Sorry, there's nothing here</h2>
-        {% if exception %}<h4>({{ exception }})</h4>{% endif %}
-    </div>
+<div class="section text-center">
+    <span class="display-1">404</span>>
+    <h2 class="mb-4">Sorry, there's nothing here</h2>
+    {% if exception %}<h5>({{ exception }})</h5>{% endif %}
 </div>
-<style>
-    .not-found-message {
-        text-align: center;
-    }
-    .not-found-message h1 {
-        font-size: 100px;
-    }
-    .not-found-message h2 {
-        font-size: 30px;
-        margin-bottom: 20px;
-    }
-</style>
 {% endblock %}

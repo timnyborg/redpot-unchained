@@ -595,43 +595,49 @@ ul.item-list {
 ul.item-list li.item, ul.item-list li.hide-toggle {
     padding: 10px 15px;
     display: block;
-    margin: 0;
     border-color: #eee;
     border-bottom: 1px solid #eee;
-    font-size: 14px;
-    color: #2e2e2e;
+    font-size: 15px;
 }
 
-ul.item-list li.item .hide-until-hover, ul.item-list li.hide-toggle .hide-until-hover {
+ul.item-list li.item .hide-until-hover,
+ul.item-list li.hide-toggle .hide-until-hover {
     visibility: hidden;
 }
 
-ul.item-list li.item:hover, ul.item-list li.hide-toggle:hover {
+ul.item-list li.item:hover,
+ul.item-list li.hide-toggle:hover {
     background-color: #f4f4f4;
 }
 
-ul.item-list li.item:hover .hide-until-hover, ul.item-list li.hide-toggle:hover .hide-until-hover {
+ul.item-list li.item:hover .hide-until-hover,
+ul.item-list li.hide-toggle:hover .hide-until-hover {
     visibility: visible;
 }
 
-ul.item-list li.item .item-info span.label:first-of-type, ul.item-list li.hide-toggle .item-info span.label:first-of-type {
+ul.item-list li.item .item-info span.label:first-of-type,
+ul.item-list li.hide-toggle .item-info span.label:first-of-type {
     margin-left: 5px;
 }
 
-ul.item-list li.item.hide-toggle, ul.item-list li.hide-toggle.hide-toggle {
+ul.item-list li.item.hide-toggle,
+ul.item-list li.hide-toggle.hide-toggle {
     text-align: center;
     cursor: pointer;
 }
 
-ul.item-list li.item.hide-toggle .rotate-icon, ul.item-list li.hide-toggle.hide-toggle .rotate-icon {
+ul.item-list li.item.hide-toggle .rotate-icon,
+ul.item-list li.hide-toggle.hide-toggle .rotate-icon {
     transition: .2s ease-out all;
 }
 
-ul.item-list li.item.hide-toggle .rotate-icon.rotated, ul.item-list li.hide-toggle.hide-toggle .rotate-icon.rotated {
+ul.item-list li.item.hide-toggle .rotate-icon.rotated,
+ul.item-list li.hide-toggle.hide-toggle .rotate-icon.rotated {
     transform: rotate(180deg);
 }
 
-ul.item-list li.item.today, ul.item-list li.hide-toggle.today {
+ul.item-list li.item.today,
+ul.item-list li.hide-toggle.today {
     background: #f3fff2;
     border-color: #e1e8d5;
 }
@@ -776,12 +782,28 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 
 
 /* Trying to make DAL match bootstrap.  DAL css should be replaced instead? */
-
+.select2-selection--single {
+    height: 38px !important;
+}
+.select2-selection__rendered {
+    line-height: 38px !important;
+    padding-left: .75rem !important;
+}
 .select2-selection.select2-selection--single.form-control {
-    height: 35px;
+    height: 38px;
     border-bottom-left-radius: 4px;
     border-top-left-radius: 4px;
     padding-top: 3px;
+}
+
+.input-group .select2-selection.select2-selection--single.form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #444;
+    line-height: 38px;
 }
 
 .select2-selection__arrow {

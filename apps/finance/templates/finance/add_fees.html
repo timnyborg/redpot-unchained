@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layout_bs5.html' %}
 {% load redpot_tags %}
 {% load render_table from django_tables2 %}
 
@@ -15,11 +15,9 @@
         <h2>Custom fee or adjustment</h2>
         <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
             {% csrf_token %}
-            {% bootstrap3form form %}
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    {% bootstrap3submit form.submit_label|default:'Save' %}
-                </div>
+            {% bootstrap5form form %}
+            <div class="col-sm-offset-2 col-sm-10">
+                {% bootstrap3submit form.submit_label|default:'Save' %}
             </div>
         </form>
     </div>

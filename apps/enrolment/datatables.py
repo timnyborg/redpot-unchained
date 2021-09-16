@@ -65,7 +65,6 @@ class FinanceTable(tables.Table):
     class Meta:
         model = Ledger
         fields = ['amount', 'narrative', 'type', 'timestamp', 'invoice', 'allocation', 'batch', 'print', 'delete']
-        template_name = 'django_tables2/bootstrap.html'
 
     def __init__(self, display_finance_columns=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -81,4 +80,3 @@ class AmendmentTable(tables.Table):
     class Meta:
         model = Amendment
         fields = ['type', 'amount', 'requested_by', 'requested_on', 'approved_by', 'approved_on', 'status', 'edit']
-        template_name = 'django_tables2/bootstrap.html'

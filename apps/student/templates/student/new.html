@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layout_bs5.html' %}
 {% load redpot_tags %}
 {% load render_table from django_tables2 %}
 
@@ -9,23 +9,28 @@
 
 <div class='section'>
     {% if not table %}
-    <div class="progress">
-        <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%">
+    <div class="progress mb-3">
+        <div class="progress-bar bg-success progress-bar-striped"
+             role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%"
+        >
         </div>
     </div>
     <h4>Personal information</h4>
     <div class='row'>
-        <div class='col-xs-8'>
+        <div class='col-8'>
             <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
                 {% csrf_token %}
-                {% bootstrap3form search_form True %}
+                {% bootstrap5form search_form True %}
                 {% bootstrap3submit 'Search for matches' %}
             </form>
+            {{ search_form.media }}
         </div>
     </div>
     {% else %}
-        <div class="progress">
-            <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+        <div class="progress mb-3">
+            <div class="progress-bar bg-success progress-bar-striped"
+                 role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%"
+            >
             </div>
         </div>
         <h2>Check possible matches</h2>
@@ -34,7 +39,7 @@
             {% render_table table %}
             <h5>If none of these records match your new person, create a new record</h5>
         {% else %}
-            <h5><span class='fa fa-check text-success'></span> No matches found</h5>
+            <h5 class="mb-3"><span class='fas fa-check text-success'></span> No matches found</h5>
         {% endif %}
         <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
             {% csrf_token %}

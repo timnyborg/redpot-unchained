@@ -93,7 +93,6 @@ class InvoiceSearchTable(tables.Table):
 
     class Meta:
         model = Invoice
-        template_name = "django_tables2/bootstrap.html"
         fields = ('number', 'invoiced_to', 'date', 'created_by', 'amount', 'balance')
         per_page = 10
         order_by = ('-date', '-created_on')
@@ -104,7 +103,6 @@ class InvoiceFeesTable(tables.Table):
 
     class Meta:
         model = Ledger
-        template_name = "django_tables2/bootstrap.html"
         fields = ('amount', 'narrative', 'type', 'timestamp', 'enrolment')
         order_by = ('date', 'id')
 
@@ -120,7 +118,6 @@ class InvoicePaymentsTable(tables.Table):
 
     class Meta:
         model = Ledger
-        template_name = "django_tables2/bootstrap.html"
         fields = ('amount', 'narrative', 'type', 'timestamp')
         order_by = ('date', 'id')
 
@@ -134,7 +131,6 @@ class InvoiceCreditNoteTable(tables.Table):
 
     class Meta:
         model = Ledger
-        template_name = "django_tables2/bootstrap.html"
         fields = ('amount', 'narrative', 'type', 'timestamp', 'invoice')
         order_by = ('date', 'id')
 
@@ -144,7 +140,6 @@ class PaymentScheduleTable(tables.Table):
 
     class Meta:
         model = ScheduledPayment
-        template_name = "django_tables2/bootstrap.html"
         fields = ('due_date', 'amount', 'is_deposit')
         order_by = ('due_date',)
         orderable = False
@@ -161,7 +156,6 @@ class ChooseEnrolmentsTable(tables.Table):
 
     class Meta:
         model = Enrolment
-        template_name = "django_tables2/bootstrap.html"
         fields = ('enrolment', 'module__code', 'module__title', 'created_by', 'created_on', 'balance')
         order_by = ('-created_on',)
         per_page = 100
@@ -182,6 +176,5 @@ class ChooseFeesTable(tables.Table):
 
     class Meta:
         model = Ledger
-        template_name = "django_tables2/bootstrap.html"
         fields = ('fee', 'amount', 'narrative', 'type', 'date', 'enrolment')
         per_page = 100

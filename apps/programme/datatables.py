@@ -38,7 +38,6 @@ class ProgrammeSearchTable(tables.Table):
 
     class Meta:
         model = Programme
-        template_name = "django_tables2/bootstrap.html"
         fields = (
             "title",
             "division",

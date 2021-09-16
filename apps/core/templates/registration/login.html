@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layout_bs5.html' %}
 {% load redpot_tags %}
 
 {% block title %}Login{% endblock %}
@@ -6,7 +6,7 @@
 {% block center %}
 <div class='section'>
 	<div class='row'>
-		<div class='col-xs-6'>
+		<div class='col-6'>
 			<h2>Login</h2>
 			<form method="post" class="form-horizontal">
 				{% csrf_token %}

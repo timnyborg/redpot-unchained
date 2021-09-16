@@ -49,7 +49,6 @@ class ModuleSearchTable(tables.Table):
 
     class Meta:
         model = Module
-        template_name = "django_tables2/bootstrap.html"
         fields = ('code', "title", "start_date", "end_date", "division", "portfolio")
         per_page = 10
         order_by = ('-start_date',)
@@ -63,7 +62,6 @@ class WaitlistTable(tables.Table):
 
     class Meta:
         model = Waitlist
-        template_name = "django_tables2/bootstrap.html"
         fields = ('id', 'student', 'listed_on', 'emailed_on')
 
 
@@ -73,6 +71,5 @@ class BookTable(tables.Table):
 
     class Meta:
         model = Book
-        template_name = "django_tables2/bootstrap.html"
         fields = ('author', 'title', 'type')
         order_by = ('-type', 'author', 'title')

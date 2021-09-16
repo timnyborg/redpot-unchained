@@ -26,7 +26,9 @@ class ModuleHECoSSubject(SignatureModel):
     module = models.ForeignKey(
         'module.Module', models.DO_NOTHING, db_column='module', related_name='module_hecos_subjects'
     )
-    hecos_subject = models.ForeignKey('HECoSSubject', models.DO_NOTHING, db_column='hecos_subject')
+    hecos_subject = models.ForeignKey(
+        'HECoSSubject', models.DO_NOTHING, db_column='hecos_subject', verbose_name='HECoS subject'
+    )
     percentage = models.IntegerField(validators=[validators.MinValueValidator(1), validators.MaxValueValidator(100)])
 
     class Meta:

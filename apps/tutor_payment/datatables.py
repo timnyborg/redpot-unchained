@@ -64,7 +64,6 @@ class SearchTable(django_tables2.Table):
 
     class Meta:
         model = TutorFee
-        template_name = "django_tables2/bootstrap.html"
         fields = (
             'approvable_icon',
             'tutor_module__tutor__student',
