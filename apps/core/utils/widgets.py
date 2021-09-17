@@ -16,8 +16,9 @@ from django.forms import widgets
 
 
 class PickerOptionsMixin:
-    """Remove the extra options by default from our date/time pickers"""
+    """Remove the extra options by default from our date/time pickers, and apply BS5 styling"""
 
+    template_name = 'widgets/datepicker_input.html'
     _default_options = {
         'showClose': False,
         'showClear': False,
@@ -47,6 +48,10 @@ class MonthPickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.DatePickerI
             return datetime.strptime(value, self.format).date()
         except (ValueError, TypeError):
             return value
+
+
+class TimePickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.TimePickerInput):
+    template_name = 'widgets/timepicker_input.html'
 
 
 class PoundInput(widgets.NumberInput):
