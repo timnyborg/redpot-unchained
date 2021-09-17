@@ -15,7 +15,7 @@ class PDF(PermissionRequiredMixin, generic.View):
 
     permission_required = 'transcript.print'
 
-    def get(self, request, student_id: int, level: str, header: bool = False, *args, **kwargs):
+    def get(self, request, student_id: int, level: str, header: bool = False, *args, **kwargs) -> http.HttpResponse:
         student = get_object_or_404(Student, pk=student_id)
         document = pdfs.create_transcript(header=header, level=level, student=student)
 
