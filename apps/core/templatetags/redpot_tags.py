@@ -61,11 +61,6 @@ def user_name(username):
     return cache.get_or_set(f'user_name_{username}', lambda: _get_name(username))
 
 
-@register.inclusion_tag('utility/bootstrap3_form.html')
-def bootstrap3form(form, status_classes=True):
-    return {'form': form, 'status_classes': status_classes}
-
-
 @register.inclusion_tag('utility/bootstrap_form.html')
 def bootstrap5form(form, status_classes=True, input_size='normal'):
     form_control_classes = {

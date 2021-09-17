@@ -43,7 +43,7 @@
         {% endif %}
         <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
             {% csrf_token %}
-            {% bootstrap3form create_form %}
+            {% bootstrap5form create_form %}
             <button type="submit" class="btn btn-success" name="action" value="create">Create student</button>
         </form>
     {% endif %}
