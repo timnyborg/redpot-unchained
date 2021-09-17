@@ -66,7 +66,7 @@ def bootstrap3form(form, status_classes=True):
     return {'form': form, 'status_classes': status_classes}
 
 
-@register.inclusion_tag('utility/bootstrap5_form.html')
+@register.inclusion_tag('utility/bootstrap_form.html')
 def bootstrap5form(form, status_classes=True, input_size='normal'):
     form_control_classes = {
         'normal': "form-control",
