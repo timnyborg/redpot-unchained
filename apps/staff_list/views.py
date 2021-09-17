@@ -49,14 +49,14 @@ class CoursesListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     subtitle = 'Courses list'
     template_name = 'staff_list/courses_list.html'
     context_object_name = 'programmes'
-
-    def get_queryset(self):
-        progs = Programme.objects.filter(contact_list_display=True)
-        return progs
+    queryset = (
+        Programme.objects.filter(contact_list_display=True)
+        .select_related('division', 'division__manager')
+        .prefetch_related('programme_staff_set', 'programme_staff_set__staff', 'programme_staff_set__role')
+    )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['qualifications'] = [
             ('Non-accredited', 'non-acc', self.object_list.filter(qualification=True)),
             ('Undergraduate short courses', 'ug-credit', self.object_list.filter(qualification=61)),

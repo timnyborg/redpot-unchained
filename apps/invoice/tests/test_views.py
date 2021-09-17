@@ -121,6 +121,9 @@ class TestCreateViews(TestCase):
             data={
                 'due_date': date(2020, 1, 1),
                 'invoiced_to': 'Person',
+                'contact_person': 'Steve',
+                'contact_email': 'a@a.net',
+                'contact_phone': '123',
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -178,3 +181,23 @@ class TestCreatePaymentPlan(LoggedInViewTestMixin, TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.invoice.payment_plan.amount, 100)
+
+
+class TestPDF(LoggedInViewTestMixin, TestCase):
+    superuser = True
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        invoice = factories.InvoiceFactory()
+        invoice.ledger_items.add(
+            LedgerFactory(),  # Todo: switch to a double-sided transaction
+            through_defaults={'item_no': 1, 'allocation': invoice},
+        )
+        cls.url = reverse('invoice:pdf', kwargs={'pk': invoice.id})
+
+    def test_get(self):
+        """This can't actually verify the contents of the pdf"""
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'application/pdf')

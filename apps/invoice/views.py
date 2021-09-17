@@ -15,13 +15,14 @@ from django.urls import reverse
 from django.views import generic
 from django.views.generic.edit import FormMixin
 
+from apps.core.utils import strings
 from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.finance.models import Ledger
 from apps.student.models import Student
 
-from . import datatables, forms, models, services
+from . import datatables, forms, models, pdfs, services
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FormMixin, FilterView):
@@ -353,3 +354,18 @@ class Payment(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, gene
 
     def get_success_url(self):
         return next_url_if_safe(self.request) or self.invoice.get_absolute_url()
+
+
+class PDF(PermissionRequiredMixin, generic.View):
+    """Generate a transcript for a single student"""
+
+    permission_required = 'invoice.print'
+
+    def get(self, request, pk: int, *args, **kwargs) -> http.HttpResponse:
+        invoice = get_object_or_404(models.Invoice, pk=pk)
+        document = pdfs.create_invoice(invoice)
+
+        filename = strings.normalize(f'Invoice_{invoice}{invoice.invoiced_to}.pdf').replace(' ', '_')
+        return http.HttpResponse(
+            document, content_type='application/pdf', headers={'Content-Disposition': f'inline;filename={filename}'}
+        )

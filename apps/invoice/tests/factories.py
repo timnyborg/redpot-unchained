@@ -9,6 +9,8 @@ class InvoiceFactory(factory.django.DjangoModelFactory):
 
     number = factory.Sequence(lambda n: n)
     amount = 100
+    ref_no = factory.Faker('pyint')
+    vat_no = factory.Faker('numerify', text='GB#########')
 
 
 class CustomPaymentPlanFactory(factory.django.DjangoModelFactory):

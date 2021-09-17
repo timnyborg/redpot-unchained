@@ -41,12 +41,9 @@ class Invoice(AddressModel, SignatureModel):
     custom_narrative = models.BooleanField(default=False)
     narrative = models.TextField(blank=True, null=True)
     ref_no = models.CharField(max_length=64, blank=True, null=True, verbose_name='Customer ref. #')
-    division = models.IntegerField(blank=True, null=True, editable=False)
-    contact_person = models.CharField(max_length=128, blank=True, null=True)
-    contact_email = models.CharField(max_length=255, blank=True, null=True)
-    contact_phone = models.CharField(max_length=64, blank=True, null=True)
-    company = models.CharField(max_length=128, blank=True, null=True)
-    formatted_addressee = models.TextField(blank=True, null=True)
+    contact_person = models.CharField(max_length=128)
+    contact_email = models.CharField(max_length=255)
+    contact_phone = models.CharField(max_length=64)
     vat_no = models.CharField(max_length=64, blank=True, null=True, verbose_name='VAT #')
 
     ledger_items = models.ManyToManyField(

@@ -29,8 +29,12 @@
         </div>
         <div class="col-md-6 hidden-xs hidden-sm"></div>
         <div class='col-xs-12 col-md-2 d-grid gap-2 mb-auto'>
-            <a class='btn btn-secondary btn-block'>Buttons</a>
-            <a class='btn btn-secondary btn-block'>Go</a>
+            <a class='btn btn-outline-dark btn-block' href="{% url 'invoice:pdf' invoice.id %}">
+                <i class="fas fa-fw fa-file-pdf"></i> PDF
+            </a>
+            <a class='btn btn-outline-dark btn-block'>
+                <i class="fas fa-fw fa-file-invoice-dollar"></i> Statement
+            </a>
             <a href="{% url 'invoice:payment' invoice.id %}" class='btn btn-success btn-block'>
                 <i class="fas fa-fw fa-pound-sign"></i> Payment
             </a>
@@ -39,7 +43,9 @@
                     <i class="fas fa-fw fa-minus"></i> Credit
                 </a>
             {% endif %}
-            <a class='btn btn-info btn-block'>Another button</a>
+            <a class='btn btn-info btn-block'>
+                <i class="fas fa-fw fa-envelope"></i> Confirmation
+            </a>
             <div class="mb-auto"></div>
         </div>
     </div>
