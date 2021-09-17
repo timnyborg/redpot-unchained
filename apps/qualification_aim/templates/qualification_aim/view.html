@@ -5,68 +5,69 @@
 
 <div class="section">
     <div class="row">
-        <div class="col-xs-12 col-md-6">
+        <div class="col-sm-12 col-md-6">
             {% edit_button object %}
             <h2>Details</h2>
-            <dl class="dl-horizontal">
-                <dt>Student</dt>
-                <dd>
+            <hr>
+            <dl class="row">
+                <dt class="col-4">Student</dt>
+                <dd class="col-8 mb-0">
                     <a href="{{ object.student.get_absolute_url }}">{{ object.student }}</a>
                 </dd>
-                <dt>Programme</dt>
-                <dd>
+                <dt class="col-4">Programme</dt>
+                <dd class="col-8 mb-0">
                     <a href="{{ object.programme.get_absolute_url }}">{{ object.programme }}</a>
                 </dd>
-                <dt>Title</dt>
-                <dd>{{ object.title }}</dd>
-                <dt>Start date</dt>
-                <dd>{{ object.start_date | default:'–' }}</dd>
-                <dt>End date</dt>
-                <dd>{{ object.end_date | default:'–' }}</dd>
-                <dt>Entry qualification</dt>
-                <dd>{{ object.entry_qualification | default:'–' }}</dd>
-                <dt>Reason for ending</dt>
-                <dd>{{ object.reason_for_ending | default:'–' }}</dd>
-                <dt>SITS code</dt>
-                <dd>{{ object.sits_code | default:'–' }}</dd>
+                <dt class="col-4">Title</dt>
+                <dd class="col-8 mb-0">{{ object.title }}</dd>
+                <dt class="col-4">Start date</dt>
+                <dd class="col-8 mb-0">{{ object.start_date | default:'–' }}</dd>
+                <dt class="col-4">End date</dt>
+                <dd class="col-8 mb-0">{{ object.end_date | default:'–' }}</dd>
+                <dt class="col-4">Entry qualification</dt>
+                <dd class="col-8 mb-0">{{ object.entry_qualification | default:'–' }}</dd>
+                <dt class="col-4">Reason for ending</dt>
+                <dd class="col-8 mb-0">{{ object.reason_for_ending | default:'–' }}</dd>
+                <dt class="col-4">SITS code</dt>
+                <dd class="col-8 mb-0">{{ object.sits_code | default:'–' }}</dd>
             </dl>
         </div>
 
-        <div class="col-xs-12 col-md-4">
-            {% if object.is_certhe %}
-                <hr class="hidden-md hidden-lg">
+        <div class="col-sm-12 col-md-6">
+            {% if object.programme.is_certhe %}
+                <hr class="d-block d-md-none">
                 {% url 'qualification_aim:certhe-marks' object.id as certhe_url %}
                 {% edit_button certhe_url %}
                 <h2>Cert. HE marks</h2>
-
+                <hr>
                 {% if object.certhe_marks %}
-                    <dl class="dl-horizontal">
-                        <dt>Courses transferred in</dt>
-                        <dd>{{ object.certhe_marks.courses_transferred_in | default:'–' }}</dd>
-                        <dt>Credits transferred in</dt>
-                        <dd>{{ object.certhe_marks.credits_transferred_in | default:'–' }}</dd>
-                        <dt>Cert HE subject</dt>
-                        <dd>{{ object.certhe_marks.subject | default:'–' }}</dd>
-                        <dt>Assignment 1 date</dt>
-                        <dd>{{ object.certhe_marks.assignment1_date | default:'–' }}</dd>
-                        <dt>Assignment 1 grade</dt>
-                        <dd>{{ object.certhe_marks.assignment1_grade | default:'–' }}</dd>
-                        <dt>Assignment 2 date</dt>
-                        <dd>{{ object.certhe_marks.assignment2_date | default:'–' }}</dd>
-                        <dt>Assignment 2 grade</dt>
-                        <dd>{{ object.certhe_marks.assignment2_grade | default:'–' }}</dd>
-                        <dt>Assignment 3 date</dt>
-                        <dd>{{ object.certhe_marks.assignment3_date | default:'–' }}</dd>
-                        <dt>Assignment 3 grade</dt>
-                        <dd>{{ object.certhe_marks.assignment3_grade | default:'–' }}</dd>
-                        <dt>Journal 1 date</dt>
-                        <dd>{{ object.certhe_marks.journal1_date | default:'–' }}</dd>
-                        <dt>Journal 2 date</dt>
-                        <dd>{{ object.certhe_marks.journal2_date | default:'–' }}</dd>
-                        <dt>Journal CATS points</dt>
-                        <dd>{{ object.certhe_marks.journal_cats_points | default:'–' }}</dd>
-                        <dt>Introductory course</dt>
-                        <dd>{{ object.certhe_marks.is_introductory_course | yesno | title }}</dd>
+                    <dl class="row">
+                        <dt class="col-4">Courses transferred in</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.courses_transferred_in | default:'–' }}</dd>
+                        <dt class="col-4">Credits transferred in</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.credits_transferred_in | default:'–' }}</dd>
+                        <dt class="col-4">Cert HE subject</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.subject | default:'–' }}</dd>
+                        <dt class="col-4">Assignment 1 date</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.assignment1_date | default:'–' }}</dd>
+                        <dt class="col-4">Assignment 1 grade</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.assignment1_grade | default:'–' }}</dd>
+                        <dt class="col-4">Assignment 2 date</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.assignment2_date | default:'–' }}</dd>
+                        <dt class="col-4">Assignment 2 grade</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.assignment2_grade | default:'–' }}</dd>
+                        <dt class="col-4">Assignment 3 date</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.assignment3_date | default:'–' }}</dd>
+                        <dt class="col-4">Assignment 3 grade</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.assignment3_grade | default:'–' }}</dd>
+                        <dt class="col-4">Journal 1 date</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.journal1_date | default:'–' }}</dd>
+                        <dt class="col-4">Journal 2 date</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.journal2_date | default:'–' }}</dd>
+                        <dt class="col-4">Journal CATS points</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.journal_cats_points | default:'–' }}</dd>
+                        <dt class="col-4">Introductory course</dt>
+                        <dd class="col-8 mb-0">{{ object.certhe_marks.is_introductory_course | yesno | title }}</dd>
                     </dl>
                 {% else %}
                     None
@@ -79,12 +80,14 @@
 
 <div class="section">
     <a id='enrolments' class='nav-anchor'></a>
-    <div class="pull-right top-right-button">
-        <a href="{% url 'enrolment:create' object.id %}" class="btn btn-success btn-xs"><span class="fas fa-plus"></span> Add enrolment</a>
+    <div class="float-end">
+        <a href="{% url 'enrolment:create' object.id %}" class="btn btn-success btn-xs">
+            <span class="fas fa-plus"></span> Add enrolment
+        </a>
     </div>
 
     <h2>Enrolments ({{ enrolments|length }})</h2>
-    <table class="table table-condensed table-striped table-hover hide-rows" data-display=5>
+    <table class="table table-striped table-hover hide-rows" data-display=5>
         <thead>
             <tr>
                 <th>Code</th>

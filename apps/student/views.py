@@ -11,10 +11,10 @@ from django.db import models
 from django.db.models import Prefetch, Q
 from django.forms import Form
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from apps.core.utils.views import PageTitleMixin
+from apps.core.utils.views import DeletionFailedMessageMixin, PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
 
@@ -54,7 +54,7 @@ class Create(LoginRequiredMixin, generic.View):
             email_address=models.F('email__email'),
             default_address=models.FilteredRelation('address', condition=models.Q(address__is_default=True)),
             postcode=models.F('default_address__postcode'),
-        )
+        )[:30]
 
     def get(self, request):
         search_form = forms.CreatePersonSearchForm()
@@ -69,7 +69,7 @@ class Create(LoginRequiredMixin, generic.View):
         if search_form.is_valid():
             # Components of our search query
             queryset = self.get_queryset(search_form)
-            table = datatables.CreateMatchTable(data=queryset)
+            table = datatables.CreateMatchTable(data=queryset, request=request)
             # Store details for use by creation method
             self.request.session['new_student'] = search_form.cleaned_data
 
@@ -231,6 +231,12 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Upda
     template_name = 'core/form.html'
     form_class = forms.EditForm
     success_message = 'Record updated'
+
+
+class Delete(LoginRequiredMixin, PageTitleMixin, DeletionFailedMessageMixin, generic.DeleteView):
+    model = Student
+    template_name = 'core/delete_form.html'
+    success_url = reverse_lazy('student:search')
 
 
 class MakeTutor(LoginRequiredMixin, generic.View):

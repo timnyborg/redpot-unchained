@@ -379,3 +379,5 @@ CKEDITOR_CONFIGS = {
         'extraPlugins': 'wordcount',
     },
 }
+
+DJANGO_TABLES2_TEMPLATE = 'django_tables2/bootstrap4.html'

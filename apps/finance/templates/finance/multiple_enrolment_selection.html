@@ -4,7 +4,8 @@
 {% block center %}
     <div class='section'>
         <h2>Select enrolments</h2>
-        <h3>Single student</h3>
+        <hr>
+        <h4>Single student</h4>
         {% if student_enrolments_table.rows %}
             <form action="" method="post">
                 {% csrf_token %}
@@ -20,7 +21,7 @@
 
         <div class='horizontal-divider'><span>OR</span></div>
 
-        <h3>My recent outstanding enrolments</h3>
+        <h4>My recent outstanding enrolments</h4>
         {% if recent_enrolments_table.rows %}
         <form action="" method="post">
             {% csrf_token %}

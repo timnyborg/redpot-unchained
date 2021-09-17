@@ -137,6 +137,8 @@ class EditForm(forms.ModelForm):  # noqa: DJ06
             'notification': CKEditorWidget(config_name='links_only'),
             **{field: CKEditorWidget() for field in HTML_FIELDS},
             **{field: widgets.DatePickerInput() for field in DATE_FIELDS},
+            'start_time': widgets.TimePickerInput(),
+            'end_time': widgets.TimePickerInput(),
         }
 
     def __init__(self, *args, **kwargs):

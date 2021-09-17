@@ -4,14 +4,11 @@
 {% load render_table from django_tables2 %}
 
 {% block right_sidebar %}
-<div class="hidden-xs" id="sidebar">
-    <ul class="nav sidenav">
-    </ul>
-</div>
+    {% include 'core/components/side_nav.html' %}
 {% endblock %}
 
 {% block center %}
-<div class="section">
+    <div class="section">
     {% if student.sits_id %}
     <div class="section-alert-header alert-warning" role="alert">
         <span class="fa fa-exclamation-circle"></span>
@@ -41,112 +38,113 @@
     {% endif %}
 
     <div class="row">
-        <div class="col-xs-12">
+        <div class="col-sm-12">
             {% edit_button student %}
-            <a id='student' class='nav-anchor'></a>
-            <h2>Personal details</h2>
+            <h2 id='student' class='section-title'>Personal details</h2>
             <hr>
-            <div class="col-xs-12 col-md-6">
-                <dl class="dl-horizontal">
-                    <dt>Title</dt><dd>{{ student.title | default:'–'  }}</dd>
-                    <dt>Surname</dt><dd>{{ student.surname }}</dd>
-                    <dt>First name</dt><dd>{{ student.firstname }}</dd>
-                    <dt>Middle names</dt><dd>{{ student.middlename | default:'–' }}</dd>
-                    <dt>Nickname</dt><dd>{{ student.nickname | default:'–'  }}</dd>
-                    <dt>Birthdate</dt><dd>{{ student.birthdate | default:'–'  }}</dd>
-                    <dt>Gender</dt><dd>{{ student.get_gender_display }}</dd>
-                    <dt>HESA ID</dt><dd>{{ student.husid | default:'–'  }}</dd>
-                    <dt>SITS ID</dt><dd>{{ student.sits_id | default:'–'  }}</dd>
-                    <dt>Nationality</dt><dd>{{ student.nationality.name }}</dd>
-                    <dt>Domicile</dt><dd>{{ student.domicile.name }}</dd>
-                    <dt>Ethnicity</dt><dd>{{ student.ethnicity.name }}</dd>
-                    <dt>Home/EU?</dt><dd>{{ student.is_eu | default:'Unknown'  }}</dd>
-                    <dt>Occupation</dt><dd>{{ student.occupation | default:'–'  }}</dd>
-                    <dt>Note</dt><dd>{{ student.note | default:'–' }}</dd>
-                    {% if last_merger %}
-                    <br>
-                    <hr>
-                    <dt>Merged by</dt><dd>{{ last_merger.created_by }}</dd>
-                    <dt>Merged on</dt><dd>{{ last_merger.modified_on | date:'SHORT_DATE_FORMAT' }}</dd>
-                    <!-- TODO: Create Merge history link page -->
-                    <a href="/student/merge-history/{{ last_merger.target }}" class="btn btn-info btn-xs">
-                        <span class="fa fa-eye"></span> Merge history
-                    </a>
-                    {% endif %}
-                </dl>
-            </div>
-            <div class="col-xs-12 col-md-6">
-                <!-- TODO: Disability dropdown feature needs to be implmented -->
-                <h4>Disability <small><a data-toggle="collapse" href="#collapse-disability"><span class="fa fa-chevron-down"></span></a></small></h4>
-                <dl class="dl-horizontal collapse" id="collapse-disability">
-                    <dt>Disability</dt><dd>{{ student.disability.description }}</dd>
-                    <dt>Detail</dt><dd>{{ student.disability_detail | default:'–'  }}</dd>
-                    <dt>Action taken</dt><dd>{{ student.disability_action | default:'–'  }}</dd>
-                </dl>
-                <h4>Dietary preferences
-                    <small>
-                        <a data-toggle="collapse" href="#collapse-diet"><span class="fa fa-chevron-down"></span></a>
-                        <!-- TODO: Diet section needs to be created -->
-                        <a href="/edit/{{student.id}}/diet/{{diet.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a>
-                    </small>
-                </h4>
-                <dl class="dl-horizontal collapse" id="collapse-diet">
-                    {% if diet %}
-                    <dt>Special diet</dt><dd>{{ diet.type }}</dd>
-                    <dt>Details</dt><dd>{{ diet.note }}</dd>
-                    {% else %}
-                    None
-                    {% endif %}
-                </dl>
-                <h4>Emergency contact
-                    <small><a data-toggle="collapse" href="#collapse-emergency"><span class="fa fa-chevron-down"></span></a></small>
-                    <!-- TODO: Create emergency contact page  -->
-                    <a href="/edit/{{student.id}}/emergency_contact/{{emergency_contact.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a>
-                </h4>
-                {% if emergency_contact %}
-                    <dl class="dl-horizontal collapse" id="collapse-emergency">
-                        <dt>Name</dt><dd>{{ emergency_contact.name }}</dd>
-                        <dt>Email</dt><dd>{{ emergency_contact.email }}</dd>
-                        <dt>Phone</dt><dd>{{ emergency_contact.phone }}</dd>
-                    </dl>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">Title</dt><dd class="col-sm-8 mb-0">{{ student.title | default:'–'  }}</dd>
+                <dt class="col-sm-4">Surname</dt><dd class="col-sm-8 mb-0">{{ student.surname }}</dd>
+                <dt class="col-sm-4">First name</dt><dd class="col-sm-8 mb-0">{{ student.firstname }}</dd>
+                <dt class="col-sm-4">Middle names</dt><dd class="col-sm-8 mb-0">{{ student.middlename | default:'–' }}</dd>
+                <dt class="col-sm-4">Nickname</dt><dd class="col-sm-8 mb-0">{{ student.nickname | default:'–'  }}</dd>
+                <dt class="col-sm-4">Birthdate</dt><dd class="col-sm-8 mb-0">{{ student.birthdate | default:'–'  }}</dd>
+                <dt class="col-sm-4">Gender</dt><dd class="col-sm-8 mb-0">{{ student.get_gender_display }}</dd>
+                <dt class="col-sm-4">HESA ID</dt><dd class="col-sm-8 mb-0">{{ student.husid | default:'–'  }}</dd>
+                <dt class="col-sm-4">SITS ID</dt><dd class="col-sm-8 mb-0">{{ student.sits_id | default:'–'  }}</dd>
+                <dt class="col-sm-4">Nationality</dt><dd class="col-sm-8 mb-0">{{ student.nationality.name }}</dd>
+                <dt class="col-sm-4">Domicile</dt><dd class="col-sm-8 mb-0">{{ student.domicile.name }}</dd>
+                <dt class="col-sm-4">Ethnicity</dt><dd class="col-sm-8 mb-0">{{ student.ethnicity.name }}</dd>
+                <dt class="col-sm-4">Home/EU?</dt><dd class="col-sm-8 mb-0">{{ student.is_eu | default:'Unknown'  }}</dd>
+                <dt class="col-sm-4">Occupation</dt><dd class="col-sm-8 mb-0">{{ student.occupation | default:'–'  }}</dd>
+                <dt class="col-sm-4">Note</dt><dd class="col-sm-8 mb-0">{{ student.note | default:'–' }}</dd>
+            </dl>
+            {% if last_merger %}
+            <dl class="row">
+                <dt class="col-sm-4">Merged by</dt><dd class="col-sm-8 mb-0">{{ last_merger.created_by }}</dd>
+                <dt class="col-sm-4">Merged on</dt><dd class="col-sm-8 mb-0">{{ last_merger.modified_on | date:'SHORT_DATE_FORMAT' }}</dd>
+            </dl>
+            <!-- TODO: Create Merge history link page -->
+            <a href="/student/merge-history/{{ last_merger.target }}" class="btn btn-secondary btn-xs mb-3">
+                <span class="fas fa-layer-group"></span> Merge history
+            </a>
+            {% endif %}
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <!-- TODO: Disability dropdown feature needs to be implmented -->
+            <h5>
+                <a data-bs-toggle="collapse" href="#collapse-disability" class="link-dark">Disability</a>
+            </h5>
+            <dl class="row collapse" id="collapse-disability">
+                <dt class="col-sm-4">Disability</dt><dd class="col-sm-8 mb-0">{{ student.disability.description }}</dd>
+                <dt class="col-sm-4">Detail</dt><dd class="col-sm-8 mb-0">{{ student.disability_detail | default:'–'  }}</dd>
+                <dt class="col-sm-4">Action taken</dt><dd class="col-sm-8 mb-0">{{ student.disability_action | default:'–'  }}</dd>
+            </dl>
+            <h5>
+                <a data-bs-toggle="collapse" href="#collapse-diet" class="link-dark">Dietary preferences</a>
+                    <!-- TODO: Diet section needs to be created -->
+                <small>
+                    <a href="/edit/{{student.id}}/diet/{{diet.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                </small>
+            </h5>
+            <dl class="row collapse" id="collapse-diet">
+                {% if diet %}
+                <dt class="col-sm-3">Special diet</dt><dd class="col-sm-9 mb-0">{{ diet.type }}</dd>
+                <dt class="col-sm-3">Details</dt><dd class="col-sm-9 mb-0">{{ diet.note }}</dd>
                 {% else %}
-                    None
+                None
                 {% endif %}
-                <hr>
-                <h4>Marketing</h4>
-                <h5>Email</h5>
-                <div class="btn-group">
-                    {% if student.email_optin %}
-                        <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">Opted in <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/student/marketing/{{ student.id }}">{% icon_text 'Opt-out' 'fa-check text-danger' %}</a></li>
-                        </ul>
-                    {% else %}
-                        <a class="btn btn-default dropdown-toggle" data-toggle="dropdown">Not opted-in <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/student/marketing/{{ student.id }}">{% icon_text 'Opt-in' 'fa-check text-success' %}</a></li>
-                        </ul>
-                    {% endif %}
-                </div>
-                <h5>Mail</h5>
-                <div class="btn-group">
-                    {% if student.no_publicity %}
-                        <a class="btn btn-danger dropdown-toggle" data-toggle="dropdown">Opted-out <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-check text-success"></span> Opt-in</a></li>
-                        </ul>
-                    {% elif student.mail_optin %}
-                        <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">Opted in <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-remove text-danger"></span> Opt-out</a></li>
-                        </ul>
-                    {% else %}
-                        <a class="btn btn-default dropdown-toggle" data-toggle="dropdown">Not opted-in <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-check text-danger"></span> Opt-in</a></li>
-                        </ul>
-                    {% endif %}
-                </div>
+            </dl>
+            <h5>
+                <a data-bs-toggle="collapse" href="#collapse-emergency" class="link-dark">Emergency contact</a>
+                <!-- TODO: Create emergency contact page  -->
+                <a href="/edit/{{student.id}}/emergency_contact/{{emergency_contact.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a>
+            </h5>
+            {% if emergency_contact %}
+                <dl class="row collapse" id="collapse-emergency">
+                    <dt class="col-sm-3">Name</dt><dd class="col-sm-9 mb-0">{{ emergency_contact.name }}</dd>
+                    <dt class="col-sm-3">Email</dt><dd class="col-sm-9 mb-0">{{ emergency_contact.email }}</dd>
+                    <dt class="col-sm-3">Phone</dt><dd class="col-sm-9 mb-0">{{ emergency_contact.phone }}</dd>
+                </dl>
+            {% else %}
+                None
+            {% endif %}
+            <hr>
+            <h5>Marketing</h5>
+            <h6>Email</h6>
+            <div class="btn-group">
+                {% if student.email_optin %}
+                    <a class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown">Opted in <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="/student/marketing/{{ student.id }}">{% icon_text 'Opt-out' 'fa-check text-danger' %}</a></li>
+                    </ul>
+                {% else %}
+                    <a class="btn btn-outline-dark btn-sm dropdown-toggle" data-bs-toggle="dropdown">Not opted-in <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="/student/marketing/{{ student.id }}">{% icon_text 'Opt-in' 'fa-check text-success' %}</a></li>
+                    </ul>
+                {% endif %}
+            </div>
+            <h6>Mail</h6>
+            <div class="btn-group">
+                {% if student.no_publicity %}
+                    <a class="btn btn-danger btn-sm dropdown-toggle" data-bs-toggle="dropdown">Opted-out <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-check text-success"></span> Opt-in</a></li>
+                    </ul>
+                {% elif student.mail_optin %}
+                    <a class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown">Opted in <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-remove text-danger"></span> Opt-out</a></li>
+                    </ul>
+                {% else %}
+                    <a class="btn btn-outline-dark btn-sm dropdown-toggle" data-bs-toggle="dropdown">Not opted-in <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-check text-danger"></span> Opt-in</a></li>
+                    </ul>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -154,11 +152,10 @@
 </div>
 
 <div class="section">
-    <div class="pull-right top-right-button">
+    <div class="float-end mt-1">
         <a href="{% url 'student:address:new' student.id %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add address</a>
     </div>
-    <a id='address' class='nav-anchor'></a>
-        <h2>Address</h2>
+        <h2 id='address' class='section-title'>Address</h2>
         {% if addresses %}
         <!-- TODO : The chevron down doesn't change to chevron up when opened. Js in tools.js (I think)-->
         <ul class="item-list hide-items" data-max-item=2>
@@ -166,34 +163,34 @@
             <li class="item" data-created-on="{{ address.created_on }}">
                 <div class="item-info">
                     <div class='row'>
-                        <div id="addressField{{ address.id }}" class="col-xs-3">
+                        <div id="addressField{{ address.id }}" class="col-sm-3">
                             <span style="white-space: pre-line;">{{ address.formatted }}</span>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-sm-3">
                         {% if address.is_default %}
-                            <span class="label label-primary">Default</span>
+                            <span class="badge bg-primary">Default</span>
                         {% endif %}
                         {% if address.sits_type %}
                             {% if address.sits_type == 'C' %}
-                                <span class="label label-warning">SITS Correspondence</span>
+                                <span class="badge bg-warning">SITS Correspondence</span>
                             {% elif address.sits_type == 'H' %}
-                                <span class="label label-warning">SITS Home</span>
+                                <span class="badge bg-warning">SITS Home</span>
                             {% else %}
-                                <span class="label label-warning">SITS Term time</span>
+                                <span class="badge bg-warning">SITS Term time</span>
                             {% endif %}
                         {% endif %}
                         {% if address.is_billing %}
-                            <span class="label label-success"
-                                data-toggle="tooltip"
+                            <span class="badge bg-success"
+                                data-bs-toggle="tooltip"
                                 data-title="Used for invoicing"
                             >Billing</span>
                         {% endif %}
                         </div>
-                        <div class="col-xs-6">
-                            <div class="pull-right">
+                        <div class="col-sm-6">
+                            <div class="float-end">
                                 {% if not address.is_billing %}
                                     <a
-                                       class="btn btn-default hide-until-hover"
+                                       class="btn btn-outline-dark hide-until-hover"
                                        data-href="{% url 'student:address-api' address.id %}"
                                        data-api-field="is_billing"
                                        data-api-value="true"
@@ -204,7 +201,7 @@
                                 {% endif %}
                                 {% if not address.is_default %}
                                     <a
-                                       class="btn btn-default hide-until-hover"
+                                       class="btn btn-outline-dark hide-until-hover"
                                        data-href="{% url 'student:address-api' address.id %}"
                                        data-api-field="is_default"
                                        data-api-value="true"
@@ -213,7 +210,7 @@
                                         Set default
                                     </a>
                                 {% endif %}
-                                <a data-toggle="tooltip" placement="top" title="Copy address to clipboard" class="btn btn-default copyAddressButton" onclick="copyToClipboardBreakLines('#addressField{{ address.id}}')">
+                                <a data-bs-toggle="tooltip" placement="top" title="Copy address to clipboard" class="btn btn-outline-dark copyAddressButton" onclick="copyToClipboardBreakLines('#addressField{{ address.id}}')">
                                     <span class="far fa-copy">
                                     </span>
                                 </a>
@@ -229,40 +226,35 @@
 </div>
 
 <div class="section">
-    <div class="pull-right top-right-button">
+    <div class="float-end mt-1">
         <a href="/edit/request.args(0)/email/new" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add email</a>
     </div>
 
-    <a id='email' class='nav-anchor'></a>
-    <h2>Email</h2>
-
-    <div id="target_add_new"></div>
+    <h2 id='email' class='section-title'>Email</h2>
     {% if emails %}
     <ul class="item-list hide-items" data-max-item=2>
     {% for email in emails %}
         <li class="item" data-created-on="{{ email.created_on }}">
             <div class='row'>
-                <div class="col-xs-6">
-                    <div class="item-info">
-                        <a id="dynamicUpdateEmailField_{{email.id}}" href="mailto:{{ email.email }}">{{ email.email }}</a>
-                        {% if email.is_default %}
-                            <span class="label label-primary">Default</span>
-                        {% endif %}
-                        {% if email.created_by == 'SITS' or email.modified_by == 'SITS' %}
-                            <span class="label label-warning">SITS</span>
-                        {% endif %}
-                        {% if email.note %}
-                            <span data-toggle="tooltip" data-title="{{ email.note }}">
-                                <i class="far fa-comment"></i>
-                            </span>
-                        {% endif %}
-                    </div>
+                <div class="col-sm-6">
+                    <a id="dynamicUpdateEmailField_{{email.id}}" href="mailto:{{ email.email }}" class="link-dark">{{ email.email }}</a>
+                    {% if email.is_default %}
+                        <span class="badge bg-primary">Default</span>
+                    {% endif %}
+                    {% if email.created_by == 'SITS' or email.modified_by == 'SITS' %}
+                        <span class="badge bg-warning">SITS</span>
+                    {% endif %}
+                    {% if email.note %}
+                        <span data-bs-toggle="tooltip" data-title="{{ email.note }}">
+                            <i class="far fa-comment"></i>
+                        </span>
+                    {% endif %}
                 </div>
-                <div class="col-xs-6">
-                    <div class="pull-right" style="margin:-7px 0;">
+                <div class="col-sm-6">
+                    <div class="float-end" style="margin:-7px 0;">
                         {% if not email.is_default %}
                             <a
-                               class="btn btn-default hide-until-hover"
+                               class="btn btn-outline-dark hide-until-hover"
                                data-href="{% url 'student:email-api' email.id %}"
                                data-api-field="is_default"
                                data-api-value="true"
@@ -271,8 +263,8 @@
                                 Set default
                             </a>
                         {% endif %}
-                        <a data-toggle="tooltip" placement="top" data-title="Copy email to clipboard" class="btn btn-default" onclick="copyToClipboard('{{email.email}}')"><span class="far fa-copy"></span></a>
-                        <a href="{{ email.get_edit_url }}" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                        <a data-bs-toggle="tooltip" placement="top" data-title="Copy email to clipboard" class="btn btn-outline-dark" onclick="copyToClipboard('{{email.email}}')"><span class="far fa-copy"></span></a>
+                        <a href="{{ email.get_edit_url }}" class="btn btn-outline-dark"><span class="fas fa-pencil-alt"></span></a>
                     </div>
                 </div>
                 <div style="display:none;" class="slidingOutEmailEditing_{{email.id}}">
@@ -286,41 +278,38 @@
 </div>
 
 <div class="section">
-    <div class="pull-right top-right-button">
+    <div class="float-end mt-1">
         <a href="/edit/{{ student.id }}/phone/new" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add phone</a>
     </div>
 
-    <a id='phone' class='nav-anchor'></a>
-    <h2>Phone</h2>
+    <h2 id='phone' class='section-title'>Phone</h2>
     {% if phones %}
     <ul class="item-list hide-items" data-max-item=2>
     {% for phone in phones %}
         <li class="item" data-created-on="{{ phone.created_on }}">
             <div class='row'>
-                <div class="col-xs-9">
-                    <div class="item-info">
-                        <a href="tel:{{phone.number}}">{{phone.number}}</a>
-                        {% if phone.is_default %}
-                            <span class="label label-primary">Default</span>
-                        {% endif %}
-                        {% if 'phone' not in 'phone.type.lower()' %}
-                            <span class="label label-default">{{phone.type}}</span>
-                        {% endif %}
-                        {% if phone.created_by == 'SITS' or phone.modified_by == 'SITS' %}
-                            <span class="label label-warning">SITS</span>
-                        {% endif %}
-                        {% if phone.note %}
-                            <span data-toggle="tooltip" data-title="{{ phone.note }}">
-                                <i class="far fa-comment"></i>
-                            </span>
-                        {% endif %}
-                    </div>
+                <div class="col-sm-9">
+                    <a href="tel:{{phone.number}}" class="link-dark">{{phone.number}}</a>
+                    {% if phone.is_default %}
+                        <span class="badge bg-primary">Default</span>
+                    {% endif %}
+                    {% if 'phone' not in 'phone.type.lower()' %}
+                        <span class="badge bg-secondary">{{phone.type}}</span>
+                    {% endif %}
+                    {% if phone.created_by == 'SITS' or phone.modified_by == 'SITS' %}
+                        <span class="badge bg-warning">SITS</span>
+                    {% endif %}
+                    {% if phone.note %}
+                        <span data-bs-toggle="tooltip" data-title="{{ phone.note }}">
+                            <i class="far fa-comment"></i>
+                        </span>
+                    {% endif %}
                 </div>
-                <div class="col-xs-3">
-                    <div class="pull-right" style="margin:-7px 0;">
+                <div class="col-sm-3">
+                    <div class="float-end" style="margin:-7px 0;">
                         {% if not phone.is_default %}
                             <a
-                               class="btn btn-default hide-until-hover"
+                               class="btn btn-outline-dark hide-until-hover"
                                data-href="{% url 'student:phone-api' phone.id %}"
                                data-api-field="is_default"
                                data-api-value="true"
@@ -329,7 +318,7 @@
                                 Set default
                             </a>
                         {% endif %}
-                        <a href="/edit/{{ student.id }}/phone/{{ phone.id }}" class="btn btn-default"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                        <a href="/edit/{{ student.id }}/phone/{{ phone.id }}" class="btn btn-outline-dark"><span class="fas fa-pencil-alt"></span></a>
                     </div>
                 </div>
             </div>
@@ -340,53 +329,53 @@
 </div>
 
 <div class="section">
-    <a id='enrolments' class='nav-anchor' data-badge-text='{{qa_list.total_enrolments}}'></a>
-    <h2>Enrolments</h2>
+    <h2 id='enrolments' class='section-title' data-badge-text='{{qa_list.total_enrolments}}'>Enrolments</h2>
     {% for qa in qa_list %}
-    <div class='panel panel-default'>
-        <div class="panel-heading">
-            <div class="pull-right">
+    <div class='card mb-3'>
+        <div class="card-header">
+            <div class="float-end">
                 <a href="{% url 'enrolment:create' qa.id %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add enrolment</a>
             </div>
-            <div class="panel-title">
-                {% if qa.qa_warning %}
-                <span title="Contains a Credit-bearing module" class="text-danger">
-                    <span class="fa fa-exclamation-circle"></span>
-                </span>
-                {% endif %}
 
-                <a href="{{ qa.get_absolute_url }}"><b>{{ qa.title }}</b></a>
-                <small> &bull; {{ qa.enrolments.count }} course{{ qa.enrolments.count|pluralize }}</small>
+            {% if qa.qa_warning %}
+            <span title="Contains a Credit-bearing module" class="text-danger">
+                <span class="fa fa-exclamation-circle"></span>
+            </span>
+            {% endif %}
 
-                {% if qa.programme.qualification.is_award and qa.end_date and qa.reason_for_ending %}
-                    {% if qa.reason_for_ending.id == 1 %}
-                    <span class="label label-success">Completed</span>
-                    {% else %}
-                    <span class="label label-warning">Ended</span>
-                    {% endif %}
-                {% elif qa.programme.qualification.on_hesa_return %}
-                    {% if qa.points_awarded %}
-                    <small>&bull; {{ qa.points_awarded }} CATS points</small>
-                    {% endif %}
+            <a href="{{ qa.get_absolute_url }}" class="link-dark"><b>{{ qa.title }}</b></a>
+            <small> &bull; {{ qa.enrolments.count }} course{{ qa.enrolments.count|pluralize }}</small>
+
+            {% if qa.programme.qualification.is_award and qa.end_date and qa.reason_for_ending %}
+                {% if qa.reason_for_ending.id == 1 %}
+                <span class="badge bg-success">Completed</span>
+                {% else %}
+                <span class="badge bg-warning">Ended</span>
                 {% endif %}
-            </div>
+            {% elif qa.programme.qualification.on_hesa_return %}
+                {% if qa.points_awarded %}
+                <small>&bull; {{ qa.points_awarded }} CATS points</small>
+                {% endif %}
+            {% endif %}
+
         </div>
         <ul class="item-list hide-items" data-max-item=5>
             {% for enrolment in qa.enrolments.all %}
             <li class="item" data-created-on="{{ enrolment.created_on}}">
-                <div class="pull-right">
-                    <a href="{{ enrolment.get_absolute_url }}" class="btn btn-default"><i class="fas fa-fw fa-search"></i></a>
+                <div class="float-end">
+                    <a href="{{ enrolment.get_absolute_url }}" class="btn btn-outline-dark"><i class="fas fa-search"></i></a>
                 </div>
-                <div class="item-title">
+                <div>
                     {% if enrolment.module.credit_points and qa.non_accredited %}
                         <span title="Credit-bearing module within a non-credit-bearing programme" class="text-danger">
                             <span class="fa fa-exclamation-circle"></span>
                         </span>
                     {% endif %}
-                    <a href="{{ enrolment.module.get_absolute_url }}">{{ enrolment.module.title }}</a>
+                    <a href="{{ enrolment.module.get_absolute_url }}" class="link-dark fw-semi-bold">{{ enrolment.module.title }}</a>
                 </div>
-                <div class="item-info">
-                    <a href="{{ enrolment.module.get_absolute_url }}">{{ enrolment.module.code }}</a> &bull; {{ enrolment.module.start_date }}
+                <div>
+                    <a href="{{ enrolment.module.get_absolute_url }}" class="link-dark">{{ enrolment.module.code }}</a>
+                    &bull; {{ enrolment.module.start_date }}
                     {% if enrolment.module.end_date and enrolment.module.end_date != enrolment.module.start_date %}
                         &ndash; {{enrolment.module.end_date}}
                     {% endif %}
@@ -398,24 +387,24 @@
     </div>
     {% endfor %}
     <a class="btn btn-success" href="{% url 'qualification_aim:new' student.id %}">{% icon_text 'Add programme' 'fa-plus' %}</a>
-    <a class="btn btn-primary" href="/waitlist/add/{{student.id}}">{% icon_text 'Add to waiting list' 'fa-list' %}</a>
+    <a class="btn btn-secondary" href="/waitlist/add/{{student.id}}">{% icon_text 'Add to waiting list' 'fa-list' %}</a>
 
-    <div class="btn-group pull-right">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    <div class="btn-group float-end">
+        <button type="button" class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             <span class="fa fa-file"></span> Documents <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu">
-            <li><a href="/student/statement/{{student.id}}" target="_blank">{% icon_text 'Statement' 'fa-pound-sign' %}</a></li>
+            <li><a class="dropdown-item" href="/student/statement/{{student.id}}" target="_blank">{% icon_text 'Statement' 'fa-pound-sign' %}</a></li>
             {% if qa_list.qa_certhe %}
-            <li><a href="/student/certhe_progress/{{student.id}}" target="_blank">{% icon_text 'CertHE progress report' 'fa-certificate' %}</a></li>
+            <li><a class="dropdown-item" href="/student/certhe_progress/{{student.id}}" target="_blank">{% icon_text 'CertHE progress report' 'fa-certificate' %}</a></li>
             {% endif %}
             {% if perms.transcript.print %}
-            <li class="divider"></li>
+            <li class="dropdown-divider"></li>
             <li class="dropdown-header">Transcripts</li>
-            <li><a href="{% url 'transcript:undergraduate' student.id %}" target="_blank">{% icon_text 'Undergraduate' 'fa-graduation-cap' %}</a></li>
-            <li><a href="{% url 'transcript:undergraduate-headed' student.id %}" target="_blank">{% icon_text 'Undergraduate (with header)' 'fa-graduation-cap' %}</a></li>
-            <li><a href="{% url 'transcript:postgraduate' student.id %}" target="_blank">{% icon_text 'Postgraduate' 'fa-graduation-cap' %}</a></li>
-            <li><a href="{% url 'transcript:postgraduate-headed' student.id %}" target="_blank">{% icon_text 'Postgraduate (with header)' 'fa-graduation-cap' %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'transcript:undergraduate' student.id %}" target="_blank">{% icon_text 'Undergraduate' 'fa-graduation-cap' %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'transcript:undergraduate-headed' student.id %}" target="_blank">{% icon_text 'Undergraduate (with header)' 'fa-graduation-cap' %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'transcript:postgraduate' student.id %}" target="_blank">{% icon_text 'Postgraduate' 'fa-graduation-cap' %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'transcript:postgraduate-headed' student.id %}" target="_blank">{% icon_text 'Postgraduate (with header)' 'fa-graduation-cap' %}</a></li>
             {% endif %}
         </ul>
     </div>
@@ -423,9 +412,8 @@
 
 {% if waitlists %}
 <div class="section">
-    <a id='waitlists' class='nav-anchor' data-badge-text='{{ waitlists.count }}'></a>
-    <h2>Waiting lists</h2>
-    <table class="table table-condensed table-striped table-hover hide-rows" data-display='3'>
+    <h2 id='waitlists' class='section-title' data-badge-text='{{ waitlists.count }}'>Waiting lists</h2>
+    <table class="table table-striped table-hover hide-rows" data-display='3'>
         <thead><tr><th>Module</th><th>Title</th><th>Listed on</th></tr></thead>
         {% for waitlist in waitlists %}
         <tr>
@@ -440,22 +428,21 @@
 
 {% if course_applications %}
 <div class="section">
-    <a id='applications' class='nav-anchor' data-badge-text='{{course_applications.count}}'></a>
-    <h2>Applications</h2>
-    <table class="table table-condensed table-striped table-hover hide-rows" data-display='3'>
+    <h2 id='applications' class='section-title' data-badge-text='{{course_applications.count}}'>Applications</h2>
+    <table class="table table-striped table-hover hide-rows" data-display='3'>
     <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
     {% for application in course_applications %}
         <tr>
-            <td><a href="/module/view/{{ application.module.code }}">{{ application.module.code }}</a></td>
-            <td><a href="/module/view/{{ application.module.code }}">{{ application.module.title }}</a></td>
+            <td><a href="{{ application.module.get_absolute_url }}">{{ application.module.code }}</a></td>
+            <td><a href="{{ application.module.get_absolute_url }}">{{ application.module.title }}</a></td>
             <td>
                 {% if application.is_completed %}
-                <span class="label label-success">Completed</span>
+                <span class="badge bg-success">Completed</span>
                 {% else %}
-                <span class="label label-default">In progress</span>
+                <span class="badge bg-secondary">In progress</span>
                 {% endif %}
             </td>
-            <td><a href="/form/view/{{ application.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a></td>
+            <td><a href="/form/view/{{ application.id }}"><span class="fas fa-pencil-alt"></span></a></td>
         </tr>
     {% endfor %}
     </table>
@@ -463,40 +450,39 @@
 {% endif %}
 
 <div class="section">
-    <div class="pull-right top-right-button">
-        <a href="/invoice/choose_enrolments/{{student.id}}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add invoice</a>
+    <div class="float-end mt-1">
+        <a href="{% url 'invoice:choose-enrolments' student.id %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add invoice</a>
     </div>
-    <a id='invoices' class='nav-anchor' data-badge-text='' data-badge-class='warning'></a>
-    <h2>Invoices</h2>
+    <h2 id='invoices' class='section-title' data-badge-text='' data-badge-class='warning'>Invoices</h2>
     {% if invoices %}
     <ul class="item-list hide-items" data-max-item=2>
         {% for invoice in invoices %}
         <li class="item" data-created-on="{{ invoice.created_on }}">
-            <div class="item-title">
-                <div class="pull-right">
-                    <a href="{{ invoice.get_absolute_url }}" class="btn btn-default"><span class="fa fa-search"></span></a>
+            <div>
+                <div class="float-end">
+                    <a href="{{ invoice.get_absolute_url }}" class="btn btn-outline-dark"><span class="fa fa-search"></span></a>
                 </div>
-                <a href="{{ invoice.get_absolute_url }}">
-                {{invoice}} &bull; {{invoice.ledger_items.first.enrolment.module}}
+                <a href="{{ invoice.get_absolute_url }}" class="link-dark fw-semi-bold">
+                    {{invoice}} &bull; {{invoice.ledger_items.first.enrolment.module}}
                 </a>
             </div>
-            <div class="item-info">
+            <div>
                 Raised {{ invoice.date | date:'d M Y' }} &bull; £{{ invoice.amount | floatformat:-2 }}
                 {% if not invoice.balance %}
                     {% if invoice.written_off %}
-                    <span class="label label-primary">Written off</span>
+                    <span class="badge bg-primary">Written off</span>
                     {% else %}
-                    <span class="label label-success">Paid</span>
+                    <span class="badge bg-success">Paid</span>
                     {% endif %}
                 {% elif invoice.balance < 0 %}
-                <span class="label label-warning">£{{ invoice.balance | floatformat:-2 }} In credit</span>
+                <span class="badge bg-warning">£{{ invoice.balance | floatformat:-2 }} In credit</span>
                 {% elif invoice.payment_plan.id %}
-                    <span class="label label-warning">£{{ invoice.balance | floatformat:-2 }} Outstanding</span>
-                    <span class="label label-primary">Payment plan</span>
+                    <span class="badge bg-warning">£{{ invoice.balance | floatformat:-2 }} Outstanding</span>
+                    <span class="badge bg-primary">Payment plan</span>
                 {% elif invoice.duedate and invoice.duedate < now %}
-                    <span class="label label-danger">£{{ invoice.balance | floatformat:-2 }} Overdue</span>
+                    <span class="badge bg-danger">£{{ invoice.balance | floatformat:-2 }} Overdue</span>
                 {% else %}
-                    <span class="label label-warning">£{{ invoice.balance | floatformat:-2 }} Outstanding</span>
+                    <span class="badge bg-warning">£{{ invoice.balance | floatformat:-2 }} Outstanding</span>
                 {% endif %}
             </div>
         </li>
@@ -506,35 +492,34 @@
 </div>
 
 <div class="section">
-    <div class="pull-right top-right-button">
+    <div class="float-end mt-1">
         <a href="{% url 'website_account:create' student.id %}" class="btn btn-success btn-xs">
             <i class="fas fa-plus"></i> Add login
         </a>
     </div>
 
-    <a id='login' class='nav-anchor'></a>
-    <h2>Login</h2>
+    <h2 id='login' class='section-title'>Login</h2>
 
     {% if website_accounts %}
     <ul class="item-list hide-items" data-max-item=1>
         {% for login in website_accounts %}
         <li class="item">
-            <div class="item-title">
-                <div class="pull-right">
-                    <a href="{% url 'website_account:edit' login.id %}" class="btn btn-default">
-                        <i class="fas fa-fw fa-pencil-alt"></i>
+            <div>
+                <div class="float-end">
+                    <a href="{% url 'website_account:edit' login.id %}" class="btn btn-outline-dark">
+                        <i class="fas fa-pencil-alt"></i>
                     </a>
                 </div>
-                {{ login.username }}
+                <span class="fw-semi-bold">{{ login.username }}</span>
                 {% if login.is_disabled %}
-                <span class="label label-danger">Disabled</span>
+                <span class="badge bg-danger">Disabled</span>
                 {% endif %}
             </div>
-            <div class="item-info">
+            <div>
                 Last logged in
                 <span class="timeago"
                       datetime="{{ login.last_login}}"
-                      data-toggle="tooltip"
+                      data-bs-toggle="tooltip"
                       data-placement="bottom"
                       data-title="{{ login.last_login | date:'j M Y H:i' }}"
                 >
@@ -549,13 +534,12 @@
 
 
 <div class="section">
-    <div class="pull-right top-right-button">
+    <div class="float-end mt-1">
         <a href="other_id/new/{{ student.id }}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add other ID</a>
     </div>
-    <a id='other_ids' class='nav-anchor'></a>
-    <h2>Other IDs</h2>
+    <h2 id='other_ids' class='section-title'>Other IDs</h2>
     {% if other_ids %}
-    <table class="table table-condensed table-striped table-hover hide-rows" data-display='3'>
+    <table class="table table-striped table-hover hide-rows" data-display='3'>
         <thead><tr><th>ID</th><th>Type</th><th>End date</th><th></th></tr></thead>
         <tbody>
         {% for other_id in other_ids %}
@@ -563,7 +547,7 @@
                 <td>{{ other_id.number }}</td>
                 <td>{{ other_id.type.description }}</td>
                 <td>{% if other_id.end_date %}{{ other_id.end_date  }}{% else %}{% endif %}</td>
-                <td class="col-xs-1">
+                <td class="col-sm-1">
                     <a href="/other-id/edit/{{ other_id.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a>
                     {% comment %} {% if auth.has_membership('dev') %} {% endcomment %}
                     <a href="/other-id/delete/{{ other_id.id }}"><span class="fas fa-times"></span></a>
@@ -575,24 +559,23 @@
     </table>
     {% endif %}
 
-    <dl class='dl-horizontal'><dt> Moodle ID</dt>
+    <dl class='row'><dt class="col-sm-2"> Moodle ID</dt>
     {% if moodle_id %}
-        <dd>{{ moodle_id.id }} <a href="/moodle-id/edit/{{ moodle_id.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a></dd>
+        <dd class="col-sm-6 mb-0">{{ moodle_id.id }} <a href="/moodle-id/edit/{{ moodle_id.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a></dd>
     {% else %}
-        <dd>N/A <a href="/moodle-id/new/{{ student.id }}"><i class="fas fa-plus"></i></a></dd>
+        <dd class="col-sm-6 mb-0">N/A <a href="/moodle-id/new/{{ student.id }}"><i class="fas fa-plus"></i></a></dd>
     {% endif %}
     </dl>
 
 </div>
 
 <div class="section">
-    <div class="pull-right top-right-button">
+    <div class="float-end mt-1">
         <a href="/enquiry/new/{{ student.id }}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add enquiries</a>
     </div>
-    <a id='enquiries' class='nav-anchor'></a>
-    <h2>Enquiries</h2>
+    <h2 id='enquiries' class='section-title'>Enquiries</h2>
     {% if enquiries %}
-    <table class="table table-condensed table-striped table-hover hide-rows" data-display='3'>
+    <table class="table table-striped table-hover hide-rows" data-display='3'>
     <thead><tr><th>Date</th><th>Module</th><th>Title</th><th>Details</th><th></th></tr></thead>
     <tbody>
     {% for enquiry in enquiries %}
@@ -600,8 +583,8 @@
             <td>{{ enquiry.date | date:'SHORT_DATE_FORMAT' }}</td>
             <td><a href="/redpot/module/view/{{ enquiry.module.id }}">{{ enquiry.module.code }}</a></td>
             <td>{{ enquiry.module.title }}</td>
-            <td><a class="set-default-hover" data-content="{{ enquiry.module.title }} ({{ enquiry.module.code }}): Please add me to the waiting list for spaces on this course" data-html="true" data-placement="left" data-toggle="popover" data-trigger="hover" data-original-title="" title=""><span class="fa fa-ellipsis-h"></span></a></td>
-            <td class="col-xs-1"><a href="/redpot/enquiry/edit/{{ enquiry.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a></td>
+            <td><a class="set-default-hover" data-content="{{ enquiry.module.title }} ({{ enquiry.module.code }}): Please add me to the waiting list for spaces on this course" data-html="true" data-placement="left" data-bs-toggle="popover" data-trigger="hover" data-original-title="" title=""><span class="fa fa-ellipsis-h"></span></a></td>
+            <td class="col-sm-1"><a href="/redpot/enquiry/edit/{{ enquiry.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a></td>
         </tr>
     {% endfor %}
     </tbody>
@@ -624,76 +607,79 @@
     </div>
     {% endif %}
 
-    <a id='tutor' class='nav-anchor'></a>
-    <h2>Tutor details</h2>
-    <div class="row" style="padding-top: 20px">
-        <div class='col-xs-9'>
-            <dl class="dl-horizontal wide">
-                <dt>Qualifications</dt><dd>{{ tutor.qualifications | default:'–'  }}</dd>
-                <dt>Affiliation</dt><dd>{{ tutor.affiliation | default:'–'  }}</dd>
-                {% if perms.tutor.edit_bank_details %}
-                    <dt>National Insurance # </dt><dd>{{ tutor.nino | default:'–' }}</dd>
-                    <dt>Employee #</dt>
-                    {% if tutor.employee_no %}
-                        <dd>{{tutor.employee_no}}</dd>
-                    {% else %}
-                        <dd><span class="text-danger"><b>None</b></span></dd>
-                    {% endif %}
-                    <dt>Appointment ID</dt>
-                    {% if tutor.appointment_id %}
-                        <dd>{{tutor.appointment_id}}</dd>
-                    {% else %}
-                        <dd><span class="text-danger"><b>None</b></span></dd>
-                    {% endif %}
-                {% endif %}
-                <dt>Oracle supplier number</dt><dd>{{ tutor.oracle_supplier_number | default:'–' }}</dd>
-            </dl>
-            {% if perms.tutor.edit_bank_details %}
-                <h4>Bank details</h4>
-                <dl class="dl-horizontal">
-                    <dt>Bank name</dt><dd>{{ tutor.bankname | default:'–' }}</dd>
-                    <dt>Branch address</dt><dd>{{ tutor.branchaddress | default:'–' }}</dd>
-                    <dt>Account name</dt><dd>{{ tutor.accountname | default:'–' }}</dd>
-                    <dt>Sort code</dt><dd>{{ tutor.sortcode | default:'–' }}</dd>
-                    <dt>Account # </dt><dd>{{ tutor.accountno | default:'–' }}</dd>
-                    <dt>SWIFT</dt><dd>{{ tutor.swift | default:'–' }}</dd>
-                    <dt>IBAN</dt><dd>{{ tutor.iban | default:'–' }}</dd>
-                    <dt>Other bank details</dt><dd>{{ tutor.other_bank_details | default:'–' }}</dd>
-                </dl>
+    <h2 id='tutor' class='section-title'>Tutor details</h2>
+    <hr>
+    <dl class="row">
+        <dt class="col-sm-3">Qualifications</dt>
+        <dd class="col-sm-9 mb-0">{{ tutor.qualifications | default:'–'  }}</dd>
+        <dt class="col-sm-3">Affiliation</dt>
+        <dd class="col-sm-9 mb-0">{{ tutor.affiliation | default:'–'  }}</dd>
+        {% if perms.tutor.edit_bank_details %}
+            <dt class="col-sm-3">National Insurance # </dt><dd class="col-sm-9 mb-0">{{ tutor.nino | default:'–' }}</dd>
+            <dt class="col-sm-3">Employee #</dt>
+            {% if tutor.employee_no %}
+                <dd class="col-sm-9 mb-0">{{tutor.employee_no}}</dd>
+            {% else %}
+                <dd class="col-sm-9 mb-0"><span class="text-danger"><b>None</b></span></dd>
             {% endif %}
-        </div>
-        {% if tutor.image %}
-            <div class='col-xs-3' style="width:100px; height:85px; max-width:100px; overflow:hidden; margin: 0 10px 0 0;">
-                <img src="/mnt/images/tutors/{{tutor.image}}" width="100px" align="left">
-            </div>
+            <dt class="col-sm-3">Appointment ID</dt>
+            {% if tutor.appointment_id %}
+                <dd class="col-sm-9 mb-0">{{tutor.appointment_id}}</dd>
+            {% else %}
+                <dd class="col-sm-9 mb-0"><span class="text-danger"><b>None</b></span></dd>
+            {% endif %}
         {% endif %}
-        <br>
-    </div>
-    <h4>Biography</h4>
-    <div class='panel panel-default panel-body'>
-        {{tutor.custom_biography}}
+        <dt class="col-sm-3">Oracle supplier number</dt>
+        <dd class="col-sm-9 mb-0">{{ tutor.oracle_supplier_number | default:'–' }}</dd>
+    </dl>
+    {% if perms.tutor.edit_bank_details %}
+        <h5>Bank details</h5>
+        <dl class="row">
+            <dt class="col-sm-3">Bank name</dt><dd class="col-sm-9 mb-0">{{ tutor.bankname | default:'–' }}</dd>
+            <dt class="col-sm-3">Branch address</dt><dd class="col-sm-9 mb-0">{{ tutor.branchaddress | default:'–' }}</dd>
+            <dt class="col-sm-3">Account name</dt><dd class="col-sm-9 mb-0">{{ tutor.accountname | default:'–' }}</dd>
+            <dt class="col-sm-3">Sort code</dt><dd class="col-sm-9 mb-0">{{ tutor.sortcode | default:'–' }}</dd>
+            <dt class="col-sm-3">Account # </dt><dd class="col-sm-9 mb-0">{{ tutor.accountno | default:'–' }}</dd>
+            <dt class="col-sm-3">SWIFT</dt><dd class="col-sm-9 mb-0">{{ tutor.swift | default:'–' }}</dd>
+            <dt class="col-sm-3">IBAN</dt><dd class="col-sm-9 mb-0">{{ tutor.iban | default:'–' }}</dd>
+            <dt class="col-sm-3">Other bank details</dt><dd class="col-sm-9 mb-0">{{ tutor.other_bank_details | default:'–' }}</dd>
+        </dl>
+    {% endif %}
+
+    {% if tutor.image %}
+        <div class='col-sm-3' style="width:100px; height:85px; max-width:100px; overflow:hidden; margin: 0 10px 0 0;">
+            <img src="/mnt/images/tutors/{{tutor.image}}" width="100px" align="left">
+        </div>
+    {% endif %}
+    <br>
+
+    <h5>Biography</h5>
+    <div class='card bg-light mb-3'>
+        <div class="card-body">
+            {{tutor.custom_biography}}
+        </div>
     </div>
 
     {% if tutor.tutorsubjects.all %}
-        <h4>Subjects</h4>
+        <h5>Subjects</h5>
         {% for tutor_subject in tutor.tutorsubjects.all %}
-            <span class="label label-warning">{{ tutor_subject.subject }}</span>
+            <span class="badge bg-warning">{{ tutor_subject.subject }}</span>
         {% endfor %}
     {% endif %}
 
     {% if perms.tutor.edit_bank_details %}
-        <h4>Right to work
+        <h5>Right to work
             <small><a href="{% url 'tutor:right-to-work' tutor.id %}">
                 <i class="fas fa-fw fa-pencil-alt"></i>
             </a></small>
-        </h4>
-        <dl class="dl-horizontal">
-            <dt>List</dt><dd>{{ tutor.get_rtw_type_display | default:'–' }}</dd>
-            <dt>Document type</dt><dd>{{ tutor.rtw_document_type | default:'–'}}</dd>
-            <dt>Document issued on</dt><dd>{{ tutor.rtw_start_date | default:'–' }}</dd>
-            <dt>Document valid until</dt><dd>{{ tutor.rtw_end_date | default:'–' }}</dd>
-            <dt>Date check done</dt><dd>{{ tutor.rtw_check_on | default:'–' }}</dd>
-            <dt>Check done by</dt><dd>{{ tutor.rtw_check_by | default:'–' }}</dd>
+        </h5>
+        <dl class="row">
+            <dt class="col-sm-3">List</dt><dd class="col-sm-9 mb-0">{{ tutor.get_rtw_type_display | default:'–' }}</dd>
+            <dt class="col-sm-3">Document type</dt><dd class="col-sm-9 mb-0">{{ tutor.rtw_document_type | default:'–'}}</dd>
+            <dt class="col-sm-3">Document issued on</dt><dd class="col-sm-9 mb-0">{{ tutor.rtw_start_date | default:'–' }}</dd>
+            <dt class="col-sm-3">Document valid until</dt><dd class="col-sm-9 mb-0">{{ tutor.rtw_end_date | default:'–' }}</dd>
+            <dt class="col-sm-3">Date check done</dt><dd class="col-sm-9 mb-0">{{ tutor.rtw_check_on | default:'–' }}</dd>
+            <dt class="col-sm-3">Check done by</dt><dd class="col-sm-9 mb-0">{{ tutor.rtw_check_by | default:'–' }}</dd>
         </dl>
     {% endif %}
 
@@ -701,26 +687,27 @@
 </div>
 
 <div class="section">
-    <div class="pull-right top-right-button">
+    <div class="float-end mt-1">
         <a href="{% url 'tutor:module:new' %}?tutor={{ tutor.id }}&next={{ request.path }}#tutor-modules" class="btn btn-success btn-xs">
             <i class="fas fa-plus"></i> Add module
         </a>
     </div>
-    <a id='tutor-modules' class='nav-anchor' data-badge-text='{{tutor_modules.count}}'></a>
-    <h2>Tutor modules</h2>
+    <h2 id='tutor-modules' class='section-title' data-badge-text='{{tutor_modules.count}}'>Tutor modules</h2>
     {% if tutor_roles %}
-    <form class="form-inline" type="get">
-      <div class="form-group">
-        <select class="form-control generic-widget" id="search_modules_by_roles_tutor_role" name="tutor_role">
-            {% for role in tutor_roles %}
-            <option {% if role == tutor_module_role %} selected{% endif %} >{{role}}</option>
-            {% endfor %}
-          </select>
-      </div>
-      <button type="submit" class="btn btn-default">Filter by Roles</button>
-    </form>
+        <form action="" method="get" class="col-5">
+            <div class="form-group">
+                <div class="input-group">
+                    <select class="form-control" id="search_modules_by_roles_tutor_role" name="tutor_role">
+                        {% for role in tutor_roles %}
+                            <option {% if role == tutor_module_role %} selected{% endif %} >{{role}}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-outline-primary">Filter by Roles</button>
+                </div>
+            </div>
+        </form>
     {% endif %}
-    <div class="pull-right">Showing {{tutor_modules_query | length}} results out of {{tutor_modules.count}}</div>
+    <div class="float-end">Showing {{tutor_modules_query | length}} results out of {{tutor_modules.count}}</div>
     <br>
     <br>
     <ul class="item-list hide-items" id="tutor-list" data-max-item=4>
@@ -729,26 +716,26 @@
     <li class="item" data-created-on="{{ tutor_module.created_on }}">
         <div class="item-title">
             <div class='row'>
-                <div class="col-xs-5">
-                    <a href="{{ tutor_module.module.get_absolute_url }}">{{tutor_module.module.title}}</a>
+                <div class="col-sm-5">
+                    <a href="{{ tutor_module.module.get_absolute_url }}" class="link-dark fw-semi-bold">{{tutor_module.module.title}}</a>
                 </div>
-                <div class="col-xs-4">
+                <div class="col-sm-4">
                     {% if tutor_module.role %}
-                    <span class="label label-primary">{{tutor_module.role}}</span>
+                    <span class="badge bg-primary">{{tutor_module.role}}</span>
                     {% endif %}
                     {% if tutor_module.is_published %}
-                    <span class="label label-success" data-toggle="tooltip" data-title="This tutor is visible on the course webpage">Published</span>
+                    <span class="badge bg-success" data-bs-toggle="tooltip" data-title="This tutor is visible on the course webpage">Published</span>
                     {% endif %}
                 </div>
-                <div class="col-xs-2">
+                <div class="col-sm-2">
                     {% if not tutor_module.module.is_cancelled %}
                         {{tutor_module.module.enrolments.count}}/{{ tutor_module.module.max_size | default:'∞' }}
                     {% else %}
-                        <span class="label label-danger">Cancelled</span>
+                        <span class="badge bg-danger">Cancelled</span>
                     {% endif %}
                 </div>
-                <div class="col-xs-1">
-                    <div class="pull-right">
+                <div class="col-sm-1">
+                    <div class="float-end">
                         {% tutor_module_menu tutor_module %}
                     </div>
                 </div>
@@ -756,8 +743,8 @@
         </div>
         <div class="item-info">
             <div class='row'>
-                <div class="col-xs-5">
-                    <a href="{{ tutor_module.module.get_absolute_url }}">{{tutor_module.module.code}}</a> &bull;
+                <div class="col-sm-5">
+                    <a href="{{ tutor_module.module.get_absolute_url }}" class="link-dark">{{tutor_module.module.code}}</a> &bull;
                     {% if tutor_module.module.start_date == tutor_module.module.end_date %}
                         {{tutor_module.module.start_date}}
                     {% else %}
@@ -773,15 +760,14 @@
 </div>
 
 <div class="section">
-    <div class="pull-right top-right-button">
+    <div class="float-end mt-1">
         <a href="/activity/new/{{ tutor.id }}&next={{ request.path }}#tutor-activity" class="btn btn-success btn-xs">
             <i class="fas fa-plus"></i> Add activity
         </a>
     </div>
 
-    <a id='tutor-activity' class='nav-anchor'></a>
-    <h2>Other tutor activity</h2>
-    <table class="table table-condensed table-striped table-hover hide-rows" data-display='2' data-hide-after='2'>
+    <h2 id='tutor-activity' class='section-title'>Other tutor activity</h2>
+    <table class="table table-striped table-hover hide-rows" data-display='2' data-hide-after='2'>
     <thead><tr><th>Type</th><th>Note</th><th>Date</th><th></th></tr></thead>
     <tbody>
     {% for tutor_activity in tutor_activities %}
@@ -789,8 +775,8 @@
             <td>{{tutor_activity.activity.description}}</td>
             <td>{{tutor_activity.note}}</td>
             <td>{{tutor_activity.date}}</td>
-            <td class="col-xs-1">
-                <a data-href="/tutor-activity/delete/{{tutor_activity.id}}?_next=%2Fredpot%2Fstudent%2Fview%2F{{student.id}}%23tutor-activity" data-target="#confirm-remove-activity" data-toggle="modal" href="#"><span class="fas fa-times"></span></a>
+            <td class="col-sm-1">
+                <a data-href="/tutor-activity/delete/{{tutor_activity.id}}?_next=%2Fredpot%2Fstudent%2Fview%2F{{student.id}}%23tutor-activity" data-bs-target="#confirm-remove-activity" data-bs-toggle="modal" href="#"><span class="fas fa-times"></span></a>
                 <a href="/tutor-activity/edit/{{tutor_activity.id}}?_next=%2Fredpot%2Fstudent%2Fview%2F{{student.id}}%23tutor-activity"><span class="fas fa-fw fa-pencil-alt"></span></a>
             </td>
         </tr>
@@ -801,8 +787,7 @@
 
 {% else %}
 <div class="section">
-    <a id='tutor' class='nav-anchor'></a>
-    <h2>Tutor details</h2>
+    <h2 id='tutor' class='section-title'>Tutor details</h2>
     <p>This person is a not a tutor.</p>
     <a class="btn btn-success" href="{% url 'student:make-tutor' student.id %}">
         <i class="fas fa-plus"></i> Make tutor
@@ -829,15 +814,6 @@
         element.remove();
     }
 
-</script>
-
-<script>
-    // When an expand/collapse icon is pressed, switch it from down to up (or left to right?  Might as well use the same setup)
-    $('.collapse').on('shown.bs.collapse', function () {
-        $(this).prev().find(".fa-chevron-down").removeClass("fa-chevron-down").addClass("fa-chevron-up");
-    }).on('hidden.bs.collapse', function () {
-        $(this).prev().find(".fa-chevron-up").removeClass("fa-chevron-up").addClass("fa-chevron-down");
-    });
 </script>
 
 <script>

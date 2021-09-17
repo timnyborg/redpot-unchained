@@ -46,16 +46,8 @@ jQuery(function(){
     });
 });
 
-//Add bs3 scheme to w2p error scheme
-jQuery(function(){
-    //$('.error').addClass('alert alert-danger');
-});
-
-jQuery(function(){
-    $('#top-flash').hide().slideDown();
-});
-
 //Autogenerate sidenavs.  Any nav-anchor <a> will be added, with the following H3's title, overridable by giving the nav-anchor a data-title attr.
+// Legacy.  Replaced with function in tools for BS5
 jQuery(function(){
     var linklist = $('#sidebar ul:first');
     if (linklist.length) {

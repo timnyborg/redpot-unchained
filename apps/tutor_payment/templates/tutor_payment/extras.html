@@ -4,12 +4,11 @@
 {% block center %}
 <div class='section'>
     <div class='row'>
-        <div class='col-xs-8'>
+        <div class='col-8'>
             <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
                 {% csrf_token %}
-                {% bootstrap3form form True %}
+                {% bootstrap5form form True %}
                 {% bootstrap3submit %}
-
             </form>
         </div>
     </div>

@@ -116,6 +116,9 @@ class Student(SITSLockingModelMixin, SignatureModel):
     def get_edit_url(self):
         return reverse('student:edit', args=[self.id])
 
+    def get_delete_url(self):
+        return reverse('student:delete', args=[self.id])
+
     @property
     def first_or_nickname(self) -> str:
         if self.nickname:

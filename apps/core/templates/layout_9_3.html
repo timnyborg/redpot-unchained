@@ -1,11 +1,11 @@
 {% extends 'layout.html' %}
 {% block container %}
-	<div class="col-xs-12 col-sm-3 col-sm-push-9 sticky-sidebar">
+    <div class="col-9">
+        {% block center %}
+        {% endblock %}
+    </div>
+    <div class="col-3">
 		{% block right_sidebar %}
 		{% endblock %}
-	</div>
-	<div class="col-xs-12 col-sm-9 col-sm-pull-3">
-		{% block center %}
-		{% endblock %}
-	</div>
+    </div>
 {% endblock %}

@@ -101,7 +101,6 @@ class SearchTable(tables.Table):
 
     class Meta:
         model = Student
-        template_name = "django_tables2/bootstrap4.html"
         fields = (
             'student',
             "first_or_nickname",
@@ -120,6 +119,5 @@ class CreateMatchTable(tables.Table):
     class Meta:
         model = Student
         fields = ['surname', 'firstname', 'birthdate', 'email_address', 'postcode']
-        template_name = "django_tables2/bootstrap.html"
         per_page = 30
         orderable = False

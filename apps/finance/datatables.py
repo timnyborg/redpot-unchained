@@ -39,7 +39,6 @@ class AddFeesTable(tables.Table):
 
     class Meta:
         model = Fee
-        template_name = "django_tables2/bootstrap.html"
         fields = ('fee', 'description', 'type', 'amount', 'limit', 'places_left')
         order_by = ('type', 'description')
 
@@ -56,7 +55,6 @@ class OutstandingEnrolmentsTable(tables.Table):
 
     class Meta:
         model = Enrolment
-        template_name = "django_tables2/bootstrap.html"
         fields = (
             'enrolment',
             'qa__student__surname',

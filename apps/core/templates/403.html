@@ -3,24 +3,14 @@
 {% block subtitle %} Unauthorized {% endblock %}
 
 {% block center %}
-<div class="section">
-    <div class="not-found-message">
-        <h1><i class="fas fa-ban"></i></h1>
-        <h2>You are not authorized to view this page</h2>
-        <h4>{% if exception %}({{ exception }}){% endif %}</h4>
-        <p>Missing a permission that you should have? Contact <b>Redpot support</b> (<a href="mailto:redpot-support@conted.ox.ac.uk">redpot-support@conted.ox.ac.uk</a>)</p>
-    </div>
+<div class="section text-center">
+    <span class="display-1"><i class="fas fa-ban"></i></span>
+    <h2 class="mb-4">You are not authorized to view this page</h2>
+    <h5>{% if exception %}({{ exception }}){% endif %}</h5>
+    <p>
+        Missing a permission that you should have? Contact <b>Redpot support</b>
+        (<a href="mailto:redpot-support@conted.ox.ac.uk">redpot-support@conted.ox.ac.uk</a>)
+    </p>
 </div>
-<style>
-    .not-found-message {
-        text-align: center;
-    }
-    .not-found-message h1 {
-        font-size: 100px;
-    }
-    .not-found-message h2 {
-        font-size: 30px;
-        margin-bottom: 20px;
-    }
-</style>
+
 {% endblock %}

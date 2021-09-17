@@ -180,8 +180,8 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
 
         expense_form_options = expense_forms.template_options(self.object)
 
-        waitlist_table = WaitlistTable(self.object.waitlists.all())
-        book_table = BookTable(self.object.books.all())
+        waitlist_table = WaitlistTable(self.object.waitlists.all(), request=self.request)
+        book_table = BookTable(self.object.books.all(), request=self.request)
 
         discounts = Discount.objects.matching_module(self.object).with_eligibility()
 

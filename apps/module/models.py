@@ -171,12 +171,9 @@ class Module(SignatureModel):
         help_text='Online enrolments will have this status by default',
     )
     note = models.CharField(max_length=512, blank=True, null=True)
-    terms_and_conditions = models.IntegerField(default=1)  # placeholder
-    # terms_and_conditions = models.ForeignKey(    # noqa: E800
-    #     'TermsAndConditions',                    # noqa: E800
-    #     models.DO_NOTHING,                       # noqa: E800
-    #     db_column='terms_and_conditions'         # noqa: E800
-    # )                                            # noqa: E800
+    terms_and_conditions = models.IntegerField(
+        choices=((1, 'Open access courses'), (2, 'Selective short courses')), null=True, blank=True
+    )
     apply_url = models.CharField(max_length=512, blank=True, null=True)
     further_details = models.TextField(blank=True, null=True)
     is_repeat = models.BooleanField(default=False)

@@ -6,36 +6,27 @@
 {% block center %}
 <div class="section">
     <div class="row">
-        <div class="col-xs-12 col-md-8">
-            <h2>Lookup</h2>
-            <form method='POST' action="{% url 'invoice:lookup' %}" class='form-horizontal'>
-                {% csrf_token %}
-                <div class="input-group col-xs-12 col-sm-6">
+        <h2>Lookup</h2>
+        <form method='POST' action="{% url 'invoice:lookup' %}" class='form-horizontal'>
+            {% csrf_token %}
+            <div class="col-3">
+                <div class="input-group">
                     {% render_field form.number class+="form-control" %}
-                    <span class="input-group-btn">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="fa fa-search"></i> Find
-                        </button>
-                    </span>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa fa-search"></i> Find
+                    </button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
 
 <div class="section">
 	<div class="row">
-		<div class="col-xs-12 col-md-8">
-            <h2>Search</h2>
-            <form action="" class='form-horizontal'>
-                {% bootstrap3form filter.form False %}
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        {% bootstrap3submit 'Search' %}
-                    </div>
-                </div>
-            </form>
-        </div>
+        <h2>Search</h2>
+        <form action="" class='form-horizontal'>
+            {% include 'core/components/search_form.html' %}
+        </form>
     </div>
 </div>
 {% if request.GET %}

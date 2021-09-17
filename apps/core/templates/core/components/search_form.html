@@ -1,10 +1,6 @@
 {% load redpot_tags %}
 <form action="" class='form-horizontal'>
-    {% bootstrap3form filter.form False %}
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            {% bootstrap3submit 'Search' %}
-        </div>
-    </div>
+    {% bootstrap5form filter.form status_classes=False input_size=input_size|default:'normal' %}
+    <button type='submit' class='btn btn-primary'>Search</button>
 </form>
 {{ filter.form.media }}

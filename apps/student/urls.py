@@ -22,6 +22,7 @@ urlpatterns = [
     path('lookup', views.Lookup.as_view(), name='lookup'),
     path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
     path('view/<int:pk>', views.View.as_view(), name='view'),
+    path('delete/<int:pk>', views.Delete.as_view(), name='delete'),
     path('email/create/<int:student_id>', views.CreateEmail.as_view(), name='email-create'),
     path('address/', include(address_urls)),
     path('merge/', not_implemented, name='merge'),

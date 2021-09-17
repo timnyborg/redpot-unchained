@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block jumbotron %}
-<div class="jumbotron landing-banner">
+<div class="jumbotron landing-banner mb-4">
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
@@ -30,13 +30,8 @@
 {% block top %}{% endblock %}
 {% block center %}
 <div class="row">
-    <style>
-        body {
-            background-color: white;
-        }
-    </style>
     <div class="col-sm-4 landing-page-icon">
-        <a href="{% url 'programme:search' %}">
+        <a href="{% url 'student:search' %}">
             <img src="{% static 'icons/flaticons/bicycle.png' %}" class="img-responsive grow landing-page-image" alt="">
             <h1>Students</h1>
         </a>
@@ -54,4 +49,9 @@
         </a>
     </div>
 </div>
+<style>
+    body {
+        background-color: white;
+    }
+</style>
 {% endblock %}

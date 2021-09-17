@@ -34,7 +34,7 @@ def edit_button(
 
     button = f"""
         <a href="{url}"
-           class="btn btn-default {sizes.get(size, '')} pull-right"
+           class="btn btn-default btn-outline-dark {sizes.get(size, '')} pull-right float-end"
            target="{target}"
            data-toggle="tooltip"
            title="{tooltip}"
@@ -61,22 +61,23 @@ def user_name(username):
     return cache.get_or_set(f'user_name_{username}', lambda: _get_name(username))
 
 
-@register.inclusion_tag('utility/bootstrap3_form.html')
-def bootstrap3form(form, status_classes=True):
-    return {'form': form, 'status_classes': status_classes}
-
-
-@register.inclusion_tag('utility/bootstrap5_form.html')
+@register.inclusion_tag('utility/bootstrap_form.html')
 def bootstrap5form(form, status_classes=True, input_size='normal'):
     form_control_classes = {
         'normal': "form-control",
         'small': "form-control form-control-sm",
         'large': "form-control form-control-lg",
     }
+    form_label_classes = {
+        'normal': "col-form-label",
+        'small': "col-form-label col-form-label-sm",
+        'large': "col-form-label col-form-label-lg",
+    }
     return {
         'form': form,
         'status_classes': status_classes,
         'form_control_class': form_control_classes.get(input_size, "form-control"),
+        'form_label_class': form_label_classes.get(input_size, "form-label"),
     }
 
 
