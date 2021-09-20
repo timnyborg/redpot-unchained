@@ -1,7 +1,5 @@
 from django.urls import path
 
-from apps.core.utils.views import not_implemented
-
 from . import views
 
 app_name = 'finance'
@@ -18,5 +16,5 @@ urlpatterns = [
     path('add-payment/pay-enrolments', views.MultipleEnrolmentPayment.as_view(), name='pay-multiple-enrolments'),
     path('transfer/<int:enrolment_id>', views.Transfer.as_view(), name='transfer'),
     path('delete-transaction/<int:allocation>', views.DeleteTransaction.as_view(), name='delete-transaction'),
-    path('receipt/<int:allocation>/<int:enrolment_id>', not_implemented, name='receipt'),
+    path('receipt/<int:allocation>/<int:enrolment_id>', views.ReceiptPDF.as_view(), name='receipt'),
 ]

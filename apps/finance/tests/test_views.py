@@ -1,3 +1,4 @@
+from decimal import Decimal
 from urllib.parse import urlencode
 
 from django import test
@@ -113,3 +114,30 @@ class TestMultipleEnrolmentPaymentView(LoggedInViewTestMixin, test.TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.enrolments[0].get_balance(), -5)
+
+
+class TestReceiptPDF(LoggedInViewTestMixin, test.TestCase):
+    superuser = True
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        enrolment = EnrolmentFactory()
+        transaction = services.insert_ledger(
+            account_code=models.Accounts.CASH,
+            amount=Decimal(100),
+            user=cls.user,
+            finance_code='TEST',
+            narrative='TEST',
+            enrolment_id=enrolment.id,
+            type_id=models.TransactionTypes.CREDIT_CARD,
+        )
+        cls.url = reverse(
+            'finance:receipt', kwargs={'allocation': transaction.account_line.allocation, 'enrolment_id': enrolment.id}
+        )
+
+    def test_get(self):
+        """This can't actually verify the contents of the pdf"""
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'application/pdf')

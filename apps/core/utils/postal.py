@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING, Iterator, Optional
 
 if TYPE_CHECKING:
     from ..models import AddressModel
@@ -151,11 +151,16 @@ ADDRESS_FORMATS = {
 
 
 class FormattedAddress:
-    """Takes a dictionary (or Row) and produces a list based on the country's correct mailing format
+    """Takes an address-compatible Model and produces a list based on the country's correct mailing format
     Can produce a newline-separated string for print, or a list of strings for pdfs, html, etc.
     """
 
-    def __init__(self, address: AddressModel):
+    def __init__(self, address: Optional[AddressModel]):
+        # If passed None (for example, if a student lacks an address, the address is an empty list)
+        if not address:
+            self._lines = []
+            return
+
         # Find an entry in the format dictionary that contains the address' country, and get the format
         format_ = next(
             (

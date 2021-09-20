@@ -28,7 +28,7 @@ lxml==4.6.3
 
 marshmallow==3.13.0
 mkdocs==1.2.2
-mkdocs-material==7.2.6
+mkdocs-material==7.2.7
 mkdocs-material-extensions==1.0.3
 mssql-django==1.0
 parameterized==0.8.1
