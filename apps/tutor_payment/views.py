@@ -1,8 +1,13 @@
+from urllib.parse import urlencode
+
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
+from django import http
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
@@ -11,7 +16,7 @@ from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.tutor.models import TutorModule
 
-from . import datatables, forms, models
+from . import datatables, forms, models, services
 
 
 class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.CreateView):
@@ -69,6 +74,42 @@ class Edit(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestam
         return next_url_if_safe(self.request) or self.object.tutor_module.get_absolute_url() + '#payments'
 
 
+class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
+    title = 'Tutor payment'
+    subtitle = 'Search'
+    template_name = 'core/search.html'
+
+    table_class = datatables.SearchTable
+    filterset_class = datatables.SearchFilter
+
+
+class Approve(PermissionRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
+    """List of payments assigned to the current user"""
+
+    model = models.TutorFee
+    permission_required = 'tutor_payment.approve'
+    template_name = 'tutor_payment/approve.html'
+    subtitle = 'Approve'
+
+    table_class = datatables.ApprovalTable
+    filterset_class = datatables.ApprovalFilter
+
+    def get_queryset(self) -> QuerySet:
+        return self.request.user.approver_payments.filter(status=models.Statuses.RAISED).select_related(
+            'type', 'tutor_module__tutor__student', 'tutor_module__module'
+        )
+
+    def post(self, request, urllib=None, *args, **kwargs) -> http.HttpResponse:
+        ids: list[str] = request.POST.getlist('payment')
+        int_ids: list[int] = [int(i) for i in ids if i.isnumeric()]
+        update_count = services.approve_payments(payment_ids=int_ids, username=request.user.username)
+        if update_count:
+            messages.success(request, f'{update_count} payments approved')
+        else:
+            messages.error(request, 'No payments approved')
+        return redirect(self.request.path_info + '?' + urlencode(self.request.GET))  # preserve filtering
+
+
 class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequiredMixin, generic.FormView):
     template_name = 'tutor_payment/extras.html'
     form_class = forms.ExtrasForm
@@ -91,12 +132,3 @@ class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequir
             user=self.request.user,
         )
         return super().form_valid(form)
-
-
-class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
-    title = 'Tutor payment'
-    subtitle = 'Search'
-    template_name = 'core/search.html'
-
-    table_class = datatables.SearchTable
-    filterset_class = datatables.SearchFilter

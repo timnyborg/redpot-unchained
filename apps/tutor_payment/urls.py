@@ -16,4 +16,5 @@ urlpatterns = [
     path('new/<int:tutor_module_id>', views.Create.as_view(), name='new'),
     path('quick/', include(quick_payments_patterns)),
     path('search/', views.Search.as_view(), name='search'),
+    path('approve/', views.Approve.as_view(), name='approve'),
 ]
