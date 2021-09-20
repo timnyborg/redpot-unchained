@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
@@ -49,18 +50,9 @@ class Edit(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestam
     template_name = 'core/form.html'
     subtitle_object = False
 
-    def can_edit(self):
-        if self.object.status_id == models.Statuses.RAISED:
-            return self.request.user.has_perm('tutor_payment.raise') and self.object.raised_by == self.request.user
-        if self.object.status_id == models.Statuses.APPROVED:
-            return self.request.user.has_perm('tutor_payment.approve')
-        if self.object.status_id == models.Statuses.TRANSFERRED:
-            return self.request.user.has_perm('tutor_payment.transfer')
-        return False
-
     def get_form_kwargs(self):
         # If not allowed to edit, display instead. should this be elsewhere?
-        if not self.can_edit():
+        if not self.object.user_can_edit(self.request.user):
             return redirect(self.object.get_absolute_url())
 
         kwargs = super().get_form_kwargs()
@@ -69,6 +61,17 @@ class Edit(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestam
 
     def get_success_url(self) -> str:
         return next_url_if_safe(self.request) or self.object.tutor_module.get_absolute_url() + '#payments'
+
+
+class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = models.TutorFee
+    template_name = 'core/delete_form.html'
+    success_url = reverse_lazy('tutor-payment:search')
+    subtitle = 'Delete'
+    subtitle_object = False
+
+    def has_permission(self) -> bool:
+        return self.get_object().user_can_edit(self.request.user)
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):

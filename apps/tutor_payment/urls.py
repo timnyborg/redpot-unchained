@@ -12,8 +12,9 @@ quick_payments_patterns = (
 )
 
 urlpatterns = [
-    path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
     path('new/<int:tutor_module_id>', views.Create.as_view(), name='new'),
+    path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
+    path('delete/<int:pk>', views.Delete.as_view(), name='delete'),
     path('quick/', include(quick_payments_patterns)),
     path('search/', views.Search.as_view(), name='search'),
     path('approve/', views.Approve.as_view(), name='approve'),

@@ -8,6 +8,8 @@ from django.db import models, transaction
 from django.urls import reverse
 from django.utils.functional import cached_property
 
+from apps.core.models import User
+
 HOLIDAY_RATE = Decimal(0.1207 / 1.1207)
 # Constants used as defaults.  If used more extensively, we may need to use enums
 
@@ -66,11 +68,22 @@ class TutorFee(models.Model):
             ('transfer', 'Can transfer tutor payments to central finance'),
         ]
 
+    def save(self, *args, **kwargs):
+        # Reverting a transferred record wipes related fields
+        if self.status_id < Statuses.TRANSFERRED:
+            self.batch = None
+            self.transferred_by = None
+            self.transferred_on = None
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
         return '#'
 
     def get_edit_url(self):
         return reverse('tutor-payment:edit', args=[self.pk])
+
+    def get_delete_url(self):
+        return reverse('tutor-payment:delete', args=[self.pk])
 
     @classmethod
     @transaction.atomic()
@@ -187,13 +200,15 @@ class TutorFee(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def save(self, *args, **kwargs):
-        # Reverting a transferred record wipes related fields
-        if self.status_id < Statuses.TRANSFERRED:
-            self.batch = None
-            self.transferred_by = None
-            self.transferred_on = None
-        super().save(*args, **kwargs)
+    def user_can_edit(self, user: User) -> bool:
+        """Checks if a user has edit (and delete) permissions on the object"""
+        if self.status_id == Statuses.RAISED:
+            return user.has_perm('tutor_payment.raise') and self.raised_by == user
+        if self.status_id == Statuses.APPROVED:
+            return user.has_perm('tutor_payment.approve')
+        if self.status_id == Statuses.TRANSFERRED:
+            return user.has_perm('tutor_payment.transfer')
+        return False
 
 
 class TutorFeeRateQuerySet(models.QuerySet):
