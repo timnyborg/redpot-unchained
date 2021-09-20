@@ -1,5 +1,6 @@
 import django_filters as filters
 import django_tables2 as tables
+from django_select2.forms import Select2MultipleWidget
 
 from django.db.models import Q
 from django.urls import reverse
@@ -42,6 +43,10 @@ class SearchFilter(filters.FilterSet):
         lookup_expr='startswith',
         label='Surname',
     )
+    raised_by = filters.ModelMultipleChoiceFilter(
+        queryset=User.objects.order_by('first_name', 'last_name'),
+        widget=Select2MultipleWidget(),
+    )
 
     class Meta:
         model = TutorFee
@@ -55,6 +60,10 @@ class SearchFilter(filters.FilterSet):
             'raised_by',
             'batch',
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filters['raised_by'].field.label_from_instance = lambda obj: obj.get_full_name()
 
 
 class SearchTable(tables.Table):
@@ -70,7 +79,7 @@ class SearchTable(tables.Table):
             'tutor_module__module__code',
             'amount',
             'type',
-            'raised_by',
+            'raised_by__get_full_name',
             'approved_by',
             'transferred_on',
             'status',
