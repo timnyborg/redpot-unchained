@@ -52,13 +52,13 @@
                         {% render_field field %}
                     {% elif field.field.widget.input_type == 'select' %}
                         {% if field.errors %}
-                            {% render_field field class+='form-select is-invalid'|add:form_control_class %}
+                            {% render_field field class+='form-select is-invalid' class+=form_control_class %}
                         {% else %}
-                            {% render_field field class+='form-select'|add:form_control_class %}
+                            {% render_field field class+='form-select' class+=form_control_class %}
                         {% endif %}
                     {% else %}
                         {% if field.errors %}
-                            {% render_field field class+='is-invalid'|add:form_control_class %}
+                            {% render_field field class+='is-invalid' class+=form_control_class %}
                         {% else %}
                             {% render_field field class+=form_control_class %}
                         {% endif %}
