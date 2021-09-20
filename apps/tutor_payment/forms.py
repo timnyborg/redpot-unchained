@@ -119,7 +119,7 @@ class ExtrasForm(forms.Form):
                 approver=approver,
                 hourly_rate=marking_hourly,
                 weeks=1,
-                raised_by=user.username,
+                raised_by=user,
             )
 
         if summative:
@@ -132,7 +132,7 @@ class ExtrasForm(forms.Form):
                 approver=approver,
                 hourly_rate=marking_hourly,
                 weeks=1,
-                raised_by=user.username,
+                raised_by=user,
             )
 
         if extra_students:
@@ -145,5 +145,5 @@ class ExtrasForm(forms.Form):
                 approver=approver,
                 hourly_rate=marking_hourly,
                 weeks=1,
-                raised_by=user.username,
+                raised_by=user,
             )

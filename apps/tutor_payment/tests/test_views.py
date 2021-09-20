@@ -57,7 +57,7 @@ class TestEditPayment(TestCase):
             Permission.objects.get(content_type__app_label='tutor_payment', codename='approve'),
         ]
         cls.user.user_permissions.add(*permissions)
-        cls.payment = factories.TutorFeeFactory(raised_by=cls.user.username, amount=50)
+        cls.payment = factories.TutorFeeFactory(raised_by=cls.user, approver=cls.user, amount=50)
         cls.url = reverse('tutor-payment:edit', args=[cls.payment.pk])
 
     def setUp(self):
@@ -88,7 +88,7 @@ class TestEditPayment(TestCase):
 class TestExtras(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.user = get_user_model().objects.create_user(username='testuser', is_superuser=True)
         cls.module = Module.objects.create(
             title='Test module',
             start_date=date(2000, 1, 1),
@@ -116,12 +116,12 @@ class TestExtras(TestCase):
             data={
                 'formative': 5,
                 'formative_rate': self.formative_rate.pk,
-                'approver': 'test',
+                'approver': 'testuser',
             },
         )
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(TutorFee.objects.last().approver, 'test')
+        self.assertEqual(TutorFee.objects.last().approver, self.user)
 
     def test_create_summative(self):
         response = self.client.post(
@@ -129,21 +129,21 @@ class TestExtras(TestCase):
             data={
                 'summative': 5,
                 'summative_rate': self.summative_rate.pk,
-                'approver': 'test',
+                'approver': 'testuser',
             },
         )
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(TutorFee.objects.last().approver, 'test')
+        self.assertEqual(TutorFee.objects.last().approver, self.user)
 
     def test_extra_students(self):
         response = self.client.post(
             self.url,
             data={
                 'extra_students': 5,
-                'approver': 'test',
+                'approver': 'testuser',
             },
         )
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(TutorFee.objects.last().approver, 'test')
+        self.assertEqual(TutorFee.objects.last().approver, self.user)

@@ -32,7 +32,7 @@ class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, gener
 
     def form_valid(self, form):
         form.instance.tutor_module = self.tutor_module
-        form.instance.raised_by = self.request.user.username
+        form.instance.raised_by = self.request.user
         return super().form_valid(form)
 
     def get_subtitle(self):
@@ -51,10 +51,7 @@ class Edit(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestam
 
     def can_edit(self):
         if self.object.status_id == models.Statuses.RAISED:
-            return (
-                self.request.user.has_perm('tutor_payment.raise')
-                and self.object.raised_by == self.request.user.username.lower()
-            )
+            return self.request.user.has_perm('tutor_payment.raise') and self.object.raised_by == self.request.user
         if self.object.status_id == models.Statuses.APPROVED:
             return self.request.user.has_perm('tutor_payment.approve')
         if self.object.status_id == models.Statuses.TRANSFERRED:
