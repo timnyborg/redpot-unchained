@@ -176,23 +176,24 @@ class TutorFee(models.Model):
             ):
                 # Check the math, while allowing for sub-penny rounding errors.
                 # This could rely on the Decimal quantize() function instead, and getcontext().prec = 2.
-                errors['amount'] = 'Total amount does not match hours worked * hourly rate (£%s)' % (
-                    self.hours_worked * self.hourly_rate
-                )
+                errors['amount'] = f'Must equal hours worked * rate (£{self.hours_worked * self.hourly_rate:.2f})'
+
         else:
             # Non hourly, so strip unneeded vars, set the weeks to 1
             self.hours_worked = None
             self.hourly_rate = None
             self.weeks = 1
 
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        # Reverting a transferred record wipes related fields
         if self.status_id < Statuses.TRANSFERRED:
-            # Reverting a transferred record wipes related fields
             self.batch = None
             self.transferred_by = None
             self.transferred_on = None
-
-        if errors:
-            raise ValidationError(errors)
+        super().save(*args, **kwargs)
 
 
 class TutorFeeRateQuerySet(models.QuerySet):
