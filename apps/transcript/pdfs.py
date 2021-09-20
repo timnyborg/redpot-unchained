@@ -22,10 +22,9 @@ def create_transcript(*, header: bool, level: str, student: Student, mark_printe
 
     address = student.get_default_address()
     address_lines = postal.FormattedAddress(address) if address else []
-    document: str = _render_transcript(
+    return _render_transcript(
         student=student, address_lines=address_lines, enrolments=list(enrolments), level=level, header=header
     )
-    return document
 
 
 class TranscriptPDF(ContedPDF):
