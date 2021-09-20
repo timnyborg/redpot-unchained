@@ -36,9 +36,22 @@ class TutorFee(models.Model):
     hourly_rate = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
     hours_worked = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
     weeks = models.IntegerField(blank=True, null=True)
-    approver = models.CharField(max_length=32)
-
-    raised_by = models.CharField(max_length=50, editable=False)
+    approver = models.ForeignKey(
+        'core.User',
+        on_delete=models.DO_NOTHING,
+        db_column='approver',
+        related_name='approver_payments',
+        related_query_name='approver_payment',
+        to_field='username',
+    )
+    raised_by = models.ForeignKey(
+        'core.User',
+        on_delete=models.DO_NOTHING,
+        db_column='raised_by',  # todo: implement fk on legacy db, or move to an id fk
+        related_name='tutor_payments',
+        related_query_name='tutor_payment',
+        to_field='username',
+    )
     raised_on = models.DateTimeField(editable=False, default=datetime.now)
     approved_by = models.CharField(max_length=50, blank=True, null=True, editable=False)
     approved_on = models.DateTimeField(blank=True, null=True, editable=False)
@@ -201,29 +214,33 @@ class TutorFeeRate(models.Model):
     class Meta:
         db_table = 'tutor_fee_rate'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'£{self.amount:.2f} - {self.description}'
 
 
 class TutorFeeStatus(models.Model):
-    description = models.CharField(max_length=50, blank=True, null=True)
+    description = models.CharField(max_length=50)
     paid = models.BooleanField()
 
     class Meta:
         db_table = 'tutor_fee_status'
 
-    def __str__(self):
-        return self.description
+    def __str__(self) -> str:
+        return str(self.description)
 
 
 class TutorFeeType(models.Model):
-    description = models.CharField(max_length=64, blank=True, null=True)
+    description = models.CharField(max_length=64)
     is_hourly = models.BooleanField()
-    code = models.CharField(max_length=64, blank=True, null=True)
-    is_active = models.BooleanField(blank=True, null=True)
+    code = models.CharField(max_length=64)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'tutor_fee_type'
 
-    def __str__(self):
-        return self.description
+    def __str__(self) -> str:
+        return str(self.description)
+
+    def short_form(self) -> str:
+        # Todo: reverse this.  Remove (hourly) from the descriptions, then update UI that needs it to add it
+        return str(self).replace(' (hourly)', '')
