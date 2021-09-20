@@ -30,10 +30,12 @@ class TransactionTypes(models.IntegerChoices):
 
 class LedgerQuerySet(models.QuerySet):
     def debts(self) -> models.QuerySet:
+        """Returns only those on the debtor control side of the ledger"""
         return self.filter(account=Accounts.DEBTOR)
 
-    def payments(self) -> models.QuerySet:
-        return self.filter(type__is_cash=True)
+    def cash_control(self) -> models.QuerySet:
+        """Returns only those on the 'cash control' (non-debtor control) side of the ledger"""
+        return self.filter(account=Accounts.CASH)
 
     def invoiced(self) -> models.QuerySet:
         return self.filter(invoice_ledger__id__isnull=False)
@@ -46,6 +48,7 @@ class LedgerQuerySet(models.QuerySet):
         # todo: should the `or Decimal(0)` go in here, making it non optional?
         return self.aggregate(balance=models.Sum('amount'))['balance']
 
+    # Todo: consider renaming payments and non-payments?
     def non_cash(self) -> models.QuerySet:
         return self.filter(type__is_cash=False)
 

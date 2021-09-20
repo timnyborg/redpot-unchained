@@ -7,7 +7,7 @@ from django_tables2.views import SingleTableMixin
 from django import http
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core import mail
 from django.core.exceptions import PermissionDenied
@@ -17,13 +17,14 @@ from django.shortcuts import get_list_or_404, get_object_or_404, redirect
 from django.urls import reverse
 from django.views import generic
 
+from apps.core.utils import strings
 from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.fee.models import Fee
 from apps.student.models import Student
 
-from . import datatables, forms, models, services
+from . import datatables, forms, models, pdfs, services
 
 
 class AddFees(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleTableMixin, generic.FormView):
@@ -259,3 +260,18 @@ class DeleteTransaction(LoginRequiredMixin, PageTitleMixin, generic.TemplateView
         )
         messages.success(request, 'Transaction deleted')
         return redirect(next_url_if_safe(request) or '')
+
+
+class ReceiptPDF(PermissionRequiredMixin, generic.View):
+    """Generate a transcript for a single student"""
+
+    permission_required = 'finance.print_receipt'
+
+    def get(self, request, allocation: int, enrolment_id: int, *args, **kwargs) -> http.HttpResponse:
+        enrolment = get_object_or_404(Enrolment, pk=enrolment_id)
+        student = enrolment.qa.student
+        document = pdfs.create_receipt(allocation=allocation, student=student)
+        filename = strings.normalize(f'Receipt_{allocation}_{student.firstname}_{student.surname}.pdf')
+        return http.HttpResponse(
+            document, content_type='application/pdf', headers={'Content-Disposition': f'inline;filename={filename}'}
+        )
