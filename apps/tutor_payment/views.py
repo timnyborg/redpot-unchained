@@ -18,7 +18,7 @@ class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, gener
     model = models.TutorFee
     permission_required = 'tutor_payment.raise'
     template_name = 'core/form.html'
-    form_class = forms.CreateForm
+    form_class = forms.PaymentForm
 
     def dispatch(self, request, *args, **kwargs):
         # get the parent record for generating the title and adding to the child record on form submission
@@ -39,7 +39,7 @@ class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, gener
 
 class Edit(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
     model = models.TutorFee
-    form_class = forms.EditForm
+    form_class = forms.PaymentForm
     success_message = 'Record updated'
     template_name = 'core/form.html'
     subtitle_object = False

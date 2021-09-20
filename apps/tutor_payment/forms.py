@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django import forms
 from django.db import transaction
 from django.forms import ValidationError
@@ -9,51 +11,31 @@ from apps.core.utils.forms import ApproverChoiceField
 from .models import TutorFee, TutorFeeRate
 
 
-class CreateForm(forms.ModelForm):
+class PaymentForm(forms.ModelForm):
+    """Form for creating or editing a payment"""
+
     approver = ApproverChoiceField('tutor_payment.approve')
 
     class Meta:
         model = TutorFee
-        fields = (
+        fields = [
             'type',
-            'hourly_rate',
-            'hours_worked',
-            'amount',
-            'weeks',
-            'details',
-            'approver',
-            'pay_after',
-        )
-        widgets = {
-            'hourly_rate': widgets.PoundInput(),
-            'amount': widgets.PoundInput(),
-            'pay_after': widgets.MonthPickerInput(),
-        }
-
-
-class EditForm(forms.ModelForm):
-    approver = ApproverChoiceField('tutor_payment.approve')
-
-    class Meta:
-        model = TutorFee
-        fields = (
-            'type',
-            'hourly_rate',
-            'hours_worked',
-            'amount',
-            'weeks',
             'status',
+            'hourly_rate',
+            'hours_worked',
+            'amount',
+            'weeks',
             'details',
             'approver',
             'pay_after',
-        )
+        ]
         widgets = {
             'hourly_rate': widgets.PoundInput(),
             'amount': widgets.PoundInput(),
             'pay_after': widgets.MonthPickerInput(),
         }
 
-    def __init__(self, editable_status, *args, **kwargs):
+    def __init__(self, editable_status: Optional[bool] = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['status'].disabled = not editable_status
 
