@@ -8,6 +8,8 @@ from django.db import models, transaction
 from django.urls import reverse
 from django.utils.functional import cached_property
 
+from apps.core.models import User
+
 HOLIDAY_RATE = Decimal(0.1207 / 1.1207)
 # Constants used as defaults.  If used more extensively, we may need to use enums
 
@@ -19,7 +21,7 @@ class Statuses(models.IntegerChoices):
     FAILED = (4, 'Failed')
 
 
-class TutorFee(models.Model):
+class TutorPayment(models.Model):
     tutor_module = models.ForeignKey(
         'tutor.TutorModule',
         models.PROTECT,
@@ -28,17 +30,35 @@ class TutorFee(models.Model):
         related_query_name='payment',
     )
     amount = models.DecimalField(max_digits=19, decimal_places=4)
-    type = models.ForeignKey('TutorFeeType', models.DO_NOTHING, db_column='type', limit_choices_to={'is_active': True})
+    type = models.ForeignKey(
+        'PaymentType',
+        models.DO_NOTHING,
+        db_column='type',
+        limit_choices_to={'is_active': True},
+    )
     pay_after = models.DateField(blank=True, null=True)
-    status = models.ForeignKey('TutorFeeStatus', models.DO_NOTHING, db_column='status', default=Statuses.RAISED)
+    status = models.ForeignKey('PaymentStatus', models.DO_NOTHING, db_column='status', default=Statuses.RAISED)
     details = models.TextField(max_length=500, blank=True, null=True)
     batch = models.PositiveIntegerField(blank=True, null=True, editable=False)
     hourly_rate = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
     hours_worked = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
     weeks = models.IntegerField(blank=True, null=True)
-    approver = models.CharField(max_length=32)
-
-    raised_by = models.CharField(max_length=50, editable=False)
+    approver = models.ForeignKey(
+        'core.User',
+        on_delete=models.DO_NOTHING,
+        db_column='approver',
+        related_name='approver_payments',
+        related_query_name='approver_payment',
+        to_field='username',
+    )
+    raised_by = models.ForeignKey(
+        'core.User',
+        on_delete=models.DO_NOTHING,
+        db_column='raised_by',  # todo: implement fk on legacy db, or move to an id fk
+        related_name='tutor_payments',
+        related_query_name='tutor_payment',
+        to_field='username',
+    )
     raised_on = models.DateTimeField(editable=False, default=datetime.now)
     approved_by = models.CharField(max_length=50, blank=True, null=True, editable=False)
     approved_on = models.DateTimeField(blank=True, null=True, editable=False)
@@ -53,11 +73,22 @@ class TutorFee(models.Model):
             ('transfer', 'Can transfer tutor payments to central finance'),
         ]
 
+    def save(self, *args, **kwargs):
+        # Reverting a transferred record wipes related fields
+        if self.status_id < Statuses.TRANSFERRED:
+            self.batch = None
+            self.transferred_by = None
+            self.transferred_on = None
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
         return '#'
 
     def get_edit_url(self):
         return reverse('tutor-payment:edit', args=[self.pk])
+
+    def get_delete_url(self):
+        return reverse('tutor-payment:delete', args=[self.pk])
 
     @classmethod
     @transaction.atomic()
@@ -65,7 +96,7 @@ class TutorFee(models.Model):
         cls,
         tutor_module,
         amount,
-        fee_type_id,
+        payment_type_id,
         details,
         hourly_rate,
         weeks,
@@ -75,7 +106,7 @@ class TutorFee(models.Model):
         holiday_date: date = None,
     ):
         """
-        Raises a fee while separating out the holiday portion to a selected month
+        Raises a payment while separating out the holiday portion to a selected month
         The holiday payment date can be specified.  If not, it gets the last day of the module's end month.
         """
         if not holiday_date:
@@ -87,10 +118,10 @@ class TutorFee(models.Model):
         holiday_amount = HOLIDAY_RATE * amount
         net_amount = amount - holiday_amount
 
-        TutorFee.objects.create(
+        TutorPayment.objects.create(
             tutor_module=tutor_module,
             amount=net_amount,
-            type_id=fee_type_id,
+            type_id=payment_type_id,
             pay_after=pay_date,
             details=details,
             approver=approver,
@@ -101,7 +132,7 @@ class TutorFee(models.Model):
         )
 
         # Holiday pay - last month
-        TutorFee.objects.create(
+        TutorPayment.objects.create(
             tutor_module=tutor_module,
             amount=holiday_amount,
             type_id=12,  # Holiday, todo choices
@@ -163,67 +194,74 @@ class TutorFee(models.Model):
             ):
                 # Check the math, while allowing for sub-penny rounding errors.
                 # This could rely on the Decimal quantize() function instead, and getcontext().prec = 2.
-                errors['amount'] = 'Total amount does not match hours worked * hourly rate (£%s)' % (
-                    self.hours_worked * self.hourly_rate
-                )
+                errors['amount'] = f'Must equal hours worked * rate (£{self.hours_worked * self.hourly_rate:.2f})'
+
         else:
             # Non hourly, so strip unneeded vars, set the weeks to 1
             self.hours_worked = None
             self.hourly_rate = None
             self.weeks = 1
 
-        if self.status_id < Statuses.TRANSFERRED:
-            # Reverting a transferred record wipes related fields
-            self.batch = None
-            self.transferred_by = None
-            self.transferred_on = None
-
         if errors:
             raise ValidationError(errors)
 
+    def user_can_edit(self, user: User) -> bool:
+        """Checks if a user has edit (and delete) permissions on the object"""
+        if self.status_id == Statuses.RAISED:
+            return user.has_perm('tutor_payment.raise') and self.raised_by == user
+        if self.status_id == Statuses.APPROVED:
+            return user.has_perm('tutor_payment.approve')
+        if self.status_id == Statuses.TRANSFERRED:
+            return user.has_perm('tutor_payment.transfer')
+        return False
 
-class TutorFeeRateQuerySet(models.QuerySet):
+
+class PaymentRateQuerySet(models.QuerySet):
     def lookup(self, tag) -> Decimal:
-        """Concise way of getting a fee_rate from a tag
-        e.g. `marking_rate = TutorFeeRate.objects.lookup('marking')
+        """Concise way of getting a payment_rate from a tag
+        e.g. `marking_rate = PaymentRate.objects.lookup('marking')
         """
         return self.get(tag=tag).amount
 
 
-class TutorFeeRate(models.Model):
+class PaymentRate(models.Model):
     tag = models.CharField(max_length=64)
     amount = models.DecimalField(max_digits=19, decimal_places=4)
     type = models.CharField(max_length=64, null=True)  # A label used for grouping
     description = models.CharField(max_length=128)
 
-    objects = TutorFeeRateQuerySet.as_manager()
+    objects = PaymentRateQuerySet.as_manager()
 
     class Meta:
         db_table = 'tutor_fee_rate'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'£{self.amount:.2f} - {self.description}'
 
 
-class TutorFeeStatus(models.Model):
-    description = models.CharField(max_length=50, blank=True, null=True)
+class PaymentStatus(models.Model):
+    description = models.CharField(max_length=50)
     paid = models.BooleanField()
 
     class Meta:
         db_table = 'tutor_fee_status'
 
-    def __str__(self):
-        return self.description
+    def __str__(self) -> str:
+        return str(self.description)
 
 
-class TutorFeeType(models.Model):
-    description = models.CharField(max_length=64, blank=True, null=True)
+class PaymentType(models.Model):
+    description = models.CharField(max_length=64)
     is_hourly = models.BooleanField()
-    code = models.CharField(max_length=64, blank=True, null=True)
-    is_active = models.BooleanField(blank=True, null=True)
+    code = models.CharField(max_length=64)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'tutor_fee_type'
 
-    def __str__(self):
-        return self.description
+    def __str__(self) -> str:
+        return str(self.description)
+
+    def short_form(self) -> str:
+        # Todo: reverse this.  Remove (hourly) from the descriptions, then update UI that needs it to add it
+        return str(self).replace(' (hourly)', '')

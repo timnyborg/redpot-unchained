@@ -36,28 +36,30 @@
 
 <div class="section">
     {% if payments %}
-        <div class="pull-right top-right-button">
-            <a href="{{ add_url }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add payment</a>
-        </div>
-        <h2 id="payments">Payments</h2>
         {% if not object.tutor.employee_no %}
-            <div class="alert alert-danger" role="alert">
+            <div class="section-alert-header alert-danger" role="alert">
                 <span class="fa fa-exclamation-triangle"></span>
                 <strong>This tutor needs an Employee Number before their fees can be paid.</strong>
             </div>
         {% endif %}
         {% if not object.tutor.appointment_id %}
-            <div class="alert alert-danger" role="alert">
+            <div class="section-alert-header alert-danger" role="alert">
                 <span class="fa fa-exclamation-triangle"></span>
                 <strong>This tutor needs an Appointment ID before their fees can be paid.</strong>
             </div>
         {% endif %}
         {% if not object.tutor.rtw_type_id %}
-            <div class="alert alert-danger" role="alert">
+            <div class="section-alert-header alert-danger" role="alert">
                 <span class="fa fa-exclamation-triangle"></span>
                 <strong>This tutor needs valid Right to Work data before their fees can be paid.</strong>
             </div>
         {% endif %}
+
+        <div class="float-end">
+            <a href="{{ add_url }}" class="btn btn-success btn-xs"><span class="fas fa-plus"></span> Add payment</a>
+        </div>
+        <h2 id="payments">Payments</h2>
+
         <table class="table table-hover table-striped">
             <thead>
             <tr>
@@ -91,7 +93,7 @@
         {% endfor %}
         </table>
     {% else %}
-        <h2 id="fees">Fees</h2>
+        <h2 id="payments">Payments</h2>
         <div class="empty-state">
             <i class="fas fa-pound-sign empty-state-icon"></i>
             <h4>No fees</h4>

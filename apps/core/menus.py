@@ -53,9 +53,9 @@ tutor_children = (
             MenuItem("Search", reverse('tutor-payment:search'), icon="search"),
             MenuItem(
                 "Approve",
-                'not-implemented',
+                reverse("tutor-payment:approve"),
                 icon="check",
-                check=lambda request: request.user.has_perm('contract.approve'),
+                check=lambda request: request.user.has_perm('tutor_payment.approve'),
             ),
         ),
     ),

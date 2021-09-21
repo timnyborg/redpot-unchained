@@ -23,8 +23,8 @@ def load_fixture(apps, schema_editor):
     call_command('loaddata', 'religion.yaml')
     call_command('loaddata', 'study_location.yaml')
     call_command('loaddata', 'transaction_type.yaml')
-    call_command('loaddata', 'tutor_fee_type.yaml')
-    call_command('loaddata', 'tutor_fee_status.yaml')
+    call_command('loaddata', 'tutor_payment_type.yaml')
+    call_command('loaddata', 'tutor_payment_status.yaml')
 
 
 class Migration(migrations.Migration):
