@@ -9,7 +9,7 @@ from apps.core.models import Division, Portfolio, User
 from apps.core.utils.datatables import EditLinkColumn, PoundsColumn
 
 from . import models
-from .models import TutorFee
+from .models import TutorPayment
 
 
 class SearchFilter(filters.FilterSet):
@@ -49,7 +49,7 @@ class SearchFilter(filters.FilterSet):
     )
 
     class Meta:
-        model = TutorFee
+        model = TutorPayment
         fields = [
             'status',
             'module',
@@ -72,7 +72,7 @@ class SearchTable(tables.Table):
     edit = EditLinkColumn('')
 
     class Meta:
-        model = TutorFee
+        model = TutorPayment
         fields = (
             'approvable_icon',
             'tutor_module__tutor__student',
@@ -127,7 +127,7 @@ class ApprovalTable(tables.Table):
     )
 
     class Meta:
-        model = models.TutorFee
+        model = models.TutorPayment
         fields = (
             'payment',
             'approvable_icon',

@@ -7,15 +7,13 @@ from .. import models, services
 from . import factories
 
 
-@patch('apps.tutor_payment.models.TutorFee.approvable', return_value=True)  # We only want to test approvable fees
+@patch('apps.tutor_payment.models.TutorPayment.approvable', return_value=True)  # We only want to test approvable items
 class TestApprovePayments(test.TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
         # begin with an approvable payment
-        cls.payment = factories.TutorFeeFactory(
-            status_id=models.Statuses.RAISED, raised_by=cls.user, approver=cls.user
-        )
+        cls.payment = factories.PaymentFactory(status_id=models.Statuses.RAISED, raised_by=cls.user, approver=cls.user)
 
     def test_approval(self, patched_method):
         result = services.approve_payments(payment_ids=[self.payment.id], username=self.user.username)

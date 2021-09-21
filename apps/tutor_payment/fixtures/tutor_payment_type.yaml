@@ -1,74 +1,74 @@
-- model: tutor_payment.tutorfeetype
+- model: tutor_payment.paymenttype
   pk: 1
   fields:
     description: Administration (hourly)
     is_hourly: true
     code: Admin GL (H)
     is_active: true
-- model: tutor_payment.tutorfeetype
+- model: tutor_payment.paymenttype
   pk: 2
   fields:
     description: Teaching (hourly)
     is_hourly: true
     code: Teach - GL (H)
     is_active: true
-- model: tutor_payment.tutorfeetype
+- model: tutor_payment.paymenttype
   pk: 3
   fields:
     description: Demonstrating (hourly)
     is_hourly: true
     code: Demonstrating GL (H)
     is_active: true
-- model: tutor_payment.tutorfeetype
+- model: tutor_payment.paymenttype
   pk: 4
   fields:
     description: Examining (hourly)
     is_hourly: true
     code: Examining - GL (H)
     is_active: true
-- model: tutor_payment.tutorfeetype
+- model: tutor_payment.paymenttype
   pk: 5
   fields:
     description: Reimbursable expenses
     is_hourly: false
     code: Reimb Exp - GL (C)
     is_active: true
-- model: tutor_payment.tutorfeetype
+- model: tutor_payment.paymenttype
   pk: 6
   fields:
     description: Travel expenses
     is_hourly: false
     code: Travel Exp - GL (C)
     is_active: true
-- model: tutor_payment.tutorfeetype
+- model: tutor_payment.paymenttype
   pk: 12
   fields:
     description: Holiday pay (hourly)
     is_hourly: true
     code: Hol Pay  GL (H)
     is_active: true
-- model: tutor_payment.tutorfeetype
+- model: tutor_payment.paymenttype
   pk: 13
   fields:
     description: Retainer
     is_hourly: false
     code: Retainer GL (C)
     is_active: false
-- model: tutor_payment.tutorfeetype
+- model: tutor_payment.paymenttype
   pk: 14
   fields:
     description: Consultancy (hourly)
     is_hourly: true
     code: Consultancy GL (H)
     is_active: true
-- model: tutor_payment.tutorfeetype
+- model: tutor_payment.paymenttype
   pk: 15
   fields:
     description: Casual labour (hourly)
     is_hourly: true
     code: Casual Labour GL (H)
     is_active: true
-- model: tutor_payment.tutorfeetype
+- model: tutor_payment.paymenttype
   pk: 16
   fields:
     description: Porter (hourly)

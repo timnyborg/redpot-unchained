@@ -21,7 +21,7 @@ from . import datatables, forms, models, services
 
 
 class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.CreateView):
-    model = models.TutorFee
+    model = models.TutorPayment
     permission_required = 'tutor_payment.raise'
     template_name = 'core/form.html'
     form_class = forms.PaymentForm
@@ -44,7 +44,7 @@ class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, gener
 
 
 class Edit(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
-    model = models.TutorFee
+    model = models.TutorPayment
     form_class = forms.PaymentForm
     success_message = 'Record updated'
     template_name = 'core/form.html'
@@ -64,7 +64,7 @@ class Edit(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestam
 
 
 class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
-    model = models.TutorFee
+    model = models.TutorPayment
     template_name = 'core/delete_form.html'
     success_url = reverse_lazy('tutor-payment:search')
     subtitle = 'Delete'
@@ -86,7 +86,7 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
 class Approve(PermissionRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     """List of payments assigned to the current user"""
 
-    model = models.TutorFee
+    model = models.TutorPayment
     permission_required = 'tutor_payment.approve'
     template_name = 'tutor_payment/approve.html'
     subtitle = 'Approve'
@@ -116,7 +116,7 @@ class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequir
     model = TutorModule
     title = 'Tutor Payment'
     subtitle = 'Extras'
-    success_message = 'Fees added'
+    success_message = 'Payments added'
 
     def dispatch(self, request, *args, **kwargs):
         # Set object so we can use it in several places
@@ -124,7 +124,7 @@ class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequir
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self) -> str:
-        return self.object.get_absolute_url() + '#fees'
+        return self.object.get_absolute_url() + '#payments'
 
     def form_valid(self, form):
         form.create_record(

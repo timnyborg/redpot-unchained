@@ -1,12 +1,12 @@
 from django import template
 
-from ..models import TutorFee
+from ..models import TutorPayment
 
 register = template.Library()
 
 
 @register.inclusion_tag('tags/payment_status_tag.html')
-def payment_status_icon(payment: TutorFee):
+def payment_status_icon(payment: TutorPayment):
     statuses = {
         'Raised': ('fa-ellipsis-h', 'text-dark'),
         'Approved': ('fa-thumbs-up', 'text-primary'),

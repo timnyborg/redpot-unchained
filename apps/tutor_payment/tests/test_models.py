@@ -7,7 +7,7 @@ from . import factories
 
 class TestPaymentApprovalCheck(test.SimpleTestCase):
     def setUp(self) -> None:
-        self.object = factories.TutorFeeFactory.build(
+        self.object = factories.PaymentFactory.build(
             tutor_module__tutor__rtw_type=RightToWorkType.PERMANENT,
         )
 

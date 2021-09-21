@@ -21,7 +21,7 @@ class Statuses(models.IntegerChoices):
     FAILED = (4, 'Failed')
 
 
-class TutorFee(models.Model):
+class TutorPayment(models.Model):
     tutor_module = models.ForeignKey(
         'tutor.TutorModule',
         models.PROTECT,
@@ -30,9 +30,14 @@ class TutorFee(models.Model):
         related_query_name='payment',
     )
     amount = models.DecimalField(max_digits=19, decimal_places=4)
-    type = models.ForeignKey('TutorFeeType', models.DO_NOTHING, db_column='type', limit_choices_to={'is_active': True})
+    type = models.ForeignKey(
+        'PaymentType',
+        models.DO_NOTHING,
+        db_column='type',
+        limit_choices_to={'is_active': True},
+    )
     pay_after = models.DateField(blank=True, null=True)
-    status = models.ForeignKey('TutorFeeStatus', models.DO_NOTHING, db_column='status', default=Statuses.RAISED)
+    status = models.ForeignKey('PaymentStatus', models.DO_NOTHING, db_column='status', default=Statuses.RAISED)
     details = models.TextField(max_length=500, blank=True, null=True)
     batch = models.PositiveIntegerField(blank=True, null=True, editable=False)
     hourly_rate = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
@@ -91,7 +96,7 @@ class TutorFee(models.Model):
         cls,
         tutor_module,
         amount,
-        fee_type_id,
+        payment_type_id,
         details,
         hourly_rate,
         weeks,
@@ -101,7 +106,7 @@ class TutorFee(models.Model):
         holiday_date: date = None,
     ):
         """
-        Raises a fee while separating out the holiday portion to a selected month
+        Raises a payment while separating out the holiday portion to a selected month
         The holiday payment date can be specified.  If not, it gets the last day of the module's end month.
         """
         if not holiday_date:
@@ -113,10 +118,10 @@ class TutorFee(models.Model):
         holiday_amount = HOLIDAY_RATE * amount
         net_amount = amount - holiday_amount
 
-        TutorFee.objects.create(
+        TutorPayment.objects.create(
             tutor_module=tutor_module,
             amount=net_amount,
-            type_id=fee_type_id,
+            type_id=payment_type_id,
             pay_after=pay_date,
             details=details,
             approver=approver,
@@ -127,7 +132,7 @@ class TutorFee(models.Model):
         )
 
         # Holiday pay - last month
-        TutorFee.objects.create(
+        TutorPayment.objects.create(
             tutor_module=tutor_module,
             amount=holiday_amount,
             type_id=12,  # Holiday, todo choices
@@ -211,21 +216,21 @@ class TutorFee(models.Model):
         return False
 
 
-class TutorFeeRateQuerySet(models.QuerySet):
+class PaymentRateQuerySet(models.QuerySet):
     def lookup(self, tag) -> Decimal:
-        """Concise way of getting a fee_rate from a tag
-        e.g. `marking_rate = TutorFeeRate.objects.lookup('marking')
+        """Concise way of getting a payment_rate from a tag
+        e.g. `marking_rate = PaymentRate.objects.lookup('marking')
         """
         return self.get(tag=tag).amount
 
 
-class TutorFeeRate(models.Model):
+class PaymentRate(models.Model):
     tag = models.CharField(max_length=64)
     amount = models.DecimalField(max_digits=19, decimal_places=4)
     type = models.CharField(max_length=64, null=True)  # A label used for grouping
     description = models.CharField(max_length=128)
 
-    objects = TutorFeeRateQuerySet.as_manager()
+    objects = PaymentRateQuerySet.as_manager()
 
     class Meta:
         db_table = 'tutor_fee_rate'
@@ -234,7 +239,7 @@ class TutorFeeRate(models.Model):
         return f'£{self.amount:.2f} - {self.description}'
 
 
-class TutorFeeStatus(models.Model):
+class PaymentStatus(models.Model):
     description = models.CharField(max_length=50)
     paid = models.BooleanField()
 
@@ -245,7 +250,7 @@ class TutorFeeStatus(models.Model):
         return str(self.description)
 
 
-class TutorFeeType(models.Model):
+class PaymentType(models.Model):
     description = models.CharField(max_length=64)
     is_hourly = models.BooleanField()
     code = models.CharField(max_length=64)
