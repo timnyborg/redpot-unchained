@@ -1,20 +1,23 @@
 from datetime import date
+from unittest.mock import patch
 
+from django import test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
-from django.test import TestCase
 from django.urls import reverse
 
+from apps.core.utils.tests import LoggedInViewTestMixin
 from apps.module.models import Module
 from apps.student.models import Student
 from apps.tutor.models import Tutor, TutorModule
 from apps.tutor.tests.factories import TutorModuleFactory
 
+from .. import models
 from ..models import TutorFee, TutorFeeRate
 from . import factories
 
 
-class TestCreatePayment(TestCase):
+class TestCreatePayment(test.TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
@@ -48,7 +51,7 @@ class TestCreatePayment(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
-class TestEditPayment(TestCase):
+class TestEditPayment(test.TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
@@ -85,7 +88,7 @@ class TestEditPayment(TestCase):
         self.assertEqual(self.payment.amount, 25)
 
 
-class TestExtras(TestCase):
+class TestExtras(test.TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser', is_superuser=True)
@@ -147,3 +150,22 @@ class TestExtras(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(TutorFee.objects.last().approver, self.user)
+
+
+class TestApprove(LoggedInViewTestMixin, test.TestCase):
+    superuser = True
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.payment = factories.TutorFeeFactory(
+            status_id=models.Statuses.RAISED, raised_by=cls.user, approver=cls.user
+        )
+        cls.url = reverse('tutor-payment:approve')
+
+    @patch('apps.tutor_payment.models.TutorFee.approvable', return_value=True)
+    def test_post(self, patched_method):
+        response = self.client.post(self.url, {'payment': [self.payment.id]})
+        self.assertEqual(response.status_code, 302)
+        self.payment.refresh_from_db()
+        self.assertEqual(self.payment.status_id, models.Statuses.APPROVED)
