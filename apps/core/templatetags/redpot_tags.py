@@ -179,3 +179,8 @@ def message_icon_class(level_tag):
         'info': 'fa-info-circle',
     }
     return f"fas fa-fw {icon_map.get(level_tag, 'fa-info-circle')}"
+
+
+@register.filter
+def mul(value, arg):
+    return value * arg

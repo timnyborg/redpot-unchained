@@ -17,4 +17,8 @@ urlpatterns = [
     path('transfer/<int:enrolment_id>', views.Transfer.as_view(), name='transfer'),
     path('delete-transaction/<int:allocation>', views.DeleteTransaction.as_view(), name='delete-transaction'),
     path('receipt/<int:allocation>/<int:enrolment_id>', views.ReceiptPDF.as_view(), name='receipt'),
+    # Financial batch views
+    path('all-batches', views.AllBatches.as_view(), name='all-batches'),
+    path('create-batch/<int:type_id>/<str:created_by>', views.CreateBatch.as_view(), name='create-batch'),
+    path('print-batch/<int:batch>', views.PrintBatch.as_view(), name='print-batch'),
 ]

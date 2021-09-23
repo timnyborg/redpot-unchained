@@ -1,8 +1,15 @@
+import django_filters as filters
 import django_tables2 as tables
 
-from apps.core.utils.datatables import PoundsColumn
+from django import forms
+from django.db.models import QuerySet
+from django.urls import reverse
+
+from apps.core.utils.datatables import LinkColumn, PoundsColumn
 from apps.enrolment.models import Enrolment
 from apps.fee.models import Fee
+
+from . import models
 
 
 class AddFeesTable(tables.Table):
@@ -65,3 +72,34 @@ class OutstandingEnrolmentsTable(tables.Table):
         )
         order_by = ('-created_on',)
         per_page = 20
+
+
+class BatchFilter(filters.FilterSet):
+    created_by = filters.CharFilter(label='Created by (username)', field_name='created_by', lookup_expr='contains')
+
+    def filter_unbatched(self, queryset, field_name, value) -> QuerySet:
+        """Returns null-valued rows if left empty"""
+        return queryset.filter(batch__isnull=value)
+
+    unbatched = filters.BooleanFilter(label='Unbatched items', method='filter_unbatched', widget=forms.CheckboxInput())
+
+    class Meta:
+        model = models.Ledger
+        fields = ['created_by', 'batch', 'unbatched']
+
+
+def batch_link(record: dict):
+    # Link to create or view depending on the status
+    if record['batch']:
+        return reverse('finance:print-batch', args=[record['batch']])
+    return reverse('finance:create-batch', args=[record['type'], record['created_by']])
+
+
+class BatchTable(tables.Table):
+    print_column = LinkColumn(verbose_name='', icon='fas fa-print', title='Print', linkify=batch_link)
+    type = tables.Column(verbose_name='Transaction type', accessor='type__description')
+
+    class Meta:
+        model = models.Ledger
+        fields = ['created_by', 'type', 'batch', 'print_column']
+        order_by = ['created_by', '-batch']

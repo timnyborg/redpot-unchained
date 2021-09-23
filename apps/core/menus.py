@@ -103,7 +103,7 @@ finance_children = [
     MenuItem("My batches", 'not-implemented', icon="file-alt", separator=True),
     MenuItem(
         "All batches",
-        'not-implemented',
+        reverse('finance:all-batches'),
         icon="file-alt",
         check=lambda request: request.user.has_perm('finance'),
     ),
