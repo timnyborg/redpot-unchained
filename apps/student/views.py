@@ -19,7 +19,7 @@ from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
 
 from . import datatables, forms
-from .models import Address, Email, Student, StudentArchive
+from .models import Address, Email, MoodleID, OtherID, Phone, Student, StudentArchive
 
 
 class Create(LoginRequiredMixin, generic.View):
@@ -273,6 +273,27 @@ class CreateEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, gener
         return self.object.student.get_absolute_url() + '#email'
 
 
+class EditEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+    model = Email
+    template_name = 'core/form.html'
+    form_class = forms.EmailForm
+
+    def get_subtitle(self) -> str:
+        return f'Edit – {self.object.email}'
+
+
+class DeleteEmail(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = Email
+    template_name = 'core/delete_form.html'
+
+    def get_subtitle(self) -> str:
+        return f'Delete – {self.object.email}'
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Email deleted')
+        return self.object.student.get_absolute_url()
+
+
 # --- Address views ---
 
 
@@ -302,4 +323,107 @@ class DeleteAddress(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 
     def get_success_url(self) -> str:
         messages.success(self.request, 'Address deleted')
+        return self.object.student.get_absolute_url()
+
+
+# --- Phone views ---
+
+
+class CreatePhone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+    form_class = forms.CreatePhoneForm
+    success_message = "Phone number added: %(number)s"
+    template_name = 'core/form.html'
+    title = 'Phone'
+
+    def get_initial(self) -> dict:
+        return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
+
+    def get_success_url(self) -> str:
+        return self.object.student.get_absolute_url() + '#phone'
+
+
+class EditPhone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+    model = Phone
+    template_name = 'core/form.html'
+    form_class = forms.PhoneForm
+
+    def get_subtitle(self) -> str:
+        return f'Edit – {self.object.number}'
+
+
+class DeletePhone(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = Phone
+    template_name = 'core/delete_form.html'
+
+    def get_subtitle(self) -> str:
+        return f'Delete – {self.object.number}'
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Phone deleted')
+        return self.object.student.get_absolute_url()
+
+
+# --- Other ID views ---
+
+
+class CreateOtherID(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+    form_class = forms.CreateOtherIDForm
+    template_name = 'core/form.html'
+    title = 'Other Id'
+
+    def get_initial(self) -> dict:
+        return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
+
+    def get_success_url(self) -> str:
+        return self.object.student.get_absolute_url() + '#other_ids'
+
+
+class EditOtherID(LoginRequiredMixin, SuccessMessageMixin, generic.UpdateView):
+    model = OtherID
+    template_name = 'core/form.html'
+    form_class = forms.OtherIDForm
+
+
+class DeleteOtherID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = OtherID
+    template_name = 'core/delete_form.html'
+
+    def get_subtitle(self) -> str:
+        return f'Delete – {self.object.number}'
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Other ID deleted')
+        return self.object.student.get_absolute_url()
+
+
+# --- Moodle views ---
+
+
+class CreateMoodleID(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+    form_class = forms.CreateMoodleIDForm
+    template_name = 'core/form.html'
+    title = 'Moodle Id'
+
+    def get_initial(self) -> dict:
+        return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
+
+    def get_success_url(self) -> str:
+        return self.object.student.get_absolute_url() + '#other_ids'
+
+
+class EditMoodleID(LoginRequiredMixin, SuccessMessageMixin, generic.UpdateView):
+    model = MoodleID
+    template_name = 'core/form.html'
+    form_class = forms.MoodleIDForm
+
+
+class DeleteMoodleID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = MoodleID
+    template_name = 'core/delete_form.html'
+
+    def get_subtitle(self) -> str:
+        return f'Delete – {self.object.moodle_id}'
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Moodle ID deleted')
         return self.object.student.get_absolute_url()

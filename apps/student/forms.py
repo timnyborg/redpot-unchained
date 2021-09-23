@@ -16,8 +16,14 @@ from . import models
 class CreateEmailForm(forms.ModelForm):
     class Meta:
         model = models.Email
-        fields = ('student', 'email', 'note')
+        fields = ('student', 'email', 'note', 'is_default')
         widgets = {'student': forms.HiddenInput}
+
+
+class EmailForm(forms.ModelForm):
+    class Meta:
+        model = models.Email
+        fields = ('email', 'note', 'is_default')
 
 
 class CreatePersonSearchForm(forms.ModelForm):
@@ -117,3 +123,50 @@ class AddressForm(SITSLockingFormMixin, forms.ModelForm):
             postcode = f'{spaceless_postcode[:-3]} {spaceless_postcode[-3:]}'
 
         return postcode
+
+
+class CreatePhoneForm(forms.ModelForm):
+    class Meta:
+        model = models.Phone
+        fields = ['student', 'number', 'type', 'note', 'is_default']
+        widgets = {'student': forms.HiddenInput}
+
+
+class PhoneForm(forms.ModelForm):
+    class Meta:
+        model = models.Phone
+        fields = ['number', 'type', 'note', 'is_default']
+
+
+class CreateOtherIDForm(forms.ModelForm):
+    class Meta:
+        model = models.OtherID
+        fields = ['student', 'number', 'type', 'note', 'start_date', 'end_date']
+        widgets = {
+            'student': forms.HiddenInput,
+            'start_date': widgets.DatePickerInput(),
+            'end_date': widgets.DatePickerInput(),
+        }
+
+
+class OtherIDForm(forms.ModelForm):
+    class Meta:
+        model = models.OtherID
+        fields = ['number', 'type', 'note', 'start_date', 'end_date']
+        widgets = {
+            'start_date': widgets.DatePickerInput(),
+            'end_date': widgets.DatePickerInput(),
+        }
+
+
+class CreateMoodleIDForm(forms.ModelForm):
+    class Meta:
+        model = models.MoodleID
+        fields = ['student', 'moodle_id', 'first_module_code']
+        widgets = {'student': forms.HiddenInput}
+
+
+class MoodleIDForm(forms.ModelForm):
+    class Meta:
+        model = models.MoodleID
+        fields = ['moodle_id', 'first_module_code']

@@ -227,7 +227,7 @@
 
 <div class="section">
     <div class="float-end mt-1">
-        <a href="/edit/request.args(0)/email/new" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add email</a>
+        <a href="{% url 'student:email:new' student.id %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add email</a>
     </div>
 
     <h2 id='email' class='section-title'>Email</h2>
@@ -267,9 +267,6 @@
                         <a href="{{ email.get_edit_url }}" class="btn btn-outline-dark"><span class="fas fa-pencil-alt"></span></a>
                     </div>
                 </div>
-                <div style="display:none;" class="slidingOutEmailEditing_{{email.id}}">
-                    <div id="target_{{email.id}}"></div>
-                </div>
             </div>
         </li>
     {% endfor %}
@@ -279,7 +276,7 @@
 
 <div class="section">
     <div class="float-end mt-1">
-        <a href="/edit/{{ student.id }}/phone/new" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add phone</a>
+        <a href="{% url 'student:phone:new' student.id %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add phone</a>
     </div>
 
     <h2 id='phone' class='section-title'>Phone</h2>
@@ -318,7 +315,7 @@
                                 Set default
                             </a>
                         {% endif %}
-                        <a href="/edit/{{ student.id }}/phone/{{ phone.id }}" class="btn btn-outline-dark"><span class="fas fa-pencil-alt"></span></a>
+                        <a href="{% url 'student:phone:edit' phone.id %}" class="btn btn-outline-dark"><span class="fas fa-pencil-alt"></span></a>
                     </div>
                 </div>
             </div>
@@ -535,7 +532,7 @@
 
 <div class="section">
     <div class="float-end mt-1">
-        <a href="other_id/new/{{ student.id }}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add other ID</a>
+        <a href="{% url 'student:other-id:new' student.id %}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add other ID</a>
     </div>
     <h2 id='other_ids' class='section-title'>Other IDs</h2>
     {% if other_ids %}
@@ -548,9 +545,9 @@
                 <td>{{ other_id.type.description }}</td>
                 <td>{% if other_id.end_date %}{{ other_id.end_date  }}{% else %}{% endif %}</td>
                 <td class="col-sm-1">
-                    <a href="/other-id/edit/{{ other_id.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                    <a href="{% url 'student:other-id:edit' other_id.id %}"><span class="fas fa-fw fa-pencil-alt"></span></a>
                     {% comment %} {% if auth.has_membership('dev') %} {% endcomment %}
-                    <a href="/other-id/delete/{{ other_id.id }}"><span class="fas fa-times"></span></a>
+                    <a href="{% url 'student:other-id:edit' other_id.id  %}"><span class="fas fa-times"></span></a>
                     {% comment %} {% endif %} {% endcomment %}
                 </td>
             </tr>
@@ -561,9 +558,9 @@
 
     <dl class='row'><dt class="col-sm-2"> Moodle ID</dt>
     {% if moodle_id %}
-        <dd class="col-sm-6 mb-0">{{ moodle_id.id }} <a href="/moodle-id/edit/{{ moodle_id.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a></dd>
+        <dd class="col-sm-6 mb-0">{{ moodle_id.id }} <a href="{% url 'student:moodle-id:edit' moodle_id.id  %}"><span class="fas fa-fw fa-pencil-alt"></span></a></dd>
     {% else %}
-        <dd class="col-sm-6 mb-0">N/A <a href="/moodle-id/new/{{ student.id }}"><i class="fas fa-plus"></i></a></dd>
+        <dd class="col-sm-6 mb-0">N/A <a href="{% url 'student:moodle-id:new' student.id %}"><i class="fas fa-plus"></i></a></dd>
     {% endif %}
     </dl>
 

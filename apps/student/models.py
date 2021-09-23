@@ -198,7 +198,7 @@ class Address(AddressModel, SITSLockingModelMixin, SignatureModel):
 
     # todo: remove the address_type table and convert Address.type to a TextChoice
     class Types(models.IntegerChoices):
-        PERMANENT = 100, "Permanent"
+        PERMANENT = 100, 'Permanent'
         HOME = 110, 'Home'
         NEXT_OF_KIN = 111, 'Next of Kin'
         COLLEGE = 400, 'College'
@@ -264,13 +264,19 @@ class Email(SignatureModel):
     )
     email = models.CharField(max_length=64)
     note = models.CharField(max_length=128, blank=True, null=True)
-    is_default = models.BooleanField(default=True)
+    is_default = models.BooleanField(default=False, verbose_name='Default?')
 
     class Meta:
         db_table = 'email'
 
+    def get_absolute_url(self) -> str:
+        return self.student.get_absolute_url() + '#email'
+
     def get_edit_url(self):
-        return '#'  # todo: implement once email edit in place
+        return reverse('student:email:edit', kwargs={'pk': self.pk})
+
+    def get_delete_url(self) -> str:
+        return reverse('student:email:delete', kwargs={'pk': self.pk})
 
 
 class NextHUSID(models.Model):
@@ -284,12 +290,21 @@ class NextHUSID(models.Model):
 
 
 class MoodleID(SignatureModel):
-    moodle_id = models.IntegerField(unique=True)
+    moodle_id = models.IntegerField(unique=True, error_messages={'unique': 'Moodle ID already in use'})
     student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student', related_name='moodle_id')
-    first_module_code = models.CharField(max_length=12)
+    first_module_code = models.CharField(max_length=12, blank=True, null=True)
 
     class Meta:
         db_table = 'moodle_id'
+
+    def get_absolute_url(self) -> str:
+        return self.student.get_absolute_url() + '#other_ids'
+
+    def get_edit_url(self):
+        return reverse('student:moodle-id:edit', kwargs={'pk': self.pk})
+
+    def get_delete_url(self) -> str:
+        return reverse('student:moodle-id:delete', kwargs={'pk': self.pk})
 
 
 class OtherID(SignatureModel):
@@ -299,6 +314,19 @@ class OtherID(SignatureModel):
         OSS = 8
         SSN = 9
 
+    class OtherIdTypeChoices(models.IntegerChoices):
+        STUDENT_BAR_CODE_ID = 1, 'Student Bar code ID'
+        PASSPORT_ID = 2, 'Passport ID'
+        VISA_ID = 3, 'Visa ID'
+        HESA_ID = 4, 'HESA ID'
+        GMC = 5, 'Regulatory Body Ref. Number (eg. GMC)'
+        ULN = 6, 'Unique Learner Number (ULN)'
+        SSO = 7, 'SSO username'
+        OSS = 8, 'OSS person number'
+        STUDENT_SUPPORT_NUM = 9, 'Student support number'
+        ALUMNI_NUM = 10, 'Alumni number'
+        __empty__ = ' –– Choose one –– '
+
     student = models.ForeignKey(
         'Student',
         models.DO_NOTHING,
@@ -306,8 +334,8 @@ class OtherID(SignatureModel):
         related_name='other_ids',
         related_query_name='other_id',
     )
-    number = models.CharField(max_length=64, blank=True, null=True)
-    type = models.OneToOneField('OtherIdType', models.DO_NOTHING, db_column='type')
+    number = models.CharField(max_length=64)
+    type = models.IntegerField(choices=OtherIdTypeChoices.choices)
     note = models.CharField(max_length=64, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
@@ -315,12 +343,14 @@ class OtherID(SignatureModel):
     class Meta:
         db_table = 'other_id'
 
+    def get_absolute_url(self) -> str:
+        return self.student.get_absolute_url() + '#other_ids'
 
-class OtherIdType(models.Model):
-    description = models.CharField(max_length=64)
+    def get_edit_url(self):
+        return reverse('student:other-id:edit', kwargs={'pk': self.pk})
 
-    class Meta:
-        db_table = 'other_id_type'
+    def get_delete_url(self) -> str:
+        return reverse('student:other-id:delete', kwargs={'pk': self.pk})
 
 
 class Nationality(models.Model):
@@ -418,11 +448,20 @@ class EmergencyContact(SignatureModel):
 
 
 class Phone(SignatureModel):
+    class PhoneTypeChoices(models.IntegerChoices):
+        PHONE = 100, 'Phone'
+        ALT_PHONE = 110, 'Alternative phone!'
+        MOBILE = 120, 'Mobile'
+        FAX = 130, 'Fax'
+        EMAIL = 200, 'Email'
+        INVALID = 299, 'Invalid'
+        __empty__ = ' –– Choose one –– '
+
     student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student', related_name="phones")
-    type = models.ForeignKey('PhoneType', models.DO_NOTHING, db_column='type')
+    type = models.IntegerField(choices=PhoneTypeChoices.choices, default=PhoneTypeChoices.PHONE)
     number = models.CharField(max_length=64)
     note = models.CharField(max_length=128, blank=True, null=True)
-    is_default = models.BooleanField()
+    is_default = models.BooleanField(default=False, verbose_name='Default?')
 
     class Meta:
         db_table = 'phone'
@@ -430,13 +469,14 @@ class Phone(SignatureModel):
     def __str__(self) -> str:
         return str(self.number)
 
+    def get_absolute_url(self) -> str:
+        return self.student.get_absolute_url() + '#phone'
 
-class PhoneType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=32, blank=True, null=True)
+    def get_edit_url(self):
+        return reverse('student:phone:edit', kwargs={'pk': self.pk})
 
-    class Meta:
-        db_table = 'phone_type'
+    def get_delete_url(self) -> str:
+        return reverse('student:phone:delete', kwargs={'pk': self.pk})
 
 
 class Enquiry(SignatureModel):
