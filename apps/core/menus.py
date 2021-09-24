@@ -166,7 +166,7 @@ other_children = (
         check=lambda request: request.user.has_perm('login'),
         children=(
             MenuItem('Brochures', 'not-implemented', icon='map'),
-            MenuItem('Discounts', 'not-implemented', icon='tags'),
+            MenuItem('Discounts', reverse('discount:search'), icon='tags'),
             MenuItem('Import opt-ins', 'not-implemented', icon='check'),
         ),
     ),
