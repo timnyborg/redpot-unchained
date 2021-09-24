@@ -141,3 +141,49 @@ class TestReceiptPDF(LoggedInViewTestMixin, test.TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['content-type'], 'application/pdf')
+
+
+class TestBatchViews(LoggedInMixin, test.TestCase):
+    superuser = True
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.transaction = services.insert_ledger(
+            account_code=models.Accounts.CASH,
+            amount=Decimal(100),
+            user=cls.user,
+            finance_code='test',
+            narrative='test narrative',
+            type_id=models.TransactionTypes.CREDIT_CARD,
+        )
+
+    def test_my_batches(self):
+        """Check that the unbatched type is displayed"""
+        response = self.client.get(reverse('finance:my-batches'))
+        self.assertContains(response, 'Credit card')
+
+    def test_all_batches_unbatched(self):
+        """Check that the unbatched type is displayed"""
+        response = self.client.get(reverse('finance:all-batches'), data={'unbatched': True})
+        self.assertContains(response, 'Credit card')
+
+    def test_all_batches_batched(self):
+        response = self.client.get(reverse('finance:all-batches'), data={'unbatched': False})
+        self.assertNotContains(response, 'Credit card')
+
+    def test_create_batch(self):
+        self.assertIsNone(self.transaction.account_line.batch)
+        self.client.get(
+            reverse(
+                'finance:create-batch',
+                kwargs={'type_id': models.TransactionTypes.CREDIT_CARD, 'created_by': self.user.username},
+            )
+        )
+        self.transaction.account_line.refresh_from_db()
+        self.assertIsNotNone(self.transaction.account_line.batch)
+
+    def test_print_batch(self):
+        models.Ledger.objects.filter(allocation=self.transaction.allocation).update(batch=1)
+        response = self.client.get(reverse('finance:print-batch', kwargs={'batch': 1}))
+        self.assertContains(response, 'test narrative')

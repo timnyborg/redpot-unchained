@@ -252,3 +252,10 @@ def transfer_funds(
         enrolment_id=target_enrolment.id,
         **common_args,
     )
+
+
+def next_batch() -> int:
+    """Return the next batch available for use"""
+    # todo: sort out using the max() method in redpot-legacy, or use the autonumber here (no!)
+    largest = models.Ledger.objects.aggregate(Max('batch'))['batch__max'] or 0
+    return largest + 1
