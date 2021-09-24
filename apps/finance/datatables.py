@@ -79,7 +79,9 @@ class BatchFilter(filters.FilterSet):
 
     def filter_unbatched(self, queryset, field_name, value) -> QuerySet:
         """Returns null-valued rows if left empty"""
-        return queryset.filter(batch__isnull=value)
+        if value:
+            return queryset.unbatched()
+        return queryset.batched()
 
     unbatched = filters.BooleanFilter(label='Unbatched items', method='filter_unbatched', widget=forms.CheckboxInput())
 

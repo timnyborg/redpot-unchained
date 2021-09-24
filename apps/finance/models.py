@@ -55,6 +55,14 @@ class LedgerQuerySet(models.QuerySet):
     def cash(self) -> models.QuerySet:
         return self.filter(type__is_cash=True)
 
+    def batched(self) -> models.QuerySet:
+        # todo: rely on isnull once all applications set null rather than 0
+        return self.filter(batch__gt=0)
+
+    def unbatched(self) -> models.QuerySet:
+        # Todo: remove the batch=0 option once all applications creating rows use null
+        return self.filter(models.Q(batch=0) | models.Q(batch__isnull=True))
+
 
 class Ledger(SignatureModel):
     # `timestamp` records the actual date of a transaction, which may differ from created_on (instalments, backfilling)

@@ -299,9 +299,7 @@ class CreateBatch(generic.View):
     def get(self, request, type_id: int, created_by: str, *args, **kwargs) -> http.HttpResponse:
         """Assign a batch # to a set of transactions of a shared type owned by a given user"""
         batch: int = services.next_batch()
-        # todo: remove batch=0 option once all systems insert null
-        models.Ledger.objects.filter(
-            Q(batch=0) | Q(batch__isnull=True),
+        models.Ledger.objects.unbatched().filter(
             created_by=created_by,
             type_id=type_id,
         ).update(batch=batch)
