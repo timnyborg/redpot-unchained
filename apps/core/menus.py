@@ -109,7 +109,7 @@ finance_children = [
     ),
     MenuItem(
         "Upload RCP",
-        'not-implemented',
+        reverse('invoice:upload-rcp'),
         separator=True,
         icon="upload",
         check=lambda request: request.user.has_perm('finance'),
