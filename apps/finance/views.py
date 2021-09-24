@@ -290,11 +290,45 @@ class AllBatches(PermissionRequiredMixin, PageTitleMixin, SingleTableMixin, Filt
     table_class = datatables.BatchTable
     filterset_class = datatables.BatchFilter
     template_name = 'core/search.html'
-    # .values + .distinct queryset lets us display grouped results in the table, but related labels must be included
-    queryset = models.Ledger.objects.cash().values('created_by', 'type', 'type__description', 'batch').distinct()
+    title = 'Finance'
+    subtitle = 'All batches'
+
+    def get_queryset(self):
+        # Using .values + .distinct queryset lets us display grouped results in the table,
+        # but related labels must be included
+        return (
+            models.Ledger.objects.cash()
+            .filter(created_on__gt=datetime.now() - relativedelta(months=12))  # limit to a year of data
+            .values('created_by', 'type', 'type__description', 'batch')
+            .distinct()
+        )
 
 
-class CreateBatch(generic.View):
+class MyBatches(LoginRequiredMixin, PageTitleMixin, generic.TemplateView):
+    """Lists batches of financial transactions, plus unbatched items"""
+
+    template_name = 'finance/my_batches.html'
+    title = 'Finance'
+    subtitle = 'My batches'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Only the user's batches from the last year
+        base_query = (
+            models.Ledger.objects.cash()
+            .filter(
+                created_on__gt=datetime.now() - relativedelta(months=12),
+                created_by=self.request.user.username,
+            )
+            .distinct()
+            .values('type', 'type__description', 'batch')
+        )
+        new = base_query.unbatched()
+        recent = base_query.batched().order_by('-batch')[:30]
+        return {**context, 'new': new, 'recent': recent}
+
+
+class CreateBatch(LoginRequiredMixin, generic.View):
     # Todo: convert to post once the table is rigged up to have a posting link column
     def get(self, request, type_id: int, created_by: str, *args, **kwargs) -> http.HttpResponse:
         """Assign a batch # to a set of transactions of a shared type owned by a given user"""
@@ -306,13 +340,16 @@ class CreateBatch(generic.View):
         return redirect(reverse('finance:print-batch', args=[batch]))
 
 
-class PrintBatch(generic.TemplateView):
+class PrintBatch(LoginRequiredMixin, PageTitleMixin, generic.TemplateView):
     """Produces a printable list of transactions in a batch"""
 
     # todo: possibly move this view to a square report, depending on its use
     template_name = 'finance/print_batch.html'
+    title = 'Finance'
+    subtitle = 'View batch'
 
     def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
         batch = self.kwargs['batch']
 
         # Find payments on a batch
@@ -337,6 +374,7 @@ class PrintBatch(generic.TemplateView):
         ]
 
         return {
+            **context,
             'batch': batch,
             'transactions': transactions,
             'total': sum(line.amount for line in cash_control_lines),

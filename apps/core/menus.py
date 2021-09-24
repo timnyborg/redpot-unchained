@@ -100,7 +100,7 @@ finance_children = [
             ),
         ),
     ),
-    MenuItem("My batches", 'not-implemented', icon="file-alt", separator=True),
+    MenuItem("My batches", reverse('finance:my-batches'), icon="file-alt", separator=True),
     MenuItem(
         "All batches",
         reverse('finance:all-batches'),
