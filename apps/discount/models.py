@@ -62,9 +62,6 @@ class Discount(SignatureModel):
         self.module_mask = self.module_mask.upper()
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self) -> str:
-        return '#'
-
     def get_edit_url(self) -> str:
         return reverse('discount:edit', kwargs={'pk': self.pk})
 

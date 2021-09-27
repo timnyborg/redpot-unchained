@@ -5,6 +5,7 @@ import django_tables2 as tables
 
 from django.db.models import Q, QuerySet
 from django.forms import CheckboxInput
+from django.urls import reverse
 
 from apps.core.utils.datatables import EditLinkColumn, LinkColumn
 from apps.discount import models
@@ -28,7 +29,12 @@ class SearchFilter(filters.FilterSet):
 
 class SearchTable(tables.Table):
     edit = EditLinkColumn(verbose_name='')
-    assign = LinkColumn(verbose_name='', icon='fas fa-user-plus', title='Assign')
+    assign = LinkColumn(
+        verbose_name='',
+        icon='fas fa-user-plus',
+        title='Assign',
+        linkify=lambda record: reverse('discount:assign', kwargs={'pk': record.pk}),
+    )
 
     def render_percent(self, value) -> str:
         return f'{value}%'
