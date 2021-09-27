@@ -56,3 +56,11 @@ class Contract(SignatureModel):
     @property
     def is_editable(self) -> bool:
         return self.status <= Statuses.APPROVED_AWAITING_SIGNATURE
+
+    @property
+    def is_approved(self) -> bool:
+        return self.status >= Statuses.APPROVED_AWAITING_SIGNATURE
+
+    @property
+    def is_signed(self) -> bool:
+        return self.status >= Statuses.SIGNED_BY_DEPARTMENT

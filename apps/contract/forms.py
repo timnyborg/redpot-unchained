@@ -129,3 +129,6 @@ class CasualTeachingForm(ContractForm):
         'return_address',
         'email_notification',
     ]
+
+    def clean_expected_work(self):
+        return self.cleaned_data['expected_work'].strip('.')
