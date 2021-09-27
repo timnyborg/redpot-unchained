@@ -7,6 +7,7 @@ from weasyprint.fonts import FontConfiguration
 from django import http
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.views import generic
@@ -18,15 +19,16 @@ from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.tutor.models import RightToWorkType
 
 
-class Edit(PermissionRequiredMixin, PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
+class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
     model = models.Contract
     permission_required = 'contract.change_contract'
     template_name = 'contract/edit.html'
+    success_message = 'Contract updated'
 
     def get_form_class(self):
         mapping = {
             models.Types.CASUAL_TEACHING: forms.CasualTeachingForm,
-            # models.Types.GUEST_SPEAKER: forms.GuestSpeakerForm,
+            models.Types.GUEST_SPEAKER: forms.GuestSpeakerForm,
         }
         return mapping[self.object.type]
 
@@ -54,21 +56,17 @@ class Edit(PermissionRequiredMixin, PageTitleMixin, AutoTimestampMixin, generic.
 
         # Automatically generated contract properties.  Contract-type-specific vars can be appended later if required
         fixed_vars = {
-            'address': FormattedAddress(address).as_list(),
-            'module': {'title': module.title, 'code': module.code},
-            'list_a_rtw': tutor.rtw_type == RightToWorkType.PERMANENT,
-            'list_overseas_rtw': tutor.rtw_type == RightToWorkType.OVERSEAS,
-        }
-
-        # Filter form vars to exclude columns from the database rows
-        option_vars = form.extra_cleaned_data
-        self.object.options = {
             'full_name': f"{student.title or ''} {student.firstname} {student.surname}",
             'salutation': f"{student.title or student.firstname} {student.surname}",
             'doc_date': datetime.today(),
-            **fixed_vars,
-            **option_vars,
+            'address': FormattedAddress(address).as_list(),
+            'module': {'title': module.title, 'code': module.code},
+            'list_a_rtw': tutor.rtw_type == RightToWorkType.PERMANENT,
+            'overseas_rtw': tutor.rtw_type == RightToWorkType.OVERSEAS,
         }
+        # Filter form vars to exclude columns from the database rows
+        option_vars = form.extra_cleaned_data
+        self.object.options = {**fixed_vars, **option_vars}
         return super().form_valid(form)
 
 

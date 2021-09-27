@@ -41,7 +41,12 @@ class Contract(SignatureModel):
     approved_on = models.DateTimeField(blank=True, null=True)
     signed_by = models.CharField(max_length=32, blank=True, null=True)
     signed_on = models.DateTimeField(blank=True, null=True)
-    email_notification = models.CharField(max_length=32, blank=True, null=True)
+    email_notification = models.EmailField(
+        max_length=32,
+        blank=True,
+        null=True,
+        help_text='Enter your email address to be notified when the contract is signed by the departmental signatory',
+    )
 
     class Meta:
         db_table = 'tutor_contract'

@@ -4,6 +4,7 @@ from django.utils.safestring import mark_safe
 
 from apps.contract import models
 from apps.core.utils.forms import ApproverChoiceField
+from apps.core.utils.widgets import PoundInput
 
 RETURN_ADDRESS_CHOICES = (
     ('Rewley House, 1 Wellington Square, OX1 2JA', 'Rewley House, 1 Wellington Square, OX1 2JA'),
@@ -14,17 +15,17 @@ EXPENSE_CHOICES = [
     ('33p', 'Undergraduate text (33p/mi.)'),
 ]
 SUPERVISOR_CHOICES = [
+    ('', '– Please select –'),
     ('Director of Studies', 'Director of Studies'),
     ('Programme Director', 'Programme Director'),
     ('Deputy Director', 'Deputy Director'),
     ('Module Coordinator', 'Module Coordinator'),
-    ('', '– Please select –'),
 ]
 PAYMENT_FREQUENCY_CHOICES = [
+    ('', '– Please select –'),
     ('monthly in arrears', 'monthly in arrears'),
     ('termly in arrears', 'termly in arrears'),
     ('on completion of the delivery of your teaching', 'on completion of the delivery of your teaching'),
-    ('', '– Please select –'),
 ]
 
 
@@ -32,6 +33,20 @@ class ContractForm(forms.ModelForm):
     """Base class for the tailored contract forms, with shared definitions and logic"""
 
     approver = ApproverChoiceField('contract.approve', help_text='Your default approver can be set in your profile')
+    # Common option fields
+    phone = forms.CharField(
+        label='Contact phone',
+        validators=[validators.RegexValidator(regex='^[-0-9 +()]+$', message='Invalid phone number')],
+    )
+    email = forms.EmailField(label='Contact email')
+    venue = forms.CharField(help_text='e.g. Ewert House')
+    expense_details = forms.ChoiceField(
+        choices=EXPENSE_CHOICES,
+        label='Travel expense details',
+        help_text='Which travel expense rate to include in the standard text',
+    )
+    return_to = forms.CharField(help_text='The name of the administrator or team')
+    return_address = forms.ChoiceField(choices=RETURN_ADDRESS_CHOICES)
 
     class Meta:
         model = models.Contract
@@ -46,19 +61,6 @@ class ContractForm(forms.ModelForm):
 
 
 class CasualTeachingForm(ContractForm):
-    phone = forms.CharField(
-        label='Contact phone',
-        validators=[validators.RegexValidator(regex='^[-0-9 +()]+$', message='Invalid phone number')],
-    )
-    email = forms.EmailField(label='Contact email')
-    return_to = forms.CharField(help_text='The name of the administrator or team')
-    return_address = forms.ChoiceField(choices=RETURN_ADDRESS_CHOICES)
-    venue = forms.CharField(help_text='e.g. Ewert House')
-    expense_details = forms.ChoiceField(
-        choices=EXPENSE_CHOICES,
-        label='Travel expense details',
-        help_text='Which travel expense rate to include in the standard text',
-    )
     supervisor = forms.CharField(
         help_text='The person overseeing the tutor, responsible for approving any substitutes'
     )
@@ -132,3 +134,29 @@ class CasualTeachingForm(ContractForm):
 
     def clean_expected_work(self):
         return self.cleaned_data['expected_work'].strip('.')
+
+
+class GuestSpeakerForm(ContractForm):
+    topic = forms.CharField(label='Lecture topic(s)')
+    dates_and_times = forms.CharField(
+        help_text=mark_safe('When the lectures will take place. E.g. <i>12 Jan 2020 at 9:45, 11:15, and 13:30</i>'),
+    )
+    lecture_no = forms.IntegerField(label='Number of lectures', initial=1, min_value=1, max_value=100)
+    fee_per_lecture = forms.DecimalField(
+        max_digits=8, decimal_places=2, max_value=10000, min_value=0, widget=PoundInput()
+    )
+
+    field_order = [
+        'phone',
+        'email',
+        'topic',
+        'venue',
+        'dates_and_times',
+        'lecture_no',
+        'fee_per_lecture',
+        'expense_details',
+        'approver',
+        'return_to',
+        'return_address',
+        'email_notification',
+    ]
