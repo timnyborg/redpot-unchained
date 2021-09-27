@@ -1,0 +1,134 @@
+/* Get webfont */
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+body {
+    font-family: Lato;
+    counter-reset: section;
+}
+
+p, address, li {
+    font-weight: 300;
+    font-style: normal;
+}
+
+p.list-heading {
+    margin-bottom: 5px;
+}
+
+p.list-heading + ul, p.list-heading + ol {
+    margin-top: 5px;
+}
+
+.inline-signature {
+    width: 40%;
+    display: inline-block;
+    padding-bottom: 30px;
+}
+
+.signature-space {
+    padding-bottom: 70px;
+}
+
+img.signature {
+    height: 70px;
+}
+
+@page {
+    @bottom-right {
+        content: counter(page);
+        height: 1cm;
+        text-align: center;
+        width: 1cm;
+        color: darkgrey;
+        font-family: Lato;
+        font-size: 12px;
+    }
+
+    @bottom-left {
+        content: var(--identifier);
+        height: 1cm;
+        color: darkgrey;
+        text-align: left;
+        width: 25cm;
+        font-family: Lato;
+        font-size: 12px;
+    }
+}
+
+h3 {
+    margin-top: 30px;
+    counter-reset: subsection;
+}
+
+h3, h4 {
+    margin-bottom: 10px;
+}
+
+h3 + p, h4 + p {
+    margin-top: 10px;
+}
+
+h3.count::before {
+    counter-increment: section;
+    content: counter(section) ". ";
+}
+
+.subcount::before {
+    counter-increment: subsection;
+    content: counter(section)"."counter(subsection);
+}
+
+a {
+    text-decoration: none;
+}
+
+ol.letters {
+  counter-reset: list;
+}
+ol.letters > li {
+  list-style: none;
+}
+ol.letters > li:before {
+  content: "(" counter(list, lower-alpha) ") ";
+  counter-increment: list;
+}
+
+hr {
+    border: none;
+    height: .5px;
+    background-color: #777;
+}
+
+.page-break {
+    page-break-after: always;
+}
+
+#watermark {
+    color: #D0D0D0;
+    font-size: 150pt;
+    transform: rotate(-50deg);
+    z-index: -1;
+    opacity: .5;
+    text-align: center;
+    top: 40%;
+    left: -10%;
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;;
+    position: fixed;
+    user-select: none;
+    cursor: default;
+}
+
+span.highlight{
+    background-color: #ffff68;
+}
+
+.signature-block {
+    page-break-inside: avoid;
+}
+
+img.logo {
+    width: 150px;
+    height: 150px;
+    float:right;
+}
