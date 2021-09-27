@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from apps.core.utils.views import DeletionFailedMessageMixin, PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
 
@@ -226,7 +226,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         }
 
 
-class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+class Edit(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
     model = Student
     template_name = 'core/form.html'
     form_class = forms.EditForm
