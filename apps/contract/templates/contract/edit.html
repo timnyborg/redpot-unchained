@@ -1,0 +1,105 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+
+{% block center %}
+    <div class="section">
+        <div class="section-alert-header alert-info">
+            <span class="fa fa-info-circle fa-fw"></span>
+            <b>You will be able to preview the contract and make amendments after submitting this form</b>
+        </div>
+
+        <h4>{{ student }}</h4>
+        <h5>{{ module.title }} ({{ module.code }}) &bull; {{ module.start_date }} &ndash; {{ module.end_date }}</h5>
+
+        <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
+            {% csrf_token %}
+            {% bootstrap5form form True %}
+            <div class="form-group mb-3">
+                <button type='submit' class='btn btn-primary'>{{ form.submit_label|default:'Save' }}</button>
+                {% if object.get_delete_url %}
+                    <a href='{{ object.get_delete_url }}' class='btn btn-danger float-end'>Delete</a>
+                {% endif %}
+            </div>
+        </form>
+
+        {% timestamp contract %}
+
+        <!-- calculation modal-->
+        <div class="modal fade" id="calculator-modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Net hourly fee calculator</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon">£</div>
+                                    <input type="number" step='.001' class="form-control" id="gross_rate" placeholder="Gross hourly rate">
+                                </div>
+                                <p style="text-align: right;"><b>/ 1.1207</b></p>
+                                <hr>
+                                <div class="input-group">
+                                    <div class="input-group-addon">£</div>
+                                    <input class="form-control" type="text" id="net_rate" placeholder="Hourly rate minus holiday pay" readonly>
+                                    <span class="input-group-btn">
+                                <a class="btn btn-default" type="button"
+                                   id="copy-button"
+                                   data-toggle="tooltip"
+                                   data-title="Copy to form"
+                                   data-trigger="hover"
+                                   data-container="body"
+                                ><span class="fa fa-copy"></span></a>
+                            </span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        $(function() {
+            // Automath
+            let gross = $('#gross_rate');
+            let net = $('#net_rate');
+
+            gross.on('keyup',
+                    function update_math() {
+                        if ($(this).val()) {  // Only run updates when data has been entered, not removed
+                            // Requested by Personnel:
+                            // Math.ceil works only on whole numbers and rounds to the next highest value
+                            // ceil (Gross val * 100 to get the 2 decimal values to become a part of the whole number = [][][][])
+                            // Divide result by 100 to get [][].[][]
+                            net.val(Math.ceil((gross.val() / 1.1207)*100)/100);
+                        } else {
+                            net.val('');
+                        }
+                    }
+            );
+
+            // Copy button
+            let copy_button = $('#copy-button');
+            let target = $('#contract_rate_of_pay');
+
+            copy_button.on('click',
+                    function update_math() {
+                        target.val('£' + net.val() + '/hr');
+                        $('#calculator-modal').modal('hide');
+                    }
+            );
+        });
+
+    </script>
+{% endblock %}

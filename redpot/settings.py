@@ -78,6 +78,7 @@ PROJECT_APPS = [
     'apps.core',
     'apps.amendment',
     'apps.application',
+    'apps.contract',
     'apps.discount',
     'apps.enrolment',
     'apps.fee',
