@@ -36,7 +36,7 @@ def edit_button(
         <a href="{url}"
            class="btn btn-outline-dark {sizes.get(size, '')} float-end"
            target="{target}"
-           data-toggle="tooltip"
+           data-bs-toggle="tooltip"
            title="{tooltip}"
         ><span class='fas fa-{icon}'></span>
         </a>

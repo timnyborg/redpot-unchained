@@ -15,8 +15,9 @@ class LinkColumn(tables.Column):
     attrs = {'td': {'style': 'width: 1px;'}}  # Must be a better way of making these as narrow as possible
     icon = 'search'
     title = 'View'
+    text_class = ''
 
-    def __init__(self, verbose_name, icon=None, title=None, linkify=None, **kwargs):
+    def __init__(self, verbose_name, icon=None, title=None, linkify=None, text_class=None, **kwargs):
         # Always disable sorting and header.
         # Avoids having to say so every time it's used: view = ViewLinkColumn(orderable=False...)
         kwargs.update(
@@ -31,11 +32,21 @@ class LinkColumn(tables.Column):
         # Allow overriding of properties
         self.title = title or self.title
         self.icon = icon or self.icon
+        self.text_class = text_class or self.text_class
 
         super().__init__(verbose_name=verbose_name, **kwargs)
 
     def render(self, record):
-        return format_html(f'<i class="fas fa-{self.icon}" title="{self.title}"></i>')
+        return format_html(
+            f'''
+            <span title="{self.title}" class="{self.text_class}"
+               data-bs-toggle="tooltip"
+               data-bs-placement="top"
+            >
+                <i class="fas fa-{self.icon}"></i>
+            </span>
+            '''
+        )
 
 
 class ViewLinkColumn(LinkColumn):
@@ -54,15 +65,7 @@ class EditLinkColumn(LinkColumn):
 class DeleteLinkColumn(LinkColumn):
     icon = 'times'
     title = 'Delete'
+    text_class = 'text-danger'
 
     def linkify(self, record):
         return record.get_delete_url()
-
-    def render(self, record):
-        return format_html(
-            f"""
-            <span class="text-danger" title="{self.title}">
-                <i class="fas fa-{self.icon}"></i>
-            </span>
-        """
-        )

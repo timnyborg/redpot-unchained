@@ -55,9 +55,15 @@ class TimePickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.TimePickerIn
 
 
 class PoundInput(widgets.NumberInput):
-    """Bootstrap text input with a £ appended"""
+    """Bootstrap text input with a £ prepended"""
 
     template_name = "widgets/pound_widget.html"
+
+
+class PercentInput(widgets.NumberInput):
+    """Bootstrap text input with a % appended"""
+
+    template_name = "widgets/percent_widget.html"
 
 
 class ReadOnlyModelWidget(widgets.Widget):
