@@ -82,10 +82,13 @@
             <td class="col-xs-3">{{ module.status.short_desc }} ({{ module.enrolment_count | default:0 }}/{{ module.max_size | default:'∞' }})</td>
             <td>
                 <a href="#"
-                    data-toggle="modal"
-                    data-target="#confirm-remove-module"
-                    data-href="{% url 'programme:remove-module' programme.id module.id %}?next={{ request.get_full_path }}#modules"
-                ><span class='fas fa-times'></span></a>
+                    data-bs-toggle="modal"
+                    data-bs-target="#commonModal"
+                    data-modal-body="Are you sure you wish to remove this module from this programme?"
+                    data-modal-confirm-class="btn-danger"
+                    data-modal-confirm-text="Remove"
+                    data-modal-href="{% url 'programme:remove-module' programme.id module.id %}?next={{ request.get_full_path }}#modules"
+                ><span class='fas fa-times text-danger'></span></a>
             </td>
         </tr>
     {% endfor %}

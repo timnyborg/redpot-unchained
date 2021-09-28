@@ -48,8 +48,11 @@
             <a href="#"
                class="dropdown-item"
                data-bs-toggle='modal'
-               data-bs-target='#confirm-remove-tutor'
-               data-href="{% url 'tutor:module:delete' tutor_module.id %}?next={{ request.get_full_path }}#tutor-modules"
+               data-bs-target='#commonModal'
+               data-modal-body="Are you sure you wish to remove this tutor from the module?"
+               data-modal-confirm-class= "btn-danger"
+               data-modal-confirm-text= "Remove"
+               data-modal-href="{% url 'tutor:module:delete' tutor_module.id %}?next={{ request.get_full_path }}#tutor-modules"
             >
                 <div class="text-danger">
                     <i class="fas fa-times fa-fw"></i> Remove
