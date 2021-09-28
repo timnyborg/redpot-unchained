@@ -6,13 +6,15 @@ from weasyprint.fonts import FontConfiguration
 
 from django import http
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.forms import ModelForm
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views import generic
+from django.views.generic.detail import SingleObjectMixin
 
 from apps.contract import forms, models
 from apps.core.utils.strings import normalize
@@ -179,4 +181,16 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
         return super().has_permission() and self.get_object().is_editable
 
     def get_success_url(self) -> str:
+        messages.success(self.request, 'Contract deleted')
         return reverse('contract:select', args=[self.object.tutor_module.id])
+
+
+class SetStatus(SingleObjectMixin, generic.View):
+    model = models.Contract
+
+    def post(self, request, status: int, *args, **kwargs) -> http.HttpResponse:
+        # todo: the actual functionality (status & rights checks, side-effects & email, messages)
+        contract = self.get_object()
+        contract.status = status
+        contract.save()
+        return redirect(contract)

@@ -23,10 +23,7 @@ class Contract(SignatureModel):
     tutor_module = models.ForeignKey('tutor.TutorModule', models.PROTECT, db_column='tutor_module')
     type = models.CharField(max_length=32, choices=Types.choices)
     options = models.JSONField(decoder=ExtendedJSONDecoder, encoder=ExtendedJSONEncoder)
-    complete = models.BooleanField(default=False)
-    add_signature = models.BooleanField(default=False)
     status = models.IntegerField(db_column='status', choices=Statuses.choices, default=Statuses.DRAFT)
-    received = models.BooleanField(default=False)
     received_on = models.DateTimeField(blank=True, null=True)
     approver = models.ForeignKey(
         'core.User',
@@ -70,8 +67,12 @@ class Contract(SignatureModel):
 
     @property
     def is_approved(self) -> bool:
-        return self.status >= Statuses.APPROVED_AWAITING_SIGNATURE
+        return self.status in (
+            Statuses.APPROVED_AWAITING_SIGNATURE,
+            Statuses.SIGNED_BY_DEPARTMENT,
+            Statuses.SIGNED_AND_RETURNED_BY_TUTOR,
+        )
 
     @property
     def is_signed(self) -> bool:
-        return self.status >= Statuses.SIGNED_BY_DEPARTMENT
+        return self.status in (Statuses.SIGNED_BY_DEPARTMENT, Statuses.SIGNED_AND_RETURNED_BY_TUTOR)

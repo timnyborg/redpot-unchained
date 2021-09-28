@@ -2,8 +2,10 @@
     {% if contract.status == statuses.DRAFT %}
     <span
         data-bs-toggle='modal'
-        data-target="#confirm-awaiting-approval"
-        data-href="set-status/awaiting-approval"
+        data-bs-target="#commonModal"
+        data-modal-body="Are you sure you want to send this contract to be approved by your manager? You will be unable to make further changes."
+        data-modal-confirm-text="Send to manager"
+        data-modal-href="{% url 'contract:set-status' contract.id statuses.AWAITING_APPROVAL %}"
     >
         <a
             class="btn btn-primary"
@@ -18,8 +20,10 @@
     {% elif contract.status == statuses.AWAITING_APPROVAL %}
     <span
         data-bs-toggle='modal'
-        data-target="#confirm-approved-by-manager"
-        data-href="set-status/approve"
+        data-bs-target="#commonModal"
+        data-modal-body="Are you sure you want to approve this contract?"
+        data-modal-confirm-text="Approve"
+        data-modal-href="{% url 'contract:set-status' contract.id statuses.APPROVED_AWAITING_SIGNATURE %}"
     >
         <a
             class="btn btn-primary"
@@ -39,8 +43,10 @@
     {% elif contract.status == statuses.APPROVED_AWAITING_SIGNATURE %}
     <span
         data-bs-toggle='modal'
-        data-target="#confirm-signed-by-department"
-        data-href="set-status/signed"
+        data-bs-target="#commonModal"
+        data-modal-body="Are you sure you want to sign this contract?"
+        data-modal-confirm-text="Sign"
+        data-modal-href="{% url 'contract:set-status' contract.id statuses.SIGNED_BY_DEPARTMENT %}"
     >
         <a
             class="btn btn-primary"
@@ -53,52 +59,56 @@
             title="Mark that the contract has been signed by department"
             {% endif %}
         >
-            <span class="fas fa-fw fa-check"></span> Signed by department
+            <span class="fas fa-fw fa-signature"></span> Add signature
         </a>
     </span>
     <span
         data-bs-toggle='modal'
-        data-target="#confirm-mark-as-draft"
-        data-href="set-status/draft"
+        data-bs-target="#commonModal"
+        data-modal-body="Are you sure you want to return this contract to draft status?"
+        data-modal-href="{% url 'contract:set-status' contract.id statuses.DRAFT %}"
     >
         <a
             class="btn btn-warning"
             data-bs-toggle="tooltip"
             data-bs-placement="bottom"
-            {% if  not perms.contract.contract_approve %}
+            {% if not perms.contract.contract_approve %}
             disabled="disabled"
             title="You do not have the right permissions"
             {% else %}
             title="Mark that the contract has been sent back to the course administrator for changes. "
             {% endif %}
         >
-            <span class="fas fa-fw fa-pencil"></span> Mark as draft (requires changes)
+            <span class="fas fa-fw fa-pencil-alt"></span> Mark as draft &ndash; needing changes
         </a>
     </span>
 
     {% elif contract.status == statuses.SIGNED_BY_DEPARTMENT %}
     <span
         data-bs-toggle='modal'
-        data-target="#confirm-signed-and-returned-by-tutor"
-        data-href="set-status/signed-and-returned"
+        data-bs-target="#commonModal"
+        data-modal-body="Are you sure you want to mark this contract as received?"
+        data-modal-href="{% url 'contract:set-status' contract.id statuses.SIGNED_AND_RETURNED_BY_TUTOR %}"
     >
         <a
-            class="btn btn-default"
+            class="btn btn-secondary"
             data-bs-toggle="tooltip"
             data-bs-placement="bottom"
             title="Mark that the tutor has signed and returned the contract"
         >
-            <span class="fas fa-fw fa-check"></span> Signed and returned by tutor
+            <span class="fas fa-fw fa-check"></span> Mark returned by tutor
         </a>
     </span>
 
     <span
         data-bs-toggle='modal'
-        data-target="#confirm-remove-signature"
-        data-href="remove-signature"
+        data-bs-target="#commonModal"
+        data-modal-body="Are you sure you want to remove signature from this contract?"
+        data-modal-confirm-text="Remove signature"
+        data-modal-href="{% url 'contract:set-status' contract.id statuses.APPROVED_AWAITING_SIGNATURE %}"
     >
         <a
-            class="btn btn-danger"
+            class="btn btn-outline-danger"
             data-bs-toggle="tooltip"
             data-bs-placement="bottom"
             {% if  not perms.contract.contract_sign %}
@@ -108,7 +118,7 @@
             title="Mark that the contract signature has been removed"
             {% endif %}
         >
-            <span class="fas fa-fw fa-remove"></span> Remove signature
+            <span class="fas fa-fw fa-signature"></span> Remove signature
         </a>
     </span>
     {% endif %}
@@ -121,8 +131,11 @@
         {% if contract.status != statuses.CANCELLED %}
             <span class="ms-auto"
                 data-bs-toggle='modal'
-                data-target="#confirm-cancel-contract"
-                data-href="cancel"
+                data-bs-target="#commonModal"
+                data-modal-body="Are you sure you want to cancel this contract?"
+                data-modal-confirm-class="btn-danger"
+                data-modal-confirm-text="Cancel contract"
+        data-modal-href="{% url 'contract:set-status' contract.id statuses.CANCELLED %}"
             >
                 <a class="btn btn-danger">
                     <span class="fas fa-fw fa-times"></span> Cancel contract

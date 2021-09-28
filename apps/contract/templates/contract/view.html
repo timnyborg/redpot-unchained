@@ -3,7 +3,7 @@
 {% block center %}
     <div class="section">
         <h4 class="float-end">
-            {% if contract.cancelled %}
+            {% if contract.status == statuses.CANCELLED %}
                 <span class="badge bg-danger">Cancelled</span>
             {% else %}
                 <span class="badge bg-success">
@@ -52,7 +52,7 @@
                             {% edit_button contract %}
                         {% else %}
                             <a href="{% url 'contract:pdf' contract.id %}" target="_blank" class="btn btn-primary float-end">
-                                <span class="fa fa-file-pdf-o"></span> View (.pdf)
+                                <span class="fas fa-fw fa-file-pdf"></span> View (.pdf)
                             </a>
                         {% endif %}
                     </div>
