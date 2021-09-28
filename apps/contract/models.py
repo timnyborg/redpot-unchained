@@ -56,6 +56,9 @@ class Contract(SignatureModel):
         return f'{self.get_type_display()} (#{self.pk})'
 
     def get_absolute_url(self) -> str:
+        return reverse('contract:view', kwargs={'pk': self.pk})
+
+    def get_edit_url(self) -> str:
         return reverse('contract:edit', kwargs={'pk': self.pk})
 
     @property

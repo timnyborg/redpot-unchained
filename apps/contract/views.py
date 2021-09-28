@@ -145,3 +145,13 @@ class PDF(PermissionRequiredMixin, generic.View):
         return http.HttpResponse(
             output, content_type='application/pdf', headers={'Content-Disposition': f'filename="{filename}"'}
         )
+
+
+class View(PermissionRequiredMixin, PageTitleMixin, generic.DetailView):
+    model = models.Contract
+    permission_required = 'tutor_contract.view_contract'
+    template_name = 'contract/view.html'
+    extra_context = {'statuses': models.Statuses}
+
+    def get_subtitle(self) -> str:
+        return f"View – {self.object.tutor_module}"

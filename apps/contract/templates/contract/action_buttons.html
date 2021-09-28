@@ -1,0 +1,140 @@
+<div class="d-flex mb-3 gap-2">
+    {% if contract.status == statuses.DRAFT %}
+    <span
+        data-bs-toggle='modal'
+        data-target="#confirm-awaiting-approval"
+        data-href="set-status/awaiting-approval"
+    >
+        <a
+            class="btn btn-primary"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            title="Mark that the contract is awaiting approval"
+        >
+            <span class="fas fa-fw fa-check"></span> Send to manager
+        </a>
+    </span>
+
+    {% elif contract.status == statuses.AWAITING_APPROVAL %}
+    <span
+        data-bs-toggle='modal'
+        data-target="#confirm-approved-by-manager"
+        data-href="set-status/approve"
+    >
+        <a
+            class="btn btn-primary"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            {% if  not perms.contract.contract_approve %}
+            disabled="disabled"
+            title="You do not have the right permissions"
+            {% else %}
+            title="Mark that the contract has been approved by manager and is awaiting signature"
+            {% endif %}
+        >
+            <span class="fas fa-fw fa-check"></span> Approve
+        </a>
+    </span>
+
+    {% elif contract.status == statuses.APPROVED_AWAITING_SIGNATURE %}
+    <span
+        data-bs-toggle='modal'
+        data-target="#confirm-signed-by-department"
+        data-href="set-status/signed"
+    >
+        <a
+            class="btn btn-primary"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            {% if  not perms.contract.contract_sign %}
+            disabled="disabled"
+            title="You do not have the right permissions"
+            {% else %}
+            title="Mark that the contract has been signed by department"
+            {% endif %}
+        >
+            <span class="fas fa-fw fa-check"></span> Signed by department
+        </a>
+    </span>
+    <span
+        data-bs-toggle='modal'
+        data-target="#confirm-mark-as-draft"
+        data-href="set-status/draft"
+    >
+        <a
+            class="btn btn-warning"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            {% if  not perms.contract.contract_approve %}
+            disabled="disabled"
+            title="You do not have the right permissions"
+            {% else %}
+            title="Mark that the contract has been sent back to the course administrator for changes. "
+            {% endif %}
+        >
+            <span class="fas fa-fw fa-pencil"></span> Mark as draft (requires changes)
+        </a>
+    </span>
+
+    {% elif contract.status == statuses.SIGNED_BY_DEPARTMENT %}
+    <span
+        data-bs-toggle='modal'
+        data-target="#confirm-signed-and-returned-by-tutor"
+        data-href="set-status/signed-and-returned"
+    >
+        <a
+            class="btn btn-default"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            title="Mark that the tutor has signed and returned the contract"
+        >
+            <span class="fas fa-fw fa-check"></span> Signed and returned by tutor
+        </a>
+    </span>
+
+    <span
+        data-bs-toggle='modal'
+        data-target="#confirm-remove-signature"
+        data-href="remove-signature"
+    >
+        <a
+            class="btn btn-danger"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            {% if  not perms.contract.contract_sign %}
+            disabled="disabled"
+            title="You do not have the right permissions"
+            {% else %}
+            title="Mark that the contract signature has been removed"
+            {% endif %}
+        >
+            <span class="fas fa-fw fa-remove"></span> Remove signature
+        </a>
+    </span>
+    {% endif %}
+
+
+    {% if contract.status < statuses.APPROVED_AWAITING_SIGNATURE %}
+        <span class="ms-auto"
+            data-bs-toggle='modal'
+            data-target="#confirm-delete-contract"
+            data-href="delete"
+        >
+            <a class="btn btn-danger">
+                <span class="fas fa-fw fa-trash"></span> Delete contract
+            </a>
+        </span>
+    {% else %}
+        {% if contract.status != statuses.CANCELLED %}
+            <span class="ms-auto"
+                data-bs-toggle='modal'
+                data-target="#confirm-cancel-contract"
+                data-href="cancel"
+            >
+                <a class="btn btn-danger">
+                    <span class="fas fa-fw fa-times"></span> Cancel contract
+                </a>
+            </span>
+        {% endif %}
+    {% endif %}
+</div>

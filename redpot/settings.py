@@ -36,6 +36,7 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'] if DEBUG else [])
 # In production, ensure SESSION_COOKIE_SECURE = True, and enforce https at the reverse-proxy or use SECURE_SSL_REDIRECT
 SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # Sentry integration
 sentry_sdk.init(
