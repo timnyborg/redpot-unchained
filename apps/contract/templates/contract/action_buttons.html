@@ -113,17 +113,10 @@
     </span>
     {% endif %}
 
-
-    {% if contract.status < statuses.APPROVED_AWAITING_SIGNATURE %}
-        <span class="ms-auto"
-            data-bs-toggle='modal'
-            data-target="#confirm-delete-contract"
-            data-href="delete"
-        >
-            <a class="btn btn-danger">
-                <span class="fas fa-fw fa-trash"></span> Delete contract
-            </a>
-        </span>
+    {% if contract.is_editable %}
+        <a class="btn btn-danger ms-auto" href="{{ contract.get_delete_url }}">
+            <span class="fas fa-fw fa-trash"></span> Delete
+        </a>
     {% else %}
         {% if contract.status != statuses.CANCELLED %}
             <span class="ms-auto"

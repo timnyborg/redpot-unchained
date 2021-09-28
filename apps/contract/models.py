@@ -61,6 +61,9 @@ class Contract(SignatureModel):
     def get_edit_url(self) -> str:
         return reverse('contract:edit', kwargs={'pk': self.pk})
 
+    def get_delete_url(self) -> str:
+        return reverse('contract:delete', kwargs={'pk': self.pk})
+
     @property
     def is_editable(self) -> bool:
         return self.status <= Statuses.APPROVED_AWAITING_SIGNATURE

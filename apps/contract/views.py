@@ -11,6 +11,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.forms import ModelForm
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.views import generic
 
 from apps.contract import forms, models
@@ -26,9 +27,22 @@ FORM_MAP = {
 }
 
 
+class Select(PermissionRequiredMixin, PageTitleMixin, generic.TemplateView):
+    permission_required = 'contract.add_contract'
+    template_name = 'contract/select.html'
+    title = 'Contract'
+    subtitle = 'New – Select type'
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        tutor_module = get_object_or_404(TutorModule, pk=self.kwargs['tutor_module_id'])
+        has_address = tutor_module.tutor.student.get_default_address() is not None
+        return {**context, 'tutor_module': tutor_module, 'has_address': has_address}
+
+
 class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestampMixin, generic.CreateView):
     model = models.Contract
-    permission_required = 'contract.create_contract'
+    permission_required = 'contract.add_contract'
     template_name = 'contract/form.html'
     success_message = 'Contract created'
 
@@ -99,8 +113,7 @@ class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTim
         return {**initial, **self.object.options}
 
     def has_permission(self) -> bool:
-        contract = self.get_object()
-        return super().has_permission() and contract.is_editable
+        return super().has_permission() and self.get_object().is_editable
 
     def form_valid(self, form) -> http.HttpResponse:
         fixed_properties = services.generate_fixed_properties(contract=form.instance)
@@ -155,3 +168,15 @@ class View(PermissionRequiredMixin, PageTitleMixin, generic.DetailView):
 
     def get_subtitle(self) -> str:
         return f"View – {self.object.tutor_module}"
+
+
+class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = models.Contract
+    permission_required = 'contract.delete_contract'
+    template_name = 'core/delete_form.html'
+
+    def has_permission(self) -> bool:
+        return super().has_permission() and self.get_object().is_editable
+
+    def get_success_url(self) -> str:
+        return reverse('contract:select', args=[self.object.tutor_module.id])
