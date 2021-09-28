@@ -1,15 +1,18 @@
 from django import forms
 from django.core import validators
+from django.db.models import TextChoices
 from django.utils.safestring import mark_safe
 
 from apps.contract import models
 from apps.core.utils.forms import ApproverChoiceField
 from apps.core.utils.widgets import PoundInput
 
-RETURN_ADDRESS_CHOICES = (
-    ('Rewley House, 1 Wellington Square, OX1 2JA', 'Rewley House, 1 Wellington Square, OX1 2JA'),
-    ('Ewert House, Ewert Place, Summertown, OX2 7DD', 'Ewert House, Ewert Place, Summertown, OX2 7DD'),
-)
+
+class ReturnAddresses(TextChoices):
+    REWLEY = 'Rewley House, 1 Wellington Square, OX1 2JA', 'Rewley House, 1 Wellington Square, OX1 2JA'
+    EWERT = 'Ewert House, Ewert Place, Summertown, OX2 7DD', 'Ewert House, Ewert Place, Summertown, OX2 7DD'
+
+
 EXPENSE_CHOICES = [
     ('45p', 'Standard expenses text (45p/mi.)'),
     ('33p', 'Undergraduate text (33p/mi.)'),
@@ -46,7 +49,7 @@ class ContractForm(forms.ModelForm):
         help_text='Which travel expense rate to include in the standard text',
     )
     return_to = forms.CharField(help_text='The name of the administrator or team')
-    return_address = forms.ChoiceField(choices=RETURN_ADDRESS_CHOICES)
+    return_address = forms.ChoiceField(choices=ReturnAddresses.choices, initial=ReturnAddresses.REWLEY)
 
     class Meta:
         model = models.Contract
@@ -104,9 +107,9 @@ class CasualTeachingForm(ContractForm):
         label='Schedule of work attached?',
         help_text='Will a schedule/description of the work be attached?',
         required=False,
+        initial=True,
     )
     references_required = forms.BooleanField(
-        label='Schedule of work attached?',
         help_text='Is this contract subject to the provision of references?',
         required=False,
     )
