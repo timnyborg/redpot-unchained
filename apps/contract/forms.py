@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 
 from apps.contract import models
 from apps.core.utils.forms import ApproverChoiceField
-from apps.core.utils.widgets import PoundInput
+from apps.core.utils.widgets import DatePickerInput, PoundInput
 
 
 class ReturnAddresses(TextChoices):
@@ -64,6 +64,8 @@ class ContractForm(forms.ModelForm):
 
 
 class CasualTeachingForm(ContractForm):
+    start_date = forms.DateField(widget=DatePickerInput())
+    end_date = forms.DateField(widget=DatePickerInput())
     supervisor = forms.CharField(
         help_text='The person overseeing the tutor, responsible for approving any substitutes'
     )

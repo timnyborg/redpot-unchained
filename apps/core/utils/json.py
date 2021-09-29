@@ -15,8 +15,6 @@ import decimal
 from json import JSONDecoder, JSONEncoder
 from typing import Callable
 
-import dateutil.parser
-
 
 class ExtendedJSONEncoder(JSONEncoder):
     def default(self, obj):
@@ -33,8 +31,8 @@ class ExtendedJSONEncoder(JSONEncoder):
 
 class ExtendedJSONDecoder(JSONDecoder):
     CONVERTERS: dict[str, Callable] = {
-        'datetime': dateutil.parser.parse,
-        'date': lambda v: dateutil.parser.parse(v).date(),  # parse returns a datetime
+        'datetime': datetime.datetime.fromisoformat,
+        'date': datetime.date.fromisoformat,
         'decimal': decimal.Decimal,
     }
 
