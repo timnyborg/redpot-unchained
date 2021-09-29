@@ -383,3 +383,7 @@ CKEDITOR_CONFIGS = {
 }
 
 DJANGO_TABLES2_TEMPLATE = 'django_tables2/bootstrap4.html'
+
+# Contract configuration - todo: consider moving into a settings table once we have one, consider a file:// url fetcher
+CONTRACT_SIGNATORY = env('CONTRACT_SIGNATORY', default='')
+CONTRACT_SIGNATURE_IMAGE = env('CONTRACT_SIGNATURE_IMAGE', default='')  # a path within the media folder

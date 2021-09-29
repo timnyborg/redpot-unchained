@@ -72,9 +72,9 @@
 
 <p class="signature-space">Dated:</p>
 <div class="signature-block">
-    {% if contract.is_signed %}
+    {% if is_signed %}
         <p>Signed on behalf of the University of Oxford</p>
-        <img class="signature" src="{% static signatory_image %}">
+        <img class="signature" src="{% static signature_image %}">
     {% else %}
         <p class="signature-space">Signed on behalf of the University of Oxford:</p>
     {% endif %}

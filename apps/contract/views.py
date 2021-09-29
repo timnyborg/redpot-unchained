@@ -128,26 +128,9 @@ class PDF(PermissionRequiredMixin, generic.View):
 
     def get(self, request, pk: int, *args, **kwargs) -> http.HttpResponse:
         contract = get_object_or_404(models.Contract, pk=pk)
-
-        module_code = contract.tutor_module.module.code
-        surname = normalize(contract.tutor_module.tutor.student.surname)
-        context = {
-            **contract.options,
-            'status': contract.status,
-            'identifier': f'{module_code}-{surname.upper()}-{contract.id}',
-            'preview_class': '' if contract.is_signed else 'highlight',
-            # todo: handling signatory and signature_image
-        }
-
-        template_map = {
-            models.Types.CASUAL_TEACHING: 'contract/pdfs/casual_teaching_contract.html',
-            models.Types.GUEST_SPEAKER: 'contract/pdfs/guest_speaker_letter.html',
-        }
-        view = template_map[contract.type]
-        html_doc = render_to_string(view, context)
+        html_doc = self.render_document(contract=contract)
 
         font_config = FontConfiguration()  # Makes @font-face and google fonts @import work
-
         output = HTML(
             string=html_doc,
             # Used fetch static images.  Could be done with system file paths, but this'll work for HTML or PDF
@@ -156,10 +139,28 @@ class PDF(PermissionRequiredMixin, generic.View):
             stylesheets=[CSS(Path(__file__).parent / 'static/css/tutor_contract.css', font_config=font_config)],
             font_config=font_config,
         )
-        filename = normalize(f"contract_{context['full_name']}_{module_code}.pdf")
+        filename = normalize(f"contract_{contract.options['full_name']}_{contract.tutor_module.module.code}.pdf")
         return http.HttpResponse(
             output, content_type='application/pdf', headers={'Content-Disposition': f'filename="{filename}"'}
         )
+
+    @staticmethod
+    def render_document(*, contract: models.Contract) -> str:
+        surname = normalize(contract.tutor_module.tutor.student.surname)
+        context = {
+            **contract.options,
+            'identifier': f'{contract.tutor_module.module.code}-{surname.upper()}-{contract.id}',
+            'preview_class': '' if contract.is_signed else 'highlight',
+            'is_signed': contract.is_signed,
+            'signatory': settings.CONTRACT_SIGNATORY,
+            'signature_image': settings.CONTRACT_SIGNATURE_IMAGE,
+        }
+        template_map: dict[str, str] = {
+            models.Types.CASUAL_TEACHING: 'contract/pdfs/casual_teaching_contract.html',
+            models.Types.GUEST_SPEAKER: 'contract/pdfs/guest_speaker_letter.html',
+        }
+        view = template_map[contract.type]
+        return render_to_string(view, context)
 
 
 class View(PermissionRequiredMixin, PageTitleMixin, generic.DetailView):

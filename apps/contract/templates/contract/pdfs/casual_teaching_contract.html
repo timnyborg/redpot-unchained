@@ -137,9 +137,9 @@ If you accept any offer of work, you will be required to carry out the teaching 
 <p>Please sign, date, and return one copy of this letter to <span class="{{ preview_class }}">{{ return_to }}</span> (<span class="{{ preview_class }}">{{ email }}
     <i>or</i> {{ return_address }}</span>) to accept this offer of casual work.</p>
 
-{% if contract.is_signed %}
+{% if is_signed %}
     <p>Yours sincerely,</p>
-    <img class="signature" src="{% static signatory_image %}">
+    <img class="signature" src="{% get_media_prefix %}{{ signature_image }}">
 {% else %}
     <p class="signature-space">Yours sincerely</p>
 {% endif %}
