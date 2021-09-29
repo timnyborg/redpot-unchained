@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from datetime import datetime
 from pathlib import Path
 from typing import Type
 
@@ -7,8 +10,9 @@ from weasyprint.fonts import FontConfiguration
 from django import http
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
 from django.forms import ModelForm
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -16,12 +20,12 @@ from django.urls import reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
-from apps.contract import forms, models
 from apps.core.utils.strings import normalize
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.tutor.models import TutorModule
 
-from . import services
+from . import forms, models, services
+from .models import Statuses
 
 FORM_MAP = {
     models.Types.CASUAL_TEACHING: forms.CasualTeachingForm,
@@ -186,12 +190,46 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
         return reverse('contract:select', args=[self.object.tutor_module.id])
 
 
-class SetStatus(SingleObjectMixin, generic.View):
+class SetStatus(LoginRequiredMixin, SingleObjectMixin, generic.View):
     model = models.Contract
 
     def post(self, request, status: int, *args, **kwargs) -> http.HttpResponse:
-        # todo: the actual functionality (status & rights checks, side-effects & email, messages)
         contract = self.get_object()
+        permissions_map: dict[int, str] = {
+            Statuses.DRAFT: 'contract.add_contract',
+            Statuses.AWAITING_APPROVAL: 'contract.add_contract',
+            Statuses.APPROVED_AWAITING_SIGNATURE: 'contract.approve',
+            Statuses.SIGNED_BY_DEPARTMENT: 'contract.sign',
+            Statuses.CANCELLED: 'contract.cancel',
+        }
+        # A user must have the rights level for the current status (can edit) and the target status (can set)
+        if not request.user.has_perms([permissions_map[contract.status], permissions_map[status]]):
+            raise PermissionDenied()
+
+        message = 'Contract status updated'
+        if status == Statuses.APPROVED_AWAITING_SIGNATURE and contract.status < Statuses.APPROVED_AWAITING_SIGNATURE:
+            contract.approved_on = datetime.now()
+            contract.approved_by = request.user.username
+            message = 'Contract approved'
+        elif status == Statuses.SIGNED_BY_DEPARTMENT and contract.status < Statuses.SIGNED_BY_DEPARTMENT:
+            contract.signed_on = datetime.now()
+            contract.signed_by = request.user.username
+            services.send_notification_mail(contract=contract)
+            message = 'Contract signed'
+
         contract.status = status
         contract.save()
+        messages.success(request, message)
+        return redirect(contract)
+
+
+class MarkReturned(PermissionRequiredMixin, SingleObjectMixin, generic.View):
+    model = models.Contract
+    permission_required = 'contract.add_contract'
+
+    def post(self, request, *args, **kwargs) -> http.HttpResponse:
+        contract = self.get_object()
+        contract.received_on = datetime.now()
+        contract.save()
+        messages.success(request, 'Contract marked returned')
         return redirect(contract)

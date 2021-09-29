@@ -15,7 +15,8 @@ class Statuses(models.IntegerChoices):
     AWAITING_APPROVAL = 2, 'Awaiting approval'
     APPROVED_AWAITING_SIGNATURE = 3, 'Approved by manager, awaiting signature'
     SIGNED_BY_DEPARTMENT = 4, 'Signed by Department'
-    SIGNED_AND_RETURNED_BY_TUTOR = 5, 'Signed and returned by tutor'
+    # code 5 is redundant due to the timestamp.  todo: remove and set all to 4 once legacy is done
+    SIGNED_AND_RETURNED_BY_TUTOR = (5, 'Signed and returned by tutor')
     CANCELLED = 6, 'Cancelled'
 
 
@@ -57,6 +58,14 @@ class Contract(SignatureModel):
 
     def __str__(self) -> str:
         return f'{self.get_type_display()} (#{self.pk})'
+
+    def save(self, *args, **kwargs):
+        # Wipe timestamps when walking back the contract status
+        if self.status < Statuses.APPROVED_AWAITING_SIGNATURE:
+            self.approved_on = self.approved_by = None
+        if self.status < Statuses.SIGNED_BY_DEPARTMENT:
+            self.signed_on = self.signed_by = self.received_on = None
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
         return reverse('contract:view', kwargs={'pk': self.pk})

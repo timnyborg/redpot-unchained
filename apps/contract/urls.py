@@ -11,4 +11,5 @@ urlpatterns = [
     path('delete/<int:pk>', views.Delete.as_view(), name='delete'),
     path('pdf/<int:pk>', views.PDF.as_view(), name='pdf'),
     path('set-status/<int:pk>/<int:status>', views.SetStatus.as_view(), name='set-status'),
+    path('mark-returned/<int:pk>', views.MarkReturned.as_view(), name='mark-returned'),
 ]
