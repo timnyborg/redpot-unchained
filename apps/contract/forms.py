@@ -73,10 +73,10 @@ class CasualTeachingForm(ContractForm):
         # todo: move to a template?
         help_text=mark_safe(
             """
-                <a class="pull-right" href="#"
-                     data-toggle='modal'
-                     data-target='#calculator-modal'
-                ><span class="fa fa-calculator"></span> Calculator</a>
+                <a class="float-end" href="#"
+                    data-bs-toggle='modal'
+                    data-bs-target='#calculator_modal'
+                ><span class="fas fa-calculator"></span> Calculator</a>
                 <b>Excluding</b> holiday pay.
                 <br/>E.g. <i>£20/hr</i>.
                 <br/>or <i>£100/day (at a notional rate of £20/hr)</i>

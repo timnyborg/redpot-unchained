@@ -25,34 +25,31 @@
         {% timestamp contract %}
 
         <!-- calculation modal-->
-        <div class="modal fade" id="calculator-modal" tabindex="-1" role="dialog">
+        <div class="modal fade" id="calculator_modal" tabindex="-1" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span><span class="sr-only">Close</span></button>
                         <h4 class="modal-title">Net hourly fee calculator</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form>
                             <div class="form-group">
                                 <div class="input-group">
-                                    <div class="input-group-addon">£</div>
+                                    <div class="input-group-text"><i class="fas fa-pound-sign"></i></div>
                                     <input type="number" step='.001' class="form-control" id="gross_rate" placeholder="Gross hourly rate">
                                 </div>
                                 <p style="text-align: right;"><b>/ 1.1207</b></p>
                                 <hr>
                                 <div class="input-group">
-                                    <div class="input-group-addon">£</div>
+                                    <div class="input-group-text"><i class="fas fa-pound-sign"></i></div>
                                     <input class="form-control" type="text" id="net_rate" placeholder="Hourly rate minus holiday pay" readonly>
-                                    <span class="input-group-btn">
-                                <a class="btn btn-default" type="button"
-                                   id="copy-button"
-                                   data-toggle="tooltip"
-                                   data-title="Copy to form"
-                                   data-trigger="hover"
-                                   data-container="body"
-                                ><span class="fa fa-copy"></span></a>
-                            </span>
+                                    <a class="btn btn-secondary" type="button"
+                                       id="copy_button"
+                                       data-bs-toggle="tooltip"
+                                       title="Copy to form"
+                                       data-container="body"
+                                    ><span class="fa fa-copy"></span></a>
                                 </div>
                             </div>
                         </form>
@@ -70,35 +67,21 @@
     </style>
 
     <script>
-        $(function() {
+        document.addEventListener('DOMContentLoaded', () => {
             // Automath
-            let gross = $('#gross_rate');
-            let net = $('#net_rate');
+            let gross = document.getElementById('gross_rate');
+            let net = document.getElementById('net_rate');
+            let copy_button = document.getElementById('copy_button');
+            let target = document.getElementById('id_rate_of_pay');
 
-            gross.on('keyup',
-                    function update_math() {
-                        if ($(this).val()) {  // Only run updates when data has been entered, not removed
-                            // Requested by Personnel:
-                            // Math.ceil works only on whole numbers and rounds to the next highest value
-                            // ceil (Gross val * 100 to get the 2 decimal values to become a part of the whole number = [][][][])
-                            // Divide result by 100 to get [][].[][]
-                            net.val(Math.ceil((gross.val() / 1.1207)*100)/100);
-                        } else {
-                            net.val('');
-                        }
-                    }
-            );
-
-            // Copy button
-            let copy_button = $('#copy-button');
-            let target = $('#contract_rate_of_pay');
-
-            copy_button.on('click',
-                    function update_math() {
-                        target.val('£' + net.val() + '/hr');
-                        $('#calculator-modal').modal('hide');
-                    }
-            );
+            gross.addEventListener('keyup', e => {
+                net.value  = Math.ceil((e.target.value / 1.1207) * 100) / 100 || '';
+            });
+            copy_button.addEventListener('click', () => {
+                target.value = `£${net.value}/hr`;
+                let modal_el = document.getElementById('calculator_modal');
+                bootstrap.Modal.getInstance(modal_el).hide();
+            });
         });
 
     </script>
