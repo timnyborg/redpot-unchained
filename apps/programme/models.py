@@ -119,6 +119,9 @@ class Programme(SignatureModel):
     def get_absolute_url(self):
         return reverse('programme:view', args=[self.id])
 
+    def get_delete_url(self):
+        return reverse('programme:delete', args=[self.id])
+
     @property
     def is_certhe(self) -> bool:
         # Todo: There must be a way to this without hardcoding statuses (old and new certhe)

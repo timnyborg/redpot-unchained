@@ -6,10 +6,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count, OuterRef, Subquery
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.views import generic
 
 from apps.core.utils.urls import next_url_if_safe
-from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.module.models import Module, ModuleStatus
 
 from .datatables import ProgrammeSearchFilter, ProgrammeSearchTable
@@ -71,7 +72,7 @@ class New(PermissionRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMe
     form_class = ProgrammeNewForm
     permission_required = 'programme.create'
     template_name = 'core/form.html'
-    success_message = 'Details updated.'
+    success_message = 'Programme created'
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
@@ -80,6 +81,13 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     table_class = ProgrammeSearchTable
     filterset_class = ProgrammeSearchFilter
     subtitle = 'Search'
+
+
+class Delete(PermissionRequiredMixin, DeletionFailedMessageMixin, PageTitleMixin, generic.DeleteView):
+    model = Programme
+    permission_required = 'programme.delete_programme'
+    template_name = 'core/delete_form.html'
+    success_url = reverse_lazy('programme:search')
 
 
 class AddModule(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.CreateView):

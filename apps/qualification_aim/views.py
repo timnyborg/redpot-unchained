@@ -3,7 +3,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
 
-from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.student.models import Student
 
 from . import forms, models
@@ -51,7 +51,7 @@ class Edit(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitl
     success_message = 'Qualification aim updated'
 
 
-class Delete(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, generic.DeleteView):
+class Delete(LoginRequiredMixin, DeletionFailedMessageMixin, PageTitleMixin, generic.DeleteView):
     model = models.QualificationAim
     template_name = 'core/delete_form.html'
 
