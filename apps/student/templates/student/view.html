@@ -811,9 +811,6 @@
         element.remove();
     }
 
-</script>
-
-<script>
     // todo: proper generic method
     function api_update() {
         const success_actions = {
@@ -841,6 +838,8 @@
     }
 
     $("[data-api-field]").change(api_update).click(api_update);
+
+    // Show/hide input fields
 </script>
 
 {% endblock %}

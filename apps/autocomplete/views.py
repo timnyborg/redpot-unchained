@@ -4,7 +4,7 @@ from django.db.models import Q
 
 from apps.enrolment.models import Enrolment
 from apps.module.models import Module
-from apps.tutor.models import Tutor
+from apps.tutor.models import RightToWorkDocumentType, Tutor
 
 
 class ModuleAutocomplete(autocomplete.Select2QuerySetView):
@@ -42,3 +42,21 @@ class EnrolmentAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_result_label(self, result):
         return f'{result.module.code} - {result.qa.student}'
+
+
+class RtwAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return RightToWorkDocumentType.objects.none()
+
+        qs = RightToWorkDocumentType.objects.all()
+
+        rtw_type = self.forwarded.get('rtw_type', None)
+
+        if rtw_type:
+            qs = qs.filter(rtw_type=rtw_type)
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs

@@ -818,6 +818,11 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
     line-height: 38px;
 }
 
+/* Remove the autocomplete duplicate chevron  */
+#id_rtw_document_type + .select2-container > .selection > span > span.select2-selection__arrow {
+    display: none !important;
+}
+
 .select2-selection__arrow {
     top: 4px !important;
 }
