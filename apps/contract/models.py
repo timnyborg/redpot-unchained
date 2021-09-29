@@ -54,7 +54,10 @@ class Contract(SignatureModel):
 
     class Meta:
         db_table = 'tutor_contract'
-        permissions = [('approve', 'Can be assigned and approve tutor contracts')]
+        permissions = [
+            ('approve', 'Can be assigned and approve tutor contracts'),
+            ('sign', 'Can sign tutor contracts'),
+        ]
 
     def __str__(self) -> str:
         return f'{self.get_type_display()} (#{self.pk})'
