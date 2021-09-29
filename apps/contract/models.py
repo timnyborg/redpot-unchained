@@ -20,7 +20,13 @@ class Statuses(models.IntegerChoices):
 
 
 class Contract(SignatureModel):
-    tutor_module = models.ForeignKey('tutor.TutorModule', models.PROTECT, db_column='tutor_module')
+    tutor_module = models.ForeignKey(
+        'tutor.TutorModule',
+        models.PROTECT,
+        db_column='tutor_module',
+        related_name='contracts',
+        related_query_name='contract',
+    )
     type = models.CharField(max_length=32, choices=Types.choices)
     options = models.JSONField(decoder=ExtendedJSONDecoder, encoder=ExtendedJSONEncoder)
     status = models.IntegerField(db_column='status', choices=Statuses.choices, default=Statuses.DRAFT)
