@@ -10,6 +10,7 @@ urlpatterns = [
     path('view/<int:pk>', views.View.as_view(), name='view'),
     path('delete/<int:pk>', views.Delete.as_view(), name='delete'),
     path('pdf/<int:pk>', views.PDF.as_view(), name='pdf'),
+    path('search', views.Search.as_view(), name='search'),
     path('approve', views.Approve.as_view(), name='approve'),
     path('sign', views.Sign.as_view(), name='sign'),
     # Endpoints

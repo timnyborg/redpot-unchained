@@ -64,7 +64,7 @@ tutor_children = (
         '#',
         icon="pencil-alt",
         children=(
-            MenuItem("Search", 'not-implemented', icon="search"),
+            MenuItem("Search", reverse("contract:search"), icon="search"),
             MenuItem(
                 "Approve",
                 reverse('contract:approve'),

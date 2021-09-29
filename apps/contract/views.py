@@ -4,7 +4,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Type
 
-from django_tables2 import SingleTableView
+import django_tables2 as tables
+from django_filters.views import FilterView
 from weasyprint import CSS, HTML
 from weasyprint.fonts import FontConfiguration
 
@@ -192,7 +193,16 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
         return reverse('contract:select', args=[self.object.tutor_module.id])
 
 
-class Approve(PermissionRequiredMixin, PageTitleMixin, SingleTableView):
+class Search(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableMixin, FilterView):
+    queryset = models.Contract.objects.select_related('tutor_module__module', 'tutor_module__tutor__student')
+    permission_required = 'tutor_contract.view_contract'
+    template_name = 'core/search.html'
+    filterset_class = datatables.SearchFilter
+    table_class = datatables.SearchTable
+    subtitle = 'Search'
+
+
+class Approve(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableView):
     permission_required = 'contract.approve'
     template_name = 'contract/approve.html'
     table_class = datatables.OutstandingTable
@@ -213,7 +223,7 @@ class Approve(PermissionRequiredMixin, PageTitleMixin, SingleTableView):
         return redirect(self.request.get_full_path())
 
 
-class Sign(PermissionRequiredMixin, PageTitleMixin, SingleTableView):
+class Sign(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableView):
     permission_required = 'contract.sign'
     template_name = 'contract/sign.html'
     table_class = datatables.OutstandingTable
