@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Type
 
+from django_tables2 import SingleTableView
 from weasyprint import CSS, HTML
 from weasyprint.fonts import FontConfiguration
 
@@ -13,6 +14,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
+from django.db.models import QuerySet
 from django.forms import ModelForm
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -24,7 +26,7 @@ from apps.core.utils.strings import normalize
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.tutor.models import TutorModule
 
-from . import forms, models, services
+from . import datatables, forms, models, services
 from .models import Statuses
 
 FORM_MAP = {
@@ -188,6 +190,30 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
     def get_success_url(self) -> str:
         messages.success(self.request, 'Contract deleted')
         return reverse('contract:select', args=[self.object.tutor_module.id])
+
+
+class Approve(PermissionRequiredMixin, PageTitleMixin, SingleTableView):
+    permission_required = 'contract.approve'
+    template_name = 'contract/approve.html'
+    table_class = datatables.ApproveTable
+    title = 'Contract'
+    subtitle = 'Approval'
+
+    def get_queryset(self) -> QuerySet:
+        return self.request.user.approver_contracts.filter(
+            status=Statuses.AWAITING_APPROVAL,
+        ).select_related('tutor_module__tutor__student', 'tutor_module__module')
+
+    def post(self, request, *args, **kwargs) -> http.HttpResponse:
+        contract_ids = request.POST.getlist('contract')
+        int_ids: list[int] = [int(i) for i in contract_ids if i.isnumeric()]
+        updated: int = services.approve_contracts(contract_ids=int_ids, user=self.request.user)
+        message_method = messages.success if updated else messages.error
+        message_method(request, f"{updated or 'No'} contract(s) approved")
+        return redirect(self.request.get_full_path())
+
+
+# --- POST endpoints ---
 
 
 class SetStatus(LoginRequiredMixin, SingleObjectMixin, generic.View):

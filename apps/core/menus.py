@@ -67,7 +67,7 @@ tutor_children = (
             MenuItem("Search", 'not-implemented', icon="search"),
             MenuItem(
                 "Approve",
-                'not-implemented',
+                reverse('contract:approve'),
                 icon="check",
                 check=lambda request: request.user.has_perm('contract.approve'),
             ),

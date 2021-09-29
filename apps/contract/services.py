@@ -6,6 +6,8 @@ from django.template.loader import render_to_string
 from django.utils import html
 
 from apps.contract import models
+from apps.contract.models import Statuses
+from apps.core.models import User
 from apps.core.utils.postal import FormattedAddress
 from apps.tutor.models import RightToWorkType
 
@@ -47,4 +49,14 @@ def send_notification_mail(*, contract: models.Contract) -> int:
         recipient_list=recipients,
         message=html.strip_tags(message),
         html_message=message,
+    )
+
+
+def approve_contracts(*, contract_ids: list, user: User) -> int:
+    """Approves contracts assigned to a user"""
+    contracts = user.approver_contracts.filter(status=Statuses.AWAITING_APPROVAL, id__in=contract_ids)
+    return contracts.update(
+        status=Statuses.APPROVED_AWAITING_SIGNATURE,
+        approved_by=user.username,
+        approved_on=datetime.now(),
     )
