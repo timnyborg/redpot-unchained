@@ -73,7 +73,7 @@ tutor_children = (
             ),
             MenuItem(
                 "Sign",
-                reverse("amendment:search"),
+                reverse("contract:sign"),
                 icon="signature",
                 check=lambda request: request.user.has_perm('contract.sign'),
             ),

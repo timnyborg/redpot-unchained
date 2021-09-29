@@ -195,7 +195,7 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
 class Approve(PermissionRequiredMixin, PageTitleMixin, SingleTableView):
     permission_required = 'contract.approve'
     template_name = 'contract/approve.html'
-    table_class = datatables.ApproveTable
+    table_class = datatables.OutstandingTable
     title = 'Contract'
     subtitle = 'Approval'
 
@@ -210,6 +210,27 @@ class Approve(PermissionRequiredMixin, PageTitleMixin, SingleTableView):
         updated: int = services.approve_contracts(contract_ids=int_ids, user=self.request.user)
         message_method = messages.success if updated else messages.error
         message_method(request, f"{updated or 'No'} contract(s) approved")
+        return redirect(self.request.get_full_path())
+
+
+class Sign(PermissionRequiredMixin, PageTitleMixin, SingleTableView):
+    permission_required = 'contract.sign'
+    template_name = 'contract/sign.html'
+    table_class = datatables.OutstandingTable
+    title = 'Contract'
+    subtitle = 'Needing signature'
+
+    def get_queryset(self) -> QuerySet:
+        return models.Contract.objects.filter(
+            status=Statuses.APPROVED_AWAITING_SIGNATURE,
+        ).select_related('tutor_module__tutor__student', 'tutor_module__module')
+
+    def post(self, request, *args, **kwargs) -> http.HttpResponse:
+        contract_ids = request.POST.getlist('contract')
+        int_ids: list[int] = [int(i) for i in contract_ids if i.isnumeric()]
+        updated: int = services.sign_contracts(contract_ids=int_ids, user=self.request.user)
+        message_method = messages.success if updated else messages.error
+        message_method(request, f"{updated or 'No'} contract(s) signed")
         return redirect(self.request.get_full_path())
 
 

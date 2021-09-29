@@ -60,3 +60,15 @@ def approve_contracts(*, contract_ids: list, user: User) -> int:
         approved_by=user.username,
         approved_on=datetime.now(),
     )
+
+
+def sign_contracts(*, contract_ids: list, user: User) -> int:
+    """Signs contracts and sends out notification emails"""
+    contracts = models.Contract.objects.filter(status=Statuses.APPROVED_AWAITING_SIGNATURE, id__in=contract_ids)
+    for contract in contracts:
+        send_notification_mail(contract=contract)
+    return contracts.update(
+        status=Statuses.SIGNED_BY_DEPARTMENT,
+        signed_by=user.username,
+        signed_on=datetime.now(),
+    )

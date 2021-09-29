@@ -4,7 +4,9 @@ from apps.contract import models
 from apps.core.utils.datatables import ViewLinkColumn
 
 
-class ApproveTable(tables.Table):
+class OutstandingTable(tables.Table):
+    """Lists contracts needing approval or signature (depending on the queryset) with a checkbox column"""
+
     contract = tables.CheckBoxColumn(accessor='id', attrs={"th__input": {"id": "toggle-all"}}, orderable=False)
     view = ViewLinkColumn(verbose_name='', attrs={'a': {'target': '_blank'}})
 
