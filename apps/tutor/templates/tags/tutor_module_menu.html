@@ -20,24 +20,28 @@
                 <i class="fas fa-briefcase fa-fw"></i> Payments
             </a>
         </li>
+        <li class="dropdown-divider"></li>
+        <li class="dropdown-header">Contracts</li>
         <li>
-            <a href="contract/view/{{ tutor_module.id }}" class="dropdown-item">
-                <span class="fas fa-fw fa-file-alt"></span>
-                {% if contract.complete %}
-                    View contract (complete)
-                {% elif contract.id %}
-                    View contract (incomplete)
-                {% else %}
-                    Create contract
-                {% endif %}
+            <a href="{% url 'contract:select' tutor_module.id %}" class="dropdown-item">
+                <span class="fas fa-fw fa-file-contract"></span> New contract
             </a>
         </li>
+        {% for contract in contracts %}
+        <li>
+            <a href="{{ contract.get_absolute_url }}" class="dropdown-item">
+                <span class="fas fa-fw fa-file-contract"></span>
+                View contract {% if contracts|length > 1 %}#{{ contract.id }}{% endif %}
+            </a>
+        </li>
+        {% endfor %}
 
-        <li class="dropdown-submenu">
-            <a class="dropdown-item"><span class="fa fa-fw fa-print"></span> Expense forms</a>
+        <li class="dropdown-divider"></li>
+        <li class="dropend">
+            <a class="dropdown-item dropdown-toggle"><span class="fa fa-fw fa-print"></span> Expense forms</a>
             <ul class="dropdown-menu">
                 {% for key, title in expense_templates.items %}
-                    <li><a href="{% url 'tutor:expense-form-single' tutor_module.id key %}">
+                    <li><a class="dropdown-item" href="{% url 'tutor:expense-form-single' tutor_module.id key %}">
                         {{ title}}
                     </a></li>
                 {% endfor %}
@@ -48,8 +52,11 @@
             <a href="#"
                class="dropdown-item"
                data-bs-toggle='modal'
-               data-bs-target='#confirm-remove-tutor'
-               data-href="{% url 'tutor:module:delete' tutor_module.id %}?next={{ request.get_full_path }}#tutor-modules"
+               data-bs-target='#commonModal'
+               data-modal-body="Are you sure you wish to remove this tutor from the module?"
+               data-modal-confirm-class= "btn-danger"
+               data-modal-confirm-text= "Remove"
+               data-modal-href="{% url 'tutor:module:delete' tutor_module.id %}?next={{ request.get_full_path }}#tutor-modules"
             >
                 <div class="text-danger">
                     <i class="fas fa-times fa-fw"></i> Remove

@@ -1,0 +1,18 @@
+{% load static %}
+<img class="logo" src="{{ canonical_url }}{% static 'images/document_logo.png' %}">
+<p><b>DEPARTMENT FOR CONTINUING EDUCATION</b></p>
+<address>
+    Rewley House, 1 Wellington Square, Oxford, OX1 2JA <br/>
+    Tel: <span class="{{ preview_class }}">{{ phone }}</span> &bull; <span class="{{ preview_class }}">{{ email }}</span>
+</address>
+
+<div style='clear:both'></div>
+
+<p style="float:right;"><span class="{{ preview_class }}">{{ doc_date|date:'j M Y'}}</span></p>
+
+<address>
+    {{ full_name }}<br/>
+    {{ address|join:'<br/>' }}
+</address>
+<div style='clear:both'></div>
+<div style="height: 100px;"></div>

@@ -107,7 +107,6 @@ class RemoveModule(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
     template_name = 'programme/remove_module.html'
     subtitle = 'Remove'
     subtitle_object = False
-    success_message = 'Module removed from programme'
 
     def get_object(self, queryset=None):
         # A special override because I'm calling this class with /programme_id/module_id/ instead of /pk/
@@ -118,5 +117,5 @@ class RemoveModule(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
         )
 
     def get_success_url(self) -> str:
-        messages.success(self.request, self.success_message)  # DeleteViews don't do this automatically
+        messages.success(self.request, f'{self.object.module} removed from {self.object.programme}')
         return next_url_if_safe(self.request) or self.object.get_absolute_url()

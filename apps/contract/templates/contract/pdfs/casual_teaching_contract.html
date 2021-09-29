@@ -1,0 +1,217 @@
+{% load static %}
+<head>
+    <title>
+        Casual teaching contract - Oxford University Department for Continuing Education
+    </title>
+</head>
+
+<style>
+:root { --identifier: '{{ identifier }}'; }
+</style>
+
+{% include 'contract/pdfs/include/watermark.html' %}
+{% include 'contract/pdfs/include/top_matter.html' %}
+
+<p>Dear {{ salutation }},</p>
+
+<h3>Services to the University of Oxford (“the University”)</h3>
+<p>I am pleased to confirm that the University is able to offer you work to provide teaching services to the University on a zero hours basis, subject to the following terms and conditions. The arrangements recorded in this letter are a contract for services and not a contract of employment.</p>
+
+<h3 class="count">Right to work</h3>
+<p>The offer of work is subject to the presentation of original documentation to establish your right to work in the UK, which the University requires in order to comply with its duties under the Immigration, Asylum and Nationality Act 2006. It will remain your responsibility to ensure that you are able to present such documentation as and when requested from you.</p>
+{% if list_a_rtw %}
+<p><span class="{{ preview_class }}">I confirm that we have already received acceptable right to work documentation.</span></p>
+{% endif %}
+
+{% if overseas_rtw %}
+<p><span class="{{ preview_class }}">Note that you will not be required to provide right to work documentation if you will be working overseas for the duration of this contract.</span></p>
+{% endif %}
+
+
+{% if references_required %}
+    <p class="list-heading">The offer is also subject to:</p>
+    <ul>
+        <li><span class="{{ preview_class }}">the provision of satisfactory references</span></li>
+    </ul>
+{% endif %}
+
+
+{% include 'contract/pdfs/include/disclosure_and_barring_services.html' %}
+
+<h3 class="count">Type of work</h3>
+<p>You will provide teaching services as and when required for the temporary period of
+    <b><span class="{{ preview_class }}">{{ start_date|date }}</span></b> (start date) to
+    <b><span class="{{ preview_class }}">{{ end_date|date }}</span></b> (end date)
+    on the course <b><span class="{{ preview_class }}"><i>{{ module.title }} ({{ module.code }}</i>)</span></b>.
+</p>
+<p>You will not be an employee of the University and at no time will there be any mutuality of obligation between you and the University. The University does not guarantee to provide work for you, nor are you obliged to accept or carry out the work that is offered to you. You are entitled during this engagement to be engaged, employed or concerned in any other business, trade, profession or activity, which does not place you in conflict with the services you are providing to the Department for Continuing Education.</p>
+<p>You may arrange a substitute tutor or lecturer, subject to the prior approval of the <span class="{{ preview_class }}">{{ supervisor_role }}</span>; in this case we will continue to pay your fee as provided below and you shall be responsible for the remuneration of (and any expenses incurred by) the substitute. For the avoidance of doubt, you will not be paid for any period during which neither you nor any substitute provides the teaching required.</p>
+<p>As regards the performance of your services, you will be responsible to <span class="{{ preview_class }}">{{ supervisor }}</span> (the <span class="{{ preview_class }}">{{ supervisor_role }}</span> and your “supervisor”) or as otherwise specified. No probationary period applies to your engagement.</p>
+
+<h3 class="count">Place of work</h3>
+<p>You will provide your services at such locations as may be agreed from time to time with the University. The venue for this assignment will be <span class="{{ preview_class }}">{{ venue }}</span></p>
+
+<p>The University’s addresses are: </p>
+<address>
+    Rewley House, 1 Wellington Square, Oxford, OX1 2JA
+</address>
+<address>
+    Ewert House, Ewert Place, Oxford, OX2 7DD
+</address>
+
+<h3 class="count">Days/Hours of work</h3>
+<p>You will provide your services at such times, on such days and for such hours as may be agreed from time to time with the University. These may be varied at the discretion of the University. Times, days and hours will vary according to the needs of the University and its students and your own availability to teach. The University may ask you to work weekdays, weekends, during normal business hours and/or evenings.</p>
+
+<h3 class="count">Rate of pay</h3>
+<p>You will only be paid for hours that you work. Save as otherwise set out in this letter, you are not entitled to any paid leave or any other benefits during your engagement.</p>
+<p>You will be paid at <span class="{{ preview_class }}">{{ rate_of_pay }}</span> (exclusive of any holiday pay), subject to any deduction of income tax and National Insurance. You will be paid <span class="{{ preview_class }}">{{ payment_frequency }}</span>.</p>
+<p><span class="{{ preview_class }}">{{ payment_preconditions }}</span></p>
+
+<h3 class="count">Expenses</h3>
+{% include 'contract/pdfs/include/expenses.html' %}
+
+<h3 class="count">Annual leave</h3>
+<p>You are entitled to the equivalent of 5.6 weeks annual holiday during each holiday year (including all bank holiday entitlements), calculated on a pro rata basis depending on the number of hours that you actually work. Your holiday entitlement is therefore equivalent to 12.07% of the hours you actually work in each holiday year.</p>
+<p>Your holiday year runs from the start date of this contract. Holidays must be taken in line with the operational needs of the University and at a time when you are not required to carry out any teaching. You cannot be paid in lieu of any accrued but untaken holiday except when your engagement ends. For the avoidance of doubt, all accrued untaken holiday will be paid to you at the end of your engagement.</p>
+<p>The amount of the payment in lieu will be calculated on the basis of 12.07% of the hours that you worked in the relevant holiday year less any hours of holiday taken in that holiday year. The amount of such payment in lieu shall be your normal hourly rate for each hour of untaken holiday.</p>
+<p>If you have taken more holiday than your accrued entitlement at the date that your engagement ends, the University shall be entitled to deduct from any payment due to you the excess holiday pay.</p>
+
+<h3 class="count">Sickness / Other benefits</h3>
+<p>If you are unable to work owing to sickness or injury during a period when you have agreed to work for the University you must notify your supervisor of the reason for your absence as soon as possible and no later than by 9am on the first day of absence. You will receive any statutory sick pay (“SSP”) to which you may be entitled but you will have no entitlement under any University sick pay scheme. You must sign the relevant SSP form and comply with any notification requirements and procedures of which the University has made you aware.</p>
+<p>You may qualify for statutory maternity, adoption, shared parental or paternity pay if you or your partner has a baby or adopt a child if you meet the statutory eligibility criteria.</p>
+
+<h3 class="count">Pension</h3>
+<p>Subject to the University’s Statement of Pensions Policy and to the applicable pension scheme rules, both of which may be amended from time to time, you are eligible to join the appropriate University pension scheme, which is the National Employment Savings Trust (NEST).</p>
+<p>In order to comply with the Pensions Act 2008, the University has a duty automatically to enrol or re-enrol into a qualifying pension scheme any eligible jobholder who is not already an active member of such a scheme. You are an eligible jobholder if you are aged between 22 and the State Pension Age, work, or ordinarily work, in the UK and earn above the threshold set by government. If you are eligible, not already an active member of one of the University’s pension schemes and have worked continuously at the University for three months or more, the University will enrol you and notify you in writing. You will have the right to opt out of the scheme. The pension scheme offered to casual workers by the University, NEST, meets or exceeds the qualifying standards set by the government.</p>
+
+<h3 class="count">Notice</h3>
+<p>This arrangement shall terminate automatically without notice on the end date specified in clause 2, but may be terminated earlier at any time by either party giving to the other one week’s notice in writing to expire at any time. The University is under no obligation to offer and you are under no obligation to accept any further work.</p>
+
+<h2>Requirements and consents</h2>
+
+<h3 class="count">Teaching requirements</h3>
+<p><span class="{{ preview_class }}">{{ expected_work }}</span>.
+{% if attached_work %}
+    <span class="{{ preview_class }}">Please see attached description of the work.</span>
+{% endif %}
+If you accept any offer of work, you will be required to carry out the teaching in accordance with the specific requirements set out for that assignment. You will be informed of these at the start of each assignment and may also be required to carry out other duties as necessary.</p>
+
+<h3 class="count">Policies and codes of practice</h3>
+<p>You will be required at all times to conform to the University’s Health and Safety Policy and to other university policies and codes of practice as they apply to you as a worker providing services to the University. A list of such policies and codes of practice is attached.</p>
+
+<h3 class="count">Confidentiality</h3>
+<p>During periods when you are providing services to the University, you may have access to and be entrusted with confidential information. In respect of all such confidential information, you may not at any time during your engagement (except in the proper performance of your duties, and then only to those who need to know such information) or afterwards (otherwise than with the prior written consent of the University or as required by law) use or disclose any confidential information to any third party and you must use your best endeavours to prevent the publication or disclosure of any such information. You should note, however, that these restrictions will not apply to information which has become available to the public generally, other than through unauthorised disclosure.</p>
+<p>You should also ensure that all notes, memoranda and other records (including those stored on computer software) made by you whilst providing services to the University belong to the University and should be handed over to it upon request and in any event, at the end of any and all periods of work.</p>
+
+<h3 class="count">Data Privacy</h3>
+<p><b><span class="subcount"></span></b> In order to comply with its contractual, statutory, and management obligations and responsibilities, the University is required to process personal data relating to you, including “special category” personal data, as defined in the General Data Protection Regulation (“GDPR”) which includes information relating to health and racial or ethnic origin, and criminal conviction data. All such data will be processed in accordance with the provisions of the GDPR and related UK data protection legislation and the University Policy on Data Protection as amended from time to time. The term ‘processing’ includes the initial collection of personal data, the holding and use of such data, as well as access and disclosure, through to final destruction. We process your personal data for a number of purposes arising from your engagement, including because we have a contract with you, to comply with a legal obligation, where necessary to meet our legitimate interests and with your consent. Further information on what data is collected and the purposes for which it is processed is available in the Staff Privacy Notice at: <a href="https://compliance.admin.ox.ac.uk/staff-privacy-policy">https://compliance.admin.ox.ac.uk/staff-privacy-policy</a></p>
+<p><b><span class="subcount"></span></b> You should inform the University if any personal data you have supplied changes during the course of your engagement. The University is required to take reasonable steps to ensure that any personal data it processes is accurate and up-to-date.</p>
+<p><b><span class="subcount"></span></b> Your attention is also drawn to the statement in the University Policy on Data Protection that all staff who have access to, or use, personal data, have a responsibility to exercise care in the treatment of that data, to use it only in accordance with / following the advice and guidance issued by the University, and to ensure that such information is not disclosed to any unauthorised person. Any breach of this policy may constitute a disciplinary offence. The current University Policy on Data Protection is available at <a href="https://compliance.admin.ox.ac.uk/data-protection-policy">https://compliance.admin.ox.ac.uk/data-protection-policy</a></p>
+
+<h3 class="count">Intellectual Property</h3>
+<p>By agreeing to the terms of this letter, you expressly agree that the terms of the University Statute and Regulations (see attached list of University Statutes and Regulations) relating to intellectual property apply to you; and that the University will be entitled in accordance with those terms to claim ownership of intellectual property which you produce while carrying out work for the University.</p>
+
+<h3 class="count">Disability in the workplace</h3>
+<p>The University's commitment to fostering an inclusive culture means that we recognise that people are different and work in different ways. If you are offered work and you have a disability or long-term health condition (see
+    <a href="http://www.admin.ox.ac.uk/eop/disab/disabilitydefinitions/">http://www.admin.ox.ac.uk/eop/disab/disabilitydefinitions/</a> for further information) that might affect your ability to carry out the work you have been offered you should contact me, in confidence, before you start work to discuss this. It is important that we understand any difficulties you may have so that we can help you and take any measures necessary to ensure you will be safe in the workplace. This might include making any ‘reasonable adjustments’ that you may need in your work.</p>
+<p>You can find resources and information about support available to disabled staff on the Equality & Diversity Unit website:
+    <a href="http://www.admin.ox.ac.uk/eop/disab/">http://www.admin.ox.ac.uk/eop/disab/</a>.</p>
+
+<h3 class="count">Collective Agreement</h3>
+<p>There is no collective agreement which directly affects your engagement.</p>
+
+<h3 class="count">Work outside the UK</h3>
+<p>You will not be required to work outside the UK during the term of your engagement.</p>
+
+<h3 class="count">Training</h3>
+<p>No training entitlement is provided by the University in respect of your engagement and there is no training which the University requires you to complete of which the University will not bear the cost.</p>
+
+<h3 class="count">Disciplinary and grievance procedures</h3>
+<p>If you are dissatisfied with any disciplinary decision relating to you or any decision to terminate your engagement you should raise the matter in writing with the Director of Finance and Administration, Department for Continuing Education. The University reserves the right to require you not to perform any services for the University pending the investigation of and decision on any disciplinary matter and you shall have no right to be paid when not performing such services.</p>
+<p>If you wish to raise a grievance you may apply in writing to the Director of Finance and Administration, Department for Continuing Education.</p>
+
+<h3 class="count">Cancellation</h3>
+<p>The University reserves the right to cancel a course or programme if circumstances, such as inadequate enrolment, make it necessary. The University cannot be held liable for cancellation and will not make any payment for a course, which is cancelled in advance.</p>
+
+<hr>
+<p>Please sign, date, and return one copy of this letter to <span class="{{ preview_class }}">{{ return_to }}</span> (<span class="{{ preview_class }}">{{ email }}
+    <i>or</i> {{ return_address }}</span>) to accept this offer of casual work.</p>
+
+{% if is_signed %}
+    <p>Yours sincerely,</p>
+    <img class="signature" src="{% get_media_prefix %}{{ signature_image }}">
+{% else %}
+    <p class="signature-space">Yours sincerely</p>
+{% endif %}
+<p><span class="{{ preview_class }}">{{ signatory }}</span></p>
+
+<p class="list-heading">Encs:</p>
+<ul>
+    <li>copy of this contract</li>
+    <li>Information about enrolment for pension</li>
+</ul>
+<hr>
+
+<p>I accept the offer of casual work on the above terms. I confirm that I have read and understood the policies referred to therein. I understand that by signing this acceptance I am certifying that all the information given by me in the context of my application for this casual work is, to the best of my knowledge and belief, correct and complete. I acknowledge that if it is subsequently discovered that I have failed to disclose any significant information relating to my ability to carry out these duties and responsibilities in a satisfactory manner, or that I have provided false or misleading information about my qualifications, my previous experience, or any other matter relevant to my engagement, this may lead to disciplinary action and/or termination of my engagement. I understand that it is my responsibility to advise the University immediately of any change to my circumstances which may affect my engagement.</p>
+
+<div class="inline-signature">
+    <p class="signature-space">Signed:</p>
+</div>
+<div class="inline-signature">
+    <p class="signature-space">Date:</p>
+</div>
+
+<div class="page-break"></div>
+
+<h2>University Codes of Practice, Statutes and Regulations:</h2>
+{% include 'contract/pdfs/include/statutes.html' %}
+<div class="page-break"></div>
+
+<h2>University of Oxford</h2>
+<h3>Enrolment in a University Pension Scheme</h3>
+<p>The University offers membership of an appropriate pension scheme to all non-employees who have a contract personally to work for or provide services to the University and who are not undertaking the work as part of their own business. Membership is by automatic enrolment or by application.</p>
+<h3>Automatic enrolment</h3>
+<p class="list-heading">The law requires employers to assess their workers and automatically enrol those who are eligible into a workplace pension scheme. This applies to workers who are not already in a qualifying pension scheme and who
+<ul>
+    <li>earn over the PAYE tax threshold</li>
+    <li>are aged 22 or over and under the State Pension Age</li>
+    <li>ordinarily work in the UK</li>
+</ul>
+<p>Eligible workers will be automatically enrolled into the National Employment Savings Trust (NEST). NEST has been confirmed as a qualifying pension scheme, which means that it meets or exceeds the government’s new standards.</p>
+<p>As allowed by law, the University is postponing the date for your assessment and enrolment for three months. The postponed automatic enrolment date which applies to you, also known as the ‘deferral date’, is three months from the start date specified in this letter of engagement.</p>
+<p class="list-heading">On this date we will assess your earnings and age and take into account where you ordinarily work. As a result of the assessment, one of the following will apply:</p>
+<ul>
+    <li>If on the deferral date you are already in one of the University’s pension schemes, you will not be automatically enrolled.</li>
+    <li>If on the deferral date you are not already in a University pension scheme and you are aged 22 or over, under State Pension Age, work or usually work in the UK, and earn more than the PAYE tax threshold we will enrol you into NEST from that date. You do not have to do anything – it will happen automatically. The University and you will both pay into this pension. You can choose to opt out of the scheme if you want to. We will write to you at your enrolment date with further information. If you wish, you have the right to join the scheme before your automatic enrolment date.</li>
+    <li>If on the deferral date you are not already in a University pension scheme and you are aged under 22, or over State Pension Age but under 75, or earn more than the Lower Earnings Limit (LEL) but no more than the PAYE tax threshold) we will not automatically enrol you into NEST. This is because you do not meet the criteria set by the government. However, you will have the right to opt in to NEST if you want to. If you join, the University of Oxford and you will both pay into the scheme.</li>
+    <li>If on the deferral date you are not already in a University pension scheme and you are under 75 and earn less than the Lower Earnings Limit we will not automatically enrol you into a pension scheme. This is because you do not meet the criteria set by the government. However, if you ask to join a pension scheme, we will arrange to enrol you into NEST.</li>
+</ul>
+
+<h3>Joining now</h3>
+<p>If you want to join NEST now, contact <a href="mailto:NEST@admin.ox.ac.uk">NEST@admin.ox.ac.uk</a></p>
+
+<h3>What happens in the future?</h3>
+<p>If you have joined one of the University’s pension schemes, or you are automatically enrolled and do not opt out, you will remain a member of that scheme and subject to its rules. If you are under 75, work or usually work in the UK, and earn over the Lower Earnings Limit a year the University must by law continue to maintain your membership of a scheme that meets certain government standards (as the schemes offered by the University do) and, if your membership of such a scheme ends (and it is not because of something you do or fail to do), we must by law immediately put you into another scheme that meets government standards.</p>
+<p>If you are automatically enrolled and then opt out, or if you were an existing pension member who would otherwise have been automatically enrolled and you subsequently cease membership of a pension scheme, the University has a duty to assess you again at a later date and, if you remain eligible, re-enrol you in the appropriate qualifying pension scheme. This assessment and automatic enrolment duty will recur every three years for so long as you remain a worker aged under 75 who is not a member of a qualifying pension scheme.</p>
+<p>If you are not in a pension scheme and are not eligible for automatic enrolment on this occasion, the University has a duty to continue to monitor your age and earnings and to take specified action if you reach one of the automatic enrolment thresholds.</p>
+
+<ul>
+    <li>If you are currently under 22 and do not join a pension scheme before you reach the age of 22. When you reach 22 we will assess your earnings. If you are earning more than the PAYE tax threshold you will be automatically enrolled into the appropriate qualifying pension scheme. You can choose to opt out if you want to, but, if you stay in, the University and you will pay into your pension every month. We will write to you at the time to give you all the information you need.
+    </li>
+    <li>If you are currently earning less than the PAYE tax threshold, but your earnings go above that level in the future. If you are 22 or over and under the State Pension Age, and ordinarily work in the UK, you will be automatically enrolled into the appropriate qualifying pension scheme. You can choose to opt out if you want to. If you pass this level of earnings, but are aged under 22 or over the State Pension Age, you will not be automatically enrolled, but you will have the right to join the appropriate qualifying pension scheme if you want. If this happens, we will write to give you all the information you need.
+    </li>
+    <li>If you are currently earning less than the Lower Earnings Limit, but your earnings go above that level in the future. If you start to earn more than the Lower Earnings Limit, but no more than the PAYE tax threshold a month, you will not be automatically enrolled, but you will have the right to opt in to the appropriate qualifying pension scheme if you want. If this happens, we will write to give you all the information you need.</li>
+</ul>
+
+<h3>Further information</h3>
+<p class="list-heading">Information on NEST is available from:</p>
+<ul>
+    <li>NEST website: <a href="http://www.nestpensions.org.uk">http://www.nestpensions.org.uk</a></li>
+    <li>University Pensions Office:  <a href="mailto:NEST@admin.ox.ac.uk">NEST@admin.ox.ac.uk</a>, or tel: 01865 616144</li>
+</ul>
+<p>Further information on pensions and saving for later life is available through:</p>
+<ul>
+    <li>Government pensions website: <a href="https://www.gov.uk/workplacepensions">https://www.gov.uk/workplacepensions</a></li>
+    <li>University pensions website: <a href="http://www.admin.ox.ac.uk/finance/pensions">http://www.admin.ox.ac.uk/finance/pensions</a></li>
+</ul>
+<p>Financial advice on pensions and other matters must be obtained from an Independent Financial Adviser.</p>

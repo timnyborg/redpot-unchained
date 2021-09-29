@@ -64,16 +64,16 @@ tutor_children = (
         '#',
         icon="pencil-alt",
         children=(
-            MenuItem("Search", 'not-implemented', icon="search"),
+            MenuItem("Search", reverse("contract:search"), icon="search"),
             MenuItem(
                 "Approve",
-                'not-implemented',
+                reverse('contract:approve'),
                 icon="check",
                 check=lambda request: request.user.has_perm('contract.approve'),
             ),
             MenuItem(
                 "Sign",
-                reverse("amendment:search"),
+                reverse("contract:sign"),
                 icon="signature",
                 check=lambda request: request.user.has_perm('contract.sign'),
             ),

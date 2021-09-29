@@ -81,41 +81,6 @@ def bootstrap5form(form, status_classes=True, input_size='normal'):
     }
 
 
-@register.inclusion_tag('utility/bootstrap3_modal.html')
-def bootstrap3modal(
-    modal_id, body, confirm_class='primary', confirm_text='Submit', cancel_text='Close', header='Confirm'
-):
-    """Description from redpot: "A first stab at a terse modal generator".  Guess it stuck?"""
-    return {
-        'modal_id': modal_id,
-        'body': body,
-        'confirm_class': confirm_class,
-        'confirm_text': confirm_text,
-        'cancel_text': cancel_text,
-        'header': header,
-    }
-
-
-@register.inclusion_tag('utility/bootstrap4_form.html')
-def bootstrap4form(form, status_classes=True):
-    return {'form': form, 'status_classes': status_classes}
-
-
-@register.inclusion_tag('utility/bootstrap4_modal.html')
-def bootstrap4modal(
-    modal_id, body, confirm_class='primary', confirm_text='Submit', cancel_text='Close', header='Confirm'
-):
-    """Description from redpot: "A first stab at a terse modal generator".  Guess it stuck?"""
-    return {
-        'modal_id': modal_id,
-        'body': body,
-        'confirm_class': confirm_class,
-        'confirm_text': confirm_text,
-        'cancel_text': cancel_text,
-        'header': header,
-    }
-
-
 @register.simple_tag
 def bootstrap3submit(text: str = 'Submit', btn_type: str = 'primary'):
     return mark_safe(f"<button type='submit' class='btn btn-{btn_type}'>{text}</button>")

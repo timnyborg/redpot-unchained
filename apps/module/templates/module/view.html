@@ -664,7 +664,20 @@
                     {% endif %}
                     <a href="{{ programme.get_absolute_url }}"> {{ programme }}</a>
                 </td>
-                <td><a href="#"><i class="fas fa-times"></i></a></td>
+                <td>
+                    <a href="#" class="float-end"
+                        data-bs-toggle="modal"
+                        data-bs-target="#commonModal"
+                        data-modal-body="Are you sure you wish to remove this module from this programme?"
+                        data-modal-confirm-class="btn-danger"
+                        data-modal-confirm-text="Remove"
+                        data-modal-href="{% url 'programme:remove-module' programme.id module.id %}?next={{ request.get_full_path }}#programmes"
+                    >
+                        <span data-bs-toggle="tooltip" title="Remove">
+                            <i class='fas fa-times text-danger'></i>
+                        </span>
+                    </a>
+                </td>
             </tr>
         {% endfor %}
     </table>
