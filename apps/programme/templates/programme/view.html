@@ -69,7 +69,7 @@
     {% for module in modules %}
         <tr>
             <td><a href="{{ module.get_absolute_url }}">{{ module.code }}</a></td>
-            <td class="col-xs-4"><a href="{{ module.get_absolute_url }}">
+            <td class="col-4"><a href="{{ module.get_absolute_url }}">
 			    {% if module.credit_points and programme.qualification == 1 %}
 					<span title="Credit-bearing module within a non-credit-bearing programme" class="text-danger">
                         <i class="fas fa-exclamation-circle"></i>
@@ -79,20 +79,25 @@
 			</td>
             <td class="text-nowrap">{{ module.start_date | date }}</td>
             <td class="text-nowrap">{{ module.end_date | date }}</td>
-            <td class="col-xs-3">{{ module.status.short_desc }} ({{ module.enrolment_count | default:0 }}/{{ module.max_size | default:'∞' }})</td>
+            <td class="col-3">{{ module.status.short_desc }} ({{ module.enrolment_count | default:0 }}/{{ module.max_size | default:'∞' }})</td>
             <td>
                 <a href="#"
-                    data-toggle="modal"
-                    data-target="#confirm-remove-module"
-                    data-href="{% url 'programme:remove-module' programme.id module.id %}?next={{ request.get_full_path }}#modules"
-                ><span class='fas fa-times'></span></a>
+                    data-bs-toggle="modal"
+                    data-bs-target="#commonModal"
+                    data-modal-body="Are you sure you wish to remove this module from this programme?"
+                    data-modal-confirm-class="btn-danger"
+                    data-modal-confirm-text="Remove"
+                    data-modal-href="{% url 'programme:remove-module' programme.id module.id %}?next={{ request.get_full_path }}#modules"
+                >
+                    <span data-bs-toggle="tooltip" title="Remove">
+                        <i class='fas fa-times text-danger'></i>
+                    </span>
+                </a>
             </td>
         </tr>
     {% endfor %}
     </table>
 </div>
-
-{% bootstrap3modal 'confirm-remove-module' 'Are you sure you wish to remove this module from this programme?' 'danger' 'Remove' %}
 
 <div class="section">
     {% if students|length >= 200 %}

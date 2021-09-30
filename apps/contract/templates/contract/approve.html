@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+{% load render_table from django_tables2 %}
+
+{% block center %}
+    <div class="section">
+        {% if table.rows %}
+            <h5>{{ table.rows|length }} contract(s)</h5>
+            <form method="post" action="">
+                {% csrf_token %}
+                {% render_table table %}
+                <button type="submit" class="btn btn-primary">Approve selected</button>
+            </form>
+        {% else %}
+            <div class="empty-state">
+                <span class="fas fa-check empty-state-icon"></span>
+                <h4>No contracts are awaiting your approval</h4>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

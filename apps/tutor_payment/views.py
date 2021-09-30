@@ -103,10 +103,8 @@ class Approve(PermissionRequiredMixin, PageTitleMixin, SingleTableMixin, FilterV
         ids: list[str] = request.POST.getlist('payment')
         int_ids: list[int] = [int(i) for i in ids if i.isnumeric()]
         update_count = services.approve_payments(payment_ids=int_ids, username=request.user.username)
-        if update_count:
-            messages.success(request, f'{update_count} payments approved')
-        else:
-            messages.error(request, 'No payments approved')
+        message_method = messages.success if update_count else messages.error
+        message_method(request, f"{update_count or 'No'} payments approved")
         return redirect(self.request.path_info + '?' + urlencode(self.request.GET))  # preserve filtering
 
 

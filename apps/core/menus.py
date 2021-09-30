@@ -64,16 +64,16 @@ tutor_children = (
         '#',
         icon="pencil-alt",
         children=(
-            MenuItem("Search", 'not-implemented', icon="search"),
+            MenuItem("Search", reverse("contract:search"), icon="search"),
             MenuItem(
                 "Approve",
-                'not-implemented',
+                reverse('contract:approve'),
                 icon="check",
                 check=lambda request: request.user.has_perm('contract.approve'),
             ),
             MenuItem(
                 "Sign",
-                reverse("amendment:search"),
+                reverse("contract:sign"),
                 icon="signature",
                 check=lambda request: request.user.has_perm('contract.sign'),
             ),
@@ -100,16 +100,16 @@ finance_children = [
             ),
         ),
     ),
-    MenuItem("My batches", 'not-implemented', icon="file-alt", separator=True),
+    MenuItem("My batches", reverse('finance:my-batches'), icon="file-alt", separator=True),
     MenuItem(
         "All batches",
-        'not-implemented',
+        reverse('finance:all-batches'),
         icon="file-alt",
         check=lambda request: request.user.has_perm('finance'),
     ),
     MenuItem(
         "Upload RCP",
-        'not-implemented',
+        reverse('invoice:upload-rcp'),
         separator=True,
         icon="upload",
         check=lambda request: request.user.has_perm('finance'),
@@ -166,7 +166,7 @@ other_children = (
         check=lambda request: request.user.has_perm('login'),
         children=(
             MenuItem('Brochures', 'not-implemented', icon='map'),
-            MenuItem('Discounts', 'not-implemented', icon='tags'),
+            MenuItem('Discounts', reverse('discount:search'), icon='tags'),
             MenuItem('Import opt-ins', 'not-implemented', icon='check'),
         ),
     ),

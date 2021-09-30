@@ -48,8 +48,8 @@ body {
     font-family: "Segoe UI", "Open Sans", "Segoe", Tahoma, Helvetica, Arial, sans-serif;
 }
 
-/* Content below header when linking to sections */
-.section-title {
+/* Content below header when linking to sections or browser jumping to incomplete form fields */
+a, input, select, textarea {
     scroll-margin-top: 95px;
 }
 

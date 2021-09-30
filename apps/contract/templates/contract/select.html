@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+{% block center %}
+    <div class="section">
+        {% if not has_address %}
+        <div class="section-alert-header alert-danger" role="alert">
+            <span class="fas fa-exclamation-circle"></span>
+            <b>This tutor has no default address.</b>
+            <a href="{% url 'student:address:new' tutor_module.tutor.student.id %}">Add an address</a>
+            before creating a contract.
+        </div>
+        {% endif %}
+
+        <div class="d-flex align-items-stretch">
+            <div class="text-center px-3 border-end">
+                <h3>Consultancy services</h3>
+                <p>Is the individual providing the teaching via a limited company (e.g. PSC) or other corporate entity? If so, then engage as a self-employed contractor.</p>
+                <p><a href="https://sharepoint.nexus.ox.ac.uk/sites/uasmosaic/finance/Documents/H03%20Consultancy%20Agreement%20-%20services%20to%20be%20supplied%20to%20the%20University%20by%20a%20Company%20or%20Firm.docx?Web=1" target="_blank">
+                    Template contract for supply of consultancy services by a company (SSO login)
+                    <span class="far fa-fw fa-file-word"></span>
+                </a></p>
+                <p><small>
+                    Self-employed contractors should not be paid holiday or be enrolled in NEST.
+                </small></p>
+            </div>
+            <div class="text-center px-3 border-end">
+                <h3>Guest speaker letter</h3>
+                <p>Is the individual a visiting lecturer giving one off talks that <b>do not</b> form part of the
+                    core curriculum of the course (e.g. a guest speaker)?</p>
+                <a href="{% url 'contract:new' tutor_module.id 'guest' %}" class="btn btn-primary" {% if not has_address %}disabled{% endif %}>
+                    <span class="fas fa-fw fa-plus"></span>
+                    Create guest speaker letter
+                </a>
+            </div>
+            <div class="text-center mx-3">
+                <h3>Casual teaching contract</h3>
+                <p>Is the individual providing talks or lectures that <b>do</b> form part of the
+                    core curriculum of the course?</p>
+                <a href="{% url 'contract:new' tutor_module.id 'casual' %}" class="btn btn-primary mb-3" {% if not has_address %}disabled{% endif %}>
+                    <span class="fas fa-fw fa-plus"></span>
+                    Create casual teaching contract
+                </a>
+
+                <p><small>
+                    If the individual has previously been engaged to carry out this work on a self-employed basis, contact <a href="mailto:personnel@conted.ox.ac.uk">personnel</a> before changing the individual’s status
+                </small></p>
+                <p><small>
+                    Casual workers should normally be paid through payroll. Any exceptions to this please speak to <a href="mailto:personnel@conted.ox.ac.uk">personnel</a>.
+                    They must receive paid holiday and, where they meet the qualification criteria, be entitled to join NEST.
+                </small></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -13,4 +13,5 @@ def tutor_module_menu(context, tutor_module: TutorModule):
         'request': context['request'],  # for ?next=
         'tutor_module': tutor_module,
         'expense_templates': expense_templates,
+        'contracts': tutor_module.contracts.all(),
     }

@@ -1,0 +1,46 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+{% block center %}
+    <div class="section">
+        <p class="h3 float-start">Batch {{ batch }}</p>
+        <p class="h3 float-end">Total: £{{ total | floatformat:-2 }}</p>
+        <div class="clearfix"></div>
+
+        <p class="h6 fw-bold">
+            <i>{{ transactions.0.cash_line.type.description }}</i> payments raised by
+            <i>{{ transactions.0.cash_line.created_by }}</i>
+        </p>
+        <hr>
+
+        {% for transaction in transactions %}
+            <p class="h6 float-start">{{ transaction.cash_line.narrative }} ({{ transaction.cash_line.timestamp | date }})</p>
+            <p class="h6 float-end">£{{ transaction.cash_line.amount | floatformat:2 }}</p>
+            <div class="clearfix"></div>
+
+            <table class="table table-sm">
+                {% for line in transaction.debtor_lines %}
+                    <tr>
+                        <td class="col-3">
+                            <a href="{{ line.enrolment.qa.student.get_absolute_url }}">{{ line.enrolment.qa.student }}</a>
+                        </td>
+                        <td class="col-1">{{ line.invoice_ledger.invoice }}</td>
+                        <td class="col-2">{{ line.enrolment.module.code }}</td>
+                        <td class="col-5">{{ line.enrolment.module.title }}</td>
+                        <td class="col-1 float-right">£{{ line.amount | mul:-1 | floatformat:2 }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endfor %}
+
+        <style>
+            @media print {
+                .page-header, .footer-content {
+                    display: none;
+                }
+                a[href]:after {
+                    content: none !important;
+                }
+            }
+        </style>
+    </div>
+{% endblock %}

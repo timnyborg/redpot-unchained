@@ -1,0 +1,88 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+
+{% block center %}
+    <div class="section">
+        <div class="section-alert-header alert-info">
+            <span class="fa fa-info-circle fa-fw"></span>
+            <b>You will be able to preview the contract and make amendments after submitting this form</b>
+        </div>
+
+        <h4>{{ student }}</h4>
+        <h5>{{ module.title }} ({{ module.code }}) &bull; {{ module.start_date }} &ndash; {{ module.end_date }}</h5>
+        <hr>
+        <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
+            {% csrf_token %}
+            {% bootstrap5form form True %}
+            <div class="form-group mb-3">
+                <button type='submit' class='btn btn-primary'>{{ form.submit_label|default:'Save' }}</button>
+                {% if object.get_delete_url %}
+                    <a href='{{ object.get_delete_url }}' class='btn btn-danger float-end'>Delete</a>
+                {% endif %}
+            </div>
+        </form>
+
+        {% timestamp contract %}
+
+        <!-- calculation modal-->
+        <div class="modal fade" id="calculator_modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Net hourly fee calculator</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-text"><i class="fas fa-pound-sign"></i></div>
+                                    <input type="number" step='.001' class="form-control" id="gross_rate" placeholder="Gross hourly rate">
+                                </div>
+                                <p style="text-align: right;"><b>/ 1.1207</b></p>
+                                <hr>
+                                <div class="input-group">
+                                    <div class="input-group-text"><i class="fas fa-pound-sign"></i></div>
+                                    <input class="form-control" type="text" id="net_rate" placeholder="Hourly rate minus holiday pay" readonly>
+                                    <a class="btn btn-secondary" type="button"
+                                       id="copy_button"
+                                       data-bs-toggle="tooltip"
+                                       title="Copy to form"
+                                       data-container="body"
+                                    ><span class="fa fa-copy"></span></a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Automath
+            let gross = document.getElementById('gross_rate');
+            let net = document.getElementById('net_rate');
+            let copy_button = document.getElementById('copy_button');
+            let target = document.getElementById('id_rate_of_pay');
+
+            gross.addEventListener('keyup', e => {
+                net.value  = Math.ceil((e.target.value / 1.1207) * 100) / 100 || '';
+            });
+            copy_button.addEventListener('click', () => {
+                target.value = `£${net.value}/hr`;
+                let modal_el = document.getElementById('calculator_modal');
+                bootstrap.Modal.getInstance(modal_el).hide();
+            });
+        });
+
+    </script>
+{% endblock %}

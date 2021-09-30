@@ -36,7 +36,7 @@ def edit_button(
         <a href="{url}"
            class="btn btn-outline-dark {sizes.get(size, '')} float-end"
            target="{target}"
-           data-toggle="tooltip"
+           data-bs-toggle="tooltip"
            title="{tooltip}"
         ><span class='fas fa-{icon}'></span>
         </a>
@@ -78,41 +78,6 @@ def bootstrap5form(form, status_classes=True, input_size='normal'):
         'status_classes': status_classes,
         'form_control_class': form_control_classes.get(input_size, "form-control"),
         'form_label_class': form_label_classes.get(input_size, "form-label"),
-    }
-
-
-@register.inclusion_tag('utility/bootstrap3_modal.html')
-def bootstrap3modal(
-    modal_id, body, confirm_class='primary', confirm_text='Submit', cancel_text='Close', header='Confirm'
-):
-    """Description from redpot: "A first stab at a terse modal generator".  Guess it stuck?"""
-    return {
-        'modal_id': modal_id,
-        'body': body,
-        'confirm_class': confirm_class,
-        'confirm_text': confirm_text,
-        'cancel_text': cancel_text,
-        'header': header,
-    }
-
-
-@register.inclusion_tag('utility/bootstrap4_form.html')
-def bootstrap4form(form, status_classes=True):
-    return {'form': form, 'status_classes': status_classes}
-
-
-@register.inclusion_tag('utility/bootstrap4_modal.html')
-def bootstrap4modal(
-    modal_id, body, confirm_class='primary', confirm_text='Submit', cancel_text='Close', header='Confirm'
-):
-    """Description from redpot: "A first stab at a terse modal generator".  Guess it stuck?"""
-    return {
-        'modal_id': modal_id,
-        'body': body,
-        'confirm_class': confirm_class,
-        'confirm_text': confirm_text,
-        'cancel_text': cancel_text,
-        'header': header,
     }
 
 
@@ -179,3 +144,8 @@ def message_icon_class(level_tag):
         'info': 'fa-info-circle',
     }
     return f"fas fa-fw {icon_map.get(level_tag, 'fa-info-circle')}"
+
+
+@register.filter
+def mul(value, arg):
+    return value * arg

@@ -31,6 +31,8 @@ urlpatterns = [
     path('amendment/', include('apps.amendment.urls')),
     path('', apps.core.views.index, name='home'),
     path('index/', apps.core.views.index),
+    path('contract/', include('apps.contract.urls')),
+    path('discount/', include('apps.discount.urls')),
     path('enrolment/', include('apps.enrolment.urls')),
     path('fee/', include('apps.fee.urls')),
     path('finance/', include('apps.finance.urls')),

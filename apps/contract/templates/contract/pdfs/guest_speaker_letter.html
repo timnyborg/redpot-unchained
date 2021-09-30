@@ -1,0 +1,88 @@
+{% load static %}
+<head>
+    <title>
+        Guest speaker letter - Oxford University Department for Continuing Education
+    </title>
+</head>
+
+<style>
+:root { --identifier: '{{ identifier }}'; }
+</style>
+
+{% include 'contract/pdfs/include/watermark.html' %}
+{% include 'contract/pdfs/include/top_matter.html' %}
+
+<p>Dear {{ salutation }},</p>
+
+<h3>Engagement as Guest Speaker</h3>
+<p>Thank you for agreeing to present lectures as a Guest Speaker for the University. This letter contains details about your services as Guest Speaker, fees and expenses. </p>
+<p>This letter governs the services you may supply from time to time to the University of Oxford as a Guest Speaker. This is not an employment contract and does not confer any employment rights on you. It is the intention of both you and the University that you are an independent contractor and nothing in this letter shall render you an employee, worker, agent or partner of the University and you shall not hold yourself out as such.</p>
+<p>The University will not be obliged to provide you with any work under this contract and you will not be obliged to accept or perform any work offered, unless and until the University has offered and you have agreed to perform such work.</p>
+<p>Each offer of work by the University which you accept shall be treated as an entirely separate and severable engagement (an assignment). The terms of this contract shall apply to each assignment but there shall be no relationship between the parties after the end of one assignment and before the start of any subsequent assignment.</p>
+<p>You may arrange a substitute Guest Speaker, subject to the prior approval of the Director of Studies; in this case we will continue to pay your fee as provided below and you shall be responsible for the remuneration of (and any expenses incurred by) the substitute. For the avoidance of doubt, you will not be paid for any period during which neither you nor any substitute provides the teaching required.</p>
+
+<h3>Teaching requirements</h3>
+<p>You are required to provide <span class="{{ preview_class }}">{{ lecture_no }}</span> guest lecture(s) on <span class="{{ preview_class }}">{{ dates_and_times }}</span>
+    as part of the course <span class="{{ preview_class }}"><i>{{ module.title }} ({{ module.code }}</i>)</span>.
+    It is agreed that your lecture(s) will cover the following subject matter: <span class="{{ preview_class }}">{{ topic }}</span>.</p>
+<p>The venue for your lecture(s) will be <span class="{{ preview_class }}">{{ venue }}</span>.</p>
+
+{% include 'contract/pdfs/include/disclosure_and_barring_services.html' %}
+
+<h3>Fees and Expenses</h3>
+<p>You will be paid a fee of £<span class="{{ preview_class }}">{{ fee_per_lecture|floatformat:-2 }}</span> per lecture. Fees are paid without deduction of tax and national insurance contributions. It is your responsibility to account for this income to HMRC.</p>
+
+{% include 'contract/pdfs/include/expenses.html' %}
+
+<h3>Confidentiality</h3>
+<p>You shall not use or disclose to any person, either during or at any time after your engagement by the University, any confidential information about the business or affairs of the University or any of its business contacts or students, or about any other matters which may come to your knowledge as a result of supplying your services to the University.</p>
+<p>For the purposes of this clause, confidential information means any information or matter which is not in the public domain (or only in the public domain as a result of your unauthorised disclosure) and which relates to the affairs of the University or any of its business contacts or students.</p>
+
+<p class="list-heading">The restriction in this clause does not apply to:</p>
+<ol class="letters">
+    <li>prevent you from making a protected disclosure within the meaning of section 43A of the Employment Rights Act 1996; or</li>
+    <li>use or disclosure that has been authorised by the University or is required by law.</li>
+</ol>
+
+<h3>Data Protection</h3>
+
+<h4>Your data</h4>
+<p>In order to comply with its contractual, statutory, and management obligations and responsibilities, the University is required to process personal data relating to you, including “special category” personal data, as defined in the General Data Protection Regulation (“GDPR”) which includes information relating to health and racial or ethnic origin, and criminal conviction data. All such data will be processed in accordance with the provisions of the GDPR and related UK data protection legislation and the University Policy on Data Protection as amended from time to time.</p>
+<p>The term ‘processing’ includes the initial collection of personal data, the holding and use of such data, as well as access and disclosure, through to final destruction. We process your personal data for a number of purposes arising from your engagement, including because we have a contract with you, to comply with a legal obligation, where necessary to meet our legitimate interests and with your consent. Further information on what data is collected and the purposes for which it is processed is available in the Staff Privacy Notice at: <a href="https://compliance.admin.ox.ac.uk/staff-privacy-policy">https://compliance.admin.ox.ac.uk/staff-privacy-policy</a></p>
+<p>You should inform the University if any personal data you have supplied changes during the course of your engagement. The University is required to take reasonable steps to ensure that any personal data it processes is accurate and up-to-date. </p>
+
+<h4>Other individuals’ data</h4>
+<p>If you are provided with any personal data of other people by the University or such personal data comes into your possession or control during your engagement, you have a responsibility to exercise care in the treatment of that data, to use it only in accordance with / following the advice and guidance issued by the University, and to ensure the information is not disclosed to an unauthorised person. Your attention is drawn to and you must comply with the University Policy on Data Protection available at: <a href="https://compliance.admin.ox.ac.uk/data-protection-policy">https://compliance.admin.ox.ac.uk/data-protection-policy</a></p>
+
+<h3>University Property</h3>
+<p>Any documents, manuals, hardware and software provided for your use by the University, and any data or documents (including copies) which you produce, maintain or store in the course of your work for the University on the University's computer systems or other electronic equipment (including mobile phones), remain the property of the University.</p>
+
+<h3>Cancellation</h3>
+<p>The University reserves the right to cancel a course or programme if circumstances, such as inadequate enrolment, make it necessary. The University cannot be held liable for cancellation and will not make any payment for a lecture, which is cancelled in advance.</p>
+
+<h3>Codes of practice</h3>
+<p>Your attention is drawn to the following list of University Codes of Practice, Statutes and Regulations in Annex A which will apply to the provision of your services to the University.</p>
+
+<h3>Governing Law and Jurisdiction</h3>
+<p>The terms of this agreement and any dispute or claim arising out of or in connection with it or its subject matter or formation (including non-contractual disputes or claims) will be governed by and construed in accordance with the laws of England and Wales. You and the University agree that the courts of England and Wales shall have exclusive jurisdiction to settle any dispute or claim arising out of or in connection with this agreement or its subject matter or formation (including non-contractual disputes or claims).</p>
+
+<p>Please sign, date, and return one copy of this letter to <span class="{{ preview_class }}">{{ return_to }}</span> (<span class="{{ preview_class }}">{{ email }} <i>or</i> {{ return_address }}</span>) to indicate your acceptance of its terms. Please note that if you do not sign and return this letter but you commence work for the University, you will be deemed to have accepted the terms set out in this letter.</p>
+
+<p class="signature-space">Signed (Guest Speaker):</p>
+
+<p class="signature-space">Dated:</p>
+<div class="signature-block">
+    {% if is_signed %}
+        <p>Signed on behalf of the University of Oxford</p>
+        <img class="signature" src="{% static signature_image %}">
+    {% else %}
+        <p class="signature-space">Signed on behalf of the University of Oxford:</p>
+    {% endif %}
+    <p><span class="{{ preview_class }}">{{ signatory }}</span></p>
+</div>
+
+<div class="page-break"></div>
+
+<h2>Annex A: University Codes of Practice, Statutes and Regulations:</h2>
+
+{% include 'contract/pdfs/include/statutes.html' %}

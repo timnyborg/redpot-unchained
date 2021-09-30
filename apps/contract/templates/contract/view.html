@@ -1,0 +1,104 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+{% block center %}
+    <div class="section">
+        <p class="fs-5 mb-0 float-end">
+            {% if contract.status == statuses.CANCELLED %}
+                <span class="badge bg-danger">Cancelled</span>
+            {% else %}
+                <span class="badge bg-success">
+                    {{ contract.get_status_display }}
+                    {% if contract.received_on %}
+                       &bull; returned by tutor {{ contract.received_on|date }}
+                    {% endif %}
+                </span>
+            {% endif %}
+        </p>
+        <ul class="nav nav-tabs mb-3 mt-2" role="tablist" id="tabnav">
+            <li role="presentation" class="nav-item"><a class="nav-link active" href="#details">Details</a></li>
+            <li role="presentation" class="nav-item"><a class="nav-link" href="#preview">Preview</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane show active" id="details">
+                <div class="row">
+                    <div class="col-7">
+                        <dl class="row">
+                            <dt class="col-3">Tutor</dt>
+                            <dd class="col-9">
+                                <a href="{{ contract.tutor_module.tutor.get_absolute_url }}">
+                                    {{ contract.tutor_module.tutor }}
+                                </a>
+                            </dd>
+                            <dt class="col-3">Module</dt>
+                            <dd class="col-9">
+                                <a href="{{ contract.tutor_module.module.get_absolute_url }}">
+                                    {{ contract.tutor_module.module }}
+                                </a>
+                            </dd>
+                            <dt class="col-3">Type</dt>
+                            <dd class="col-9">{{ contract.get_type_display }}</dd>
+                            {% if contract.type == 'casual' %}
+                                <dt class="col-3">Start date</dt>
+                                <dd class="col-9">{{ contract.options.start_date|date }}</dd>
+                                <dt class="col-3">End date</dt>
+                                <dd class="col-9">{{ contract.options.end_date|date }}</dd>
+                                <dt class="col-3">Expected work</dt>
+                                <dd class="col-9">{{ contract.options.expected_work }}</dd>
+                                <dt class="col-3">Rate of pay</dt>
+                                <dd class="col-9">{{ contract.options.rate_of_pay }}</dd>
+                            {% elif contract.type == 'guest' %}
+                                <dt class="col-3">Topic</dt>
+                                <dd class="col-9">{{ contract.options.topic }}</dd>
+                                <dt class="col-3">Number of lectures</dt>
+                                <dd class="col-9">{{ contract.options.lecture_no }}</dd>
+                                <dt class="col-3">Fee per lecture</dt>
+                                <dd class="col-9">£{{ contract.options.fee_per_lecture|floatformat:-2 }}</dd>
+                                <dt class="col-3">Dates and times</dt>
+                                <dd class="col-9">{{ contract.options.dates_and_times }}</dd>
+                            {% endif %}
+                        </dl>
+                    </div>
+                    <div class="col-5">
+                        {% if contract.is_editable %}
+                            {% edit_button contract %}
+                        {% else %}
+                            <a href="{% url 'contract:pdf' contract.id %}" target="_blank" class="btn btn-primary float-end">
+                                <span class="fas fa-fw fa-file-pdf"></span> View (.pdf)
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% include 'contract/action_buttons.html' %}
+            </div>
+            <div role="tabpanel" class="tab-pane" id="preview">
+                <embed src="{% url 'contract:pdf' contract.id %}" type="application/pdf" width="100%" height="600px"/>
+            </div>
+        </div>
+        {% timestamp contract %}
+    </div>
+    <script>
+        var triggerTabList = [].slice.call(document.querySelectorAll('#tabnav a'))
+        triggerTabList.forEach(function (triggerEl) {
+            var tabTrigger = new bootstrap.Tab(triggerEl)
+
+            triggerEl.addEventListener('click', function (event) {
+                event.preventDefault()
+                tabTrigger.show()
+            })
+        })
+        // Jump to hash tab on page load
+        let hash = document.location.hash;
+        if (hash) {
+            let triggerEl = document.querySelector(`#tabnav a[href="${hash}"]`)
+            bootstrap.Tab.getInstance(triggerEl).show()
+        }
+        // Change hash in navbar on tab navigation
+        document.querySelectorAll('.nav-tabs a').forEach( element => {
+            element.addEventListener('shown.bs.tab', event => {
+                history.pushState(null, null, event.target.hash);
+            })
+        })
+    </script>
+{% endblock %}

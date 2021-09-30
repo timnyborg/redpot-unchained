@@ -174,8 +174,10 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         fees = self.object.fees.order_by('-type__display_order', 'description').select_related('type').all()
         programmes = self.object.programmes.order_by('title').select_related('qualification').all()
 
-        tutors = self.object.tutor_modules.select_related('tutor__student').order_by(
-            Coalesce('display_order', 999), 'id'
+        tutors = (
+            self.object.tutor_modules.select_related('tutor__student')
+            .prefetch_related('contracts')
+            .order_by(Coalesce('display_order', 999), 'id')
         )
 
         expense_form_options = expense_forms.template_options(self.object)

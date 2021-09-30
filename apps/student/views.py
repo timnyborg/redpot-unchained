@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from apps.core.utils.views import DeletionFailedMessageMixin, PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
 
@@ -176,7 +176,12 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
             # todo: annotate in the enrolment count, to avoid n+1
             tutor_modules = tutor.tutor_modules.select_related('module').order_by('-module__start_date')
             tutor_roles = tutor.tutor_modules.values_list('role', flat=True).exclude(role=None).distinct()
-            tutor_modules_query = tutor.tutor_modules.select_related('module').order_by('-module__start_date')
+            tutor_modules_query = (
+                # Todo: annotate enrolment count for the table
+                tutor.tutor_modules.select_related('module')
+                .prefetch_related('contracts')
+                .order_by('-module__start_date')
+            )
             if tutor_module_role:
                 tutor_modules_query &= tutor_modules_query.filter(role__contains=tutor_module_role)
 
@@ -226,7 +231,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         }
 
 
-class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+class Edit(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
     model = Student
     template_name = 'core/form.html'
     form_class = forms.EditForm
@@ -260,7 +265,7 @@ class MakeTutor(LoginRequiredMixin, generic.View):
 # --- Email views ---
 
 
-class CreateEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+class CreateEmail(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
     form_class = forms.CreateEmailForm
     success_message = "Email address added: %(email)s"
     template_name = 'core/form.html'
@@ -273,7 +278,7 @@ class CreateEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, gener
         return self.object.student.get_absolute_url() + '#email'
 
 
-class EditEmail(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+class EditEmail(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
     model = Email
     template_name = 'core/form.html'
     form_class = forms.EmailForm
@@ -297,7 +302,7 @@ class DeleteEmail(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 # --- Address views ---
 
 
-class CreateAddress(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+class CreateAddress(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
     model = Address
     template_name = 'core/form.html'
     form_class = forms.AddressForm
@@ -311,7 +316,7 @@ class CreateAddress(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, gen
         return super().form_valid(form)
 
 
-class EditAddress(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+class EditAddress(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
     model = Address
     template_name = 'student/edit_address.html'
     form_class = forms.AddressForm
@@ -329,7 +334,7 @@ class DeleteAddress(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 # --- Phone views ---
 
 
-class CreatePhone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+class CreatePhone(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
     form_class = forms.CreatePhoneForm
     success_message = "Phone number added: %(number)s"
     template_name = 'core/form.html'
@@ -342,7 +347,7 @@ class CreatePhone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, gener
         return self.object.student.get_absolute_url() + '#phone'
 
 
-class EditPhone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+class EditPhone(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
     model = Phone
     template_name = 'core/form.html'
     form_class = forms.PhoneForm
@@ -366,7 +371,7 @@ class DeletePhone(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 # --- Other ID views ---
 
 
-class CreateOtherID(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+class CreateOtherID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
     form_class = forms.CreateOtherIDForm
     template_name = 'core/form.html'
     title = 'Other Id'
@@ -378,7 +383,7 @@ class CreateOtherID(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, gen
         return self.object.student.get_absolute_url() + '#other_ids'
 
 
-class EditOtherID(LoginRequiredMixin, SuccessMessageMixin, generic.UpdateView):
+class EditOtherID(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
     model = OtherID
     template_name = 'core/form.html'
     form_class = forms.OtherIDForm
@@ -399,7 +404,7 @@ class DeleteOtherID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 # --- Moodle views ---
 
 
-class CreateMoodleID(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+class CreateMoodleID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
     form_class = forms.CreateMoodleIDForm
     template_name = 'core/form.html'
     title = 'Moodle Id'
@@ -411,7 +416,7 @@ class CreateMoodleID(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, ge
         return self.object.student.get_absolute_url() + '#other_ids'
 
 
-class EditMoodleID(LoginRequiredMixin, SuccessMessageMixin, generic.UpdateView):
+class EditMoodleID(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
     model = MoodleID
     template_name = 'core/form.html'
     form_class = forms.MoodleIDForm

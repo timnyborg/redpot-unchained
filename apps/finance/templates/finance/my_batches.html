@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+
+{% block center %}
+    <div class="section">
+        <h2>Unbatched</h2>
+        {% if new %}
+            <div class="row">
+                <div class="col-12 col-sm-6">
+                    <table class="table table-condensed table-striped table-hover hide-rows" data-display=5>
+                        <thead><tr><th>Type</th><th></th></thead>
+                        {% for row in new %}
+                            <tr>
+                                <td>{{ row.type__description }}</td>
+                                <td>
+                                    <a href="{% url 'finance:create-batch' row.type user.username %}">
+                                        <i class="fas fa-print"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            No outstanding transactions
+        {% endif %}
+    </div>
+
+    {% if recent %}
+        <div class="section">
+            <h2>Recent</h2>
+            <div class="row">
+                <div class="col-12 col-sm-6">
+                    <table class="table table-condensed table-striped table-hover hide-rows" data-display=5>
+                        <thead><tr><th>Batch</th><th>Type</th><th></th></thead>
+                        {% for row in recent %}
+                            <tr>
+                                <td>{{ row.batch }}</td>
+                                <td>{{ row.type__description }}</td>
+                                <td>
+                                    <a href="{% url 'finance:print-batch' row.batch %}">
+                                        <i class="fas fa-print"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
