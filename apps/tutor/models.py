@@ -189,6 +189,7 @@ class RightToWorkDocumentType(models.Model):
 
     class Meta:
         db_table = 'rtw_document_type'
+        ordering = ['name']
 
     def __str__(self) -> str:
         return str(self.name)

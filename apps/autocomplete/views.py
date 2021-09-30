@@ -1,13 +1,14 @@
 from dal import autocomplete
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 
 from apps.enrolment.models import Enrolment
 from apps.module.models import Module
-from apps.tutor.models import Tutor
+from apps.tutor.models import RightToWorkDocumentType, Tutor
 
 
-class ModuleAutocomplete(autocomplete.Select2QuerySetView):
+class ModuleAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Module.objects.all()
         if self.q:
@@ -19,7 +20,7 @@ class ModuleAutocomplete(autocomplete.Select2QuerySetView):
         return result.long_form
 
 
-class TutorAutocomplete(autocomplete.Select2QuerySetView):
+class TutorAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Tutor.objects.select_related('student')
         if self.q:
@@ -30,7 +31,7 @@ class TutorAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
-class EnrolmentAutocomplete(autocomplete.Select2QuerySetView):
+class EnrolmentAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Enrolment.objects.select_related('qa__student', 'module')
         if self.q:
@@ -42,3 +43,21 @@ class EnrolmentAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_result_label(self, result):
         return f'{result.module.code} - {result.qa.student}'
+
+
+class RtwAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.requesst.user.is_authenticated:
+            return RightToWorkDocumentType.objects.none()
+
+        qs = RightToWorkDocumentType.objects.all()
+
+        rtw_type = self.forwarded.get('rtw_type')
+
+        if rtw_type:
+            qs = qs.filter(rtw_type=rtw_type)
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
