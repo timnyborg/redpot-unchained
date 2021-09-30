@@ -2,20 +2,23 @@
     Tools to easily serialize/de-serialize more python data types into json, e.g. datetime, decimal
     To automatically convert to and from a python dict for storage in a database:
 
+        field_name = models.JSONField(decoder=ExtendedJSONDecoder, encoder=ExtendedJSONEncoder)
+
     Adapted from:
     https://stackoverflow.com/questions/30840129/parsing-datetime-in-python-json-loads
     https://gist.github.com/abhinav-upadhyay/5300137
 """
+from __future__ import annotations
 
 import datetime
 import decimal
 from json import JSONDecoder, JSONEncoder
-
-import dateutil.parser
+from typing import Callable
 
 
 class ExtendedJSONEncoder(JSONEncoder):
     def default(self, obj):
+        # this could be converted to a dictionary, mapping types to labels and methods
         if isinstance(obj, (datetime.datetime,)):
             return {"val": obj.isoformat(), "__type__": "datetime"}
         elif isinstance(obj, (datetime.date,)):
@@ -27,9 +30,9 @@ class ExtendedJSONEncoder(JSONEncoder):
 
 
 class ExtendedJSONDecoder(JSONDecoder):
-    CONVERTERS = {
-        'datetime': dateutil.parser.parse,
-        'date': lambda v: dateutil.parser.parse(v).date(),  # parse returns a datetime
+    CONVERTERS: dict[str, Callable] = {
+        'datetime': datetime.datetime.fromisoformat,
+        'date': datetime.date.fromisoformat,
         'decimal': decimal.Decimal,
     }
 

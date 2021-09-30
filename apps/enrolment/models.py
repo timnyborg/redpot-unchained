@@ -52,7 +52,7 @@ class EnrolmentQuerySet(models.QuerySet):
 class Enrolment(SignatureModel):
     qa = models.ForeignKey(
         'qualification_aim.QualificationAim',
-        models.DO_NOTHING,
+        models.PROTECT,
         db_column='qa',
         related_name='enrolments',
         related_query_name='enrolment',
@@ -60,7 +60,7 @@ class Enrolment(SignatureModel):
     )
     module = models.ForeignKey(
         'module.Module',
-        models.DO_NOTHING,
+        models.PROTECT,
         db_column='module',
         related_name='enrolments',
         related_query_name='enrolment',

@@ -24,7 +24,7 @@ class QualificationAim(SITSLockingModelMixin, SignatureModel):
     )
     programme = models.ForeignKey(
         'programme.Programme',
-        models.DO_NOTHING,
+        models.PROTECT,
         db_column='programme',
         related_name='qualification_aims',
         limit_choices_to={'is_active': True},

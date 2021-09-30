@@ -127,10 +127,11 @@ Menu.add_item("main", MenuItem("Finance", '#', children=finance_children))
 
 def dev_children(request):
     return [
+        MenuItem("System info", reverse('system-info'), icon="server"),
         MenuItem(
             "View on redpot-staging",
             f'https://redpot-staging.conted.ox.ac.uk{request.get_full_path()}',
-            icon="server",
+            icon="sync",
             target='_blank',
         ),
         MenuItem(
