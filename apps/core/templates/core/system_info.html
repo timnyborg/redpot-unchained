@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+
+{% block title %}System{% endblock %}
+{% block subtitle %}Info{% endblock %}
+{% block center %}
+    <div class="row">
+        <div class="col-sm">
+            <div class="section">
+                <h4>
+                    <i class="fas fa-fw fa-microchip"></i> CPU
+                </h4>
+                <h5>{{ cpu_count }} core{{ cpu_count|pluralize }}</h5>
+            </div>
+            <div class="section">
+                <h4>
+                    <i class="fas fa-fw fa-memory"></i> Memory usage
+                </h4>
+                <h5>{{ used_memory|filesizeformat }} / {{ max_memory|filesizeformat }}</h5>
+            </div>
+            <div class="section">
+                <h4>
+                    <i class="far fa-fw fa-clock"></i> Uptime
+                </h4>
+                <h5>about {{ uptime|duration }}</h5>
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="section">
+                <h4>
+                    <i class="fas fa-fw fa-hdd"></i> Disk usage
+                </h4>
+                <h5>{{ disk.used|filesizeformat }} / {{ disk.total|filesizeformat   }}</h5>
+            </div>
+            <div class="section">
+                <h4>
+                    <i class="fas fa-fw fa-database"></i> Redis cache
+                </h4>
+                <h5>{{ redis.used|filesizeformat }} / {{ redis.total|filesizeformat   }}</h5>
+            </div>
+            <div class="section">
+                <h4>
+                    <i class="fab fa-fw fa-python"></i> Library versions
+                </h4>
+                <dl class="row">
+                    <dd class="col-2">Python</dd><dt class="col-10">{{ library_versions.python }}</dt>
+                    <dd class="col-2">Django</dd><dt class="col-10">{{ library_versions.django }}</dt>
+                </dl>
+            </div>
+        </div>
+    </div>
+{% endblock %}

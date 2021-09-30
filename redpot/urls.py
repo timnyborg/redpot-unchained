@@ -21,16 +21,17 @@ from django.urls import include, path
 from django.views.defaults import page_not_found
 from django.views.generic import RedirectView
 
-import apps.core.views
+import apps.core.views as core_views
 from redpot.settings import W2P_REDPOT_URL
 
 urlpatterns = [
-    path('login/', apps.core.views.CustomLoginView.as_view(), name='login'),
+    path('login/', core_views.CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='registration/logout.html'), name='logout'),
     path('admin/', admin.site.urls),
     path('amendment/', include('apps.amendment.urls')),
-    path('', apps.core.views.index, name='home'),
-    path('index/', apps.core.views.index),
+    path('', core_views.Index.as_view(), name='home'),
+    path('index/', core_views.Index.as_view()),
+    path('system-info/', core_views.SystemInfo.as_view(), name='system-info'),
     path('contract/', include('apps.contract.urls')),
     path('discount/', include('apps.discount.urls')),
     path('enrolment/', include('apps.enrolment.urls')),

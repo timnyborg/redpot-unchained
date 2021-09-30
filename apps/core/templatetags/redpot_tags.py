@@ -149,3 +149,16 @@ def message_icon_class(level_tag):
 @register.filter
 def mul(value, arg):
     return value * arg
+
+
+@register.filter
+def duration(seconds: int) -> str:
+    """Format a given number of seconds into days, hours, or minutes"""
+    days = seconds // (3600 * 24)
+    hours = (seconds % (3600 * 24)) // 3600
+    minutes = round((seconds % 3600) / 60)
+    if days:
+        return f'{days} days'
+    elif hours:
+        return f'{hours} hours'
+    return f'{minutes} minutes'
