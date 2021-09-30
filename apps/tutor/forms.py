@@ -60,15 +60,14 @@ class Edit(forms.ModelForm):
 
 
 class RightToWork(forms.ModelForm):
-    # todo: document_type as an autocomplete
-    # (https://django-autocomplete-light.readthedocs.io/en/master/tutorial.html#filtering-results-based-on-the-value-of-other-fields-in-the-form)
     class Meta:
         model = Tutor
-        fields = ['rtw_type', 'rtw_document_type', 'rtw_check_on', 'rtw_check_by', 'rtw_start_date', 'rtw_end_date']
+        fields = ['rtw_type', 'rtw_document_type', 'rtw_start_date', 'rtw_end_date', 'rtw_check_on', 'rtw_check_by']
         widgets = {
             'rtw_start_date': DatePickerInput(),
             'rtw_end_date': DatePickerInput(),
             'rtw_check_on': DatePickerInput(),
+            'rtw_document_type': autocomplete.ModelSelect2(url='autocomplete:rtw', forward=['rtw_type']),
         }
 
     def clean(self):
