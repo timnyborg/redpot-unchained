@@ -567,9 +567,6 @@
 </div>
 
 <div class="section">
-    <div class="float-end mt-1">
-        <a href="/enquiry/new/{{ student.id }}" class="btn btn-success btn-xs"><i class="fas fa-plus"></i> Add enquiries</a>
-    </div>
     <h2 id='enquiries' class='section-title'>Enquiries</h2>
     {% if enquiries %}
     <table class="table table-striped table-hover hide-rows" data-display='3'>
@@ -578,10 +575,31 @@
     {% for enquiry in enquiries %}
         <tr>
             <td>{{ enquiry.date | date:'SHORT_DATE_FORMAT' }}</td>
-            <td><a href="/redpot/module/view/{{ enquiry.module.id }}">{{ enquiry.module.code }}</a></td>
+            <td><a href="{{ enquiry.module.get_absolute_url }}">{{ enquiry.module.code }}</a></td>
             <td>{{ enquiry.module.title }}</td>
-            <td><a class="set-default-hover" data-content="{{ enquiry.module.title }} ({{ enquiry.module.code }}): Please add me to the waiting list for spaces on this course" data-html="true" data-placement="left" data-bs-toggle="popover" data-trigger="hover" data-original-title="" title=""><span class="fa fa-ellipsis-h"></span></a></td>
-            <td class="col-sm-1"><a href="/redpot/enquiry/edit/{{ enquiry.id }}"><span class="fas fa-fw fa-pencil-alt"></span></a></td>
+            <td>
+                <a
+                   data-bs-content="{{ enquiry.detail }}"
+                   data-bs-toggle="popover"
+                   data-bs-trigger="hover"
+                >
+                    <span class="fa fa-ellipsis-h"></span>
+                </a>
+            </td>
+            <td>
+                <a href="#" class="text-danger float-end"
+                    data-bs-toggle='modal'
+                    data-bs-target="#commonModal"
+                    data-modal-body="Are you sure you want to delete this enquiry?"
+                    data-modal-confirm-text="Delete"
+                    data-modal-confirm-class="btn-danger"
+                    data-modal-href="{% url 'student:enquiry:delete' enquiry.id %}"
+                >
+                    <span data-bs-toggle="tooltip" title="Delete">
+                        <i class="fas fa-times"></i>
+                    </span>
+                </a>
+            </td>
         </tr>
     {% endfor %}
     </tbody>

@@ -19,7 +19,7 @@ from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
 
 from . import datatables, forms
-from .models import Address, Email, MoodleID, OtherID, Phone, Student, StudentArchive
+from .models import Address, Email, Enquiry, MoodleID, OtherID, Phone, Student, StudentArchive
 
 
 class Create(LoginRequiredMixin, generic.View):
@@ -431,4 +431,17 @@ class DeleteMoodleID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 
     def get_success_url(self) -> str:
         messages.success(self.request, 'Moodle ID deleted')
-        return self.object.student.get_absolute_url()
+        return self.object.student.get_absolute_url() + '#other_ids'
+
+
+# --- Enquiry views ---
+
+
+class DeleteEnquiry(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = Enquiry
+    template_name = 'core/delete_form.html'
+    subtitle_object = False
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Enquiry deleted')
+        return self.object.student.get_absolute_url() + '#enquiries'
