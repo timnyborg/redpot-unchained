@@ -84,15 +84,14 @@
             </dl>
             <h5>
                 <a data-bs-toggle="collapse" href="#collapse-diet" class="link-dark">Dietary preferences</a>
-                    <!-- TODO: Diet section needs to be created -->
                 <small>
-                    <a href="/edit/{{student.id}}/diet/{{diet.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                    <a href="{% url 'student:edit-diet' student.id %}"><span class="fas fa-fw fa-pencil-alt"></span></a>
                 </small>
             </h5>
             <dl class="row collapse" id="collapse-diet">
                 {% if diet %}
-                <dt class="col-sm-3">Special diet</dt><dd class="col-sm-9 mb-0">{{ diet.type }}</dd>
-                <dt class="col-sm-3">Details</dt><dd class="col-sm-9 mb-0">{{ diet.note }}</dd>
+                <dt class="col-sm-4">Special diet</dt><dd class="col-sm-8 mb-0">{{ diet.get_type_display }}</dd>
+                <dt class="col-sm-4">Details</dt><dd class="col-sm-8 mb-0">{{ diet.note }}</dd>
                 {% else %}
                 None
                 {% endif %}
@@ -100,7 +99,9 @@
             <h5>
                 <a data-bs-toggle="collapse" href="#collapse-emergency" class="link-dark">Emergency contact</a>
                 <!-- TODO: Create emergency contact page  -->
-                <a href="/edit/{{student.id}}/emergency_contact/{{emergency_contact.id}}"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                <a href="{% url 'student:edit-emergency-contact' student.id %}">
+                    <small><span class="fas fa-fw fa-pencil-alt"></span></small>
+                </a>
             </h5>
             {% if emergency_contact %}
                 <dl class="row collapse" id="collapse-emergency">

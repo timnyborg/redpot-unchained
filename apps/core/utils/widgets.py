@@ -109,9 +109,6 @@ class ToggleWidget(widgets.CheckboxInput):
     def __init__(self, attrs=None, check_test=None):
         attrs = {**self.base_attrs, **(attrs or {})}
         super().__init__(attrs, check_test)
-        """
-        _data-on':'Non-credit', '_data-off':'For credit    ', '_data-offstyle':'success', '_data-onstyle':'warning'}
-        """
 
 
 class DatalistTextInput(widgets.TextInput):

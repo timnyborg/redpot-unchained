@@ -129,7 +129,7 @@
                     <tr>
                         <td>{{ booking.fee.description }}</td>
                         {# todo: test student related data once implemented #}
-                        <td>{{ student.diet.diet_type.description }}</td>
+                        <td>{{ student.diet.get_type_display }}</td>
                         <td>{{ student.diet.note }}
                         </td>
                         <td>

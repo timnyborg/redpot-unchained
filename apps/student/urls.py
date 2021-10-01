@@ -65,6 +65,12 @@ urlpatterns = [
     path('other-id/', include(other_id_urls)),
     path('moodle-id/', include(moodle_id_urls)),
     path('enquiry/', include(enquiry_urls)),
+    path('edit-diet/<int:student_id>', views.CreateOrEditDiet.as_view(), name='edit-diet'),
+    path(
+        'edit-emergency-contact/<int:student_id>',
+        views.CreateOrEditEmergencyContact.as_view(),
+        name='edit-emergency-contact',
+    ),
     path('delete/<int:pk>', views.Delete.as_view(), name='delete'),
     path('address/', include(address_urls)),
     path('merge/', not_implemented, name='merge'),

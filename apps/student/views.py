@@ -19,7 +19,7 @@ from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
 
 from . import datatables, forms
-from .models import Address, Email, Enquiry, MoodleID, OtherID, Phone, Student, StudentArchive
+from .models import Address, Diet, Email, EmergencyContact, Enquiry, MoodleID, OtherID, Phone, Student, StudentArchive
 
 
 class Create(LoginRequiredMixin, generic.View):
@@ -405,9 +405,9 @@ class DeleteOtherID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 
 
 class CreateMoodleID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+    model = MoodleID
     form_class = forms.CreateMoodleIDForm
     template_name = 'core/form.html'
-    title = 'Moodle Id'
 
     def get_initial(self) -> dict:
         return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
@@ -434,7 +434,7 @@ class DeleteMoodleID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
         return self.object.student.get_absolute_url() + '#other_ids'
 
 
-# --- Enquiry views ---
+# --- Other child views ---
 
 
 class DeleteEnquiry(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
@@ -445,3 +445,40 @@ class DeleteEnquiry(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
     def get_success_url(self) -> str:
         messages.success(self.request, 'Enquiry deleted')
         return self.object.student.get_absolute_url() + '#enquiries'
+
+
+class CreateOrEditDiet(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+    model = Diet
+    fields = ['type', 'note']
+    template_name = 'core/form.html'
+    success_message = 'Dietary preferences updated'
+    subtitle_object = False
+
+    def get_object(self, queryset=None):
+        student = get_object_or_404(Student, pk=self.kwargs['student_id'])
+        obj, created = Diet.objects.get_or_create(student=student)
+        return obj
+
+    def get_success_url(self):
+        return self.object.student.get_absolute_url()
+
+
+class CreateOrEditEmergencyContact(
+    LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView
+):
+    model = EmergencyContact
+    fields = ['name', 'phone', 'email']
+    template_name = 'core/form.html'
+    success_message = 'Emergency contact details updated'
+    subtitle_object = False
+
+    def get_object(self, queryset=None):
+        student = get_object_or_404(Student, pk=self.kwargs['student_id'])
+        obj, created = EmergencyContact.objects.get_or_create(
+            student=student,
+            defaults={'created_by': self.request.user.username, 'modified_by': self.request.user.username},
+        )
+        return obj
+
+    def get_success_url(self):
+        return self.object.student.get_absolute_url()
