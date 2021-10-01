@@ -545,11 +545,10 @@
                 <td>{{ other_id.number }}</td>
                 <td>{{ other_id.type.description }}</td>
                 <td>{% if other_id.end_date %}{{ other_id.end_date  }}{% else %}{% endif %}</td>
-                <td class="col-sm-1">
-                    <a href="{% url 'student:other-id:edit' other_id.id %}"><span class="fas fa-fw fa-pencil-alt"></span></a>
-                    {% comment %} {% if auth.has_membership('dev') %} {% endcomment %}
-                    <a href="{% url 'student:other-id:edit' other_id.id  %}"><span class="fas fa-times"></span></a>
-                    {% comment %} {% endif %} {% endcomment %}
+                <td>
+                    <a href="{% url 'student:other-id:edit' other_id.id %}" class="float-end">
+                        <span class="fas fa-fw fa-pencil-alt"></span>
+                    </a>
                 </td>
             </tr>
         {% endfor %}

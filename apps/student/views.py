@@ -282,6 +282,7 @@ class EditEmail(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessM
     model = Email
     template_name = 'core/form.html'
     form_class = forms.EmailForm
+    success_message = "Email updated: %(email)s"
 
     def get_subtitle(self) -> str:
         return f'Edit – {self.object.email}'
@@ -306,6 +307,7 @@ class CreateAddress(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, Succ
     model = Address
     template_name = 'core/form.html'
     form_class = forms.AddressForm
+    success_message = "Address added"
 
     def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
         self.student = get_object_or_404(Student, pk=self.kwargs['student_id'])
@@ -320,6 +322,7 @@ class EditAddress(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, Succes
     model = Address
     template_name = 'student/edit_address.html'
     form_class = forms.AddressForm
+    success_message = "Address updated"
 
 
 class DeleteAddress(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
@@ -351,6 +354,7 @@ class EditPhone(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessM
     model = Phone
     template_name = 'core/form.html'
     form_class = forms.PhoneForm
+    success_message = 'Phone number updated: %(number)s'
 
     def get_subtitle(self) -> str:
         return f'Edit – {self.object.number}'
@@ -374,7 +378,8 @@ class DeletePhone(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 class CreateOtherID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
     form_class = forms.CreateOtherIDForm
     template_name = 'core/form.html'
-    title = 'Other Id'
+    title = 'Other ID'
+    success_message = 'Other ID added'
 
     def get_initial(self) -> dict:
         return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
@@ -383,10 +388,12 @@ class CreateOtherID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, Succ
         return self.object.student.get_absolute_url() + '#other_ids'
 
 
-class EditOtherID(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
+class EditOtherID(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
     model = OtherID
     template_name = 'core/form.html'
     form_class = forms.OtherIDForm
+    title = 'Other ID'
+    success_message = 'Other ID updated'
 
 
 class DeleteOtherID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):

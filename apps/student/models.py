@@ -347,6 +347,9 @@ class OtherID(SignatureModel):
     class Meta:
         db_table = 'other_id'
 
+    def __str__(self) -> str:
+        return f'{self.get_type_display()}: {self.number}'
+
     def get_absolute_url(self) -> str:
         return self.student.get_absolute_url() + '#other_ids'
 
