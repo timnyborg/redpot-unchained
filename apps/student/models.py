@@ -6,6 +6,7 @@ from django.db import models, transaction
 from django.urls import reverse
 
 from apps.core.models import AddressModel, SignatureModel, SITSLockingModelMixin
+from apps.core.utils.models import PhoneField
 from apps.invoice.models import Invoice
 from apps.module.models import Module
 
@@ -262,7 +263,7 @@ class Email(SignatureModel):
     student = models.ForeignKey(
         'Student', models.DO_NOTHING, db_column='student', related_name='emails', related_query_name='email'
     )
-    email = models.CharField(max_length=64)
+    email = models.EmailField(max_length=64)
     note = models.CharField(max_length=128, blank=True, null=True)
     is_default = models.BooleanField(default=False, verbose_name='Default?')
 
@@ -290,17 +291,20 @@ class NextHUSID(models.Model):
 
 
 class MoodleID(SignatureModel):
-    moodle_id = models.IntegerField(unique=True, error_messages={'unique': 'Moodle ID already in use'})
+    moodle_id = models.IntegerField(
+        unique=True, error_messages={'unique': 'Moodle ID already in use'}, verbose_name='Moodle ID'
+    )
     student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student', related_name='moodle_id')
     first_module_code = models.CharField(max_length=12, blank=True, null=True)
 
     class Meta:
         db_table = 'moodle_id'
+        verbose_name = 'Moodle ID'
 
     def get_absolute_url(self) -> str:
         return self.student.get_absolute_url() + '#other_ids'
 
-    def get_edit_url(self):
+    def get_edit_url(self) -> str:
         return reverse('student:moodle-id:edit', kwargs={'pk': self.pk})
 
     def get_delete_url(self) -> str:
@@ -342,6 +346,9 @@ class OtherID(SignatureModel):
 
     class Meta:
         db_table = 'other_id'
+
+    def __str__(self) -> str:
+        return f'{self.get_type_display()}: {self.number}'
 
     def get_absolute_url(self) -> str:
         return self.student.get_absolute_url() + '#other_ids'
@@ -418,30 +425,35 @@ class Disability(SignatureModel):
 
 
 class Diet(models.Model):
+    class Types(models.IntegerChoices):
+        VEGETARIAN = 200, "Vegetarian"
+        VEGAN = 210, "Vegan"
+        FISH_EATING_VEGETARIAN = 220, "Fish-eating vegetarian"
+        DEMI_VEGETARIAN = 230, "Demi-vegetarian (no red meat)"
+        NON_DAIRY = 240, "Non-dairy"
+        DIABETIC = 250, "Diabetic"
+        GLUTEN_FREE = 320, "Gluten Free (Coeliac)"
+        OTHER = 900, "Other"
+        __empty__ = 'None'
+
     student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student')
-    type = models.ForeignKey('DietType', models.DO_NOTHING, db_column='type', blank=True, null=True)
+    type = models.IntegerField(
+        choices=Types.choices, db_column='type', blank=True, null=True, verbose_name='Special diet'
+    )
     note = models.CharField(max_length=512, blank=True, null=True)
 
     class Meta:
         db_table = 'diet'
 
-
-class DietType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64)
-
-    class Meta:
-        db_table = 'diet_type'
-
     def __str__(self) -> str:
-        return str(self.description)
+        return f'{self.get_type_display()}: {self.note}'
 
 
 class EmergencyContact(SignatureModel):
     student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student', related_name='emergency_contact')
-    name = models.CharField(max_length=128, blank=True, null=True)
-    phone = models.CharField(max_length=32, blank=True, null=True)
-    email = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=128)
+    phone = PhoneField(max_length=32, blank=True, null=True)
+    email = models.EmailField(max_length=128, blank=True, null=True)
 
     class Meta:
         db_table = 'emergency_contact'
@@ -459,7 +471,7 @@ class Phone(SignatureModel):
 
     student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student', related_name="phones")
     type = models.IntegerField(choices=PhoneTypeChoices.choices, default=PhoneTypeChoices.PHONE)
-    number = models.CharField(max_length=64)
+    number = PhoneField(max_length=64)
     note = models.CharField(max_length=128, blank=True, null=True)
     is_default = models.BooleanField(default=False, verbose_name='Default?')
 

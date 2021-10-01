@@ -644,19 +644,16 @@ ul.item-list li.hide-toggle .item-info span.label:first-of-type {
     margin-left: 5px;
 }
 
-ul.item-list li.item.hide-toggle,
-ul.item-list li.hide-toggle.hide-toggle {
+.hide-toggle {
     text-align: center;
     cursor: pointer;
 }
 
-ul.item-list li.item.hide-toggle .rotate-icon,
-ul.item-list li.hide-toggle.hide-toggle .rotate-icon {
-    transition: .2s ease-out all;
+.hide-wrapper + .hide-toggle .rotate-icon {
+    transition: .3s ease-out all;
 }
 
-ul.item-list li.item.hide-toggle .rotate-icon.rotated,
-ul.item-list li.hide-toggle.hide-toggle .rotate-icon.rotated {
+.hide-wrapper.open + .hide-toggle .rotate-icon {
     transform: rotate(180deg);
 }
 
