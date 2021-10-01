@@ -411,7 +411,7 @@
 {% if waitlists %}
 <div class="section">
     <h2 id='waitlists' class='section-title' data-badge-text='{{ waitlists.count }}'>Waiting lists</h2>
-    <table class="table table-striped table-hover hide-rows" data-display='3'>
+    <table class="table table-hover hide-rows" data-display='3'>
         <thead><tr><th>Module</th><th>Title</th><th>Listed on</th></tr></thead>
         {% for waitlist in waitlists %}
         <tr>
@@ -427,7 +427,7 @@
 {% if course_applications %}
 <div class="section">
     <h2 id='applications' class='section-title' data-badge-text='{{course_applications.count}}'>Applications</h2>
-    <table class="table table-striped table-hover hide-rows" data-display='3'>
+    <table class="table table-hover hide-rows" data-display='3'>
     <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
     {% for application in course_applications %}
         <tr>
@@ -537,13 +537,13 @@
     </div>
     <h2 id='other_ids' class='section-title'>Other IDs</h2>
     {% if other_ids %}
-    <table class="table table-striped table-hover hide-rows" data-display='3'>
+    <table class="table table-hover hide-rows" data-display='3'>
         <thead><tr><th>ID</th><th>Type</th><th>End date</th><th></th></tr></thead>
         <tbody>
         {% for other_id in other_ids %}
             <tr>
                 <td>{{ other_id.number }}</td>
-                <td>{{ other_id.type.description }}</td>
+                <td>{{ other_id.get_type_display }}</td>
                 <td>{% if other_id.end_date %}{{ other_id.end_date  }}{% else %}{% endif %}</td>
                 <td>
                     <a href="{% url 'student:other-id:edit' other_id.id %}" class="float-end">
@@ -569,7 +569,7 @@
 <div class="section">
     <h2 id='enquiries' class='section-title'>Enquiries</h2>
     {% if enquiries %}
-    <table class="table table-striped table-hover hide-rows" data-display='3'>
+    <table class="table table-hover hide-rows" data-display='3'>
     <thead><tr><th>Date</th><th>Module</th><th>Title</th><th>Details</th><th></th></tr></thead>
     <tbody>
     {% for enquiry in enquiries %}
@@ -781,7 +781,7 @@
     </div>
 
     <h2 id='tutor-activity' class='section-title'>Other tutor activity</h2>
-    <table class="table table-striped table-hover hide-rows" data-display='2' data-hide-after='2'>
+    <table class="table table-hover hide-rows" data-display='2' data-hide-after='2'>
     <thead><tr><th>Type</th><th>Note</th><th>Date</th><th></th></tr></thead>
     <tbody>
     {% for tutor_activity in tutor_activities %}
