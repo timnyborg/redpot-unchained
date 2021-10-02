@@ -242,7 +242,7 @@
                     {% if email.is_default %}
                         <span class="badge bg-primary">Default</span>
                     {% endif %}
-                    {% if email.created_by == 'SITS' or email.modified_by == 'SITS' %}
+                    {% if email.is_sits_record %}
                         <span class="badge bg-warning">SITS</span>
                     {% endif %}
                     {% if email.note %}
@@ -294,7 +294,7 @@
                     {% if 'phone' not in 'phone.type.lower()' %}
                         <span class="badge bg-secondary">{{phone.type}}</span>
                     {% endif %}
-                    {% if phone.created_by == 'SITS' or phone.modified_by == 'SITS' %}
+                    {% if phone.is_sits_record %}
                         <span class="badge bg-warning">SITS</span>
                     {% endif %}
                     {% if phone.note %}
