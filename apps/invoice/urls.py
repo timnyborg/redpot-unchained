@@ -10,6 +10,7 @@ urlpatterns = [
     path('lookup', views.Lookup.as_view(), name='lookup'),
     path('upload-rcp', views.UploadRCP.as_view(), name='upload-rcp'),
     path('credit/<int:pk>', views.Credit.as_view(), name='credit'),
+    path('payment/select/<int:student_id>', views.SelectForPayment.as_view(), name='select-for-payment'),
     path('payment/<int:pk>', views.Payment.as_view(), name='payment'),
     path('pdf/<int:pk>', views.PDF.as_view(), name='pdf'),
     # invoice creation steps

@@ -5,6 +5,7 @@ from django.forms.models import fields_for_model
 from apps.core.utils.widgets import DatePickerInput, PoundInput
 from apps.enrolment.models import Enrolment
 from apps.finance.models import Ledger, TransactionType
+from apps.student.models import Student
 
 from . import models
 
@@ -83,6 +84,19 @@ class CreditForm(forms.Form):
         )
         # Dropdown options display the module title
         self.fields['enrolment'].label_from_instance = lambda obj: obj.module
+
+
+class SelectForPaymentForm(forms.Form):
+    submit_label = 'Select invoice'
+    invoice = forms.ModelChoiceField(queryset=models.Invoice.objects.all(), empty_label=' – Select – ')
+
+    def __init__(self, student: Student, exclude_paid: bool = True, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        qs = student.get_invoices().order_by('-id')
+        if exclude_paid:
+            qs = qs.outstanding()
+        self.fields['invoice'].queryset = qs
+        self.fields['invoice'].label_from_instance = lambda obj: f'{obj} (£{obj.balance:.2f})'
 
 
 class PaymentForm(forms.Form):
