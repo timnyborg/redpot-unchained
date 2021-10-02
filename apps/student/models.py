@@ -259,7 +259,8 @@ class Address(AddressModel, SITSLockingModelMixin, SignatureModel):
         return self.created_by == 'SITS' or self.modified_by == 'SITS' or self.sits_type is not None
 
 
-class Email(SignatureModel):
+class Email(SITSLockingModelMixin, SignatureModel):
+    sits_managed_fields = ['email']
     student = models.ForeignKey(
         'Student', models.DO_NOTHING, db_column='student', related_name='emails', related_query_name='email'
     )
@@ -278,6 +279,10 @@ class Email(SignatureModel):
 
     def get_delete_url(self) -> str:
         return reverse('student:email:delete', kwargs={'pk': self.pk})
+
+    @property
+    def is_sits_record(self) -> bool:
+        return self.created_by == 'SITS' or self.modified_by == 'SITS'
 
 
 class NextHUSID(models.Model):
@@ -311,7 +316,9 @@ class MoodleID(SignatureModel):
         return reverse('student:moodle-id:delete', kwargs={'pk': self.pk})
 
 
-class OtherID(SignatureModel):
+class OtherID(SITSLockingModelMixin, SignatureModel):
+    sits_managed_fields = ['type', 'number']
+
     class Types(models.IntegerChoices):
         STUDENT_CARD = 1
         SSO = 7
@@ -358,6 +365,10 @@ class OtherID(SignatureModel):
 
     def get_delete_url(self) -> str:
         return reverse('student:other-id:delete', kwargs={'pk': self.pk})
+
+    @property
+    def is_sits_record(self) -> bool:
+        return self.created_by == 'SITS' or self.modified_by == 'SITS'
 
 
 class Nationality(models.Model):
@@ -459,7 +470,9 @@ class EmergencyContact(SignatureModel):
         db_table = 'emergency_contact'
 
 
-class Phone(SignatureModel):
+class Phone(SITSLockingModelMixin, SignatureModel):
+    sits_managed_fields = ['type', 'number']
+
     class PhoneTypeChoices(models.IntegerChoices):
         PHONE = 100, 'Phone'
         ALT_PHONE = 110, 'Alternative phone!'
@@ -489,6 +502,10 @@ class Phone(SignatureModel):
 
     def get_delete_url(self) -> str:
         return reverse('student:phone:delete', kwargs={'pk': self.pk})
+
+    @property
+    def is_sits_record(self) -> bool:
+        return self.created_by == 'SITS' or self.modified_by == 'SITS'
 
 
 class Enquiry(SignatureModel):
