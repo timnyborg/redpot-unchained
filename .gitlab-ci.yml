@@ -1,6 +1,6 @@
-image: docker:latest
+image: docker:19.03.12
 services:
-  - docker:dind
+  - docker:18-dind
 
 variables:
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE/redpot:$CI_COMMIT_REF_SLUG
