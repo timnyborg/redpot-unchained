@@ -24,38 +24,38 @@ build:
     - docker build --cache-from $CONTAINER_RELEASE_IMAGE --tag $CONTAINER_TEST_IMAGE .
     - docker push $CONTAINER_TEST_IMAGE
 
-pytest:
-  stage: test
-  image: $CONTAINER_TEST_IMAGE
-  script:
-    # XMLRunner to generate results for gitlab
-    - coverage run manage.py test --noinput
-  after_script:
-    # must be in the after section to be run even if tests fail
-    - coverage xml
-    # text output to capture the total
-    - coverage report
-  artifacts:
-    when: always
-    reports:
-      junit: test_results.xml
-      cobertura: coverage.xml
-  services:
-    - name: mcr.microsoft.com/mssql/server:2019-latest
-      alias: mssql
-  variables:
-    # MSSQL config
-    MSSQL_SA_PASSWORD: Test@only
-    ACCEPT_EULA: Y
+#pytest:
+#  stage: test
+#  image: $CONTAINER_TEST_IMAGE
+#  script:
+#    # XMLRunner to generate results for gitlab
+#    - coverage run manage.py test --noinput
+#  after_script:
+#    # must be in the after section to be run even if tests fail
+#    - coverage xml
+#    # text output to capture the total
+#    - coverage report
+#  artifacts:
+#    when: always
+#    reports:
+#      junit: test_results.xml
+#      cobertura: coverage.xml
+#  services:
+#    - name: mcr.microsoft.com/mssql/server:2019-latest
+#      alias: mssql
+#  variables:
+#    # MSSQL config
+#    MSSQL_SA_PASSWORD: Test@only
+#    ACCEPT_EULA: Y
 
-include:
-  - template: Security/SAST.gitlab-ci.yml
+#include:
+#  - template: Security/SAST.gitlab-ci.yml
 
-python-safety:
-  stage: lint
-  image: pipelinecomponents/python-safety:latest
-  script:
-    - safety check --full-report -r requirements.txt
+#python-safety:
+#  stage: lint
+#  image: pipelinecomponents/python-safety:latest
+#  script:
+#    - safety check --full-report -r requirements.txt
 
 release-image:
   stage: release
@@ -74,7 +74,6 @@ deploy-staging:
   tags:
     - django-staging
   script:
-    - cd /opt/django/redpot-unchained
-    - docker stack deploy --compose-file docker-compose.prod.yml redpot-unchained
+    - docker stack deploy --compose-file $STAGING_COMPOSE_FILE $DOCKER_STACK_NAME
 #  only:
 #    - master
