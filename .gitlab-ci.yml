@@ -74,6 +74,6 @@ deploy-staging:
   tags:
     - django-staging
   script:
-    - docker stack deploy --compose-file $STAGING_COMPOSE_FILE $DOCKER_STACK_NAME
+    - docker stack deploy --compose-file $DOCKER_COMPOSE_FILE $DOCKER_STACK_NAME
 #  only:
 #    - master
