@@ -74,6 +74,7 @@ deploy-staging:
   tags:
     - django-staging
   script:
+    - cd /opt/django/redpot-unchained
     - docker stack deploy --compose-file docker-compose.prod.yml redpot-unchained
 #  only:
 #    - master
