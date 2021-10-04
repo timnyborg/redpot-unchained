@@ -6,6 +6,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 from apps.core.utils.widgets import DatePickerInput, ReadOnlyModelWidget
+from apps.fee.models import Catering
 from apps.module.models import Module
 from apps.qualification_aim.models import QualificationAim
 from apps.student.models import Student
@@ -72,3 +73,15 @@ class EditForm(forms.ModelForm):
         if not self.instance.qa.programme.qualification.is_postgraduate:
             # Todo: consider whether module level is a better check
             del self.fields['mark']
+
+
+class CateringForm(forms.ModelForm):
+    class Meta:
+        model = Catering
+        fields = ['fee']
+
+    def __init__(self, module: Module, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # limits options to the module's catering fees
+        self.fields['fee'].queryset = module.fees.filter(is_catering=True)
+        self.fields['fee'].label = 'Catering option'

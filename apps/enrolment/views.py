@@ -1,5 +1,6 @@
 from urllib.parse import urlencode
 
+from django import http
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -10,10 +11,12 @@ from django.views import generic
 
 import apps.student.services as student_services
 from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
+from apps.fee.models import Catering
 from apps.finance.models import Ledger, TransactionTypes
 from apps.qualification_aim.models import QualificationAim
 
 from . import datatables, forms, models, services
+from .forms import CateringForm
 
 
 class Create(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.FormView):
@@ -155,3 +158,38 @@ class Delete(LoginRequiredMixin, PageTitleMixin, DeletionFailedMessageMixin, gen
 
     def get_success_url(self) -> str:
         return self.object.qa.get_absolute_url()
+
+
+# -- Catering views --
+
+
+class CreateCatering(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, generic.CreateView):
+    model = Catering
+    template_name = 'core/form.html'
+    form_class = CateringForm
+    success_message = 'Catering added'
+
+    def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
+        self.enrolment = get_object_or_404(models.Enrolment, pk=self.kwargs['enrolment_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self) -> dict:
+        kwargs = super().get_form_kwargs()
+        return {**kwargs, 'module': self.enrolment.module}
+
+    def form_valid(self, form) -> http.HttpResponse:
+        form.instance.enrolment = self.enrolment
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return self.object.enrolment.get_absolute_url() + '#catering'
+
+
+class DeleteCatering(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = Catering
+    template_name = 'core/delete_form.html'
+    subtitle_object = False
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Catering removed')
+        return self.object.enrolment.get_absolute_url() + '#catering'

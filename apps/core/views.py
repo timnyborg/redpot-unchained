@@ -55,6 +55,6 @@ class SystemInfo(PermissionRequiredMixin, generic.TemplateView):
             },
             'library_versions': {
                 'python': platform.python_version(),
-                'django': django.__version__,
+                'django': django.get_version(),
             },
         }
