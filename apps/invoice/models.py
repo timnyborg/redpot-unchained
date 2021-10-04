@@ -75,6 +75,7 @@ class Invoice(AddressModel, SignatureModel):
 
     @cached_property
     def balance(self):
+        # Todo: investigate a way of single request caching without being a property.  lru_cache persists too long
         return self.allocated_ledger_items.aggregate(sum=models.Sum('amount'))['sum']
 
     def get_fees(self):

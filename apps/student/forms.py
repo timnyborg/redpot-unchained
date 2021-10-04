@@ -20,7 +20,7 @@ class CreateEmailForm(forms.ModelForm):
         widgets = {'student': forms.HiddenInput}
 
 
-class EmailForm(forms.ModelForm):
+class EmailForm(SITSLockingFormMixin, forms.ModelForm):
     class Meta:
         model = models.Email
         fields = ('email', 'note', 'is_default')
@@ -132,7 +132,7 @@ class CreatePhoneForm(forms.ModelForm):
         widgets = {'student': forms.HiddenInput}
 
 
-class PhoneForm(forms.ModelForm):
+class PhoneForm(SITSLockingFormMixin, forms.ModelForm):
     class Meta:
         model = models.Phone
         fields = ['number', 'type', 'note', 'is_default']
@@ -149,7 +149,7 @@ class CreateOtherIDForm(forms.ModelForm):
         }
 
 
-class OtherIDForm(forms.ModelForm):
+class OtherIDForm(SITSLockingFormMixin, forms.ModelForm):
     class Meta:
         model = models.OtherID
         fields = ['number', 'type', 'note', 'start_date', 'end_date']

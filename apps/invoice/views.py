@@ -323,19 +323,44 @@ class Credit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, gener
         return next_url_if_safe(self.request) or self.invoice.get_absolute_url()
 
 
+class SelectForPayment(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
+    """Form to select an invoice for payment before forwarding to Payment"""
+
+    permission_required = 'invoice.pay_invoice'
+    form_class = forms.SelectForPaymentForm
+    template_name = 'core/form.html'
+    title = 'Invoice'
+    subtitle = 'Payment – Select invoice'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        return {
+            **kwargs,
+            'student': get_object_or_404(Student, pk=self.kwargs['student_id']),
+            # We want to let finance users post adjustments to paid invoices,
+            # but keep the list clean of paid invoices for regular users
+            'exclude_paid': not self.request.user.has_perm('user.finance'),  # todo: a proper permission
+        }
+
+    def form_valid(self, form) -> http.HttpResponse:
+        return redirect('invoice:payment', pk=form.cleaned_data['invoice'].pk)
+
+
 class Payment(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.FormView):
     """Form to credit an invoice on a single enrolment"""
 
     permission_required = 'invoice.pay_invoice'
     title = 'Invoice'
-    subtitle = 'Add payment'
     form_class = forms.PaymentForm
     template_name = 'core/form.html'
-    success_message = ''  # todo
+    success_message = 'Payment added: £%(amount).2f'
 
     def dispatch(self, request, *args, **kwargs):
         self.invoice = get_object_or_404(models.Invoice, pk=kwargs['pk'])
         return super().dispatch(request, *args, **kwargs)
+
+    def get_subtitle(self):
+        return f'Add payment – {self.invoice}'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

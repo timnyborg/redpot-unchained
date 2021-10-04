@@ -102,6 +102,7 @@ class FeeType(models.Model):
         return f'{self.narrative}'
 
 
+# Todo: move catering and accommodation to Enrolment (it's where their forms naturally sit), or a separate bookings app
 class Accommodation(SignatureModel):
     class Types(models.IntegerChoices):
         SINGLE = (100, 'Single')
