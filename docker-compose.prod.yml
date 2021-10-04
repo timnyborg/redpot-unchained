@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  django:
+    image: gitlab.conted.ox.ac.uk/django/redpot-unchained/redpot:ci-deploy
+    secrets:
+      - source: app_config
+        target: /code/secrets.env
+    deploy:
+      replicas: 2
+    ports:
+      - 127.0.0.1:8000:8000
+    volumes:
+      - ./volumes/static:/volumes/static
+      - ./volumes/media:/volumes/media
+    restart: always
+
+  worker:
+    image: gitlab.conted.ox.ac.uk/django/redpot-unchained/redpot:ci-deploy
+    secrets:
+      - source: app_config
+        target: /code/secrets.env
+    restart: always
+    command: celery -A redpot worker -n redpot-worker
+  redis:
+    image: redis:6.0
+    restart: always
+
+secrets:
+  app_config:
+    file: ./secrets.env
+

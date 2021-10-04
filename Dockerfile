@@ -77,5 +77,8 @@ ENV UWSGI_STATIC_EXPIRES_URI="/static/.*\.[a-f0-9]{12,}\.(css|js|png|jpg|jpeg|gi
 # Change to a non-root user
 USER ${APP_USER}:${APP_USER}
 
+# Copy static to a mountable directory
+ENTRYPOINT ["/code/docker/entrypoint.sh"]
+
 # Start uWSGI
 CMD ["uwsgi", "--show-config"]
