@@ -68,10 +68,12 @@ release-image:
     - master
 
 
-#deploy:
-#  stage: deploy
-#  script:
-#    - ./deploy.sh
-#  only:
-#    - master
-#  when: manual
+deploy-staging:
+  stage: deploy
+  environment: staging
+  tags:
+    - django-staging
+  script:
+    - docker stack deploy --compose-file docker-compose.prod.yml redpot-unchained
+  only:
+    - master

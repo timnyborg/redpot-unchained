@@ -9,6 +9,7 @@ services:
       replicas: 2
     ports:
       - 127.0.0.1:8000:8000
+    entrypoint: /code/docker/entrypoint.sh
     volumes:
       - ./volumes/static:/volumes/static
       - ./volumes/media:/volumes/media
