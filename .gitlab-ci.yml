@@ -1,10 +1,12 @@
-image: docker:latest
+image: docker:20.10.8
 services:
-  - docker:dind
+  - docker:20.10.8-dind
 
 variables:
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE/redpot:$CI_COMMIT_REF_SLUG
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE/redpot:latest
+
+  DOCKER_TLS_CERTDIR: ""
 
   # only run bandit (for now)
   SAST_EXCLUDED_ANALYZERS: "eslint,semgrep"
