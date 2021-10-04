@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   django:
-    image: gitlab.conted.ox.ac.uk/django/redpot-unchained/redpot:ci-deploy
+    image: gitlab.conted.ox.ac.uk:5050/django/redpot-unchained/redpot:latest
     secrets:
       - source: app_config
         target: /code/secrets.env
@@ -16,7 +16,7 @@ services:
     restart: always
 
   worker:
-    image: gitlab.conted.ox.ac.uk/django/redpot-unchained/redpot:ci-deploy
+    image: gitlab.conted.ox.ac.uk:5050/django/redpot-unchained/redpot:latest
     secrets:
       - source: app_config
         target: /code/secrets.env
