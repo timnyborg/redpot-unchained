@@ -1,0 +1,61 @@
+{% extends 'core/form.html' %}
+
+{% block after-section %}
+    <div class='section'>
+        {% if limit.online_places_left > 0 %}
+            <div class="section-alert-header alert-success" role="alert">
+                <span class="fas fa-fw fa-check"></span>
+                Spaces available for online booking
+            </div>
+        {% elif limit.paper_places_left > 0 %}
+            <div class="section-alert-header alert-warning" role="alert">
+                <span class="fas fa-fw fa-exclamation-circle"></span>
+                Online booking closed.  Spaces available for paper booking
+            </div>
+        {% else %}
+            <div class="section-alert-header alert-danger" role="alert">
+                <span class="fas fa-fw fa-exclamation-circle"></span>
+                Full
+            </div>
+        {% endif %}
+        <h2>Bookings</h2>
+        <dl>
+            <dt>Places taken</dt>
+            <dd>{{ bookings|length }}/{{ limit.places }}</dd>
+        </dl>
+        <div class="row">
+            <div class="col-6">
+                <table class="table table-hover">
+                    <thead><tr><th>Student</th><th>Module</th><th></th></thead>
+                    {% for row in bookings %}
+                        <tr>
+                            <td>{{ row.enrolment.qa.student }}</td>
+                            <td>{{ row.enrolment.module.code }}</td>
+                            <td>
+                                <a href="{{ row.enrolment.get_absolute_url }}"
+                                   class="float-end"
+                                   data-bs-toggle="tooltip"
+                                   title="View enrolment"
+                                >
+                                    <i class="fas fa-search"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+        </div>
+
+        <h2>Fees</h2>
+        <table class="table table-hover">
+            <thead><tr><th>Module</th><th>Fee</th><th></th></thead>
+            {% for fee in fees %}
+                <tr>
+                    <td><a href="{{ fee.module.get_absolute_url }}">{{ fee.module.code }}</a></td>
+                    <td><a href="{{ fee.get_absolute_url }}">{{ fee.description }}</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

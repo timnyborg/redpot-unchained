@@ -79,6 +79,7 @@ PROJECT_APPS = [
     'apps.core',
     'apps.amendment',
     'apps.application',
+    'apps.booking',
     'apps.contract',
     'apps.discount',
     'apps.enrolment',
@@ -242,7 +243,7 @@ STATICFILES_FINDERS = (
 STATIC_ROOT: Path = BASE_DIR / 'static'
 STATICFILES_DIRS = [BASE_DIR / 'redpot' / 'assets']
 MEDIA_URL = env('MEDIA_URL', default='/media/')
-MEDIA_ROOT: Path = env.path('MEDIA_ROOT', default=str(BASE_DIR / 'media'))
+MEDIA_ROOT: Path = env.path('MEDIA_ROOT', default=BASE_DIR / 'media')
 
 DJANGORESIZED_DEFAULT_QUALITY = 75
 DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'PNG': ".png"}

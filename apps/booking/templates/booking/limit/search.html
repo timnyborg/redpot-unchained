@@ -1,0 +1,8 @@
+{% extends 'core/search.html' %}
+{% block after-sections %}
+    <div class="section">
+        <a href="{% url 'booking:create-limit' %}" class="btn btn-success">
+            <i class="fa fa-plus"></i> New limit
+        </a>
+    </div>
+{% endblock %}
