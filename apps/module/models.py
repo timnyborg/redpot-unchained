@@ -12,10 +12,10 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.functional import cached_property
 
+from apps.booking.models import Accommodation
 from apps.core.models import SignatureModel
 from apps.core.utils.dates import academic_year
 from apps.core.utils.models import PhoneField, UpperCaseCharField
-from apps.fee.models import Accommodation
 
 
 class Statuses(models.IntegerChoices):

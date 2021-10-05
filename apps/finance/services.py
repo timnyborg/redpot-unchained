@@ -8,9 +8,10 @@ from typing import Any, Optional
 from django.db import transaction
 from django.db.models import Max
 
+from apps.booking.models import Accommodation, Catering
 from apps.core.models import User
 from apps.enrolment.models import Enrolment
-from apps.fee.models import Accommodation, Catering, Fee
+from apps.fee.models import Fee
 from apps.module.models import Module
 
 from . import models
