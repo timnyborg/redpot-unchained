@@ -336,7 +336,7 @@
             </div>
 
             {% if qa.qa_warning %}
-            <span title="Contains a Credit-bearing module" class="text-danger">
+            <span data-bs-toggle="tooltip" title="Contains a credit-bearing module" class="text-danger">
                 <span class="fa fa-exclamation-circle"></span>
             </span>
             {% endif %}
@@ -365,7 +365,7 @@
                 </div>
                 <div>
                     {% if enrolment.module.credit_points and qa.non_accredited %}
-                        <span title="Credit-bearing module within a non-credit-bearing programme" class="text-danger">
+                        <span data-bs-toggle="tooltip" title="Credit-bearing module within a non-credit-bearing programme" class="text-danger">
                             <span class="fa fa-exclamation-circle"></span>
                         </span>
                     {% endif %}
