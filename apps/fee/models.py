@@ -47,7 +47,7 @@ class Fee(SignatureModel):
     )
     limit = models.ForeignKey(
         to='booking.Limit',
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         related_name='fees',
         related_query_name='fee',
         blank=True,

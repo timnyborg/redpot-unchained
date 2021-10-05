@@ -130,8 +130,8 @@
                     <tr>
                         <td>{{ booking.fee.description }}</td>
                         {# todo: test student related data once implemented #}
-                        <td>{{ student.diet.get_type_display }}</td>
-                        <td>{{ student.diet.note }}
+                        <td>{{ student.diet.get_type_display | default:'–'  }}</td>
+                        <td>{{ student.diet.note | default:'–'  }}
                         </td>
                         <td>
                             <a class="text-danger float-end"
@@ -166,10 +166,12 @@
                 {% for booking in accommodation %}
                     <tr>
                         <td>{{ booking.get_type_display }}</td>
-                        <td>{{ booking.note }}</td>
+                        <td>{{ booking.note | default:'–' }}</td>
                         <td>
                             {% if booking.limit %}
-                                <a href="{{ booking.limit.get_absolute_url }}ew">{{ booking.limit.description }}</a>
+                                <a href="{{ booking.limit.get_absolute_url }}">{{ booking.limit.description }}</a>
+                            {% else %}
+                                &ndash;
                             {% endif %}
                         </td>
                         <td>

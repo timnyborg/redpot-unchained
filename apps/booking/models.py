@@ -17,7 +17,7 @@ class Accommodation(SignatureModel):
     note = models.CharField(max_length=256, blank=True, null=True)
     limit = models.ForeignKey(
         'Limit',
-        models.PROTECT,
+        models.SET_NULL,
         db_column='limit',
         blank=True,
         null=True,
@@ -47,16 +47,29 @@ class Limit(SignatureModel):
 
     description = models.CharField(max_length=128)
     places = models.IntegerField()
-    www_buffer = models.IntegerField(default=0, help_text='Spaces that cannot be booked online')
+    online_booking_buffer = models.IntegerField(
+        default=0, help_text='Spaces that cannot be booked online', db_column='www_buffer'
+    )
+    # todo: an is_active column, or a purge of old, unused records
 
     class Meta:
         db_table = 'limit'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.description)
 
-    def get_absolute_url(self):
-        return '#'
+    def get_absolute_url(self) -> str:
+        # todo: consider separating details out from edit page
+        return reverse('booking:edit-limit', kwargs={'pk': self.pk})
 
-    def places_left(self, www_buffer: bool = True) -> int:
-        return self.places - (self.www_buffer if www_buffer else 0) - self.bookings.count()
+    def get_edit_url(self) -> str:
+        return reverse('booking:edit-limit', kwargs={'pk': self.pk})
+
+    def get_delete_url(self) -> str:
+        return reverse('booking:delete-limit', kwargs={'pk': self.pk})
+
+    def online_places_left(self) -> int:
+        return self.paper_places_left() - self.online_booking_buffer
+
+    def paper_places_left(self) -> int:
+        return self.places - self.bookings.count()

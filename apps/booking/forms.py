@@ -21,3 +21,9 @@ class CateringForm(forms.ModelForm):
         # limits options to the module's catering fees
         self.fields['fee'].queryset = module.fees.filter(is_catering=True)
         self.fields['fee'].label = 'Catering option'
+
+
+class LimitForm(forms.ModelForm):
+    class Meta:
+        model = models.Limit
+        fields = ['description', 'places', 'online_booking_buffer']

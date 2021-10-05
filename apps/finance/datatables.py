@@ -23,7 +23,7 @@ class AddFeesTable(tables.Table):
     places_left = tables.Column(verbose_name='Places left', empty_values=[], orderable=False)
 
     def render_limit(self, value):
-        return value.places_left()
+        return value.paper_places_left()
 
     def render_places_left(self, record):
         if record.is_single_accom:
