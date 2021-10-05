@@ -30,5 +30,5 @@ class ScheduledPaymentFactory(factory.django.DjangoModelFactory):
         model = models.ScheduledPayment
 
     due_date = factory.Faker('date')
-    amount = factory.Faker('pydecimal', min_value=1, left_digits=6, right_digits=2)
+    amount = factory.Faker('pydecimal', min_value=1, left_digits=4, right_digits=2)
     is_deposit = False
