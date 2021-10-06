@@ -1,8 +1,8 @@
 ## 12 Factor design
 See [https://12factor.net](https://12factor.net)
 
- * No credentials should be stored in the source code.  Instead, they should come from Environment Variables or secrets files.  Act like the source code is public.
- * No configuration should be stored in the source code.  Hosts, ports, service urls, etc., should come from Environment Variables or secrets files.  You should be able to switch any connected resource (database, cache, file server, APIs, etc.) without editing the source code.
+ * No credentials should be stored in the source code.  Instead, they should come from Environment Variables or secrets files.  Act like the source code is public, because it is.
+ * No configuration should be stored in the source code.  Hosts, ports, service urls, etc., should come from Environment Variables or secrets files.  You should be able to switch any connected resource (database, cache, file server, APIs, etc.) without editing the source code.  We use the `environs` library to access secrets in `settings.py`, with defaults that allow Docker-based automated testing to function.
  * All python dependencies should go in `requirements.txt`.  Fetching them on a new environment should be as simple as `pip install -r requirements.txt`
  * All debian dependencies should go in `dependencies.txt`.  When deploying to a new environment, you shouldn't need to look through pip install errors to figure out what you're missing.
 
@@ -28,8 +28,8 @@ Including:
 ## GET requests should be read-only
 See [https://twitter.com/rombulow/status/990684463007907840](https://twitter.com/rombulow/status/990684463007907840)
 
-A GET request should never change the model's state.  So our endpoints like programme/remove-module/ or module/publish/
+A GET request should never change the model's state.  So endpoints like `programme/remove-module/` or `module/publish/`
 should only respond to POSTs.
 
-This can be done through confirmation forms (e.g. an UpdateView or DeleteView, maybe in a
-modal), javascript, or a host of other approaches.
+This can be done through confirmation forms (e.g. an UpdateView or DeleteView, bootstrap
+modals), javascript, or a host of other approaches.

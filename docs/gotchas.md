@@ -86,7 +86,7 @@ class View(PageTitleMixin, DetailView):
 ```
 
 ## Forms require more tailoring
-For example, making sure they have `method='post'` or `enctype='multipart/form-data'` when handling files.  Much of the boilerplate can be handled with custom tags, though.
+For example, making sure they have `method='post'`, `enctype='multipart/form-data'` when handling files, and `{{ form.media }}` to support widgets with js/css dependencies.  Much of the boilerplate can be handled with custom tags or resuable templates, though.
 
 ## Each project is its own wsgi application
 web2py acts as a wsgi application, and allows us to drag and drop into the /applications/ folder.  This means a

@@ -1,7 +1,7 @@
 celery==5.1.2
 celery-progress==0.1.1
-coverage==6.0
-Django==3.2.7
+coverage[toml]==6.0
+Django==3.2.8
 django-auth-ldap==3.0.0
 django-autocomplete-light==3.8.2
 django-bootstrap-datepicker-plus==3.0.5
@@ -15,7 +15,7 @@ django-redis==5.0.0
 django-resized==0.3.11
 django-select2==7.7.3
 django-simple-menu==1.2.1
-django-tables2==2.4.0
+django-tables2==2.4.1
 django-widget-tweaks==1.4.8
 djangorestframework==3.12.4
 docx-mailmerge==0.5.0
