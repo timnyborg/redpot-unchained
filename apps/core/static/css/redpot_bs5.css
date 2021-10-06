@@ -71,7 +71,7 @@ a[data-bs-toggle="collapse"][aria-expanded="true"]:after {
 }
 
 /* sharp cards */
-.card {
+.card, .card-img, .card-img-top {
     border-radius: 0;
 }
 
@@ -612,11 +612,7 @@ ul.item-list {
     border-top: 1px solid #eee;
 }
 
-.panel-heading + ul.item-list {
-    border-top: none;
-}
-
-ul.item-list li.item, ul.item-list li.hide-toggle {
+ul.item-list li {
     padding: 10px 15px;
     display: block;
     border-color: #eee;
@@ -624,23 +620,19 @@ ul.item-list li.item, ul.item-list li.hide-toggle {
     font-size: 15px;
 }
 
-ul.item-list li.item .hide-until-hover,
-ul.item-list li.hide-toggle .hide-until-hover {
-    visibility: hidden;
-}
-
-ul.item-list li.item:hover,
-ul.item-list li.hide-toggle:hover {
+ul.item-list li:hover {
     background-color: #f4f4f4;
 }
 
-ul.item-list li.item:hover .hide-until-hover,
-ul.item-list li.hide-toggle:hover .hide-until-hover {
+.hide-until-hover {
+    visibility: hidden;
+}
+
+ul.item-list li.item:hover .hide-until-hover {
     visibility: visible;
 }
 
-ul.item-list li.item .item-info span.label:first-of-type,
-ul.item-list li.hide-toggle .item-info span.label:first-of-type {
+ul.item-list li.item .item-info span.label:first-of-type {
     margin-left: 5px;
 }
 
@@ -649,11 +641,12 @@ ul.item-list li.hide-toggle .item-info span.label:first-of-type {
     cursor: pointer;
 }
 
-.hide-wrapper + .hide-toggle .rotate-icon {
+.hide-toggle .rotate-icon {
     transition: .3s ease-out all;
 }
 
-.hide-wrapper.open + .hide-toggle .rotate-icon {
+.hide-wrapper.open + .hide-toggle .rotate-icon,
+.hide-toggle.open .rotate-icon {
     transform: rotate(180deg);
 }
 
@@ -748,23 +741,17 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
     background: none;
 }
 
+/* Face wall and profile styling */
+
 .wall .card-img-top {
     width: 100%;
     height: 10vw;
     object-fit: cover;
 }
 
-.wall .card {
-    text-align: left;
-}
 
-.wall .card p, .card-phone {
+.wall .card p {
     font-size: 90%;
-}
-
-.wall .card a {
-    text-decoration: none !important;
-    color: inherit;
 }
 
 .wall .card:hover {
@@ -799,7 +786,6 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 }
 
 /*Bootstrap 4 accordion css ends*/
-/*# sourceMappingURL=redpot.css.map */
 
 
 /* Trying to make DAL match bootstrap.  DAL css should be replaced instead? */

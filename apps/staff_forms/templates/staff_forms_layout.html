@@ -1,9 +1,9 @@
-{% extends 'layout_bs4.html' %}
+{% extends 'layout.html' %}
 
 {% load menu %}
 {% block mainmenu %}
     {% generate_menu %}
     {% with menu=menus.staff_forms %}
-        {% include 'menu/bootstrap4_menu.html' %}
+        {% include 'menu/bootstrap5_menu.html' %}
     {% endwith %}
 {% endblock %}
