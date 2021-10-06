@@ -19,17 +19,24 @@ tutor/
     tutor_tags.py
   __init__.py
   admin.py
+  api.py
   apps.py
   datatables.py
   forms.py
   menus.py
   models.py
+  serializers.py
   tasks.py
   tests.py
   urls.py
   utils.py
   views.py
 ```
+
+## api.py
+Contains:
+
+* Django Rest Framework `APIView` classes used as API endpoints
 
 ## datatables.py
 Contains:
@@ -71,10 +78,15 @@ Contains:
 If this file grows too large, it may make sense to replace it with a `models/` folder, with a `.py` file for each
 module or group of modules, though too many models may be a sign that the app is too large.
 
+## serializers.py
+Contains:
+
+* Django Rest Framework `Serializer` or `ModelSerializer` classes used by `apis.py`
+
 ## tasks.py
 Contains:
 
-* Functions that are Celery tasks, marked with the `@shared_task` decorator.
+* Functions that are Celery tasks, marked with the `@app.task` decorator.
 
 The functions should be kept thin, essentially wrapping other function calls where possible.
 
