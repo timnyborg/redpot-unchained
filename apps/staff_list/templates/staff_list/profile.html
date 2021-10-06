@@ -1,10 +1,10 @@
-{% extends 'staff_list_layout_bs4.html' %}
+{% extends 'staff_list_layout.html' %}
 {% load static %}
 {% block center %}
     <div class="main-body">
           <div class="row gutters-sm">
             <div class="col-md-4 mb-3">
-              <div class="card">
+              <div class="card h-100">
                 <div class="card-body">
                   <div class="d-flex flex-column align-items-center text-center">
                   <div class="image-cropper">
@@ -23,46 +23,46 @@
               <div class="card mb-3">
                 <div class="card-body">
                   <div class="row">
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                       <h6 class="mb-0"><i class="fas fa-fw fa-user-tag"></i> Full Name</h6>
                     </div>
-                    <div class="col-sm-9 text-secondary">
+                    <div class="col-sm-10 text-secondary">
                       {{ staff.first_name }} {{ staff.last_name }}
                     </div>
                   </div>
                   <hr>
                   <div class="row">
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                       <h6 class="mb-0"><i class="fas fa-fw fa-envelope"></i> Email</h6>
                     </div>
-                    <div class="col-sm-9 text-secondary">
+                    <div class="col-sm-10 text-secondary">
                         {% if staff.email %} {{ staff.email }} {% else %}-{% endif %}
                     </div>
                   </div>
                   <hr>
                   <div class="row">
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                       <h6 class="mb-0"><i class="fas fa-fw fa-phone"></i> Phone</h6>
                     </div>
-                    <div class="col-sm-9 text-secondary">
+                    <div class="col-sm-10 text-secondary">
                       {% if staff.phone %} {{ staff.phone }} {% else %}-{% endif %}
                     </div>
                   </div>
                   <hr>
                   <div class="row">
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                       <h6 class="mb-0"><i class="fas fa-fw fa-map-marker"></i> Location</h6>
                     </div>
-                    <div class="col-sm-9 text-secondary">
+                    <div class="col-sm-10 text-secondary">
                       {% if staff.room %} {{ staff.room }} {% else %}-{% endif %}
                     </div>
                   </div>
                   <hr>
                   <div class="row">
-                    <div class="col-sm-3">
-                      <h6 class="mb-0"><i class="fas fa-fw fa-user-clock"></i> Date joined</h6>
+                    <div class="col-sm-2">
+                      <h6 class="mb-0"><i class="fas fa-fw fa-user-clock"></i> Joined</h6>
                     </div>
-                    <div class="col-sm-9 text-secondary">
+                    <div class="col-sm-10 text-secondary">
                       {{ staff.date_joined | date }}
                     </div>
                   </div>
