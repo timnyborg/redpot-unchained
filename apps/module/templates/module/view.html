@@ -427,7 +427,7 @@
         <dd class="col-9">{{ enrolments | length }}</dd>
     </dl>
     {% if enrolments %}
-        <table class="table table-striped table-hover hide-rows">
+        <table class="table table-hover hide-rows">
         <thead>
             <tr>
                 <th>Name</th>
@@ -493,7 +493,7 @@
 {% if applications %}
 <div class="section">
     <h2 id='application_forms' data-badge-text='{{ applications | length }}' class="section-title">Applications</h2>
-    <table id="applications" class="table table-striped table-hover hide-rows">
+    <table id="applications" class="table table-hover hide-rows">
     <thead><tr><th>Surname</th><th>Firstname</th><th>Status</th><th></th></tr></thead>
     <tbody>
     {% for application in applications %}
@@ -537,7 +537,7 @@
     </div>
     <h2 id="fees" class="section-title">Fees</h2>
     {% if fees %}
-        <table class="table table-striped table-hover">
+        <table class="table table-hover">
             <thead><tr><th colspan="100%">Tuition</th></tr></thead>
             {% for fee in fees %}
                 {% if fee.type.narrative == 'Programme fee' %}
@@ -556,7 +556,7 @@
                 {% endif %}
             {% endfor %}
         </table>
-        <table class="table table-striped table-hover">
+        <table class="table table-hover">
             <thead><tr><th colspan="100%">Other</th></tr></thead>
             {% for fee in fees %}
                 {% if fee.type.narrative != 'Programme fee' %}
@@ -578,7 +578,7 @@
     {% endif %}
 
     {% if discounts %}
-    <table class="table table-striped">
+    <table class="table">
         <thead><tr><th>Discount codes</th><th></th><th></th></tr></thead>
         {% for discount in discounts %}
             <tr>
@@ -624,7 +624,7 @@
     </div>
     <h2 id="payment-plans" class="section-title">Payment plans</h2>
     {% if payment_plans %}
-        <table class="table table-striped table-hover" >
+        <table class="table table-hover" >
         <thead><tr><th>Type</th><th></th></tr></thead>
         {% for plan in payment_plans %}
             <tr>
@@ -651,7 +651,7 @@
     <h2 id="programmes" class="section-title">Programmes</h2>
     {% if programmes %}
     <p>This module is part of the following programmes</p>
-    <table class="table table-striped table-hover">
+    <table class="table table-hover">
     <thead><tr><th>Title</th><th></th></tr></thead>
         {% for programme in programmes %}
             {# delete_button = TD(A(icon('remove'), data={'toggle': 'modal', 'target': '#confirm-remove-module', 'href': URL('programme', 'remove_module', args=row.id, vars={'_next': URL(args=request.args, anchor='programmes')})}, _href='#'), _class='span2 quick-icons') #}
