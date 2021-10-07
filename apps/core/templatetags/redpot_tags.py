@@ -2,6 +2,7 @@ import socket
 from typing import Optional, Union
 
 from django import template
+from django.conf import settings
 from django.core.cache import cache
 from django.db.models import Model
 from django.utils.safestring import mark_safe
@@ -153,3 +154,9 @@ def duration(seconds: int) -> str:
     elif hours:
         return f'{hours} hours'
     return f'{minutes} minutes'
+
+
+@register.inclusion_tag('utility/google_tag_manager.html', takes_context=True)
+def google_tag_manager_script(context: dict) -> str:
+    context['google_tag_manager_id'] = settings.GOOGLE_TAG_MANAGER_ID
+    return context
