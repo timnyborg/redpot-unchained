@@ -359,6 +359,7 @@ CKEDITOR_CONFIGS = {
                 'span(fas,far,fad,fal,fab,fa,fa-*)[!class]',
             ]
         ),
+        'width': '100%',
     },
     'links_only': {
         'toolbar': 'custom',
@@ -371,6 +372,7 @@ CKEDITOR_CONFIGS = {
             ['Source'],
         ],
         'extraPlugins': 'wordcount',
+        'width': '100%',
     },
 }
 
