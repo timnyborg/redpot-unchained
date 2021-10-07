@@ -7,7 +7,8 @@ import time
 import django_redis
 
 import django
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django import http
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.views import generic
 
@@ -23,7 +24,16 @@ class CustomLoginView(LoginView):
     authentication_form = CustomAuthForm
 
 
-class SystemInfo(PermissionRequiredMixin, generic.TemplateView):
+class SuperUserRequiredMixin(UserPassesTestMixin):
+    """Mixin that limits a view to superusers"""
+
+    request: http.HttpRequest
+
+    def test_func(self) -> bool:
+        return self.request.user.is_superuser
+
+
+class SystemInfo(SuperUserRequiredMixin, generic.TemplateView):
     permission_required = 'user.dev'
     template_name = 'core/system_info.html'
 
@@ -54,13 +64,10 @@ class SystemInfo(PermissionRequiredMixin, generic.TemplateView):
         }
 
 
-class Impersonate(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
+class Impersonate(SuperUserRequiredMixin, PageTitleMixin, generic.FormView):
     """A screen for quick user impersonation, requiring a superuser"""
 
     template_name = 'core/impersonate.html'
     form_class = ImpersonateForm
     title = 'User'
     subtitle = 'Impersonate'
-
-    def has_permission(self) -> bool:
-        return self.request.user.is_superuser
