@@ -48,19 +48,6 @@ PREREQ_APPS = [
     # 'django.contrib.sessions', # disabled until migrated
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 3rd party apps
-    'ckeditor',  # django-ckeditor
-    'menu',  # django-simple-menu
-    'django_select2',
-    'django_tables2',
-    'django_filters',
-    'widget_tweaks',  # django-widget-tweaks
-    'celery_progress',
-    'django_celery_beat',
-    'django_celery_results',
-    'bootstrap_datepicker_plus',
-    'rest_framework',
-    'crispy_forms',
 ]
 
 PROJECT_APPS = [
@@ -88,7 +75,23 @@ PROJECT_APPS = [
     'apps.website_account',
 ]
 
-INSTALLED_APPS = PREREQ_APPS + PROJECT_APPS
+THIRD_PARTY_APPS = [
+    'ckeditor',  # django-ckeditor
+    'hijack',  # django-hijack
+    'menu',  # django-simple-menu
+    'django_select2',
+    'django_tables2',
+    'django_filters',
+    'widget_tweaks',  # django-widget-tweaks
+    'celery_progress',
+    'django_celery_beat',
+    'django_celery_results',
+    'bootstrap_datepicker_plus',
+    'rest_framework',
+    'crispy_forms',
+]
+
+INSTALLED_APPS = PREREQ_APPS + PROJECT_APPS + THIRD_PARTY_APPS  # Third party apps last to allow template overriding
 
 if env('REDIS_HOST', default=None):
     CACHES = {
@@ -120,6 +123,7 @@ MIDDLEWARE = [
     'redpot.middleware.IEDetectionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'hijack.middleware.HijackUserMiddleware',
 ]
 
 ROOT_URLCONF = 'redpot.urls'
@@ -229,7 +233,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 STATIC_ROOT: Path = BASE_DIR / 'static'
-STATICFILES_DIRS = [BASE_DIR / 'redpot' / 'assets']
 MEDIA_URL = env('MEDIA_URL', default='/media/')
 MEDIA_ROOT: Path = env.path('MEDIA_ROOT', default=BASE_DIR / 'media')
 
@@ -356,6 +359,7 @@ CKEDITOR_CONFIGS = {
                 'span(fas,far,fad,fal,fab,fa,fa-*)[!class]',
             ]
         ),
+        'width': '100%',
     },
     'links_only': {
         'toolbar': 'custom',
@@ -368,6 +372,7 @@ CKEDITOR_CONFIGS = {
             ['Source'],
         ],
         'extraPlugins': 'wordcount',
+        'width': '100%',
     },
 }
 

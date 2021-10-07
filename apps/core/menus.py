@@ -134,6 +134,7 @@ def dev_children(request):
             icon="sync",
             target='_blank',
         ),
+        MenuItem("Impersonate", reverse('impersonate'), icon="mask"),
         MenuItem(
             "sentry.io",
             settings.SENTRY_URL,

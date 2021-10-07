@@ -52,6 +52,9 @@ urlpatterns = [
     path('staff-list/', include('apps.staff_list.urls')),
     path('staff-forms/', include('apps.staff_forms.urls')),
     path('website-account/', include('apps.website_account.urls')),
+    # django-hijack urls for impersonation
+    path('impersonate', core_views.Impersonate.as_view(), name='impersonate'),
+    path('impersonate-api/', include('hijack.urls')),
     # Example of legacy URLs
     path(
         'student/view/<int:id>',

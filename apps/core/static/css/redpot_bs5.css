@@ -822,3 +822,8 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 span.invalid-feedback {
     display: block !important;
 }
+
+/* Force ckeditor widgets to full-width */
+.django-ckeditor-widget{
+    display: block !important;
+}
