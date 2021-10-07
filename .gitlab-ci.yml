@@ -49,9 +49,11 @@ pytest:
 
 include:
   - template: Security/SAST.gitlab-ci.yml
+    needs: []
 
 python-safety:
   stage: lint
+  needs: []
   image: pipelinecomponents/python-safety:latest
   script:
     - safety check --full-report -r requirements.txt
