@@ -1,7 +1,7 @@
 image: docker:20.10.7
 
 variables:
-  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE/redpot:$CI_COMMIT_REF_SLUG
+  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE/redpot:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE/redpot:latest
 
   # only run bandit (for now)
@@ -11,7 +11,6 @@ stages:
   - build
   - test
   - lint
-  - release
   - deploy
 
 build:
@@ -50,24 +49,14 @@ pytest:
 
 include:
   - template: Security/SAST.gitlab-ci.yml
+    needs: []
 
 python-safety:
   stage: lint
+  needs: []
   image: pipelinecomponents/python-safety:latest
   script:
     - safety check --full-report -r requirements.txt
-
-release-image:
-  stage: release
-  services:
-    - docker:20.10.7-dind
-  script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull $CONTAINER_TEST_IMAGE
-    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
-    - docker push $CONTAINER_RELEASE_IMAGE
-  only:
-    - master
 
 deploy-staging:
   stage: deploy
@@ -75,6 +64,7 @@ deploy-staging:
   tags:
     - django-staging
   script:
+    - export REDPOT_IMAGE=$CONTAINER_TEST_IMAGE
     - docker stack deploy --compose-file $DOCKER_COMPOSE_FILE $DOCKER_STACK_NAME
   only:
     - master
