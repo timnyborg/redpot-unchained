@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   django:
-    image: gitlab.conted.ox.ac.uk/django/redpot-unchained/redpot:ci-deploy
+    image: ${REDPOT_IMAGE:?}
     secrets:
       - source: app_config
         target: /code/secrets.env
@@ -9,14 +9,14 @@ services:
       replicas: 2
     ports:
       - 127.0.0.1:8000:8000
-    entrypoint: /code/docker/entrypoint.sh
+    entrypoint: ["/code/docker/prod_static_entrypoint.sh", "uwsgi"]
     volumes:
-      - ./volumes/static:/volumes/static
-      - ./volumes/media:/volumes/media
+      - ${APP_FOLDER:?}/volumes/static:/volumes/static
+      - ${APP_FOLDER:?}/volumes/media:/volumes/media
     restart: always
 
   worker:
-    image: gitlab.conted.ox.ac.uk/django/redpot-unchained/redpot:ci-deploy
+    image: ${REDPOT_IMAGE:?}
     secrets:
       - source: app_config
         target: /code/secrets.env
@@ -28,5 +28,5 @@ services:
 
 secrets:
   app_config:
-    file: ./secrets.env
+    file: ${APP_FOLDER:?}/secrets.env
 
