@@ -78,7 +78,7 @@
 
     {% for message in messages %}
         <div
-            class="alert-header alert-{{ message.level_tag }}"
+            class="alert-header alert-{{ message.level_tag }} dismissable"
             onclick="this.classList.add('alert-hidden');" role="navigation"
         >
             <div class="container">

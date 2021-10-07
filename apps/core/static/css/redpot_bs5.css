@@ -272,7 +272,6 @@ span.noLocations {
 .alert-header {
     text-align: center;
     font-size: 18px;
-    cursor: pointer;
     transition: height 0.5s linear;
     max-height: 40px; /* an estimate for the slide up transition */
 }
@@ -295,17 +294,8 @@ span.noLocations {
     margin-right: 3px;
 }
 
-#top-flash {
-    min-width: 250px;
-    z-index: 10;
-}
-
-@media only screen and (min-width: 768px) {
-    #top-flash {
-        /*Should be set in Less */
-        position: fixed;
-        right: 20%;
-    }
+.alert-header.dismissable {
+    cursor: pointer;
 }
 
 /*Text over a divider, replicating <hr> style, with larger margins (40 vs 20) */
