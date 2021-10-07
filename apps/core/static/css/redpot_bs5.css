@@ -200,23 +200,6 @@ footer a {
     transform: none;
 }
 
-
-/* Tables' textless action icons sit at the far right, spaced */
-.quick-icons {
-    text-align: right;
-}
-
-.quick-icons a {
-    margin-left: 5px;
-}
-
-/* When quick-icons is not applied, do much the same effect.
-This has the side effect of reversing the display order (float vs text-align) so it's not recommended*/
-td:not(.quick-icons) > a:not(.set-default-hover) > .glyphicon, td:not(.quick-icons) > a:not(.set-default-hover) > .fa {
-    float: right;
-    margin-left: 5px;
-}
-
 /* Collapse forms, form-groups and help blocks (inserted by default by w2p) */
 .help-block {
     margin-top: 0;
