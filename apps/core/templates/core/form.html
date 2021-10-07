@@ -6,7 +6,7 @@
         {% block before-form %}{% endblock %}
         <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
             {% csrf_token %}
-            {% bootstrap5form form True %}
+            {% bootstrap_form form True %}
             <div class="form-group mb-3">
                 <button type='submit' class='btn btn-primary'>{{ form.submit_label|default:'Save' }}</button>
                 {% if object.get_delete_url %}

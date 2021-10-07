@@ -7,7 +7,7 @@
         <h4>Step 2: Choose fees to add to invoice</h4>
         <form method="get" action="{% url 'invoice:create' student.id %}">
             {% render_table table %}
-            {% bootstrap3submit 'Select' %}
+            {% bootstrap_submit 'Select' %}
         </form>
     </div>
 {% endblock %}

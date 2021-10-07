@@ -20,8 +20,8 @@
         <div class='col-8'>
             <form action="" enctype="multipart/form-data" method="post">
                 {% csrf_token %}
-                {% bootstrap5form search_form True %}
-                {% bootstrap3submit 'Search for matches' %}
+                {% bootstrap_form search_form True %}
+                {% bootstrap_submit 'Search for matches' %}
             </form>
             {{ search_form.media }}
         </div>
@@ -43,7 +43,7 @@
         {% endif %}
         <form action="" enctype="multipart/form-data" method="post">
             {% csrf_token %}
-            {% bootstrap5form create_form %}
+            {% bootstrap_form create_form %}
             <button type="submit" class="btn btn-success" name="action" value="create">Create student</button>
         </form>
     {% endif %}

@@ -48,14 +48,14 @@
                     {% block mainmenu %}
                         <!-- Nav menu center -->
                         {% with menu=menus.main %}
-                            {% include 'menu/bootstrap5_menu.html' %}
+                            {% include 'menu/bootstrap_menu.html' %}
                         {% endwith %}
                     {% endblock %}
                 </ul>
                 <!-- Login (nav right) -->
                 <ul class='navbar-nav justify-content-right ms-auto'>
                     {% with menu=menus.user %}
-                        {% include 'menu/bootstrap5_menu.html' %}
+                        {% include 'menu/bootstrap_menu.html' %}
                     {% endwith %}
                 </ul>
             </div>

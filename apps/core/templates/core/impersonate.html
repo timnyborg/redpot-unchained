@@ -5,7 +5,7 @@
 <div class='section'>
     <form action="{% url 'hijack:acquire' %}" enctype="multipart/form-data" method="post">
         {% csrf_token %}
-        {% bootstrap5form form %}
+        {% bootstrap_form form %}
         <div class="form-group mb-3">
             <button type='submit' class='btn btn-primary'>Impersonate</button>
         </div>

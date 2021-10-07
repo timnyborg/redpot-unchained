@@ -8,7 +8,7 @@
         <h4>Step 1: Choose enrolments to add to invoice</h4>
         <form method="get" action="{% url 'invoice:choose-fees' student.id %}">
             {% render_table table %}
-            {% bootstrap3submit 'Select' %}
+            {% bootstrap_submit 'Select' %}
         </form>
         {# todo: empty state #}
     </div>

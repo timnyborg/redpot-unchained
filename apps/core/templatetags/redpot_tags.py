@@ -63,7 +63,7 @@ def user_name(username):
 
 
 @register.inclusion_tag('utility/bootstrap_form.html')
-def bootstrap5form(form, status_classes=True, input_size='normal'):
+def bootstrap_form(form, status_classes=True, input_size='normal'):
     form_control_classes = {
         'normal': "form-control",
         'small': "form-control form-control-sm",
@@ -83,18 +83,8 @@ def bootstrap5form(form, status_classes=True, input_size='normal'):
 
 
 @register.simple_tag
-def bootstrap3submit(text: str = 'Submit', btn_type: str = 'primary'):
+def bootstrap_submit(text: str = 'Submit', btn_type: str = 'primary'):
     return mark_safe(f"<button type='submit' class='btn btn-{btn_type}'>{text}</button>")
-
-
-@register.simple_tag
-def bootstrap3delete(url: str, btn_type: str = 'danger', text: str = 'Delete'):
-    return mark_safe(f"<a href='{url}' class='pull-right btn btn-{btn_type}'>{text}</a>")
-
-
-@register.simple_tag
-def bootstrap3backbutton(text='Back', btn_type='default'):
-    return mark_safe(f"<a class='btn btn-{btn_type}' href='javascript:history.back()'>{text}</a>")
 
 
 @register.simple_tag

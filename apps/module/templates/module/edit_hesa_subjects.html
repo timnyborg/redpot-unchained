@@ -18,12 +18,12 @@
 
                     {% for subform in form %}
                         {# todo: consider using inline form layout here #}
-                        {% bootstrap5form subform True %}
+                        {% bootstrap_form subform True %}
                         {% if not forloop.last %}<hr>{% endif %}
                     {% endfor %}
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                            {% bootstrap3submit form.submit_label|default:'Save' %}
+                            {% bootstrap_submit form.submit_label|default:'Save' %}
                         </div>
                     </div>
                 </form>

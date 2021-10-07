@@ -7,8 +7,8 @@
     <p>Are you sure you want to remove <b>{{ programmemodule.module.long_form }}</b> from <b>{{ programmemodule.programme }}</b>?</p>
     <form action="" method="post">
         {% csrf_token %}
-        {% bootstrap3submit text='Remove' btn_type='danger' %}
-        {% bootstrap3backbutton btn_type='secondary' %}
+        {% bootstrap_submit text='Remove' btn_type='danger' %}
+        <a class='btn btn-secondary' href='javascript:history.back()'>Cancel</a>
     </form>
 </div>
 {{ form.media }}
