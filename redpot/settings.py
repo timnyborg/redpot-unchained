@@ -233,7 +233,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 STATIC_ROOT: Path = BASE_DIR / 'static'
-STATICFILES_DIRS = [BASE_DIR / 'redpot' / 'assets']
 MEDIA_URL = env('MEDIA_URL', default='/media/')
 MEDIA_ROOT: Path = env.path('MEDIA_ROOT', default=BASE_DIR / 'media')
 
