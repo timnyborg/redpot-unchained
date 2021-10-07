@@ -59,15 +59,32 @@
             </div>
         </div>
     </nav>
+    {% if request.user.is_hijacked %}
+        <div class="alert-header alert-info" role="navigation">
+            <div class="container">
+                <span class="alert-icon"><i class="fas fa-fw fa-mask"></i></span>
+                You are currently impersonating <b>{{ request.user.get_full_name }}</b> ({{ request.user.username }})
+                <button class="btn btn-link btn-xs" type="submit" form="release_impersonate_form" >
+                    End impersonation
+                </button>
+                <form id="release_impersonate_form" action="{% url 'hijack:release' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+
     {% for message in messages %}
         <div
             class="alert-header alert-{{ message.level_tag }}"
             onclick="this.classList.add('alert-hidden');" role="navigation"
         >
             <div class="container">
-            <span class="alert-icon">
-                <i class="{% message_icon_class message.level_tag %}"></i>
-            </span>
+                <span class="alert-icon">
+                    <i class="{% message_icon_class message.level_tag %}"></i>
+                </span>
                 <span class="alert-heading">{{ message.heading }}</span> {{ message }}
             </div>
         </div>

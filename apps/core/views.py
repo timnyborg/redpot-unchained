@@ -7,26 +7,20 @@ import time
 import django_redis
 
 import django
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.views import generic
 
-
-# A custom Login form & view to enable overriding error_messages
-class CustomAuthForm(AuthenticationForm):
-    error_messages = {
-        'invalid_login': "Please enter your departmental %(username)s and password",
-        'inactive': "This account is inactive.",
-    }
-
-
-class CustomLoginView(LoginView):
-    authentication_form = CustomAuthForm
+from apps.core.forms import CustomAuthForm, ImpersonateForm
+from apps.core.utils.views import PageTitleMixin
 
 
 class Index(generic.TemplateView):
     template_name = 'core/index.html'
+
+
+class CustomLoginView(LoginView):
+    authentication_form = CustomAuthForm
 
 
 class SystemInfo(PermissionRequiredMixin, generic.TemplateView):
@@ -58,3 +52,15 @@ class SystemInfo(PermissionRequiredMixin, generic.TemplateView):
                 'django': django.get_version(),
             },
         }
+
+
+class Impersonate(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
+    """A screen for quick user impersonation, requiring a superuser"""
+
+    template_name = 'core/impersonate.html'
+    form_class = ImpersonateForm
+    title = 'User'
+    subtitle = 'Impersonate'
+
+    def has_permission(self) -> bool:
+        return self.request.user.is_superuser

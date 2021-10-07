@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+{% block center %}
+
+<div class='section'>
+    <form action="{% url 'hijack:acquire' %}" enctype="multipart/form-data" method="post" class="form-horizontal">
+        {% csrf_token %}
+        {% bootstrap5form form True %}
+        <div class="form-group mb-3">
+            <button type='submit' class='btn btn-primary'>{{ form.submit_label|default:'Save' }}</button>
+            {% if object.get_delete_url %}
+                <a href='{{ object.get_delete_url }}' class='btn btn-danger float-end'>Delete</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{{ form.media }}
+
+{% endblock %}
