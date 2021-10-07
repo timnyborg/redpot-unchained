@@ -101,17 +101,17 @@
         </thead>
         {% for row in enrolments %}
             <tr>
-                <td class="col-xs-1">
+                <td class="col-1">
                     <a href="{{ row.module.get_absolute_url }}">{{ row.module.code }}</a>
                 </td>
                 <td>
                     <a href="{{ row.module.get_absolute_url }}">{{ row.module.title }}</a>
                 </td>
-                <td class="col-xs-2">{{ row.status }}</td>
-                <td class="col-xs-2">{{ row.result }}</td>
-                <td class="col-xs-1">{{ row.points_awarded | default:'–' }}</td>
-                <td class="col-xs-2">{{ row.module.start_date }}</td>
-                <td class="col-xs-1">
+                <td class="col-2">{{ row.status }}</td>
+                <td class="col-2">{{ row.result }}</td>
+                <td class="col-1">{{ row.points_awarded | default:'–' }}</td>
+                <td class="col-2">{{ row.module.start_date }}</td>
+                <td class="col-1">
                     <a href="{{ row.get_absolute_url }}">
                         <i class="fas fa-search"></i>
                     </a>

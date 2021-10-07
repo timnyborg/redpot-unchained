@@ -3,7 +3,7 @@
 {% block center %}
 
 <div class='section'>
-    <form action="{% url 'hijack:acquire' %}" enctype="multipart/form-data" method="post" class="form-horizontal">
+    <form action="{% url 'hijack:acquire' %}" enctype="multipart/form-data" method="post">
         {% csrf_token %}
         {% bootstrap5form form %}
         <div class="form-group mb-3">

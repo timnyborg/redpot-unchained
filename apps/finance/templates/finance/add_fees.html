@@ -5,7 +5,7 @@
 {% block center %}
     <div class="section">
         <h2>Course fees</h2>
-        <form action="{% url 'finance:add-module-fees' enrolment.id %}" method="post" class="form-horizontal">
+        <form action="{% url 'finance:add-module-fees' enrolment.id %}" method="post">
             {% csrf_token %}
             {% render_table table %}
             {% bootstrap3submit 'Add fees' %}
@@ -13,7 +13,7 @@
         <div class='horizontal-divider'><span>OR</span></div>
 
         <h2>Custom fee or adjustment</h2>
-        <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
+        <form action="" enctype="multipart/form-data" method="post">
             {% csrf_token %}
             {% bootstrap5form form %}
             <div class="col-sm-offset-2 col-sm-10">

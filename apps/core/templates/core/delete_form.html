@@ -3,21 +3,17 @@
 {% block center %}
 
 <div class='section'>
-    <div class='row'>
-        <div class='col-xs-8'>
-            <h4>Are you sure you wish to delete this record?</h4>
-            <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
-                {% csrf_token %}
-                <div class="form-group">
-                    <div class="col-sm-10">
-                        {% bootstrap3submit text='Delete' btn_type='danger' %}
-                        {% if object.get_absolute_url %}
-                            <a href="{{ object.get_absolute_url }}" class="btn btn-secondary">Cancel</a>
-                        {% endif %}
-                    </div>
-                </div>
-            </form>
+    <h4>Are you sure you wish to delete this record?</h4>
+    <form action="" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <div class="col-sm-10">
+                {% bootstrap3submit text='Delete' btn_type='danger' %}
+                {% if object.get_absolute_url %}
+                    <a href="{{ object.get_absolute_url }}" class="btn btn-secondary">Cancel</a>
+                {% endif %}
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 {% endblock %}

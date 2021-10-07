@@ -11,7 +11,7 @@
         <h4>{{ student }}</h4>
         <h5>{{ module.title }} ({{ module.code }}) &bull; {{ module.start_date }} &ndash; {{ module.end_date }}</h5>
         <hr>
-        <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
+        <form action="" enctype="multipart/form-data" method="post" >
             {% csrf_token %}
             {% bootstrap5form form True %}
             <div class="form-group mb-3">

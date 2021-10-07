@@ -5,7 +5,7 @@
 {% block center %}
 <div class="section">
     <div class="row">
-        <div class="col-xs-12 col-md-4">
+        <div class="col-12 col-md-4">
             {% edit_button invoice %}
             <h2>{{ invoice }}</h2>
 
@@ -28,7 +28,7 @@
             </dl>
         </div>
         <div class="col-md-6 hidden-xs hidden-sm"></div>
-        <div class='col-xs-12 col-md-2 d-grid gap-2 mb-auto'>
+        <div class='col-12 col-md-2 d-grid gap-2 mb-auto'>
             <a class='btn btn-outline-dark btn-block' href="{% url 'invoice:pdf' invoice.id %}">
                 <i class="fas fa-fw fa-file-pdf"></i> PDF
             </a>

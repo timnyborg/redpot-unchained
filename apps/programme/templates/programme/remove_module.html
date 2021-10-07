@@ -5,7 +5,7 @@
 <div class='section'>
     {# todo: use generic delete template once it handles custom confirmation messages #}
     <p>Are you sure you want to remove <b>{{ programmemodule.module.long_form }}</b> from <b>{{ programmemodule.programme }}</b>?</p>
-    <form action="" method="post" class="form-horizontal">
+    <form action="" method="post">
         {% csrf_token %}
         {% bootstrap3submit text='Remove' btn_type='danger' %}
         {% bootstrap3backbutton btn_type='secondary' %}
