@@ -235,6 +235,9 @@ STATICFILES_FINDERS = (
 STATIC_ROOT: Path = BASE_DIR / 'static'
 MEDIA_URL = env('MEDIA_URL', default='/media/')
 MEDIA_ROOT: Path = env.path('MEDIA_ROOT', default=BASE_DIR / 'media')
+# separate path and URL for media only accessible via an X-Accel-Redirect header
+PROTECTED_MEDIA_URL = env('PROTECTED_MEDIA_URL', default='/protected-media/')
+PROTECTED_MEDIA_ROOT: Path = env.path('PROTECTED_MEDIA_ROOT', default=BASE_DIR / 'protected_media')
 
 DJANGORESIZED_DEFAULT_QUALITY = 75
 DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'PNG': ".png"}

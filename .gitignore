@@ -1,10 +1,20 @@
-secrets.*
-*.env
+# python runtime files
 __pycache__/
 *.py[cod]
+
+# configs and secrets
+secrets.*
+*.env
+
+# IDE folders
+.vscode
 .idea/
+
+# environment management
 Pipfile*
 .venv
 venv
+
+# media folders
 media/
-.vscode
+protected_media/

@@ -30,4 +30,5 @@ urlpatterns = [
         name='postgraduate-headed',
     ),
     path('create-batch', views.CreateBatch.as_view(), name='create-batch'),
+    path('view-batch/<str:filename>', views.ViewBatch.as_view(), name='view-batch'),
 ]

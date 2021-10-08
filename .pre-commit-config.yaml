@@ -38,4 +38,4 @@ repos:
     hooks:
      - id: eslint
        args: [--fix]
-       exclude: ckeditor/plugins/*
+       exclude: ckeditor/plugins/

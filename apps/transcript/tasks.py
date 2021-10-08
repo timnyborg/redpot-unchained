@@ -1,6 +1,5 @@
 from datetime import date, datetime
 from io import BytesIO
-from pathlib import Path
 
 from celery_progress.backend import ProgressRecorder
 from PyPDF2 import PdfFileMerger
@@ -52,7 +51,7 @@ def create_batch(self, *, level: str, header: bool, created_by: str):
         recorder.set_progress(current=index, total=len(students), description='Todo')
 
     # create the media subfolder if required
-    file_path = Path(settings.MEDIA_ROOT / 'protected' / 'transcripts')
+    file_path = settings.PROTECTED_MEDIA_ROOT / 'transcripts'
     file_path.mkdir(parents=True, exist_ok=True)
 
     now = datetime.now()
