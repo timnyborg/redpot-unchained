@@ -66,5 +66,5 @@ deploy-staging:
   script:
     - export REDPOT_IMAGE=$CONTAINER_TEST_IMAGE
     - docker stack deploy --compose-file $DOCKER_COMPOSE_FILE $DOCKER_STACK_NAME
-  only:
-    - master
+#  only:
+#    - master

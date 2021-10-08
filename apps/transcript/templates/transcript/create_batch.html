@@ -4,7 +4,7 @@
     <div class="alert alert-info">
         <i class="fas fa-info-circle"></i>
         Transcripts will be produced for <strong>all</strong> newly-completed stand-alone for-credit enrolments.
-        (Individual transcripts can be printed from students' personal records.)
+        (Individual transcripts can be printed from students' personal records)
     </div>
 {% endblock %}
 
@@ -13,11 +13,10 @@
         <h2>Previous batches</h2>
         <table class="table table-striped">
             <tbody>
-            {# Todo: list previous batches #}
             {% for filename in history %}
             <tr>
                 <td>
-                    <a href="{{ filename }}">{{ filename }}</a>
+                    <a href="{% url 'transcript:view-batch' filename %}">{{ filename }}</a>
                 </td>
             </tr>
             {% endfor %}

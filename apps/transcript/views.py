@@ -1,4 +1,5 @@
 from django import http
+from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.views import generic
@@ -45,6 +46,16 @@ class CreateBatch(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         # Get a list of past files
-        # todo: get list of past files from a restricted media directory (/transcripts), all .pdfs reverse sorted
-        context['history'] = ['fakerecord.pdf']
+        file_path = settings.PROTECTED_MEDIA_ROOT / 'transcripts'
+        file_path.mkdir(parents=True, exist_ok=True)
+
+        context['history'] = sorted([file.stem + file.suffix for file in file_path.iterdir()], reverse=True)
         return context
+
+
+class ViewBatch(PermissionRequiredMixin, generic.View):
+    permission_required = 'transcript.batch_print'
+
+    def get(self, request, filename: str, *args, **kwargs):
+        path = settings.PROTECTED_MEDIA_URL + 'transcripts/' + filename
+        return http.HttpResponse(content_type='', headers={'X-Accel-Redirect': path})

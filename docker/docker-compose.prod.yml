@@ -32,6 +32,9 @@ services:
         target: /code/secrets.env
     restart: always
     command: celery -A redpot worker -n redpot-worker
+    volumes:
+      - ${APP_FOLDER:?}/volumes/media:/volumes/media
+
   redis:
     image: redis:6.0
     restart: always
@@ -39,4 +42,3 @@ services:
 secrets:
   app_config:
     file: ${APP_FOLDER:?}/secrets.env
-
