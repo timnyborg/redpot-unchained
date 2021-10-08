@@ -112,7 +112,7 @@ class Student(SITSLockingModelMixin, SignatureModel):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
-        return reverse('student-view', args=[self.id])
+        return reverse('student:view', args=[self.id])
 
     def get_edit_url(self):
         return reverse('student:edit', args=[self.id])
