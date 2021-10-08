@@ -12,13 +12,13 @@
     <div class="col-7">
         <dl class="row">
             <dt class="col-3">Tutor</dt>
-            <dd class="col-9 mb-1"><a href="{% url 'student-view' object.tutor.student_id %}">
-                {{ object.tutor.student }}
-            </a></dd>
+            <dd class="col-9 mb-1">
+                <a href="{{ object.tutor.get_absolute_url }}">{{ object.tutor.student }}</a>
+            </dd>
             <dt class="col-3">Module</dt>
-            <dd class="col-9 mb-1"><a href="{% url 'module:view' object.module.id %}">
-                {{ object.module.long_form }}
-            </a></dd>
+            <dd class="col-9 mb-1">
+                <a href="{{ object.module.get_absolute_url }}">{{ object.module.long_form }}</a>
+            </dd>
             <dt class="col-3">Role</dt>
             <dd class="col-9 mb-1">{{ object.role | default:'–' }}</dd>
             <dt class="col-3">Teaching</dt>

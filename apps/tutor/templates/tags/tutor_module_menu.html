@@ -5,18 +5,18 @@
     </a>
     <ul class="dropdown-menu" role="menu">
         <li>
-            <a href="{% url 'tutor:module:view' tutor_module.id %}?next={{ request.get_full_path }}#tutor-modules" class="dropdown-item">
+            <a href="{{ tutor_module.get_absolute_url }}?next={{ request.get_full_path }}#tutor-modules" class="dropdown-item">
                 <i class="fas fa-fw fa-search"></i> Details
             </a>
         </li>
         <li>
-            <a href="{% url 'tutor:module:edit' tutor_module.id %}?next={{ request.get_full_path }}#tutor-modules" class="dropdown-item">
+            <a href="{{ tutor_module.get_edit_url }}?next={{ request.get_full_path }}#tutor-modules" class="dropdown-item">
                 <i class="fas fa-fw fa-pencil-alt"></i> Edit
             </a>
         </li>
         <li class="dropdown-divider"></li>
         <li>
-            <a href="{% url 'tutor:module:view' tutor_module.id %}#payments" class="dropdown-item">
+            <a href="{{ tutor_module.get_absolute_url }}#payments" class="dropdown-item">
                 <i class="fas fa-briefcase fa-fw"></i> Payments
             </a>
         </li>

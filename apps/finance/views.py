@@ -167,7 +167,7 @@ class MultipleEnrolmentSelection(LoginRequiredMixin, PageTitleMixin, generic.Tem
             return self.get(request, *args, **kwargs)
 
         query_string = urlencode(
-            {'enrolment': enrolments, 'next': reverse('student-view', args=[self.kwargs['student_id']])}, doseq=True
+            {'enrolment': enrolments, 'next': reverse('student:view', args=[self.kwargs['student_id']])}, doseq=True
         )
         return redirect(reverse('finance:pay-multiple-enrolments') + f'?{query_string}')
 
