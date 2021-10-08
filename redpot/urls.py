@@ -19,10 +19,8 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from django.views.defaults import page_not_found
-from django.views.generic import RedirectView
 
 import apps.core.views as core_views
-from redpot.settings import W2P_REDPOT_URL
 
 urlpatterns = [
     path('login/', core_views.CustomLoginView.as_view(), name='login'),
@@ -51,21 +49,11 @@ urlpatterns = [
     path('user/', include('apps.user.urls')),
     path('staff-list/', include('apps.staff_list.urls')),
     path('staff-forms/', include('apps.staff_forms.urls')),
+    path('task/', include('apps.task_progress.urls', namespace='task')),
     path('website-account/', include('apps.website_account.urls')),
     # django-hijack urls for impersonation
     path('impersonate', core_views.Impersonate.as_view(), name='impersonate'),
     path('impersonate-api/', include('hijack.urls')),
-    # Example of legacy URLs
-    path(
-        'student/view/<int:id>',
-        RedirectView.as_view(url=f'{W2P_REDPOT_URL}/student/view/%(id)s'),
-        name='student-view',
-    ),
-    path(
-        'student/<str:action>/<int:id>',
-        RedirectView.as_view(url=f'{W2P_REDPOT_URL}/student/%(action)s/%(id)s'),
-        name='student-view',
-    ),
     path('unimplemented', page_not_found, {'exception': 'Haven\'t built it yet'}, name='unimplemented'),
 ]
 
