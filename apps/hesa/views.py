@@ -1,9 +1,4 @@
-import json
-
-from celery.result import AsyncResult
-
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views import generic
 
@@ -30,17 +25,4 @@ class CreateBatch(LoginRequiredMixin, PageTitleMixin, generic.FormView):
         task = tasks.create_return.delay(
             academic_year=form.cleaned_data['year'], created_by=self.request.user.username
         )
-        return redirect('hesa:status', task_id=task.id)
-
-
-class TaskStatus(generic.View):
-    def get(self, request, task_id):
-        result = AsyncResult(task_id)
-        response_data = {
-            'state': result.state,
-            'details': result.info,
-        }
-        if isinstance(response_data['details'], Exception):
-            response_data['details'] = repr(response_data['details'])
-
-        return JsonResponse(json.dumps(response_data), content_type='application/json', safe=False)
+        return redirect('task:progress', task_id=task.id)
