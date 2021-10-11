@@ -2,78 +2,21 @@
 {% load redpot_tags %}
 {% block center %}
 
-<div class='section'>
-    {% block before-form %}{% endblock %}
-    <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
-        {% csrf_token %}
-        {% bootstrap5form form True %}
-        <div class="form-group mb-3">
-            <button type='submit' class='btn btn-primary'>{{ form.submit_label|default:'Save' }}</button>
-            {% if object.get_delete_url %}
-                <a href='{{ object.get_delete_url }}' class='btn btn-danger float-end'>Delete</a>
-            {% endif %}
-        </div>
-    </form>
-    {% block after-form %}{% endblock %}
-    {% timestamp object %}
-</div>
-{% block after-section %}{% endblock %}
-{{ form.media }}
-
-<script>
-// Return to work show and hide input fields
-(function() {
-    var elem = document.getElementById("id_rtw_type");
-    var rtw_doc_div = document.getElementById("id_rtw_document_type").closest(".form-group");
-
-    function slideDown (element) {
-        element.style.opacity = 1;
-        element.style.transition = "all 1s ease-in-out";
-
-
-        if (element.classList.contains("has-error")){
-            // Should only occur on refresh
-            element.style.height = "auto";
-        } else {
-            element.style.height = "54px";
-        }
-    }
-
-    function slideUp (element) {
-        element.style.opacity = 0;
-        element.style.transition = "all 0.5s ease-in-out";
-        element.style.height = "0px";
-    }
-
-    function rtw_div_display() {
-
-
-        var rtw_check_by_div = document.getElementById("id_rtw_start_date").closest(".form-group");
-        var rtw_doc_type_div = document.getElementById("id_rtw_end_date").closest(".form-group");
-
-        if (elem.value == 1) {
-            // List A
-            slideDown(rtw_doc_div);
-            slideUp(rtw_check_by_div);
-            slideUp(rtw_doc_type_div);
-
-        } else if (elem.value == 2) {
-            // List B
-            slideDown(rtw_doc_div);
-            slideDown(rtw_check_by_div);
-            slideDown(rtw_doc_type_div);
-        } else {
-            slideUp(rtw_doc_div);
-            slideUp(rtw_check_by_div);
-            slideUp(rtw_doc_type_div);
-        }
-    }
-
-    // On page load
-    document.onload = rtw_div_display();
-
-    // Dropdown change
-    elem.onchange = rtw_div_display;
-})();
-</script>
+    <div class='section'>
+        {% block before-form %}{% endblock %}
+        <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
+            {% csrf_token %}
+            {% bootstrap5form form True %}
+            <div class="form-group mb-3">
+                <button type='submit' class='btn btn-primary'>{{ form.submit_label|default:'Save' }}</button>
+                {% if object.get_delete_url %}
+                    <a href='{{ object.get_delete_url }}' class='btn btn-danger float-end'>Delete</a>
+                {% endif %}
+            </div>
+        </form>
+        {% block after-form %}{% endblock %}
+        {% timestamp object %}
+    </div>
+    {% block after-section %}{% endblock %}
+    {{ form.media }}
 {% endblock %}

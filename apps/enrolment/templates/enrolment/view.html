@@ -71,7 +71,7 @@
             <i class="fas fa-fw fa-pound-sign"></i> Add payment
         </a>
         <a
-            href="{% url 'invoice:choose-enrolments' student.id %}?enrolments={{ enrolment.id }}"
+            href="{% url 'invoice:choose-enrolments' student.id %}?enrolment={{ enrolment.id }}"
             class="btn btn-primary"
             {% if payment_disabled and not perms.finance %}disabled{% endif %}
         >
