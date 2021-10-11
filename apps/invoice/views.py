@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views import generic
@@ -114,10 +115,12 @@ class ChooseEnrolments(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, gen
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
+        int_ids = [int(str_id) for str_id in self.request.GET.getlist('enrolment') if str_id.isnumeric()]
         return (
             Enrolment.objects.filter(
+                # Past year of enrolments, plus any indicated by URL
+                Q(created_on__gt=datetime.now() - relativedelta(years=1)) | Q(id__in=int_ids),
                 qa__student=self.student,
-                created_on__gt=datetime.now() - relativedelta(years=1),
                 # Only include enrolments with non-invoiced ledger items
                 ledger__id__isnull=False,
                 ledger__invoice_ledger__id__isnull=True,
