@@ -200,23 +200,6 @@ footer a {
     transform: none;
 }
 
-
-/* Tables' textless action icons sit at the far right, spaced */
-.quick-icons {
-    text-align: right;
-}
-
-.quick-icons a {
-    margin-left: 5px;
-}
-
-/* When quick-icons is not applied, do much the same effect.
-This has the side effect of reversing the display order (float vs text-align) so it's not recommended*/
-td:not(.quick-icons) > a:not(.set-default-hover) > .glyphicon, td:not(.quick-icons) > a:not(.set-default-hover) > .fa {
-    float: right;
-    margin-left: 5px;
-}
-
 /* Collapse forms, form-groups and help blocks (inserted by default by w2p) */
 .help-block {
     margin-top: 0;
@@ -272,7 +255,6 @@ span.noLocations {
 .alert-header {
     text-align: center;
     font-size: 18px;
-    cursor: pointer;
     transition: height 0.5s linear;
     max-height: 40px; /* an estimate for the slide up transition */
 }
@@ -295,17 +277,8 @@ span.noLocations {
     margin-right: 3px;
 }
 
-#top-flash {
-    min-width: 250px;
-    z-index: 10;
-}
-
-@media only screen and (min-width: 768px) {
-    #top-flash {
-        /*Should be set in Less */
-        position: fixed;
-        right: 20%;
-    }
+.alert-header.dismissable {
+    cursor: pointer;
 }
 
 /*Text over a divider, replicating <hr> style, with larger margins (40 vs 20) */

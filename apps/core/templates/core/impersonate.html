@@ -3,14 +3,11 @@
 {% block center %}
 
 <div class='section'>
-    <form action="{% url 'hijack:acquire' %}" enctype="multipart/form-data" method="post" class="form-horizontal">
+    <form action="{% url 'hijack:acquire' %}" enctype="multipart/form-data" method="post">
         {% csrf_token %}
-        {% bootstrap5form form True %}
+        {% bootstrap_form form %}
         <div class="form-group mb-3">
-            <button type='submit' class='btn btn-primary'>{{ form.submit_label|default:'Save' }}</button>
-            {% if object.get_delete_url %}
-                <a href='{{ object.get_delete_url }}' class='btn btn-danger float-end'>Delete</a>
-            {% endif %}
+            <button type='submit' class='btn btn-primary'>Impersonate</button>
         </div>
     </form>
 </div>

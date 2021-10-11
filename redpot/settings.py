@@ -386,3 +386,6 @@ DJANGO_TABLES2_TEMPLATE = 'utility/bootstrap5_table.html'
 # Contract configuration - todo: consider moving into a settings table once we have one, consider a file:// url fetcher
 CONTRACT_SIGNATORY = env('CONTRACT_SIGNATORY', default='')
 CONTRACT_SIGNATURE_IMAGE = env('CONTRACT_SIGNATURE_IMAGE', default='')  # a path within the media folder
+
+# Tag manager config
+GOOGLE_TAG_MANAGER_ID = env('GOOGLE_TAG_MANAGER_ID', default='')

@@ -19,7 +19,7 @@
                 {% if item.icon %}<i class="fas fa-{{ item.icon }}"></i> {% endif %}{{item.title}}
             </a>
             {% if item.children %}
-                {% include 'menu/bootstrap5_submenu.html' with items=item.children %}
+                {% include 'menu/bootstrap_submenu.html' with items=item.children %}
             {% endif %}
         </li>
     {% endif %}

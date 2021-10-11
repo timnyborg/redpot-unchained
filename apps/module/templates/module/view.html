@@ -513,7 +513,7 @@
                 {% endif %}
             </td>
             <td>
-                <a href="form/view/{{ application.id }}">
+                <a href="form/view/{{ application.id }}" class="float-end">
                     <i class="fas fa-fw fa-pencil-alt"></i>
                 </a>
             </td>
@@ -549,8 +549,8 @@
                         </td>
                         <td></td>
                         <td>£{{ fee.amount | floatformat:-2 }}</td>
-                        <td class="quick-icons">
-                            <a href="{% url 'fee:edit' fee.pk %}"><i class="fas fa-pencil-alt"></i></a>
+                        <td>
+                            <a href="{% url 'fee:edit' fee.pk %}" class="float-end"><i class="fas fa-pencil-alt"></i></a>
                         </td>
                     </tr>
                 {% endif %}
@@ -568,8 +568,8 @@
                         </td>
                         <td>{{ fee.type.narrative }}</td>
                         <td>£{{ fee.amount | floatformat:-2 }}</td>
-                        <td class="quick-icons">
-                            <a href="{% url 'fee:edit' fee.pk %}"><i class="fas fa-pencil-alt"></i></a>
+                        <td>
+                            <a href="{% url 'fee:edit' fee.pk %}" class="float-end"><i class="fas fa-pencil-alt"></i></a>
                         </td>
                     </tr>
                 {% endif %}
@@ -620,7 +620,7 @@
 
 <div class="section">
     <div class="float-end">
-        <a href="module/add-payment-plan/{{ module.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add Payment plan</a>
+        <a href="module/add-payment-plan/{{ module.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add payment plan</a>
     </div>
     <h2 id="payment-plans" class="section-title">Payment plans</h2>
     {% if payment_plans %}
@@ -631,9 +631,8 @@
                 <td>
                     {{ plan.name }}
                 </td>
-                <td class="quick-icons">
-                    <a href="EDIT"><i class="fas fa-fw fa-pencil-alt"></i></a>
-                    <a href="DELETE"><i class="fas fa-fw fa-times"></i></a>
+                <td>
+                    <a href="DELETE" class="float-end"><i class="fas fa-fw fa-times"></i></a>
                 </td>
             </tr>
             {# delete_button = A(icon('remove'), data={'toggle': 'modal', 'target': '#confirm-remove-plan', 'href': URL('payment_plan', args=['delete', plan.id])}, _href='#') #}
@@ -645,7 +644,7 @@
 <div class="section">
     <div class="float-end">
         <a href="{% url 'module:add-programme' module.id %}?next={{ request.get_full_path }}#programmes" class="btn btn-success btn-xs">
-            <span class="fa fa-plus"></span> Add Programme
+            <span class="fa fa-plus"></span> Add programme
         </a>
     </div>
     <h2 id="programmes" class="section-title">Programmes</h2>
@@ -654,7 +653,6 @@
     <table class="table table-hover">
     <thead><tr><th>Title</th><th></th></tr></thead>
         {% for programme in programmes %}
-            {# delete_button = TD(A(icon('remove'), data={'toggle': 'modal', 'target': '#confirm-remove-module', 'href': URL('programme', 'remove_module', args=row.id, vars={'_next': URL(args=request.args, anchor='programmes')})}, _href='#'), _class='span2 quick-icons') #}
             <tr>
                 <td>
                     {% if programme.qualification == 1 and module.credit_points %}

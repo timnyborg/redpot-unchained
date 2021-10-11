@@ -7,7 +7,7 @@
 <div class="section">
     <div class="row">
         <h2>Lookup</h2>
-        <form method='POST' action="{% url 'invoice:lookup' %}" class='form-horizontal'>
+        <form method='POST' action="{% url 'invoice:lookup' %}">
             {% csrf_token %}
             <div class="col-3">
                 <div class="input-group">
@@ -24,7 +24,7 @@
 <div class="section">
 	<div class="row">
         <h2>Search</h2>
-        <form action="" class='form-horizontal'>
+        <form action="">
             {% include 'core/components/search_form.html' %}
         </form>
     </div>
