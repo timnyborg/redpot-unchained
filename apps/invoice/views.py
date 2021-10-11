@@ -168,7 +168,7 @@ class Create(LoginRequiredMixin, PageTitleMixin, generic.FormView):
     Provide the invoice details in a standard form"""
 
     form_class = forms.InvoiceForm
-    template_name = 'core/form.html'
+    template_name = 'invoice/form.html'
     title = 'Invoice'
     subtitle = 'Create – additional details'
 
