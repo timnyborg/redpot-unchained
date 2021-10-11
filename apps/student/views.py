@@ -14,11 +14,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
+from apps.core.utils import strings
 from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
 
-from . import datatables, forms
+from . import datatables, forms, pdfs
 from .models import Address, Diet, Email, EmergencyContact, Enquiry, MoodleID, OtherID, Phone, Student, StudentArchive
 
 
@@ -489,3 +490,15 @@ class CreateOrEditEmergencyContact(
 
     def get_success_url(self):
         return self.object.student.get_absolute_url()
+
+
+class StatementPDF(LoginRequiredMixin, generic.View):
+    """Generate a statement for all a student's enrolments"""
+
+    def get(self, request, pk: int, *args, **kwargs) -> http.HttpResponse:
+        student = get_object_or_404(Student, pk=pk)
+        document = pdfs.create_statement(student)
+        filename = strings.normalize(f'Statement_{student.firstname}_{student.surname}.pdf')
+        return http.HttpResponse(
+            document, content_type='application/pdf', headers={'Content-Disposition': f'inline;filename={filename}'}
+        )

@@ -612,7 +612,8 @@ ul.item-list {
     border-top: 1px solid #eee;
 }
 
-ul.item-list li {
+ul.item-list li.item,
+ul.item-list li.hide-toggle{
     padding: 10px 15px;
     display: block;
     border-color: #eee;
@@ -620,7 +621,8 @@ ul.item-list li {
     font-size: 15px;
 }
 
-ul.item-list li:hover {
+ul.item-list li.item:hover,
+ul.item-list li.hide-toggle:hover {
     background-color: #f4f4f4;
 }
 

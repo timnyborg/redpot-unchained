@@ -119,12 +119,15 @@
                 {% if student.email_optin %}
                     <a class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown">Opted in <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="/student/marketing/{{ student.id }}">{% icon_text 'Opt-out' 'fa-check text-danger' %}</a></li>
+                        <li><a href="/student/marketing/{{ student.id }}">
+                            <i class="fas fa-fw fa-check text-danger">Opt-out</i>
+                        </a></li>
                     </ul>
                 {% else %}
                     <a class="btn btn-outline-dark btn-sm dropdown-toggle" data-bs-toggle="dropdown">Not opted-in <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="/student/marketing/{{ student.id }}">{% icon_text 'Opt-in' 'fa-check text-success' %}</a></li>
+                        <li><a href="/student/marketing/{{ student.id }}">
+                            <i class="fas fa-fw fa-check text-success"></i> Opt-in</a></li>
                     </ul>
                 {% endif %}
             </div>
@@ -183,7 +186,7 @@
                         {% if address.is_billing %}
                             <span class="badge bg-success"
                                 data-bs-toggle="tooltip"
-                                data-title="Used for invoicing"
+                                title="Used for invoicing"
                             >Billing</span>
                         {% endif %}
                         </div>
@@ -211,7 +214,7 @@
                                         Set default
                                     </a>
                                 {% endif %}
-                                <a data-bs-toggle="tooltip" placement="top" title="Copy address to clipboard" class="btn btn-outline-dark copyAddressButton" onclick="copyToClipboardBreakLines('#addressField{{ address.id}}')">
+                                <a data-bs-toggle="tooltip" placement="top" title="Copy address to clipboard" class="btn btn-outline-dark me-1 copyAddressButton" onclick="copyToClipboardBreakLines('#addressField{{ address.id}}')">
                                     <span class="far fa-copy">
                                     </span>
                                 </a>
@@ -246,7 +249,7 @@
                         <span class="badge bg-warning">SITS</span>
                     {% endif %}
                     {% if email.note %}
-                        <span data-bs-toggle="tooltip" data-title="{{ email.note }}">
+                        <span data-bs-toggle="tooltip" title="{{ email.note }}">
                             <i class="far fa-comment"></i>
                         </span>
                     {% endif %}
@@ -264,7 +267,7 @@
                                 Set default
                             </a>
                         {% endif %}
-                        <a data-bs-toggle="tooltip" placement="top" data-title="Copy email to clipboard" class="btn btn-outline-dark" onclick="copyToClipboard('{{email.email}}')"><span class="far fa-copy"></span></a>
+                        <a data-bs-toggle="tooltip" placement="top" title="Copy email to clipboard" class="btn btn-outline-dark" onclick="copyToClipboard('{{email.email}}')"><span class="far fa-copy"></span></a>
                         <a href="{{ email.get_edit_url }}" class="btn btn-outline-dark"><span class="fas fa-pencil-alt"></span></a>
                     </div>
                 </div>
@@ -298,7 +301,7 @@
                         <span class="badge bg-warning">SITS</span>
                     {% endif %}
                     {% if phone.note %}
-                        <span data-bs-toggle="tooltip" data-title="{{ phone.note }}">
+                        <span data-bs-toggle="tooltip" title="{{ phone.note }}">
                             <i class="far fa-comment"></i>
                         </span>
                     {% endif %}
@@ -384,25 +387,39 @@
         </ul>
     </div>
     {% endfor %}
-    <a class="btn btn-success" href="{% url 'qualification_aim:new' student.id %}">{% icon_text 'Add programme' 'fa-plus' %}</a>
-    <a class="btn btn-secondary" href="/waitlist/add/{{student.id}}">{% icon_text 'Add to waiting list' 'fa-list' %}</a>
+    <a class="btn btn-success" href="{% url 'qualification_aim:new' student.id %}">
+<i class="fas fa-fw fa-plus"></i> Add programme</a>
+    <a class="btn btn-secondary" href="/waitlist/add/{{student.id}}">
+<i class="fas fa-fw fa-list"></i> Add to waiting list</a>
 
     <div class="btn-group float-end">
         <button type="button" class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class="fa fa-file"></span> Documents <span class="caret"></span>
+            <span class="fas fa-file"></span> Documents <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu">
-            <li><a class="dropdown-item" href="/student/statement/{{student.id}}" target="_blank">{% icon_text 'Statement' 'fa-pound-sign' %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'student:statement' student.id %}" target="_blank">
+                <i class="fas fa-fw fa-pound-sign"></i> Statement
+            </a></li>
             {% if qa_list.qa_certhe %}
-            <li><a class="dropdown-item" href="/student/certhe_progress/{{student.id}}" target="_blank">{% icon_text 'CertHE progress report' 'fa-certificate' %}</a></li>
+                <li><a class="dropdown-item" href="/student/certhe_progress/{{student.id}}" target="_blank">
+                    <i class="fas fa-fw fa-certificate"></i> CertHE progress report
+                </a></li>
             {% endif %}
             {% if perms.transcript.print %}
-            <li class="dropdown-divider"></li>
-            <li class="dropdown-header">Transcripts</li>
-            <li><a class="dropdown-item" href="{% url 'transcript:undergraduate' student.id %}" target="_blank">{% icon_text 'Undergraduate' 'fa-graduation-cap' %}</a></li>
-            <li><a class="dropdown-item" href="{% url 'transcript:undergraduate-headed' student.id %}" target="_blank">{% icon_text 'Undergraduate (with header)' 'fa-graduation-cap' %}</a></li>
-            <li><a class="dropdown-item" href="{% url 'transcript:postgraduate' student.id %}" target="_blank">{% icon_text 'Postgraduate' 'fa-graduation-cap' %}</a></li>
-            <li><a class="dropdown-item" href="{% url 'transcript:postgraduate-headed' student.id %}" target="_blank">{% icon_text 'Postgraduate (with header)' 'fa-graduation-cap' %}</a></li>
+                <li class="dropdown-divider"></li>
+                <li class="dropdown-header">Transcripts</li>
+                <li><a class="dropdown-item" href="{% url 'transcript:undergraduate' student.id %}" target="_blank">
+                    Undergraduate
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'transcript:undergraduate-headed' student.id %}" target="_blank">
+                    Undergraduate (with header)
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'transcript:postgraduate' student.id %}" target="_blank">
+                    Postgraduate
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'transcript:postgraduate-headed' student.id %}" target="_blank">
+                    Postgraduate (with header)
+                </a></li>
             {% endif %}
         </ul>
     </div>
@@ -519,7 +536,7 @@
                       datetime="{{ login.last_login}}"
                       data-bs-toggle="tooltip"
                       data-placement="bottom"
-                      data-title="{{ login.last_login | date:'j M Y H:i' }}"
+                      title="{{ login.last_login | date:'j M Y H:i' }}"
                 >
                     {{ login.last_login }}
                 </span>
@@ -739,7 +756,7 @@
                     <span class="badge bg-primary">{{tutor_module.role}}</span>
                     {% endif %}
                     {% if tutor_module.is_published %}
-                    <span class="badge bg-success" data-bs-toggle="tooltip" data-title="This tutor is visible on the course webpage">Published</span>
+                    <span class="badge bg-success" data-bs-toggle="tooltip" title="This tutor is visible on the course webpage">Published</span>
                     {% endif %}
                 </div>
                 <div class="col-sm-2">

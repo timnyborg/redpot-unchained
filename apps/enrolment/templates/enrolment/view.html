@@ -92,7 +92,7 @@
             <ul class="dropdown-menu" role="menu">
                 {% include 'enrolment/includes/amendment_options.html' %}
             </ul>
-            <a class="btn btn-secondary" href="/enrolment/statement/{{ enrolment.id }}" target="_blank">
+            <a class="btn btn-secondary" href="{% url 'enrolment:statement' enrolment.id %}" target="_blank">
                 <span class="fas fa-print"></span> Statement
             </a>
         </div>
