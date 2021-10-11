@@ -60,6 +60,7 @@ urlpatterns = [
     path('lookup', views.Lookup.as_view(), name='lookup'),
     path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
     path('view/<int:pk>', views.View.as_view(), name='view'),
+    path('statement/<int:pk>', views.StatementPDF.as_view(), name='statement'),
     path('email/', include(email_urls)),
     path('phone/', include(phone_urls)),
     path('other-id/', include(other_id_urls)),

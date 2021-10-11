@@ -126,15 +126,6 @@ def enrolment_label(enrolment_status_id, text):
 
 
 @register.simple_tag
-def icon_text(text, icon_type):
-    return mark_safe(
-        f"""
-        <span class="fa {icon_type}"></span> {text}
-    """
-    )
-
-
-@register.simple_tag
 def message_icon_class(level_tag):
     """Converts the level_tag of a message to a font-awesome icon class"""
     icon_map = {
