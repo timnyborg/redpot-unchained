@@ -32,7 +32,7 @@
             <a class='btn btn-outline-dark btn-block' href="{% url 'invoice:pdf' invoice.id %}">
                 <i class="fas fa-fw fa-file-pdf"></i> PDF
             </a>
-            <a class='btn btn-outline-dark btn-block'>
+            <a href="{% url 'invoice:statement' invoice.id %}" class='btn btn-outline-dark btn-block'>
                 <i class="fas fa-fw fa-file-invoice-dollar"></i> Statement
             </a>
             <a href="{% url 'invoice:payment' invoice.id %}" class='btn btn-success btn-block'>

@@ -6,7 +6,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.core.utils.tests import LoggedInViewTestMixin
+from apps.core.utils.tests import LoggedInMixin, LoggedInViewTestMixin
 from apps.enrolment.tests.factories import EnrolmentFactory
 from apps.finance.tests.factories import LedgerFactory
 from apps.student.tests.factories import AddressFactory
@@ -183,21 +183,33 @@ class TestCreatePaymentPlan(LoggedInViewTestMixin, TestCase):
         self.assertEqual(self.invoice.payment_plan.amount, 100)
 
 
-class TestPDF(LoggedInViewTestMixin, TestCase):
+class TestPDFs(LoggedInMixin, TestCase):
+    """Check that invoice pdfs render correctly.  These can't actually verify the contents of the pdf"""
+
     superuser = True
 
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        invoice = factories.InvoiceFactory()
-        invoice.ledger_items.add(
+        cls.invoice = factories.InvoiceFactory()
+        cls.invoice.ledger_items.add(
             LedgerFactory(),  # Todo: switch to a double-sided transaction
-            through_defaults={'item_no': 1, 'allocation': invoice},
+            through_defaults={'item_no': 1, 'allocation': cls.invoice},
         )
-        cls.url = reverse('invoice:pdf', kwargs={'pk': invoice.id})
 
-    def test_get(self):
-        """This can't actually verify the contents of the pdf"""
-        response = self.client.get(self.get_url())
+    def test_invoice(self):
+        response = self.client.get(reverse('invoice:pdf', kwargs={'pk': self.invoice.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'application/pdf')
+
+    def test_statement_without_schedule(self):
+        response = self.client.get(reverse('invoice:statement', kwargs={'pk': self.invoice.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'application/pdf')
+
+    def test_statement_with_schedule(self):
+        payment_plan = factories.CustomPaymentPlanFactory(invoice=self.invoice)
+        factories.ScheduledPaymentFactory.create_batch(size=2, payment_plan=payment_plan)
+        response = self.client.get(reverse('invoice:statement', kwargs={'pk': self.invoice.id}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['content-type'], 'application/pdf')

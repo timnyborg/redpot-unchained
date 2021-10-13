@@ -141,7 +141,7 @@ class TestEmailsViews(TestCase):
     def test_delete_email(self):
         new_email = factories.EmailFactory(student=self.student)
         self.assertEqual(self.email.student, new_email.student)
-        self.assertEquals(self.student.emails.count(), 2)
+        self.assertEqual(self.student.emails.count(), 2)
         self.client.post(reverse('student:email:delete', kwargs={'pk': self.email.pk}))
         self.student.refresh_from_db()
         self.assertEqual(self.student.emails.count(), 1)

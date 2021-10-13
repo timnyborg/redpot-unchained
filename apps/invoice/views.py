@@ -397,3 +397,18 @@ class PDF(PermissionRequiredMixin, generic.View):
         return http.HttpResponse(
             document, content_type='application/pdf', headers={'Content-Disposition': f'inline;filename={filename}'}
         )
+
+
+class StatementPDF(PermissionRequiredMixin, generic.View):
+    """Generate a transcript for a single student"""
+
+    permission_required = 'invoice.print'
+
+    def get(self, request, pk: int, *args, **kwargs) -> http.HttpResponse:
+        invoice = get_object_or_404(models.Invoice, pk=pk)
+        document = pdfs.create_statement(invoice)
+
+        filename = f'Invoice_Statement_{invoice.prefix}{invoice.number}.pdf'
+        return http.HttpResponse(
+            document, content_type='application/pdf', headers={'Content-Disposition': f'inline;filename={filename}'}
+        )

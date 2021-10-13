@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from datetime import date
 from itertools import cycle
 
 from apps.core.utils.legacy.fpdf import ContedPDF
 from apps.core.utils.postal import FormattedAddress
+from apps.finance.models import Ledger
 from apps.invoice import models
 
 DATE_FORMAT = '%d %b %Y'
@@ -10,14 +14,17 @@ DATE_FORMAT = '%d %b %Y'
 
 
 def create_invoice(invoice: models.Invoice) -> bytes:
+    # separated out model access from rendering to ease migration to weasyprint
     fees = (
         invoice.get_fees()
         .select_related('enrolment__module', 'enrolment__qa__student')
         .order_by('enrolment__qa__student__surname', 'enrolment__qa__student__firstname', 'enrolment__id')
     )
+    return _generate_invoice(invoice=invoice, fees=fees)
 
+
+def _generate_invoice(*, invoice: models.Invoice, fees: list[Ledger]) -> bytes:
     pdf = ContedPDF()
-
     pdf.bottom_left_text = (
         "In the event of a query please contact: "
         f"{invoice.contact_person} {invoice.contact_phone} ({invoice.contact_email or 'finance@conted.ox.ac.uk'})"
@@ -270,7 +277,91 @@ def create_invoice(invoice: models.Invoice) -> bytes:
         'Full terms and conditions are available at: https://www.conted.ox.ac.uk/terms-and-conditions',
     )
 
-    # Output everything onto PDF
     pdf.set_title(f'Invoice {invoice.prefix}{invoice.number}')
+    return pdf.output(dest='S').encode('latin-1')
 
+
+def create_statement(invoice: models.Invoice) -> bytes:
+    payments = list(invoice.get_payments().select_related('type').order_by('timestamp'))
+    try:
+        scheduled_payments = list(invoice.payment_plan.scheduled_payments.order_by('due_date'))
+    except models.PaymentPlan.DoesNotExist:
+        scheduled_payments = []
+    return _generate_statement(invoice=invoice, payments=payments, scheduled_payments=scheduled_payments)
+
+
+def _generate_statement(
+    *, invoice: models.Invoice, payments: list[Ledger], scheduled_payments: list[models.ScheduledPayment]
+) -> bytes:
+    # todo: when converting to weasyprint, much of the top matter and footer is shared with invoice,
+    #  so use a common template
+    pdf = ContedPDF()
+    pdf.bottom_left_text = (
+        "In the event of a query please contact: "
+        f"{invoice.contact_person} {invoice.contact_phone} ({invoice.contact_email or 'finance@conted.ox.ac.uk'})"
+    )
+    pdf.bottom_right_text = 'VAT number: GB 125 5067 30'
+
+    # Creating name and address information on the left, invoice details on the right
+    block = [invoice.invoiced_to]
+    if invoice.fao:
+        block.append(invoice.fao)
+    block.extend(FormattedAddress(invoice).as_list())
+    pdf.address_block(block)
+
+    pdf.ln(-4)
+    pdf.cell(0, 4, date.today().strftime(DATE_FORMAT), 0, 1, 'R')
+    pdf.ln(20)
+
+    pdf.set_font('', 'B', 14)
+    pdf.cell(0, 10, 'STATEMENT', 0, 1, 'C')
+
+    pdf.ln(10)
+    pdf.set_font('', 'B', 12)
+    pdf.cell(60, 4, f'Invoice {invoice.prefix}{invoice.number}', align='L')
+    pdf.cell(80, 4, 'Amount', align='R')
+    pdf.cell(30, 4, f'£{invoice.amount:.2f}', align='R')
+
+    pdf.ln(10)
+    pdf.set_font('', 'B', 12)
+    pdf.multi_cell(0, 4, 'Payments', align='L')
+    pdf.ln(2)
+
+    payment_total = sum(-payment.amount for payment in payments)
+    pdf.PrettyTable(
+        body=[
+            [
+                payment.timestamp.strftime(DATE_FORMAT),
+                payment.narrative,
+                payment.type.description,
+                f'£{-payment.amount:.2f}',
+            ]
+            for payment in payments
+        ]
+        if payments
+        else [['None', '', '', '']],
+        footer=['Total', f'£{payment_total:.2f}'],
+        width={'body': [25, 97, 24, 24], 'footer': [132, 38]},
+        fill={'body': [(231, 231, 231), False]},
+        align={'body': ['L', 'L', 'L', 'R'], 'footer': 'R'},
+    ).render()
+
+    pdf.ln(8)
+    pdf.set_font('', 'B', 12)
+    pdf.cell(140, 0, 'Balance', align='R')
+    pdf.cell(30, 0, f'£{invoice.balance:.2f}', align='R')
+
+    if scheduled_payments:
+        pdf.ln(8)
+        pdf.set_font('', 'B', 12)
+        pdf.multi_cell(0, 4, 'Scheduled payments', align='L')
+        pdf.ln(2)
+        pdf.PrettyTable(
+            body=[[row.due_date.strftime(DATE_FORMAT), f'£{row.amount:.2f}'] for row in scheduled_payments],
+            width={'body': [30, 50]},
+            fill={'body': [(231, 231, 231), False]},
+            align={'body': ['L', 'R']},
+        ).render()
+
+    pdf.set_title(f'Invoice statement {invoice.prefix}{invoice.number}')
     return pdf.output(dest='S').encode('latin-1')

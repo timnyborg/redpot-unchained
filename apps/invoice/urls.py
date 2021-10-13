@@ -13,6 +13,7 @@ urlpatterns = [
     path('payment/select/<int:student_id>', views.SelectForPayment.as_view(), name='select-for-payment'),
     path('payment/<int:pk>', views.Payment.as_view(), name='payment'),
     path('pdf/<int:pk>', views.PDF.as_view(), name='pdf'),
+    path('statement/<int:pk>', views.StatementPDF.as_view(), name='statement'),
     # invoice creation steps
     path('choose-enrolments/<int:student_id>', views.ChooseEnrolments.as_view(), name='choose-enrolments'),
     path('choose-fees/<int:student_id>', views.ChooseFees.as_view(), name='choose-fees'),
