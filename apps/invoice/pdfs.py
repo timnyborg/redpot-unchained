@@ -284,7 +284,7 @@ def _generate_invoice(*, invoice: models.Invoice, fees: list[Ledger]) -> bytes:
 def create_statement(invoice: models.Invoice) -> bytes:
     payments = list(invoice.get_payments().select_related('type').order_by('timestamp'))
     try:
-        scheduled_payments = list(invoice.payment_plan.scheduled_payments().order_by('due_date'))
+        scheduled_payments = list(invoice.payment_plan.scheduled_payments.order_by('due_date'))
     except models.PaymentPlan.DoesNotExist:
         scheduled_payments = []
     return _generate_statement(invoice=invoice, payments=payments, scheduled_payments=scheduled_payments)
