@@ -4,6 +4,7 @@ from django_select2.forms import Select2MultipleWidget, Select2Widget
 
 from django import forms
 from django.core import exceptions
+from django.core.exceptions import ValidationError
 from django.forms import fields
 from django.forms.widgets import Textarea
 
@@ -260,6 +261,25 @@ class BaseHESASubjectFormSet(forms.BaseInlineFormSet):
         # Don't raise an error if the total is 0 (all rows deleted)
         if total_percentage not in (0, 100):
             raise exceptions.ValidationError(f"Percentages add to {total_percentage}, not 100")
+
+
+class UncancelForm(forms.ModelForm):
+    class Meta:
+        model = models.Module
+        fields = ['status']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        module_status = cleaned_data.get('status')
+
+        if module_status == models.ModuleStatus.objects.get(id=33):
+            raise ValidationError({'status': "Please select a different course status to uncancel the course"})
+
+
+class CancelForm(forms.ModelForm):
+    class Meta:
+        model = models.Module
+        fields = []
 
 
 HESASubjectFormSet = forms.inlineformset_factory(

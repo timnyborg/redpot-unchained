@@ -47,7 +47,7 @@ class EnrolmentAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView
 
 class RtwAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
-        if not self.requesst.user.is_authenticated:
+        if not self.request.user.is_authenticated:
             return RightToWorkDocumentType.objects.none()
 
         qs = RightToWorkDocumentType.objects.all()

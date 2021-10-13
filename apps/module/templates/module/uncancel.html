@@ -1,0 +1,39 @@
+{% extends 'core/form.html' %}
+{% block center %}
+<div class="section">
+    <h3>{{module.title}} <small>({{module.code}})</small></h3>
+
+    {% if form.errors.status %}
+
+    <div class="alert alert-danger">
+        {% for field, errors in form.errors.items %}
+        {% for error in errors %}
+        {{ error }}
+        {% endfor %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-success">
+        <b>Caution!</b>
+        Are you sure you wish to uncancel this course?
+    </div>
+    {% endif %}
+
+    Uncancellation will enable:
+    <ul>
+        <li>Online booking</li>
+        <li>Pre-course reminder emails</li>
+    </ul>
+
+    <div class="alert alert-warning">
+        Automated Remainders and Automated Feedback may need to be enabled manually.
+    </div>
+    <form action="" enctype="multipart/form-data" method="post" class="form-horizontal float-end">
+        {% csrf_token %}
+        <div class="input-group">
+            {{ form.status }}
+            <button class="btn btn-success" type="submit"><span class="fa fa-check"></span> Uncancel</button>
+        </div>
+    </form>
+    <a href="{% url 'module:view' module.id %}" class="btn btn-outline-dark"><span class="fa fa-arrow-left"></span> Back</a>
+{% endblock %}
