@@ -30,6 +30,13 @@ class Statuses(models.IntegerChoices):
     FULL = 35
 
 
+class TutorFeeStatus(models.IntegerChoices):
+    RAISED = 1
+    APPROVED = 2
+    TRANSFERRED = 3
+    FAILED = 4
+
+
 class ModuleManager(models.Manager):
     """A manager which defers html blob fields by default"""
 

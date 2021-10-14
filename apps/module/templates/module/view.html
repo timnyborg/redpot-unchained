@@ -270,7 +270,7 @@
 
             <h6 class="mt-3">Course Status</h6>
             <a href="#"
-               class="btn btn-primary {% if module.auto_publish %}disabled{% else %}dropdown-toggle{% endif %}"
+               class="btn btn-primary {% if module.status.id == 33 %}disabled{% else %}dropdown-toggle{% endif %}"
                data-bs-toggle="dropdown"
             >
                 {{ module.status }}
@@ -337,9 +337,12 @@
                     <li><a class="dropdown-item" href="cabs_booking/{{ module.id }}"><span class="fas fa-fw fa-taxi"></span> Book course into CABS</a></li>
                 {% endif %}
             </ul>
-
-            <a href="cancel/{{ module.id }}" class="btn btn-danger">
-                <i class="fas fa-fw fa-times"></i> Cancel
+            {% if module.status.id == 33 %}
+            <a href="{% url 'module:uncancel' module.id %}" class="btn btn-danger">
+            {% else %}
+            <a href="{% url 'module:cancel' module.id %}" class="btn btn-danger">
+            {% endif %}
+                <i class="fas fa-fw fa-times"></i> {% if module.status.id == 33 %}Unc{% else %}C{% endif %}ancel
             </a>
             <div class="row">
                 <div class="col-6">

@@ -17,10 +17,11 @@ from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitle
 from apps.discount.models import Discount
 from apps.enrolment.models import Enrolment
 from apps.tutor.utils import expense_forms
+from apps.tutor_payment.models import TutorPayment
 
 from . import exports, forms, services
 from .datatables import BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
-from .models import Module, ModuleStatus
+from .models import Module, ModuleStatus, TutorFeeStatus
 
 
 class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.CreateView):
@@ -283,9 +284,7 @@ class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
         return redirect(module)
 
 
-class EditHESASubjects(
-    LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.detail.SingleObjectMixin, generic.FormView
-):
+class EditHESASubjects(LoginRequiredMixin, PageTitleMixin, generic.detail.SingleObjectMixin, generic.FormView):
     model = Module
     form_class = forms.HESASubjectFormSet
     template_name = 'module/edit_hesa_subjects.html'
@@ -306,3 +305,47 @@ class EditHESASubjects(
 
     def get_success_url(self):
         return self.object.get_absolute_url()
+
+
+class Uncancel(LoginRequiredMixin, PageTitleMixin, generic.UpdateView):
+    model = Module
+    form_class = forms.UncancelForm
+    template_name = 'module/uncancel.html'
+    subtitle = 'Uncancel'
+
+    def form_valid(self, form):
+        form.instance.is_cancelled = False
+        form.save()
+        return super().form_valid(form)
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self) -> str:
+        return self.object.get_absolute_url()
+
+
+class Cancel(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
+    model = Module
+    form_class = forms.CancelForm
+    template_name = 'module/cancel.html'
+    subtitle = 'Cancel'
+
+    def post(self, request, **kwargs):
+        module = get_object_or_404(Module, pk=kwargs['pk'])
+        module.status = ModuleStatus.objects.get(id=33)
+        module.is_cancelled = True
+        module.auto_feedback = False
+        module.auto_reminder = False
+        module.save()
+        messages.success(request, 'Course cancelled')
+        return redirect(module.get_absolute_url())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        future_fees = TutorPayment.objects.filter(
+            tutor_module__module=self.object, status_id__in=[TutorFeeStatus.APPROVED, TutorFeeStatus.RAISED]
+        ).select_related('status', 'tutor_module__tutor__student')
+
+        return {'future_fees': future_fees, **context}

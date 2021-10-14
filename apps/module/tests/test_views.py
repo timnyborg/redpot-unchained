@@ -9,7 +9,7 @@ from apps.hesa.models import HECoSSubject
 from apps.programme.models import ProgrammeModule
 from apps.programme.tests.factories import ProgrammeFactory
 
-from ..models import Module
+from ..models import Module, ModuleStatus
 from . import factories
 
 
@@ -282,3 +282,42 @@ class TestHESASubjectEditView(LoggedInViewTestMixin, TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.module.hecos_subjects.count(), 2)
+
+
+class TestCancelAndUncancelView(LoggedInViewTestMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.module = factories.ModuleFactory(status=ModuleStatus.objects.get(id=22))
+        cls.cancel_module_url = reverse('module:cancel', args=[cls.module.pk])
+        cls.cancelled_module = factories.ModuleFactory(
+            status=ModuleStatus.objects.get(id=33), is_cancelled=True, auto_feedback=False, auto_reminder=False
+        )
+        cls.uncancel_module_url = reverse('module:uncancel', args=[cls.cancelled_module.pk])
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_cancel_module(self):
+        self.assertNotEqual(self.module.status.id, 33)
+        response = self.client.post(self.cancel_module_url)
+        self.assertEqual(response.status_code, 302)
+        self.module.refresh_from_db()
+        self.assertTrue(self.module.is_cancelled)
+        self.assertFalse(self.module.auto_feedback)
+        self.assertFalse(self.module.auto_reminder)
+        self.assertEqual(self.module.status.id, 33)
+
+    def test_uncancel_module(self):
+        self.assertEqual(self.cancelled_module.status.id, 33)
+        response = self.client.post(self.uncancel_module_url, data={'status': 20})
+        self.cancelled_module.refresh_from_db()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.cancelled_module.status.id, 20)
+        self.assertFalse(self.cancelled_module.auto_feedback)
+        self.assertFalse(self.cancelled_module.auto_reminder)
+        self.assertFalse(self.cancelled_module.is_cancelled)
