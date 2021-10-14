@@ -621,7 +621,9 @@
 
 <div class="section">
     <div class="float-end">
-        <a href="module/add-payment-plan/{{ module.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add payment plan</a>
+        <a href="{% url 'module:add-payment-plan' module.id %}" class="btn btn-success btn-xs">
+            <span class="fa fa-plus"></span> Add payment plan
+        </a>
     </div>
     <h2 id="payment-plans" class="section-title">Payment plans</h2>
     {% if payment_plans %}
@@ -629,14 +631,22 @@
         <thead><tr><th>Type</th><th></th></tr></thead>
         {% for plan in payment_plans %}
             <tr>
+                <td>{{ plan.name }}</td>
                 <td>
-                    {{ plan.name }}
-                </td>
-                <td>
-                    <a href="DELETE" class="float-end"><i class="fas fa-fw fa-times"></i></a>
+                    <a href="#" class="float-end"
+                        data-bs-toggle="modal"
+                        data-bs-target="#commonModal"
+                        data-modal-body="Are you sure you wish to remove this payment plan?"
+                        data-modal-confirm-class="btn-danger"
+                        data-modal-confirm-text="Remove"
+                        data-modal-href="{% url 'module:remove-payment-plan' module.id plan.id %}"
+                    >
+                        <span data-bs-toggle="tooltip" title="Remove">
+                            <i class='fas fa-times text-danger'></i>
+                        </span>
+                    </a>
                 </td>
             </tr>
-            {# delete_button = A(icon('remove'), data={'toggle': 'modal', 'target': '#confirm-remove-plan', 'href': URL('payment_plan', args=['delete', plan.id])}, _href='#') #}
         {% endfor %}
         </table>
     {% endif %}

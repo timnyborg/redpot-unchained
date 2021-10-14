@@ -197,3 +197,4 @@ class ModulePaymentPlan(models.Model):
 
     class Meta:
         db_table = 'module_payment_plan'
+        constraints = [models.UniqueConstraint(fields=['module', 'plan_type'], name='unique_module_payment_plan')]

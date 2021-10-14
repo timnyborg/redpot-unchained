@@ -4,12 +4,13 @@ from django_select2.forms import Select2MultipleWidget, Select2Widget
 
 from django import forms
 from django.core import exceptions
-from django.core.exceptions import ValidationError
+from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.forms import fields
 from django.forms.widgets import Textarea
 
 from apps.core.utils import widgets
 from apps.hesa.models import ModuleHECoSSubject
+from apps.invoice.models import ModulePaymentPlan
 from apps.programme.models import ProgrammeModule
 
 from . import models
@@ -291,3 +292,12 @@ HESASubjectFormSet = forms.inlineformset_factory(
     max_num=3,
     validate_max=True,
 )
+
+
+class ModulePaymentPlanForm(forms.ModelForm):
+    module = forms.ModelChoiceField(queryset=models.Module.objects.all(), widget=forms.HiddenInput(), disabled=True)
+
+    class Meta:
+        model = ModulePaymentPlan
+        fields = ['module', 'plan_type']
+        error_messages = {NON_FIELD_ERRORS: {'unique_together': 'This plan is already attached to the module'}}
