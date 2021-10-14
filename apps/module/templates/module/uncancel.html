@@ -1,4 +1,5 @@
 {% extends 'core/form.html' %}
+{% load widget_tweaks %}
 {% block center %}
 <div class="section">
     <h3>{{module.title}} <small>({{module.code}})</small></h3>
@@ -28,10 +29,10 @@
     <div class="alert alert-warning">
         Automated Remainders and Automated Feedback may need to be enabled manually.
     </div>
-    <form action="" enctype="multipart/form-data" method="post" class="form-horizontal float-end">
+    <form action="" enctype="multipart/form-data" method="post" class="float-end">
         {% csrf_token %}
         <div class="input-group">
-            {{ form.status }}
+            {% render_field form.status class+='form-select' %}
             <button class="btn btn-success" type="submit"><span class="fa fa-check"></span> Uncancel</button>
         </div>
     </form>

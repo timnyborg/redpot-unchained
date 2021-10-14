@@ -284,9 +284,7 @@ class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
         return redirect(module)
 
 
-class EditHESASubjects(
-    LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.detail.SingleObjectMixin, generic.FormView
-):
+class EditHESASubjects(LoginRequiredMixin, PageTitleMixin, generic.detail.SingleObjectMixin, generic.FormView):
     model = Module
     form_class = forms.HESASubjectFormSet
     template_name = 'module/edit_hesa_subjects.html'
@@ -309,7 +307,7 @@ class EditHESASubjects(
         return self.object.get_absolute_url()
 
 
-class Uncancel(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
+class Uncancel(LoginRequiredMixin, PageTitleMixin, generic.UpdateView):
     model = Module
     form_class = forms.UncancelForm
     template_name = 'module/uncancel.html'
@@ -343,9 +341,6 @@ class Cancel(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.Up
         module.save()
         messages.success(request, 'Course cancelled')
         return redirect(module.get_absolute_url())
-
-    def get_success_url(self) -> str:
-        return self.object.get_absolute_url()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

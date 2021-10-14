@@ -272,7 +272,8 @@ class UncancelForm(forms.ModelForm):
         cleaned_data = super().clean()
         module_status = cleaned_data.get('status')
 
-        if module_status == models.ModuleStatus.objects.get(id=33):
+        # Module cancelled status
+        if module_status.id == 33:
             raise ValidationError({'status': "Please select a different course status to uncancel the course"})
 
 

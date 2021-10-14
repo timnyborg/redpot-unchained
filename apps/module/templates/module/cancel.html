@@ -12,7 +12,7 @@
     {% if future_fees %}
     <hr>
     <h5>This course has outstanding tutor fees.  You may wish to cancel them after cancelling the course:</h5>
-    <table class="table table-striped table-condensed table-hover">
+    <table class="table table-hover">
         <tr>
             <th>Name</th>
             <th>Amount</th>
@@ -36,8 +36,8 @@
         Are you sure you wish to cancel this course?
     </div>
     <a href="{% url 'module:view' module.id %}" class="btn btn-outline-dark"><span class="fa fa-arrow-left"></span> Back</a>
-    <form action="" enctype="multipart/form-data" method="post" class="form-horizontal float-end">
+    <form action="" enctype="multipart/form-data" method="post" class="float-end">
         {% csrf_token %}
-        <button class="btn alert-danger pull-right" type="submit"><span class="fas fa-times"></span> Cancel</button>
+        <button class="btn btn-danger" type="submit"><span class="fas fa-times"></span> Cancel</button>
     </form>
 {% endblock %}
