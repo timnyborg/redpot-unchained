@@ -348,12 +348,10 @@
                 <div class="col-6">
                     <h6 class="mt-3">Automated reminders</h6>
                     {% if module.reminder_sent_on %}
-                        <h4>
-                    <span class="badge bg-success">
+                    <span class="badge bg-success mb-2">
                         <i class="fas fa-fw fa-envelope"></i>
-                        Sent on {{ module.reminder_sent_on | date }}
+                        Sent {{ module.reminder_sent_on | date }}
                     </span>
-                        </h4>
                     {% else %}
                         <label data-bs-toggle="tooltip" data-bs-placement="top" title="When ON, students will be emailed a reminder about the course, 5 days before it starts.">
                             <input type="checkbox"

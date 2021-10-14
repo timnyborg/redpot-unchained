@@ -47,9 +47,6 @@ class StudentListExport(resources.ModelResource):
     def dehydrate_phone_numbers(self, enrolment: Enrolment):
         return ', '.join(map(str, enrolment.qa.student.phones.all()))
 
-    class Meta:
-        model = Enrolment
-
 
 class ConstantField(fields.Field):
     """
@@ -102,6 +99,3 @@ class MoodleListExport(resources.ModelResource):
 
     def dehydrate_paid(self, enrolment: Enrolment) -> str:
         return 'No' if enrolment.get_balance() else 'Yes'
-
-    class Meta:
-        model = Enrolment
