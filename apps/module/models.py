@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
@@ -11,11 +12,10 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.functional import cached_property
 
+from apps.booking.models import Accommodation
 from apps.core.models import SignatureModel
 from apps.core.utils.dates import academic_year
-from apps.core.utils.models import UpperCaseCharField
-from apps.fee.models import Accommodation
-from redpot.settings import PUBLIC_WEBSITE_URL
+from apps.core.utils.models import PhoneField, UpperCaseCharField
 
 
 class Statuses(models.IntegerChoices):
@@ -124,8 +124,8 @@ class Module(SignatureModel):
 
     is_published = models.BooleanField(default=False)
     # finance_code = models.CharField(max_length=64, blank=True, null=True)  # noqa: E800 # todo: should this be used?
-    email = models.CharField(max_length=256, blank=True, null=True)
-    phone = models.CharField(max_length=256, blank=True, null=True)
+    email = models.EmailField(max_length=256, blank=True, null=True)
+    phone = PhoneField(max_length=256, blank=True, null=True)
 
     source_module_code = models.CharField(max_length=12, blank=True, null=True)
     overview = models.TextField(blank=True, null=True)
@@ -257,7 +257,7 @@ class Module(SignatureModel):
         return reverse('module:edit', args=[self.id])
 
     def get_website_url(self) -> str:
-        return f'{PUBLIC_WEBSITE_URL}/courses/{self.url}?code={self.code}'
+        return f'{settings.PUBLIC_WEBSITE_URL}/courses/{self.url}?code={self.code}'
 
     @property
     def full_time_equivalent(self) -> float:

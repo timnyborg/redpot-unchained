@@ -1,6 +1,6 @@
 {% load redpot_tags %}
-<form action="" class='form-horizontal'>
-    {% bootstrap5form filter.form status_classes=False input_size=input_size|default:'normal' %}
+<form action="">
+    {% bootstrap_form filter.form status_classes=False input_size=input_size|default:'normal' %}
     <button type='submit' class='btn btn-primary'>{{ search_label | default:'Search' }}</button>
 </form>
 {{ filter.form.media }}

@@ -9,4 +9,5 @@ urlpatterns = [
     path('view/<int:pk>', views.View.as_view(), name='view'),
     path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
     path('delete/<int:pk>', views.Delete.as_view(), name='delete'),
+    path('statement/<int:pk>', views.StatementPDF.as_view(), name='statement'),
 ]

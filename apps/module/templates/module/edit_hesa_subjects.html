@@ -4,8 +4,8 @@
 {% block center %}
     <div class='section'>
         <div class='row'>
-            <div class='col-xs-8'>
-                <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
+            <div class='col-8'>
+                <form action="" enctype="multipart/form-data" method="post">
                     {# form is actually a formset #}
                     {{ form.management_form }}
                     {% for err in form.non_form_errors %}
@@ -18,12 +18,12 @@
 
                     {% for subform in form %}
                         {# todo: consider using inline form layout here #}
-                        {% bootstrap5form subform True %}
+                        {% bootstrap_form subform True %}
                         {% if not forloop.last %}<hr>{% endif %}
                     {% endfor %}
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                            {% bootstrap3submit form.submit_label|default:'Save' %}
+                            {% bootstrap_submit form.submit_label|default:'Save' %}
                         </div>
                     </div>
                 </form>

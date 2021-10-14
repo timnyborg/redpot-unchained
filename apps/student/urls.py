@@ -51,6 +51,8 @@ moodle_id_urls = (
     'moodle-id',
 )
 
+enquiry_urls = ([path('delete/<int:pk>', views.DeleteEnquiry.as_view(), name='delete')], 'enquiry')
+
 urlpatterns = [
     path('make-tutor/<int:student_id>', views.MakeTutor.as_view(), name='make-tutor'),
     path('new', views.Create.as_view(), name='new'),
@@ -58,10 +60,18 @@ urlpatterns = [
     path('lookup', views.Lookup.as_view(), name='lookup'),
     path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
     path('view/<int:pk>', views.View.as_view(), name='view'),
+    path('statement/<int:pk>', views.StatementPDF.as_view(), name='statement'),
     path('email/', include(email_urls)),
     path('phone/', include(phone_urls)),
     path('other-id/', include(other_id_urls)),
     path('moodle-id/', include(moodle_id_urls)),
+    path('enquiry/', include(enquiry_urls)),
+    path('edit-diet/<int:student_id>', views.CreateOrEditDiet.as_view(), name='edit-diet'),
+    path(
+        'edit-emergency-contact/<int:student_id>',
+        views.CreateOrEditEmergencyContact.as_view(),
+        name='edit-emergency-contact',
+    ),
     path('delete/<int:pk>', views.Delete.as_view(), name='delete'),
     path('address/', include(address_urls)),
     path('merge/', not_implemented, name='merge'),

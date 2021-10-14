@@ -30,6 +30,13 @@ from library import * # noqa: F403
 
 flake8 is configured in `setup.cfg`
 
+### eslint
+[eslint](https://eslint.org/) is a powerful and highly-configurable code-analysis tool for javascript, which can
+identify syntax errors, enforce style and programming practice, etc.  We currently use a set of rules defined by the
+Django project, but popular configurations created by Airbnb, Google, etc. are available.
+
+eslint is configured in `.eslintrc`
+
 ### Other
 A bunch of standard code checkers and cleaners (check-json, check-yaml, end-of-file-fixer, etc.)
 

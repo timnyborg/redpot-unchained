@@ -1,7 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from ..models import FeeTypes, Limit
+from apps.booking.models import Limit
+
+from ..models import FeeTypes
 from . import factories
 
 

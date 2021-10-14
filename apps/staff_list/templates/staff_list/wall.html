@@ -1,23 +1,26 @@
-{% extends 'staff_list_layout_bs4.html' %}
+{% extends 'staff_list_layout.html' %}
 {% load static %}
 {% block center %}
-    <div class="row justify-content-center wall">
+    <div class="wall row row-cols-3 row-cols-md-5 g-4">
         {% for staff in staffs %}
-                <div class="card mt-3 mr-3 ml-3" style="width: 12rem;">
+            <div class="col">
+                <div class="card mb-3 h-100">
                     <a href="{% url 'staff_list:profile' staff.id %}">
-                      <img class="card-img-top" src="{% if staff.image %}{{ staff.image.url }}{% else %}{% static 'images/staff_profile/default_pic.jpg' %}{% endif %}" alt="profile image">
-                      <div class="card-body">
-                            <h6>{{ staff.first_name }} {{ staff.last_name }}</h6>
-                            {% if staff.phone %}
-                                <span class='fa fa-phone card-phone'></span> {{ staff.phone_number }}
-                            {% endif %}
-                            <br/>
-                            {% if staff.role %}
-                                <p class="card-text"><span class='fa fa-briefcase'></span> {{ staff.role }}</p>
-                            {% endif %}
-                      </div>
+                        <img class="card-img-top" src="{% if staff.image %}{{ staff.image.url }}{% else %}{% static 'images/staff_profile/default_pic.jpg' %}{% endif %}" alt="profile image">
+                        <div class="card-body">
+                            <h6 class="text-dark">{{ staff.first_name }} {{ staff.last_name }}</h6>
+                            <p class="card-text link-dark">
+                                {% if staff.phone %}
+                                    <i class='fas fa-fw fa-phone'></i> {{ staff.phone_number }}<br/>
+                                {% endif %}
+                                {% if staff.role %}
+                                    <span class='fas fa-fw fa-briefcase'></span> {{ staff.role }}
+                                {% endif %}
+                            </p>
+                        </div>
                     </a>
                 </div>
+            </div>
         {% endfor %}
     </div>
 {% endblock %}

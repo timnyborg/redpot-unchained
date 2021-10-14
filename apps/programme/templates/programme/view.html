@@ -71,7 +71,7 @@
             <td><a href="{{ module.get_absolute_url }}">{{ module.code }}</a></td>
             <td class="col-4"><a href="{{ module.get_absolute_url }}">
 			    {% if module.credit_points and programme.qualification == 1 %}
-					<span title="Credit-bearing module within a non-credit-bearing programme" class="text-danger">
+					<span data-bs-toggle="tooltip" title="Credit-bearing module within a non-credit-bearing programme" class="text-danger">
                         <i class="fas fa-exclamation-circle"></i>
                     </span>
 				{% endif %}

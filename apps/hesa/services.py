@@ -137,7 +137,7 @@ class HESAReturn:
                 sexid=row.sex,
                 nation=row.nationality.hesa_code,
                 ethnic=str(row.ethnicity_id).zfill(2),
-                disable=str(row.disability or 0).zfill(2),  # todo: default 0 for disability in the table itself?
+                disable=str(row.disability_id or 0).zfill(2),  # todo: remove 0 once fixture & default are in place
                 ttaccom=row.termtime_accommodation,
                 ttpcode=_correct_postcode(row.termtime_postcode or row.postcode or ''),
                 ssn=row.ssn,
@@ -268,7 +268,7 @@ class HESAReturn:
                 mtitle=row.title.replace('–', '-').replace('ʿ', ''),  # todo: regex/normalization method?
                 fte=row.full_time_equivalent,
                 crdtpts=str(row.credit_points).zfill(3),
-                levlpts=row.points_level,
+                levlpts=row.points_level_id,
             )
 
     def _student_on_module(self) -> None:

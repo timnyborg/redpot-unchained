@@ -50,7 +50,9 @@ other_runs = Module.objects\
 The most compact, but arguable the ugliest.  The indentation varies wildly, depending on the variable name
 
 ### Or just use black
-If you configure [pre-commit hooks](pre-commit-hooks.md), `black` will automatically format these long statements according to their length.
+If you configure [pre-commit hooks](pre-commit-hooks.md), `black` will automatically format these long statements
+according to their length.  You can also configure your IDE to run black (and isort) on file save
+([details](https://black.readthedocs.io/en/stable/integrations/editors.html#pycharm-intellij-idea)).
 
 ## Organizing imports
 Since more or less every file in Django is a module, many of them will end up filled with imports.

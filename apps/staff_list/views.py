@@ -15,7 +15,7 @@ class SiteTitleMixin(PageTitleMixin):
 
 
 class StaffListView(LoginRequiredMixin, SiteTitleMixin, SingleTableView):
-    subtitle = 'List'
+    subtitle = 'Contact details'
     template_name = 'staff_list/list.html'
     table_class = StaffListTable
     table_pagination = False
@@ -25,7 +25,6 @@ class StaffListView(LoginRequiredMixin, SiteTitleMixin, SingleTableView):
 
 
 class StaffDetailView(LoginRequiredMixin, SiteTitleMixin, DetailView):
-    subtitle = 'Profile'
     model = User
     template_name = 'staff_list/profile.html'
     context_object_name = 'staff'
@@ -34,6 +33,9 @@ class StaffDetailView(LoginRequiredMixin, SiteTitleMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['staff_programmes'] = self.object.programme_staff_set.all()
         return context
+
+    def get_subtitle(self) -> str:
+        return f'Profile – {self.object.get_full_name()}'
 
 
 class WallListView(LoginRequiredMixin, SiteTitleMixin, ListView):

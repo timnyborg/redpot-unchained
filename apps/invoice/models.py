@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils.functional import cached_property
 
 from apps.core.models import AddressModel, SignatureModel
+from apps.core.utils.models import PhoneField
 
 CUSTOM_PLAN_TYPE = 16
 CUSTOM_PAYMENT_PENDING_STATUS = 2
@@ -42,8 +43,8 @@ class Invoice(AddressModel, SignatureModel):
     narrative = models.TextField(blank=True, null=True)
     ref_no = models.CharField(max_length=64, blank=True, null=True, verbose_name='Customer ref. #')
     contact_person = models.CharField(max_length=128)
-    contact_email = models.CharField(max_length=255)
-    contact_phone = models.CharField(max_length=64)
+    contact_email = models.EmailField(max_length=255)
+    contact_phone = PhoneField(max_length=64)
     vat_no = models.CharField(max_length=64, blank=True, null=True, verbose_name='VAT #')
 
     ledger_items = models.ManyToManyField(
@@ -74,6 +75,7 @@ class Invoice(AddressModel, SignatureModel):
 
     @cached_property
     def balance(self):
+        # Todo: investigate a way of single request caching without being a property.  lru_cache persists too long
         return self.allocated_ledger_items.aggregate(sum=models.Sum('amount'))['sum']
 
     def get_fees(self):

@@ -1,11 +1,11 @@
 from datetime import date, datetime
 from io import BytesIO
-from pathlib import Path
 
 from celery_progress.backend import ProgressRecorder
 from PyPDF2 import PdfFileMerger
 
 from django.conf import settings
+from django.urls import reverse
 
 from apps.enrolment.models import Enrolment
 from apps.student.models import Student
@@ -49,10 +49,10 @@ def create_batch(self, *, level: str, header: bool, created_by: str):
         student = Student.objects.get(pk=student_id)  # todo: get the student objects directly from the queryset
         transcript = pdfs.create_transcript(header=header, level=level, student=student, mark_printed=True)
         merger.append(BytesIO(transcript))
-        recorder.set_progress(current=index, total=len(students), description='Todo')
+        recorder.set_progress(current=index, total=len(students), description='Rendering transcripts')
 
     # create the media subfolder if required
-    file_path = Path(settings.MEDIA_ROOT / 'protected' / 'transcripts')
+    file_path = settings.PROTECTED_MEDIA_ROOT / 'transcripts'
     file_path.mkdir(parents=True, exist_ok=True)
 
     now = datetime.now()
@@ -62,4 +62,4 @@ def create_batch(self, *, level: str, header: bool, created_by: str):
     with open(filename, 'wb') as output:
         merger.write(output)
 
-    return {'progress': 'could go here'}  # TODO: figure out what to return
+    return {'redirect': reverse('transcript:view-batch', kwargs={'filename': title})}

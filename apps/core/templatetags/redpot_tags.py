@@ -2,6 +2,7 @@ import socket
 from typing import Optional, Union
 
 from django import template
+from django.conf import settings
 from django.core.cache import cache
 from django.db.models import Model
 from django.utils.safestring import mark_safe
@@ -62,7 +63,7 @@ def user_name(username):
 
 
 @register.inclusion_tag('utility/bootstrap_form.html')
-def bootstrap5form(form, status_classes=True, input_size='normal'):
+def bootstrap_form(form, status_classes=True, input_size='normal'):
     form_control_classes = {
         'normal': "form-control",
         'small': "form-control form-control-sm",
@@ -82,18 +83,8 @@ def bootstrap5form(form, status_classes=True, input_size='normal'):
 
 
 @register.simple_tag
-def bootstrap3submit(text: str = 'Submit', btn_type: str = 'primary'):
+def bootstrap_submit(text: str = 'Submit', btn_type: str = 'primary'):
     return mark_safe(f"<button type='submit' class='btn btn-{btn_type}'>{text}</button>")
-
-
-@register.simple_tag
-def bootstrap3delete(url: str, btn_type: str = 'danger', text: str = 'Delete'):
-    return mark_safe(f"<a href='{url}' class='pull-right btn btn-{btn_type}'>{text}</a>")
-
-
-@register.simple_tag
-def bootstrap3backbutton(text='Back', btn_type='default'):
-    return mark_safe(f"<a class='btn btn-{btn_type}' href='javascript:history.back()'>{text}</a>")
 
 
 @register.simple_tag
@@ -126,15 +117,6 @@ def enrolment_label(enrolment_status_id, text):
 
 
 @register.simple_tag
-def icon_text(text, icon_type):
-    return mark_safe(
-        f"""
-        <span class="fa {icon_type}"></span> {text}
-    """
-    )
-
-
-@register.simple_tag
 def message_icon_class(level_tag):
     """Converts the level_tag of a message to a font-awesome icon class"""
     icon_map = {
@@ -162,3 +144,9 @@ def duration(seconds: int) -> str:
     elif hours:
         return f'{hours} hours'
     return f'{minutes} minutes'
+
+
+@register.inclusion_tag('utility/google_tag_manager.html', takes_context=True)
+def google_tag_manager_script(context: dict) -> str:
+    context['google_tag_manager_id'] = settings.GOOGLE_TAG_MANAGER_ID
+    return context

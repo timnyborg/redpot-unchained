@@ -1,0 +1,8 @@
+{% extends 'layout_9_3.html' %}
+{% load menu %}
+{% block mainmenu %}
+    {% generate_menu %}
+    {% with menu=menus.staff_list %}
+        {% include 'menu/bootstrap_menu.html' %}
+    {% endwith %}
+{% endblock %}

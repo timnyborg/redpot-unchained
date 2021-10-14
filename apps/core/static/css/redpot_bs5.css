@@ -71,7 +71,7 @@ a[data-bs-toggle="collapse"][aria-expanded="true"]:after {
 }
 
 /* sharp cards */
-.card {
+.card, .card-img, .card-img-top {
     border-radius: 0;
 }
 
@@ -200,23 +200,6 @@ footer a {
     transform: none;
 }
 
-
-/* Tables' textless action icons sit at the far right, spaced */
-.quick-icons {
-    text-align: right;
-}
-
-.quick-icons a {
-    margin-left: 5px;
-}
-
-/* When quick-icons is not applied, do much the same effect.
-This has the side effect of reversing the display order (float vs text-align) so it's not recommended*/
-td:not(.quick-icons) > a:not(.set-default-hover) > .glyphicon, td:not(.quick-icons) > a:not(.set-default-hover) > .fa {
-    float: right;
-    margin-left: 5px;
-}
-
 /* Collapse forms, form-groups and help blocks (inserted by default by w2p) */
 .help-block {
     margin-top: 0;
@@ -272,7 +255,6 @@ span.noLocations {
 .alert-header {
     text-align: center;
     font-size: 18px;
-    cursor: pointer;
     transition: height 0.5s linear;
     max-height: 40px; /* an estimate for the slide up transition */
 }
@@ -295,17 +277,8 @@ span.noLocations {
     margin-right: 3px;
 }
 
-#top-flash {
-    min-width: 250px;
-    z-index: 10;
-}
-
-@media only screen and (min-width: 768px) {
-    #top-flash {
-        /*Should be set in Less */
-        position: fixed;
-        right: 20%;
-    }
+.alert-header.dismissable {
+    cursor: pointer;
 }
 
 /*Text over a divider, replicating <hr> style, with larger margins (40 vs 20) */
@@ -612,11 +585,8 @@ ul.item-list {
     border-top: 1px solid #eee;
 }
 
-.panel-heading + ul.item-list {
-    border-top: none;
-}
-
-ul.item-list li.item, ul.item-list li.hide-toggle {
+ul.item-list li.item,
+ul.item-list li.hide-toggle{
     padding: 10px 15px;
     display: block;
     border-color: #eee;
@@ -624,39 +594,34 @@ ul.item-list li.item, ul.item-list li.hide-toggle {
     font-size: 15px;
 }
 
-ul.item-list li.item .hide-until-hover,
-ul.item-list li.hide-toggle .hide-until-hover {
-    visibility: hidden;
-}
-
 ul.item-list li.item:hover,
 ul.item-list li.hide-toggle:hover {
     background-color: #f4f4f4;
 }
 
-ul.item-list li.item:hover .hide-until-hover,
-ul.item-list li.hide-toggle:hover .hide-until-hover {
+.hide-until-hover {
+    visibility: hidden;
+}
+
+ul.item-list li.item:hover .hide-until-hover {
     visibility: visible;
 }
 
-ul.item-list li.item .item-info span.label:first-of-type,
-ul.item-list li.hide-toggle .item-info span.label:first-of-type {
+ul.item-list li.item .item-info span.label:first-of-type {
     margin-left: 5px;
 }
 
-ul.item-list li.item.hide-toggle,
-ul.item-list li.hide-toggle.hide-toggle {
+.hide-toggle {
     text-align: center;
     cursor: pointer;
 }
 
-ul.item-list li.item.hide-toggle .rotate-icon,
-ul.item-list li.hide-toggle.hide-toggle .rotate-icon {
-    transition: .2s ease-out all;
+.hide-toggle .rotate-icon {
+    transition: .3s ease-out all;
 }
 
-ul.item-list li.item.hide-toggle .rotate-icon.rotated,
-ul.item-list li.hide-toggle.hide-toggle .rotate-icon.rotated {
+.hide-wrapper.open + .hide-toggle .rotate-icon,
+.hide-toggle.open .rotate-icon {
     transform: rotate(180deg);
 }
 
@@ -751,23 +716,17 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
     background: none;
 }
 
+/* Face wall and profile styling */
+
 .wall .card-img-top {
     width: 100%;
     height: 10vw;
     object-fit: cover;
 }
 
-.wall .card {
-    text-align: left;
-}
 
-.wall .card p, .card-phone {
+.wall .card p {
     font-size: 90%;
-}
-
-.wall .card a {
-    text-decoration: none !important;
-    color: inherit;
 }
 
 .wall .card:hover {
@@ -802,7 +761,6 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 }
 
 /*Bootstrap 4 accordion css ends*/
-/*# sourceMappingURL=redpot.css.map */
 
 
 /* Trying to make DAL match bootstrap.  DAL css should be replaced instead? */
@@ -837,5 +795,10 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 
 /* Only required while DatePicker templates aren't fully BS5-compatible */
 span.invalid-feedback {
+    display: block !important;
+}
+
+/* Force ckeditor widgets to full-width */
+.django-ckeditor-widget{
     display: block !important;
 }

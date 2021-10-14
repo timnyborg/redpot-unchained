@@ -26,6 +26,8 @@
 
     <script src="{% static 'js/fontawesome5/all.js' %}" type="text/javascript"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+    {% google_tag_manager_script %}
 </head>
 
 <body>
@@ -46,28 +48,45 @@
                     {% block mainmenu %}
                         <!-- Nav menu center -->
                         {% with menu=menus.main %}
-                            {% include 'menu/bootstrap5_menu.html' %}
+                            {% include 'menu/bootstrap_menu.html' %}
                         {% endwith %}
                     {% endblock %}
                 </ul>
                 <!-- Login (nav right) -->
                 <ul class='navbar-nav justify-content-right ms-auto'>
                     {% with menu=menus.user %}
-                        {% include 'menu/bootstrap5_menu.html' %}
+                        {% include 'menu/bootstrap_menu.html' %}
                     {% endwith %}
                 </ul>
             </div>
         </div>
     </nav>
+    {% if request.user.is_hijacked %}
+        <div class="alert-header alert-info" role="navigation">
+            <div class="container">
+                <span class="alert-icon"><i class="fas fa-fw fa-mask"></i></span>
+                You are currently impersonating <b>{{ request.user.get_full_name }}</b> ({{ request.user.username }})
+                <button class="btn btn-link btn-xs" type="submit" form="release_impersonate_form" >
+                    End impersonation
+                </button>
+                <form id="release_impersonate_form" action="{% url 'hijack:release' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+
     {% for message in messages %}
         <div
-            class="alert-header alert-{{ message.level_tag }}"
+            class="alert-header alert-{{ message.level_tag }} dismissable"
             onclick="this.classList.add('alert-hidden');" role="navigation"
         >
             <div class="container">
-            <span class="alert-icon">
-                <i class="{% message_icon_class message.level_tag %}"></i>
-            </span>
+                <span class="alert-icon">
+                    <i class="{% message_icon_class message.level_tag %}"></i>
+                </span>
                 <span class="alert-heading">{{ message.heading }}</span> {{ message }}
             </div>
         </div>
@@ -175,7 +194,6 @@
             event.stopPropagation();
         })
     })
-</script>
-
+    </script>
 </body>
 </html>

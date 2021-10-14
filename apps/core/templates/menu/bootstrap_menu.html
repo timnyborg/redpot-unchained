@@ -1,0 +1,26 @@
+{# See https://github.com/jazzband/django-simple-menu/tree/master/menu/templates for BS4 and a submodel #}
+{% for item in menu %}
+    {% if item.visible %}
+        {% if item.separator %}
+            <div class="dropdown-divider"></div>
+        {% endif %}
+
+        <li class="nav-item{% if item.selected %} active{% endif %} dropdown">
+            <a
+                href="{{ item.url }}"
+                class="me-2 text-light nav-link"
+                {% if item.children %}
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                {% endif %}
+            >
+                {% if item.icon %}<i class="fas fa-{{ item.icon }}"></i> {% endif %}{{item.title}}
+            </a>
+            {% if item.children %}
+                {% include 'menu/bootstrap_submenu.html' with items=item.children %}
+            {% endif %}
+        </li>
+    {% endif %}
+{% endfor %}

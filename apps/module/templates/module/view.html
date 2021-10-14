@@ -430,7 +430,7 @@
         <dd class="col-9">{{ enrolments | length }}</dd>
     </dl>
     {% if enrolments %}
-        <table class="table table-striped table-hover hide-rows">
+        <table class="table table-hover hide-rows">
         <thead>
             <tr>
                 <th>Name</th>
@@ -496,7 +496,7 @@
 {% if applications %}
 <div class="section">
     <h2 id='application_forms' data-badge-text='{{ applications | length }}' class="section-title">Applications</h2>
-    <table id="applications" class="table table-striped table-hover hide-rows">
+    <table id="applications" class="table table-hover hide-rows">
     <thead><tr><th>Surname</th><th>Firstname</th><th>Status</th><th></th></tr></thead>
     <tbody>
     {% for application in applications %}
@@ -516,7 +516,7 @@
                 {% endif %}
             </td>
             <td>
-                <a href="form/view/{{ application.id }}">
+                <a href="form/view/{{ application.id }}" class="float-end">
                     <i class="fas fa-fw fa-pencil-alt"></i>
                 </a>
             </td>
@@ -540,7 +540,7 @@
     </div>
     <h2 id="fees" class="section-title">Fees</h2>
     {% if fees %}
-        <table class="table table-striped table-hover">
+        <table class="table table-hover">
             <thead><tr><th colspan="100%">Tuition</th></tr></thead>
             {% for fee in fees %}
                 {% if fee.type.narrative == 'Programme fee' %}
@@ -552,14 +552,14 @@
                         </td>
                         <td></td>
                         <td>£{{ fee.amount | floatformat:-2 }}</td>
-                        <td class="quick-icons">
-                            <a href="{% url 'fee:edit' fee.pk %}"><i class="fas fa-pencil-alt"></i></a>
+                        <td>
+                            <a href="{% url 'fee:edit' fee.pk %}" class="float-end"><i class="fas fa-pencil-alt"></i></a>
                         </td>
                     </tr>
                 {% endif %}
             {% endfor %}
         </table>
-        <table class="table table-striped table-hover">
+        <table class="table table-hover">
             <thead><tr><th colspan="100%">Other</th></tr></thead>
             {% for fee in fees %}
                 {% if fee.type.narrative != 'Programme fee' %}
@@ -571,8 +571,8 @@
                         </td>
                         <td>{{ fee.type.narrative }}</td>
                         <td>£{{ fee.amount | floatformat:-2 }}</td>
-                        <td class="quick-icons">
-                            <a href="{% url 'fee:edit' fee.pk %}"><i class="fas fa-pencil-alt"></i></a>
+                        <td>
+                            <a href="{% url 'fee:edit' fee.pk %}" class="float-end"><i class="fas fa-pencil-alt"></i></a>
                         </td>
                     </tr>
                 {% endif %}
@@ -581,7 +581,7 @@
     {% endif %}
 
     {% if discounts %}
-    <table class="table table-striped">
+    <table class="table">
         <thead><tr><th>Discount codes</th><th></th><th></th></tr></thead>
         {% for discount in discounts %}
             <tr>
@@ -623,20 +623,19 @@
 
 <div class="section">
     <div class="float-end">
-        <a href="module/add-payment-plan/{{ module.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add Payment plan</a>
+        <a href="module/add-payment-plan/{{ module.id }}" class="btn btn-success btn-xs"><span class="fa fa-plus"></span> Add payment plan</a>
     </div>
     <h2 id="payment-plans" class="section-title">Payment plans</h2>
     {% if payment_plans %}
-        <table class="table table-striped table-hover" >
+        <table class="table table-hover" >
         <thead><tr><th>Type</th><th></th></tr></thead>
         {% for plan in payment_plans %}
             <tr>
                 <td>
                     {{ plan.name }}
                 </td>
-                <td class="quick-icons">
-                    <a href="EDIT"><i class="fas fa-fw fa-pencil-alt"></i></a>
-                    <a href="DELETE"><i class="fas fa-fw fa-times"></i></a>
+                <td>
+                    <a href="DELETE" class="float-end"><i class="fas fa-fw fa-times"></i></a>
                 </td>
             </tr>
             {# delete_button = A(icon('remove'), data={'toggle': 'modal', 'target': '#confirm-remove-plan', 'href': URL('payment_plan', args=['delete', plan.id])}, _href='#') #}
@@ -648,20 +647,19 @@
 <div class="section">
     <div class="float-end">
         <a href="{% url 'module:add-programme' module.id %}?next={{ request.get_full_path }}#programmes" class="btn btn-success btn-xs">
-            <span class="fa fa-plus"></span> Add Programme
+            <span class="fa fa-plus"></span> Add programme
         </a>
     </div>
     <h2 id="programmes" class="section-title">Programmes</h2>
     {% if programmes %}
     <p>This module is part of the following programmes</p>
-    <table class="table table-striped table-hover">
+    <table class="table table-hover">
     <thead><tr><th>Title</th><th></th></tr></thead>
         {% for programme in programmes %}
-            {# delete_button = TD(A(icon('remove'), data={'toggle': 'modal', 'target': '#confirm-remove-module', 'href': URL('programme', 'remove_module', args=row.id, vars={'_next': URL(args=request.args, anchor='programmes')})}, _href='#'), _class='span2 quick-icons') #}
             <tr>
                 <td>
                     {% if programme.qualification == 1 and module.credit_points %}
-                        <span title="Credit-bearing module within a non-credit-bearing programme" class="text-danger">
+                        <span title="Credit-bearing module within a non-credit-bearing programme" data-bs-toggle="tooltip" class="text-danger">
                             <i class="fas fa-exclamation-circle"></i>
                         </span>
                     {% endif %}
@@ -713,7 +711,7 @@
                     {% if row.is_published %}
                         <span class="badge bg-success"
                             data-bs-toggle="tooltip"
-                            data-title="This tutor is visible on the course webpage"
+                            title="This tutor is visible on the course webpage"
                         >Published</span>
                     {% endif %}
                     </div>

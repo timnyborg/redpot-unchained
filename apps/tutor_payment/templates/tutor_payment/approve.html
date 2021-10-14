@@ -11,7 +11,7 @@
             <form action="" method="post">
                 {% render_table table %}
                 {% csrf_token %}
-                {% bootstrap3submit 'Approve' %}
+                {% bootstrap_submit 'Approve' %}
             </form>
         {% else %}
             <div class="empty-state">

@@ -25,3 +25,23 @@ check_untyped_defs = true
 
 [tool.django-stubs]
 django_settings_module = "redpot.settings"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = 'redpot.settings'
+python_files = ['tests.py', 'test_*.py', '*_tests.py']
+
+[tool.coverage.run]
+omit = [
+    '.venv/*',
+    'automodels.py',
+    'redpot/wsgi.py',
+    'redpot/asgi.py',
+    'manage.py',
+    'tasks.py',
+    '*tests*',
+]
+source = ['.']
+
+[tool.coverage.report]
+skip_covered = true
+precision = 2

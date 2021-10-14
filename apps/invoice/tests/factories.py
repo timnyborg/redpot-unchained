@@ -22,7 +22,7 @@ class CustomPaymentPlanFactory(factory.django.DjangoModelFactory):
     invoice = factory.SubFactory(InvoiceFactory)
     type_id = models.CUSTOM_PLAN_TYPE
     status_id = models.CUSTOM_PAYMENT_PENDING_STATUS
-    amount = factory.Faker('pydecimal', min_value=1)
+    amount = factory.Faker('pydecimal', min_value=1, max_value=100000, right_digits=2)
 
 
 class ScheduledPaymentFactory(factory.django.DjangoModelFactory):
@@ -30,5 +30,5 @@ class ScheduledPaymentFactory(factory.django.DjangoModelFactory):
         model = models.ScheduledPayment
 
     due_date = factory.Faker('date')
-    amount = factory.Faker('pydecimal', min_value=1, left_digits=6, right_digits=2)
+    amount = factory.Faker('pydecimal', min_value=1, max_value=100000, right_digits=2)
     is_deposit = False

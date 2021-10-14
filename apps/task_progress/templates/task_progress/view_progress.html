@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block center %}
+    <div class="section">
+        <h2>Progress</h2>
+        <hr>
+        <div class='progress mb-2'>
+            <div id='progress-bar' class='progress-bar progress-bar-striped' style="width: 0%;"></div>
+        </div>
+        <div id="progress-bar-message" class="fs-4">Job waiting in queue</div>
+        <div id="celery-result" class="fs-4"></div>
+    </div>
+
+    <script src="{% static 'celery_progress/celery_progress.js' %}"></script>
+    <script>
+        function onProgress(progressBarElement, progressBarMessageElement, progress) {
+            progressBarElement.style.backgroundColor = this.barColors.progress;
+            progressBarElement.style.width = progress.percent + "%";
+            let description = progress.description || "";
+            if (progress.current === 0) {
+                progressBarMessageElement.textContent = progress.pending ? 'Job waiting in queue' : 'Job started';
+            } else {
+                progressBarMessageElement.textContent = `${progress.current} of ${progress.total}: ${description}`
+            }
+        }
+        function onResult(resultElement, result) {
+            // Print a result if result['value'] is returned, regardless of success/failure
+            if (result.value) {
+                resultElement.textContent = `Result: ${result.value}`
+            }
+        }
+        function onSuccess(progressBarElement, progressBarMessageElement, result) {
+            progressBarElement.style.backgroundColor = this.barColors.success;
+            progressBarMessageElement.textContent = "Success!";
+            if (result.redirect) {
+                window.location.replace(result.redirect);
+            }
+        }
+        function onError(progressBarElement, progressBarMessageElement, excMessage, data) {
+            progressBarElement.style.backgroundColor = this.barColors.error;
+            excMessage = excMessage || '';
+            progressBarMessageElement.textContent = "Whoops, something went wrong! " + excMessage;
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            let progressUrl = "{% url 'task:status' task_id %}";
+            CeleryProgressBar.initProgressBar(
+                progressUrl,
+                {
+                    onSuccess: onSuccess,
+                    onResult: onResult,
+                    onProgress: onProgress,
+                    onError: onError,
+                    pollInterval: 1000
+                }
+            );
+        });
+    </script>
+{% endblock %}

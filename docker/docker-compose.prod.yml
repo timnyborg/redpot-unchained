@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  django:
+    image: ${REDPOT_IMAGE:?}
+    secrets:
+      - source: app_config
+        target: /code/secrets.env
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 5s
+        order: start-first
+        failure_action: rollback
+    healthcheck:
+      test: curl localhost:8000/  # todo: a lightweight /healthcheck endpoint
+      interval: "15s"  # compromise between quick "start" and long "running" healthchecks.  Docker doesn't let you pick both
+      timeout: "3s"
+      retries: 3
+    ports:
+      - 127.0.0.1:8000:8000
+    entrypoint: ["/code/docker/prod_static_entrypoint.sh", "uwsgi"]
+    volumes:
+      - ${APP_FOLDER:?}/volumes/static:/volumes/static
+      - ${APP_FOLDER:?}/volumes/media:/volumes/media
+    restart: always
+
+  worker:
+    image: ${REDPOT_IMAGE:?}
+    secrets:
+      - source: app_config
+        target: /code/secrets.env
+    restart: always
+    command: celery -A redpot worker -n redpot-worker
+    volumes:
+      - ${APP_FOLDER:?}/volumes/media:/volumes/media
+
+  redis:
+    image: redis:6.0
+    restart: always
+
+secrets:
+  app_config:
+    file: ${APP_FOLDER:?}/secrets.env

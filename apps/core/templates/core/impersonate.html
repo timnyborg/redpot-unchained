@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+{% block center %}
+
+<div class='section'>
+    <form action="{% url 'hijack:acquire' %}" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="form-group mb-3">
+            <button type='submit' class='btn btn-primary'>Impersonate</button>
+        </div>
+    </form>
+</div>
+{{ form.media }}
+
+{% endblock %}

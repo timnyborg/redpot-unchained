@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+
+{% load menu %}
+{% block mainmenu %}
+    {% generate_menu %}
+    {% with menu=menus.staff_forms %}
+        {% include 'menu/bootstrap_menu.html' %}
+    {% endwith %}
+{% endblock %}

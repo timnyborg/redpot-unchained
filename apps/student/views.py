@@ -14,12 +14,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
+from apps.core.utils import strings
 from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
 
-from . import datatables, forms
-from .models import Address, Email, MoodleID, OtherID, Phone, Student, StudentArchive
+from . import datatables, forms, pdfs
+from .models import Address, Diet, Email, EmergencyContact, Enquiry, MoodleID, OtherID, Phone, Student, StudentArchive
 
 
 class Create(LoginRequiredMixin, generic.View):
@@ -282,6 +283,7 @@ class EditEmail(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessM
     model = Email
     template_name = 'core/form.html'
     form_class = forms.EmailForm
+    success_message = "Email updated: %(email)s"
 
     def get_subtitle(self) -> str:
         return f'Edit – {self.object.email}'
@@ -306,6 +308,7 @@ class CreateAddress(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, Succ
     model = Address
     template_name = 'core/form.html'
     form_class = forms.AddressForm
+    success_message = "Address added"
 
     def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
         self.student = get_object_or_404(Student, pk=self.kwargs['student_id'])
@@ -320,6 +323,7 @@ class EditAddress(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, Succes
     model = Address
     template_name = 'student/edit_address.html'
     form_class = forms.AddressForm
+    success_message = "Address updated"
 
 
 class DeleteAddress(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
@@ -351,6 +355,7 @@ class EditPhone(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessM
     model = Phone
     template_name = 'core/form.html'
     form_class = forms.PhoneForm
+    success_message = 'Phone number updated: %(number)s'
 
     def get_subtitle(self) -> str:
         return f'Edit – {self.object.number}'
@@ -374,7 +379,8 @@ class DeletePhone(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 class CreateOtherID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
     form_class = forms.CreateOtherIDForm
     template_name = 'core/form.html'
-    title = 'Other Id'
+    title = 'Other ID'
+    success_message = 'Other ID added'
 
     def get_initial(self) -> dict:
         return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
@@ -383,10 +389,12 @@ class CreateOtherID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, Succ
         return self.object.student.get_absolute_url() + '#other_ids'
 
 
-class EditOtherID(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
+class EditOtherID(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
     model = OtherID
     template_name = 'core/form.html'
     form_class = forms.OtherIDForm
+    title = 'Other ID'
+    success_message = 'Other ID updated'
 
 
 class DeleteOtherID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
@@ -405,9 +413,9 @@ class DeleteOtherID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 
 
 class CreateMoodleID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+    model = MoodleID
     form_class = forms.CreateMoodleIDForm
     template_name = 'core/form.html'
-    title = 'Moodle Id'
 
     def get_initial(self) -> dict:
         return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
@@ -431,4 +439,66 @@ class DeleteMoodleID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 
     def get_success_url(self) -> str:
         messages.success(self.request, 'Moodle ID deleted')
+        return self.object.student.get_absolute_url() + '#other_ids'
+
+
+# --- Other child views ---
+
+
+class DeleteEnquiry(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = Enquiry
+    template_name = 'core/delete_form.html'
+    subtitle_object = False
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Enquiry deleted')
+        return self.object.student.get_absolute_url() + '#enquiries'
+
+
+class CreateOrEditDiet(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+    model = Diet
+    fields = ['type', 'note']
+    template_name = 'core/form.html'
+    success_message = 'Dietary preferences updated'
+    subtitle_object = False
+
+    def get_object(self, queryset=None):
+        student = get_object_or_404(Student, pk=self.kwargs['student_id'])
+        obj, created = Diet.objects.get_or_create(student=student)
+        return obj
+
+    def get_success_url(self):
         return self.object.student.get_absolute_url()
+
+
+class CreateOrEditEmergencyContact(
+    LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView
+):
+    model = EmergencyContact
+    fields = ['name', 'phone', 'email']
+    template_name = 'core/form.html'
+    success_message = 'Emergency contact details updated'
+    subtitle_object = False
+
+    def get_object(self, queryset=None):
+        student = get_object_or_404(Student, pk=self.kwargs['student_id'])
+        obj, created = EmergencyContact.objects.get_or_create(
+            student=student,
+            defaults={'created_by': self.request.user.username, 'modified_by': self.request.user.username},
+        )
+        return obj
+
+    def get_success_url(self):
+        return self.object.student.get_absolute_url()
+
+
+class StatementPDF(LoginRequiredMixin, generic.View):
+    """Generate a statement for all a student's enrolments"""
+
+    def get(self, request, pk: int, *args, **kwargs) -> http.HttpResponse:
+        student = get_object_or_404(Student, pk=pk)
+        document = pdfs.create_statement(student)
+        filename = strings.normalize(f'Statement_{student.firstname}_{student.surname}.pdf')
+        return http.HttpResponse(
+            document, content_type='application/pdf', headers={'Content-Disposition': f'inline;filename={filename}'}
+        )

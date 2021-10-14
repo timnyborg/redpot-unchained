@@ -11,9 +11,9 @@
         <h4>{{ student }}</h4>
         <h5>{{ module.title }} ({{ module.code }}) &bull; {{ module.start_date }} &ndash; {{ module.end_date }}</h5>
         <hr>
-        <form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
+        <form action="" enctype="multipart/form-data" method="post" >
             {% csrf_token %}
-            {% bootstrap5form form True %}
+            {% bootstrap_form form True %}
             <div class="form-group mb-3">
                 <button type='submit' class='btn btn-primary'>{{ form.submit_label|default:'Save' }}</button>
                 {% if object.get_delete_url %}

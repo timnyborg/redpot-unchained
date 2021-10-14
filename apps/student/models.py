@@ -6,6 +6,7 @@ from django.db import models, transaction
 from django.urls import reverse
 
 from apps.core.models import AddressModel, SignatureModel, SITSLockingModelMixin
+from apps.core.utils.models import PhoneField
 from apps.invoice.models import Invoice
 from apps.module.models import Module
 
@@ -111,7 +112,7 @@ class Student(SITSLockingModelMixin, SignatureModel):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
-        return reverse('student-view', args=[self.id])
+        return reverse('student:view', args=[self.id])
 
     def get_edit_url(self):
         return reverse('student:edit', args=[self.id])
@@ -258,11 +259,12 @@ class Address(AddressModel, SITSLockingModelMixin, SignatureModel):
         return self.created_by == 'SITS' or self.modified_by == 'SITS' or self.sits_type is not None
 
 
-class Email(SignatureModel):
+class Email(SITSLockingModelMixin, SignatureModel):
+    sits_managed_fields = ['email']
     student = models.ForeignKey(
         'Student', models.DO_NOTHING, db_column='student', related_name='emails', related_query_name='email'
     )
-    email = models.CharField(max_length=64)
+    email = models.EmailField(max_length=64)
     note = models.CharField(max_length=128, blank=True, null=True)
     is_default = models.BooleanField(default=False, verbose_name='Default?')
 
@@ -278,6 +280,10 @@ class Email(SignatureModel):
     def get_delete_url(self) -> str:
         return reverse('student:email:delete', kwargs={'pk': self.pk})
 
+    @property
+    def is_sits_record(self) -> bool:
+        return self.created_by == 'SITS' or self.modified_by == 'SITS'
+
 
 class NextHUSID(models.Model):
     """Tracks how many HUSIDs have been allocated in a given year, acting as a seed for their generation"""
@@ -290,24 +296,29 @@ class NextHUSID(models.Model):
 
 
 class MoodleID(SignatureModel):
-    moodle_id = models.IntegerField(unique=True, error_messages={'unique': 'Moodle ID already in use'})
+    moodle_id = models.IntegerField(
+        unique=True, error_messages={'unique': 'Moodle ID already in use'}, verbose_name='Moodle ID'
+    )
     student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student', related_name='moodle_id')
     first_module_code = models.CharField(max_length=12, blank=True, null=True)
 
     class Meta:
         db_table = 'moodle_id'
+        verbose_name = 'Moodle ID'
 
     def get_absolute_url(self) -> str:
         return self.student.get_absolute_url() + '#other_ids'
 
-    def get_edit_url(self):
+    def get_edit_url(self) -> str:
         return reverse('student:moodle-id:edit', kwargs={'pk': self.pk})
 
     def get_delete_url(self) -> str:
         return reverse('student:moodle-id:delete', kwargs={'pk': self.pk})
 
 
-class OtherID(SignatureModel):
+class OtherID(SITSLockingModelMixin, SignatureModel):
+    sits_managed_fields = ['type', 'number']
+
     class Types(models.IntegerChoices):
         STUDENT_CARD = 1
         SSO = 7
@@ -343,6 +354,9 @@ class OtherID(SignatureModel):
     class Meta:
         db_table = 'other_id'
 
+    def __str__(self) -> str:
+        return f'{self.get_type_display()}: {self.number}'
+
     def get_absolute_url(self) -> str:
         return self.student.get_absolute_url() + '#other_ids'
 
@@ -351,6 +365,10 @@ class OtherID(SignatureModel):
 
     def get_delete_url(self) -> str:
         return reverse('student:other-id:delete', kwargs={'pk': self.pk})
+
+    @property
+    def is_sits_record(self) -> bool:
+        return self.created_by == 'SITS' or self.modified_by == 'SITS'
 
 
 class Nationality(models.Model):
@@ -418,36 +436,43 @@ class Disability(SignatureModel):
 
 
 class Diet(models.Model):
+    class Types(models.IntegerChoices):
+        VEGETARIAN = 200, "Vegetarian"
+        VEGAN = 210, "Vegan"
+        FISH_EATING_VEGETARIAN = 220, "Fish-eating vegetarian"
+        DEMI_VEGETARIAN = 230, "Demi-vegetarian (no red meat)"
+        NON_DAIRY = 240, "Non-dairy"
+        DIABETIC = 250, "Diabetic"
+        GLUTEN_FREE = 320, "Gluten Free (Coeliac)"
+        OTHER = 900, "Other"
+        __empty__ = 'None'
+
     student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student')
-    type = models.ForeignKey('DietType', models.DO_NOTHING, db_column='type', blank=True, null=True)
+    type = models.IntegerField(
+        choices=Types.choices, db_column='type', blank=True, null=True, verbose_name='Special diet'
+    )
     note = models.CharField(max_length=512, blank=True, null=True)
 
     class Meta:
         db_table = 'diet'
 
-
-class DietType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    description = models.CharField(max_length=64)
-
-    class Meta:
-        db_table = 'diet_type'
-
     def __str__(self) -> str:
-        return str(self.description)
+        return f'{self.get_type_display()}: {self.note}'
 
 
 class EmergencyContact(SignatureModel):
     student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student', related_name='emergency_contact')
-    name = models.CharField(max_length=128, blank=True, null=True)
-    phone = models.CharField(max_length=32, blank=True, null=True)
-    email = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=128)
+    phone = PhoneField(max_length=32, blank=True, null=True)
+    email = models.EmailField(max_length=128, blank=True, null=True)
 
     class Meta:
         db_table = 'emergency_contact'
 
 
-class Phone(SignatureModel):
+class Phone(SITSLockingModelMixin, SignatureModel):
+    sits_managed_fields = ['type', 'number']
+
     class PhoneTypeChoices(models.IntegerChoices):
         PHONE = 100, 'Phone'
         ALT_PHONE = 110, 'Alternative phone!'
@@ -459,7 +484,7 @@ class Phone(SignatureModel):
 
     student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student', related_name="phones")
     type = models.IntegerField(choices=PhoneTypeChoices.choices, default=PhoneTypeChoices.PHONE)
-    number = models.CharField(max_length=64)
+    number = PhoneField(max_length=64)
     note = models.CharField(max_length=128, blank=True, null=True)
     is_default = models.BooleanField(default=False, verbose_name='Default?')
 
@@ -477,6 +502,10 @@ class Phone(SignatureModel):
 
     def get_delete_url(self) -> str:
         return reverse('student:phone:delete', kwargs={'pk': self.pk})
+
+    @property
+    def is_sits_record(self) -> bool:
+        return self.created_by == 'SITS' or self.modified_by == 'SITS'
 
 
 class Enquiry(SignatureModel):
