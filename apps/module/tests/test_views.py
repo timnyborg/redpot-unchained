@@ -1,11 +1,14 @@
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.core.utils.tests import LoggedInViewTestMixin
+from apps.core.utils.tests import LoggedInMixin, LoggedInViewTestMixin
 from apps.enrolment.tests.factories import EnrolmentFactory
 from apps.fee.tests.factories import FeeFactory
 from apps.hesa.models import HECoSSubject
+from apps.invoice.models import PaymentPlanType
 from apps.programme.models import ProgrammeModule
 from apps.programme.tests.factories import ProgrammeFactory
 
@@ -321,3 +324,24 @@ class TestCancelAndUncancelView(LoggedInViewTestMixin, TestCase):
         self.assertFalse(self.cancelled_module.auto_feedback)
         self.assertFalse(self.cancelled_module.auto_reminder)
         self.assertFalse(self.cancelled_module.is_cancelled)
+
+
+class TestPaymentPlanViews(LoggedInMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.module = factories.ModuleFactory()
+        cls.plan_type = PaymentPlanType.objects.create(name='Plan', deposit=Decimal(0))
+
+    def test_add_plan(self):
+        response = self.client.post(
+            reverse('module:add-payment-plan', args=[self.module.id]), data={'plan_type': self.plan_type.id}
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.module.payment_plans.count(), 1)
+
+    def test_remove_plan(self):
+        self.module.payment_plans.add(self.plan_type)
+        response = self.client.post(reverse('module:remove-payment-plan', args=[self.module.id, self.plan_type.id]))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.module.payment_plans.count(), 0)

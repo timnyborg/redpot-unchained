@@ -14,10 +14,17 @@ urlpatterns = [
     path('new', views.New.as_view(), name='new'),
     path('search', views.Search.as_view(), name='search'),
     path('view/<int:pk>', views.View.as_view(), name='view'),
-    path('add-programme/<int:module_id>', views.AddProgramme.as_view(), name='add-programme'),
-    path('edit-hesa-subjects/<int:pk>', views.EditHESASubjects.as_view(), name='edit-hesa-subjects'),
-    path('uncancel/<int:pk>', views.Uncancel.as_view(), name='uncancel'),
     path('cancel/<int:pk>', views.Cancel.as_view(), name='cancel'),
+    path('uncancel/<int:pk>', views.Uncancel.as_view(), name='uncancel'),
+    # child record views
+    path('programme/add/<int:module_id>', views.AddProgramme.as_view(), name='add-programme'),
+    path('payment-plan/add/<int:module_id>', views.AddPaymentPlan.as_view(), name='add-payment-plan'),
+    path(
+        'payment-plan/remove/<int:module_id>/<int:plan_type_id>',
+        views.RemovePaymentPlan.as_view(),
+        name='remove-payment-plan',
+    ),
+    path('hesa-subjects/edit/<int:pk>', views.EditHESASubjects.as_view(), name='edit-hesa-subjects'),
     # reports
     path('student-list/<int:pk>', views.StudentList.as_view(), name='student-list'),
     path('moodle-list/<int:pk>', views.MoodleList.as_view(), name='moodle-list'),

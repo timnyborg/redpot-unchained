@@ -1,6 +1,6 @@
 celery==5.1.2
 celery-progress==0.1.1
-coverage[toml]==6.0
+coverage[toml]==6.0.2
 Django==3.2.8
 django-auth-ldap==3.0.0
 django-autocomplete-light==3.8.2
@@ -26,8 +26,8 @@ fpdf==1.7.2
 freezegun==1.1.0
 lxml==4.6.3
 marshmallow==3.13.0
-mkdocs==1.2.2
-mkdocs-material==7.3.1
+mkdocs==1.2.3
+mkdocs-material==7.3.3
 mkdocs-material-extensions==1.0.3
 mssql-django==1.0
 parameterized==0.8.1
@@ -36,7 +36,7 @@ pre-commit==2.15.0
 PyPDF2==1.26.0
 python-dateutil==2.8.2
 python-ldap==3.3.1
-PyYAML==5.4.1
+PyYAML==6.0
 sentry-sdk==1.4.3
 uk-postcode-utils==1.1
 unittest-xml-reporting==3.0.4

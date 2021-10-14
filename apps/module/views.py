@@ -16,6 +16,7 @@ from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitleMixin
 from apps.discount.models import Discount
 from apps.enrolment.models import Enrolment
+from apps.invoice.models import ModulePaymentPlan
 from apps.tutor.utils import expense_forms
 from apps.tutor_payment.models import TutorPayment
 
@@ -349,3 +350,33 @@ class Cancel(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.Up
         ).select_related('status', 'tutor_module__tutor__student')
 
         return {'future_fees': future_fees, **context}
+
+
+class AddPaymentPlan(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.CreateView):
+    model = ModulePaymentPlan
+    title = 'Module'
+    subtitle = 'Add payment plan'
+    form_class = forms.ModulePaymentPlanForm
+    template_name = 'core/form.html'
+    success_message = 'Payment plan added: %(plan_type)s'
+
+    def get_initial(self) -> dict:
+        return {'module': get_object_or_404(Module, pk=self.kwargs['module_id'])}
+
+    def get_success_url(self) -> str:
+        return self.object.module.get_absolute_url() + '#payment-plans'
+
+
+class RemovePaymentPlan(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.DeleteView):
+    model = ModulePaymentPlan
+    title = 'Module'
+    subtitle = 'Remove payment plan'
+    subtitle_object = False
+    template_name = 'core/delete_form.html'
+
+    def get_object(self, queryset=None) -> ModulePaymentPlan:
+        return get_object_or_404(ModulePaymentPlan, **self.kwargs)
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, f'Payment plan removed: {self.object.plan_type}')
+        return self.object.module.get_absolute_url() + '#payment-plans'
