@@ -563,7 +563,7 @@
                 <td>{{ other_id.get_type_display }}</td>
                 <td>{% if other_id.end_date %}{{ other_id.end_date  }}{% else %}{% endif %}</td>
                 <td>
-                    <a href="{% url 'student:other-id:edit' other_id.id %}" class="float-end">
+                    <a href="{% url 'student:other-id:edit' other_id.id %}" class="float-end" data-bs-toggle="tooltip" title="Edit">
                         <span class="fas fa-fw fa-pencil-alt"></span>
                     </a>
                 </td>
@@ -792,7 +792,7 @@
 
 <div class="section">
     <div class="float-end mt-1">
-        <a href="/activity/new/{{ tutor.id }}&next={{ request.path }}#tutor-activity" class="btn btn-success btn-xs">
+        <a href="{% url 'tutor:activity:new' tutor.id %}" class="btn btn-success btn-xs">
             <i class="fas fa-plus"></i> Add activity
         </a>
     </div>
@@ -801,14 +801,15 @@
     <table class="table table-hover hide-rows" data-display='2' data-hide-after='2'>
     <thead><tr><th>Type</th><th>Note</th><th>Date</th><th></th></tr></thead>
     <tbody>
-    {% for tutor_activity in tutor_activities %}
+    {% for activity in tutor_activities %}
         <tr>
-            <td>{{tutor_activity.activity.description}}</td>
-            <td>{{tutor_activity.note}}</td>
-            <td>{{tutor_activity.date}}</td>
+            <td>{{activity.activity.description}}</td>
+            <td>{{activity.note}}</td>
+            <td>{{activity.date}}</td>
             <td class="col-sm-1">
-                <a data-href="/tutor-activity/delete/{{tutor_activity.id}}?_next=%2Fredpot%2Fstudent%2Fview%2F{{student.id}}%23tutor-activity" data-bs-target="#confirm-remove-activity" data-bs-toggle="modal" href="#"><span class="fas fa-times"></span></a>
-                <a href="/tutor-activity/edit/{{tutor_activity.id}}?_next=%2Fredpot%2Fstudent%2Fview%2F{{student.id}}%23tutor-activity"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                <a href="{{ activity.get_edit_url }}" class="float-end" data-bs-toggle="tooltip" title="Edit">
+                    <span class="fas fa-fw fa-pencil-alt"></span>
+                </a>
             </td>
         </tr>
     {% endfor %}

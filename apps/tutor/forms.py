@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 from apps.core.utils.widgets import DatePickerInput, ReadOnlyModelWidget
 from apps.module.models import Module
 
-from .models import RightToWorkType, Tutor, TutorModule
+from .models import RightToWorkType, Tutor, TutorActivity, TutorModule
 
 
 class BasicEdit(forms.ModelForm):
@@ -153,3 +153,12 @@ class TutorModuleCreateForm(forms.ModelForm):
             self.fields['module'].widget = ReadOnlyModelWidget(Module)
         if tutor:
             self.fields['tutor'].widget = ReadOnlyModelWidget(Tutor)
+
+
+class TutorActivityForm(forms.ModelForm):
+    tutor = forms.ModelChoiceField(Tutor.objects.all(), widget=forms.HiddenInput(), disabled=True)
+
+    class Meta:
+        model = TutorActivity
+        fields = ['tutor', 'activity', 'date', 'note']
+        widgets = {'date': DatePickerInput()}

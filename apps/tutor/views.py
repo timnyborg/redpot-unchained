@@ -13,7 +13,7 @@ from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin
 from apps.module.models import Module
 
 from . import forms
-from .models import Tutor, TutorModule
+from .models import Tutor, TutorActivity, TutorModule
 from .utils.mail_merge import MailMergeView
 
 
@@ -268,3 +268,35 @@ class ExpenseFormView(MailMergeView):
             }
             for record in self.queryset.all()[:2]
         ]
+
+
+class CreateTutorActivity(
+    LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView
+):
+    form_class = forms.TutorActivityForm
+    template_name = 'core/form.html'
+    model = TutorActivity
+    success_message = 'Activity added'
+
+    def get_initial(self) -> dict:
+        return {'tutor': get_object_or_404(Tutor, pk=self.kwargs['tutor_id'])}
+
+
+class EditTutorActivity(
+    LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView
+):
+    form_class = forms.TutorActivityForm
+    template_name = 'core/form.html'
+    model = TutorActivity
+    success_message = 'Activity updated'
+    subtitle_object = None
+
+
+class DeleteTutorActivity(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = TutorActivity
+    template_name = 'core/delete_form.html'
+    subtitle_object = None
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Activity deleted')
+        return self.object.get_absolute_url()

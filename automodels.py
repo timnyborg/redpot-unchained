@@ -17,15 +17,6 @@ class AcornPostcodes(models.Model):
         db_table = 'acorn_postcodes'
 
 
-class TutorActivity(models.Model):
-    description = models.CharField(max_length=128, blank=True, null=True)
-    is_active = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'activity'
-
-
 class AutoNumber(models.Model):
     id = models.AutoField()
     name = models.CharField(max_length=32)
@@ -369,14 +360,6 @@ class Room(models.Model):
     class Meta:
         managed = False
         db_table = 'room'
-
-
-class StaffRole(models.Model):
-    name = models.CharField(max_length=64)
-
-    class Meta:
-        managed = False
-        db_table = 'staff_role'
 
 
 class TermsAndConditions(models.Model):
