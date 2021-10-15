@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from . import views
+from . import api, views
 
 app_name = 'tutor'
 
@@ -10,6 +10,8 @@ tutor_module_patterns = (
         path('edit/<int:pk>', views.TutorOnModuleEdit.as_view(), name='edit'),  # tutor:module:edit
         path('new/', views.TutorOnModuleCreate.as_view(), name='new'),  # tutor:module:new
         path('view/<int:pk>', views.TutorOnModuleView.as_view(), name='view'),  # tutor:module:view
+        # apis
+        path('reorder', api.ReorderAPI.as_view(), name='reorder'),
     ],
     'module',
 )

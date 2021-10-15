@@ -703,15 +703,13 @@
         <ul class="item-list" id="tutor-list">
         {% for row in tutors %}
             <li class="item"
-                id='tutor_modules_{{ row.tutor_module.id }}'
+                data-id="{{ row.id }}"
                 style="position: relative;"
-                data-created-on="{{ row.tutor_module.created_on }}"
+                data-created-on="{{ row.created_on }}"
             >
-                <div class="drag-container me-3" style="z-index:2">
-                    <span class="drag-icon"><i class="fa fa-ellipsis-v"></i></span>
-                </div>
                 <div class='row'>
                     <div class="col-4">
+                        <i class="fas fa-ellipsis-v text-secondary drag-icon me-1"></i>
                         <a class="link-dark fw-semi-bold" href="{{ row.tutor.get_absolute_url }}">{{ row.tutor.student.firstname }} {{ row.tutor.student.surname }}</a>
                     </div>
                     <div class="col-6">
@@ -778,29 +776,37 @@
 
     $("[data-api-field]").change(api_update).click(api_update);
 </script>
-{% comment %}
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"
+        integrity="sha512-zYXldzJsDrNKV+odAwFYiDXV2Cy37cwizT+NkuiPGsa9X1dOz04eHvUWVuxaJ299GvcJT31ug2zO4itXBjFx4w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"
+></script>
 <script>
-// Use the jquery-ui sortable, function, with some great helper stuff from http://www.avtex.com/blog/2015/01/27/drag-and-drop-sorting-of-table-rows-in-priority-order/
-$(document).ready(function() {
-    $("#tutor-list").sortable({
-        items: '> .item',
-        handle: '.drag-container',
-        axis: 'y',
-        stop: function(event, ui) {
-            var data = $(this).sortable('serialize');
-
-            // POST to server using $.post or $.ajax
-            $.ajax({
-                data: data,
-                type: 'POST',
-                url: 'notimplemented'
-            }).success(function (data, string, jqXHR) {
-                console.log(data);
-            });
+    const el = document.getElementById('tutor-list');
+    const sortable = Sortable.create(el, {
+        dragClass: "drag-icon",
+        store: {
+            /**
+             * Save the order of elements. Called onEnd (when the item is dropped).
+             * @param {Sortable}  sortable
+             */
+            set: function (sortable) {
+                const data = {ids: sortable.toArray()};
+                fetch("{% url 'tutor:module:reorder' %}", {
+                    method: 'PATCH',
+                    headers:{
+                        'Content-Type': 'application/json',
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    body: JSON.stringify(data),
+                })
+            }
         }
     });
+</script>
 
+{% comment %}
+$(document).ready(function() {
     $('#applications').DataTable({
         "dom" : '<"top"i>rt<"bottom"flp><"clear">',
         "pagingType": "numbers",
@@ -814,5 +820,4 @@ $(document).ready(function() {
 });
 </script>
 {% endcomment %}
-
 {% endblock %}
