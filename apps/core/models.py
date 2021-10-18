@@ -107,7 +107,15 @@ rename_profile_image = PathAndRename('images/staff_profile/')
 class User(SignatureModel, AbstractUser):
     """Extends the standard django user model with additional fields"""
 
-    default_approver = models.CharField(max_length=32, blank=True, null=True)
+    default_approver = models.ForeignKey(
+        'User',
+        on_delete=models.PROTECT,
+        related_name='+',
+        to_field='username',
+        db_column='default_approver',
+        blank=True,
+        null=True,
+    )
     role = models.CharField(max_length=512, blank=True, null=True)
     image = ResizedImageField(upload_to=rename_profile_image, null=True, blank=True)
     phone = PhoneField(max_length=512, blank=True, null=True)

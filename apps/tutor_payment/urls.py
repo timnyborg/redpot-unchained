@@ -7,6 +7,7 @@ app_name = 'tutor-payment'
 quick_payments_patterns = (
     [
         path('extras/<int:pk>', views.Extras.as_view(), name='extras'),  # 'tutor-payment:quick:extras'
+        path('syllabus/<int:pk>', views.AddSyllabusFee.as_view(), name='syllabus'),
     ],
     'quick',
 )

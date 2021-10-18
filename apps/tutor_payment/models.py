@@ -21,6 +21,14 @@ class Statuses(models.IntegerChoices):
     FAILED = (4, 'Failed')
 
 
+class Types(models.IntegerChoices):
+    # Non-exhaustive list
+    ADMIN = 1
+    TEACHING = 2
+    EXAMINING = 4
+    HOLIDAY_PAY = 12
+
+
 class TutorPayment(models.Model):
     tutor_module = models.ForeignKey(
         'tutor.TutorModule',
