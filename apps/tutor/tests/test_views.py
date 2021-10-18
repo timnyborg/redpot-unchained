@@ -1,7 +1,11 @@
+from datetime import date
+
 from django.contrib.auth import get_user_model
 from django.template import TemplateDoesNotExist
 from django.test import TestCase
 from django.urls import reverse
+
+from apps.core.utils.tests import LoggedInViewTestMixin
 
 from .. import models
 from . import factories
@@ -86,3 +90,20 @@ class TestCreateTutorOnModule(TestCase):
             models.TutorModule.objects.last().tutor_id,
             self.tutor.id,
         )
+
+
+class TestCreateActivity(LoggedInViewTestMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.tutor = factories.TutorFactory()
+        cls.activity = models.ActivityType.objects.create(description='Test activity')
+        cls.url = reverse('tutor:activity:new', args=[cls.tutor.pk])
+
+    def test_post(self):
+        response = self.client.post(
+            self.url,
+            data={'activity': self.activity.pk, 'date': date(2020, 1, 1)},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(models.TutorActivity.objects.last().tutor_id, self.tutor.pk)
