@@ -4,16 +4,13 @@ from unittest.mock import patch
 from django import test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from django.db.models import Sum
 from django.urls import reverse
 
-from apps.core.utils.tests import LoggedInViewTestMixin
-from apps.module.models import Module
-from apps.student.models import Student
-from apps.tutor.models import Tutor, TutorModule
+from apps.core.utils.tests import LoggedInMixin, LoggedInViewTestMixin
 from apps.tutor.tests.factories import TutorModuleFactory
 
 from .. import models
-from ..models import PaymentRate, TutorPayment
 from . import factories
 
 
@@ -44,7 +41,7 @@ class TestCreatePayment(test.TestCase):
                 'hours_worked': 5,
                 'amount': 25,
                 'weeks': 4,
-                'type': 1,  # todo: choices/enum
+                'type': models.Types.ADMIN,
                 'approver': 'testuser',
             },
         )
@@ -78,7 +75,7 @@ class TestEditPayment(test.TestCase):
                 'hours_worked': 5,
                 'amount': 25,
                 'weeks': 4,
-                'type': 1,  # todo: choices/enum
+                'type': models.Types.ADMIN,
                 'approver': 'testuser',
             },
         )
@@ -92,23 +89,13 @@ class TestExtras(test.TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser', is_superuser=True)
-        cls.module = Module.objects.create(
-            title='Test module',
-            start_date=date(2000, 1, 1),
-            end_date=date(2001, 1, 1),
-        )
-        cls.student = Student.objects.create(
-            firstname='First',
-            surname='Last',
-        )
-        cls.tutor = Tutor.objects.create(student=cls.student)
-        cls.tutor_module = TutorModule.objects.create(module=cls.module, tutor=cls.tutor)
+        cls.tutor_module = TutorModuleFactory(module__start_date=date(2020, 1, 1), module__end_date=date(2021, 1, 1))
         cls.url = reverse('tutor-payment:quick:extras', kwargs={'pk': cls.tutor_module.pk})
 
-        PaymentRate.objects.create(tag='online_extra_student', amount=20)
-        PaymentRate.objects.create(tag='marking_rate', amount=6)
-        cls.summative_rate = PaymentRate.objects.create(type='summative', amount=10, description='Summ')
-        cls.formative_rate = PaymentRate.objects.create(type='formative', amount=10, description='Form')
+        models.PaymentRate.objects.create(tag='online_extra_student', amount=20)
+        models.PaymentRate.objects.create(tag='marking_rate', amount=6)
+        cls.summative_rate = models.PaymentRate.objects.create(type='summative', amount=10, description='Summ')
+        cls.formative_rate = models.PaymentRate.objects.create(type='formative', amount=10, description='Form')
 
     def setUp(self):
         self.client.force_login(self.user)
@@ -124,7 +111,7 @@ class TestExtras(test.TestCase):
         )
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(TutorPayment.objects.last().approver, self.user)
+        self.assertEqual(models.TutorPayment.objects.last().approver, self.user)
 
     def test_create_summative(self):
         response = self.client.post(
@@ -137,7 +124,7 @@ class TestExtras(test.TestCase):
         )
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(TutorPayment.objects.last().approver, self.user)
+        self.assertEqual(models.TutorPayment.objects.last().approver, self.user)
 
     def test_extra_students(self):
         response = self.client.post(
@@ -149,7 +136,35 @@ class TestExtras(test.TestCase):
         )
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(TutorPayment.objects.last().approver, self.user)
+        self.assertEqual(models.TutorPayment.objects.last().approver, self.user)
+
+
+class TestSyllabus(LoggedInMixin, test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user.default_approver = cls.user
+        cls.user.save()
+        cls.tutor_module = TutorModuleFactory(module__start_date=date(2000, 1, 1))
+        models.PaymentRate.objects.create(tag='weekly_hourly_rate', amount=10)
+        cls.url = reverse('tutor-payment:quick:syllabus', kwargs={'pk': cls.tutor_module.pk})
+
+    def test_fails_without_approver(self):
+        self.user.default_approver = None
+        self.user.save()
+        self.client.post(self.url)
+        self.assertEqual(self.tutor_module.payments.count(), 0)
+
+    def test_fails_without_start_date(self):
+        self.tutor_module.module.start_date = None
+        self.tutor_module.module.save()
+        self.client.post(self.url)
+        self.assertEqual(self.tutor_module.payments.count(), 0)
+
+    def test_create(self):
+        self.client.post(self.url)
+        self.assertEqual(self.tutor_module.payments.count(), 2)  # 1 payment + 1 holiday
+        self.assertEqual(self.tutor_module.payments.aggregate(sum=Sum('amount'))['sum'], 30)
 
 
 class TestApprove(LoggedInViewTestMixin, test.TestCase):

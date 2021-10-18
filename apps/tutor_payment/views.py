@@ -1,5 +1,7 @@
+from datetime import date
 from urllib.parse import urlencode
 
+from dateutil.relativedelta import relativedelta
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
@@ -108,7 +110,7 @@ class Approve(PermissionRequiredMixin, PageTitleMixin, SingleTableMixin, FilterV
         return redirect(self.request.path_info + '?' + urlencode(self.request.GET))  # preserve filtering
 
 
-class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequiredMixin, generic.FormView):
+class Extras(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, generic.FormView):
     template_name = 'tutor_payment/extras.html'
     form_class = forms.ExtrasForm
     model = TutorModule
@@ -130,3 +132,41 @@ class Extras(PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, LoginRequir
             user=self.request.user,
         )
         return super().form_valid(form)
+
+
+class AddSyllabusFee(LoginRequiredMixin, generic.View):
+    """Adds a syllabus prep fee for a weekly class"""
+
+    def post(self, request, *args, **kwargs) -> http.HttpResponse:  # todo: post
+        tutor_module = get_object_or_404(TutorModule, **self.kwargs)
+
+        if not request.user.default_approver:
+            messages.error(request, 'Cannot add syllabus fees: no default approver set in your user profile')
+            return redirect(tutor_module)
+
+        # To be paid (with holiday) the month after starting
+        start_date = tutor_module.module.start_date
+        if not start_date:
+            messages.error(request, 'Cannot add syllabus fees: module needs a start date')
+            return redirect(tutor_module)
+
+        pay_date = date(start_date.year, start_date.month, 1) + relativedelta(months=1)
+
+        rate = models.PaymentRate.objects.lookup('weekly_hourly_rate')
+        amount = 3 * rate
+
+        models.TutorPayment.create_with_holiday(
+            tutor_module=tutor_module,
+            amount=amount,
+            payment_type_id=models.Types.TEACHING,
+            details=f'Syllabus prep fee (£{amount:.2f})',
+            approver=request.user.default_approver,
+            hourly_rate=rate,
+            weeks=1,
+            raised_by=request.user,
+            pay_date=pay_date,
+            holiday_date=pay_date,
+        )
+
+        messages.success(request, f'Syllabus fee added (£{amount:.2f})')
+        return redirect(tutor_module.get_absolute_url() + '#payments')

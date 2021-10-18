@@ -1,14 +1,13 @@
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractUser
+from apps.core.models import User
 
 
 class LoggedInMixin:
-    user: AbstractUser
+    user: User
     superuser: bool = False
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = get_user_model().objects.create_user(username='testuser', is_superuser=cls.superuser)
+        cls.user = User.objects.create_user(username='testuser', is_superuser=cls.superuser)
 
     def setUp(self):
         self.client.force_login(self.user)

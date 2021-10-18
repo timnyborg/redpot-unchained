@@ -8,7 +8,7 @@ from django.forms.models import fields_for_model
 from apps.core.utils import widgets
 from apps.core.utils.forms import ApproverChoiceField
 
-from .models import PaymentRate, TutorPayment
+from .models import PaymentRate, TutorPayment, Types
 
 
 class PaymentForm(forms.ModelForm):
@@ -96,6 +96,7 @@ class ExtrasForm(forms.Form):
     def create_record(self, tutor_module, user):
         """Create payments from the form data, supplemented with tutor_module and user from the view"""
 
+        # todo: this really should be in a service, not in a form
         # Lookup current rates
         marking_hourly = PaymentRate.objects.lookup('marking_rate')
         per_student = PaymentRate.objects.lookup('online_extra_student')
@@ -114,7 +115,7 @@ class ExtrasForm(forms.Form):
             TutorPayment.create_with_holiday(
                 tutor_module=tutor_module,
                 amount=amount,
-                payment_type_id=4,  # Examining.  todo: use a choices object
+                payment_type_id=Types.EXAMINING,
                 details=f'Marking (Formative, {formative} @ £{formative_rate.amount:.2f})',
                 approver=approver,
                 hourly_rate=marking_hourly,
@@ -127,7 +128,7 @@ class ExtrasForm(forms.Form):
             TutorPayment.create_with_holiday(
                 tutor_module=tutor_module,
                 amount=amount,
-                payment_type_id=4,  # Examining.  todo: use a choices object
+                payment_type_id=Types.EXAMINING,
                 details=f'Marking (Summative, {summative} @ £{summative_rate.amount:.2f})',
                 approver=approver,
                 hourly_rate=marking_hourly,
@@ -140,7 +141,7 @@ class ExtrasForm(forms.Form):
             TutorPayment.create_with_holiday(
                 tutor_module=tutor_module,
                 amount=amount,
-                payment_type_id=2,  # Teaching,  todo: use a choices object
+                payment_type_id=Types.TEACHING,
                 details=f'Extra students payment ({extra_students})',
                 approver=approver,
                 hourly_rate=marking_hourly,
