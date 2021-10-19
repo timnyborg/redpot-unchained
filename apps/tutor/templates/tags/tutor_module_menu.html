@@ -38,7 +38,9 @@
 
         <li class="dropdown-divider"></li>
         <li class="dropend">
-            <a class="dropdown-item dropdown-toggle"><span class="fa fa-fw fa-print"></span> Expense forms</a>
+            <a class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                <span class="fa fa-fw fa-print"></span> Expense forms
+            </a>
             <ul class="dropdown-menu">
                 {% for key, title in expense_templates.items %}
                     <li><a class="dropdown-item" href="{% url 'tutor:expense-form-single' tutor_module.id key %}">
