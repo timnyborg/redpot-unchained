@@ -72,3 +72,28 @@ def sign_contracts(*, contract_ids: list, user: User) -> int:
         signed_by=user.username,
         signed_on=datetime.now(),
     )
+
+
+def mail_pending_contracts_signature() -> int:
+    """Email reminder to sign pending contracts"""
+    outstanding = models.Contract.objects.filter(status=Statuses.APPROVED_AWAITING_SIGNATURE).count()
+
+    if outstanding:
+        context = {
+            'outstanding': outstanding,
+            'name': 'Sean Faughnan',
+            'email': 'personnel@conted.ox.ac.uk',
+            'url': settings.CANONICAL_URL + '/contract/need-signature',
+        }
+        message = render_to_string('contract/email/pending_tutor_contracts_signatures.html', context=context)
+
+        recipients = [settings.SUPPORT_EMAIL if settings.DEBUG else settings.CONTRACT_SIGNATURE_EMAILS]
+        mail.send_mail(
+            recipient_list=recipients,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            subject='Tutor contracts awaiting signature',
+            message=html.strip_tags(message),
+            html_message=message,
+        )
+
+    return outstanding
