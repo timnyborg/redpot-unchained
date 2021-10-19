@@ -18,7 +18,7 @@ def template_options(module: Module) -> Dict:
         return {
             'weekly': 'Weekly classes',
             # todo: find out why D&W is here.  AG added in a commit in Sept 2019
-            'day-weekend': 'Day & Weekend courses',
+            'day_weekend': 'Day & Weekend courses',
             'undergraduate_award': 'Undergraduate award',
             'postgraduate': 'Postgraduate',
         }
