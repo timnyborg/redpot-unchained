@@ -239,6 +239,9 @@ MEDIA_ROOT: Path = env.path('MEDIA_ROOT', default=BASE_DIR / 'media')
 # separate path and URL for media only accessible via an X-Accel-Redirect header
 PROTECTED_MEDIA_URL = env('PROTECTED_MEDIA_URL', default='/protected-media/')
 PROTECTED_MEDIA_ROOT: Path = env.path('PROTECTED_MEDIA_ROOT', default=BASE_DIR / 'protected_media')
+# separate path and URL for public website media in production.
+WEBSITE_MEDIA_URL = env('WEBSITE_MEDIA_URL', default=MEDIA_URL)
+WEBSITE_MEDIA_ROOT: Path = env.path('WEBSITE_MEDIA_ROOT', default=MEDIA_ROOT)
 
 # Login customization
 LOGIN_REDIRECT_URL = '/'
