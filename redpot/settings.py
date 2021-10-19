@@ -240,9 +240,6 @@ MEDIA_ROOT: Path = env.path('MEDIA_ROOT', default=BASE_DIR / 'media')
 PROTECTED_MEDIA_URL = env('PROTECTED_MEDIA_URL', default='/protected-media/')
 PROTECTED_MEDIA_ROOT: Path = env.path('PROTECTED_MEDIA_ROOT', default=BASE_DIR / 'protected_media')
 
-DJANGORESIZED_DEFAULT_QUALITY = 75
-DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'PNG': ".png"}
-
 # Login customization
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login'
