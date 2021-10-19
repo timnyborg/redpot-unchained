@@ -55,6 +55,8 @@ urlpatterns = [
     path('impersonate', core_views.Impersonate.as_view(), name='impersonate'),
     path('impersonate-api/', include('hijack.urls')),
     path('unimplemented', page_not_found, {'exception': 'Haven\'t built it yet'}, name='unimplemented'),
+    # django-ckeditor urls for uploads
+    path('ckeditor/', include('ckeditor_uploader.urls')),
 ]
 
 if settings.DEBUG:
