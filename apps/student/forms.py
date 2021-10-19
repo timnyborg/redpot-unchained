@@ -1,5 +1,6 @@
 import re
-from datetime import datetime
+from datetime import date, datetime
+from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 from ukpostcodeutils import validation
@@ -75,11 +76,12 @@ class EditForm(SITSLockingFormMixin, forms.ModelForm):
             'note': forms.Textarea(),
         }
 
-    def clean_birthdate(self) -> None:
+    def clean_birthdate(self) -> Optional[date]:
         """Prevent ages < 12 (arbitrary) to avoid common data entry errors (current date, 2067 instead of 1967, etc."""
         birthdate = self.cleaned_data['birthdate']
         if birthdate and birthdate > (datetime.today() - relativedelta(years=12)).date():
             raise ValidationError('Must be a bit older than that!')
+        return birthdate
 
 
 class AddressForm(SITSLockingFormMixin, forms.ModelForm):
