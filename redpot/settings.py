@@ -78,6 +78,7 @@ PROJECT_APPS = [
 
 THIRD_PARTY_APPS = [
     'ckeditor',  # django-ckeditor
+    'ckeditor_uploader',
     'hijack',  # django-hijack
     'menu',  # django-simple-menu
     'django_select2',
@@ -364,6 +365,7 @@ CKEDITOR_CONFIGS = {
             ]
         ),
         'width': '100%',
+        'removeDialogTabs': 'image:advanced;link:advanced',
     },
     'links_only': {
         'toolbar': 'custom',
@@ -379,7 +381,8 @@ CKEDITOR_CONFIGS = {
         'width': '100%',
     },
 }
-
+CKEDITOR_STORAGE_BACKEND = 'redpot.storages.WebsiteStorage'
+CKEDITOR_UPLOAD_PATH = 'uploads/'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 DJANGO_TABLES2_TEMPLATE = 'utility/bootstrap5_table.html'
 
