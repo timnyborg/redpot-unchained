@@ -28,7 +28,16 @@
                         <a href="resolve/batchid">Resolve incomplete</a>
                     </td>
                     <td>
-                        <a href="delete_batch/batchid"><i class="fas fa-times"></i></a>
+                        <a class="float-end" href="#" data-bs-toggle="tooltip" title="Delete">
+                            <i class="fas fa-times text-danger"
+                               data-bs-target="#commonModal"
+                               data-bs-toggle="modal"
+                               data-modal-href="{% url 'hesa:delete-batch' batch.id %}"
+                               data-modal-body="Are you sure you want to delete this batch?  This cannot be undone."
+                               data-modal-confirm-text="Delete batch"
+                               data-modal-confirm-class="btn-danger"
+                            ></i>
+                        </a>
                     </td>
                 </tr>
             {% endfor %}

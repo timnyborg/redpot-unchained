@@ -13,4 +13,4 @@ def create_return(self, *, academic_year: int, created_by: str):
     batch = services.create_return(academic_year, created_by, recorder=recorder)
     recorder.set_progress(current=12, total=12, description='Generating XML')
     services.save_xml(batch=batch)
-    return {'redirect': reverse('hesa:xml', kwargs={'pk': batch.pk})}
+    return {'redirect': reverse('hesa:xml', kwargs={'pk': batch.pk})}  # todo: redirect to view page instead

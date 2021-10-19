@@ -1,10 +1,11 @@
 from django import http
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.views import generic
 
-# todo: permissions
 from apps.core.utils.views import PageTitleMixin
 
 from . import forms, models, tasks
@@ -30,6 +31,16 @@ class CreateBatch(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
             academic_year=form.cleaned_data['year'], created_by=self.request.user.username
         )
         return redirect('task:progress', task_id=task.id)
+
+
+class DeleteBatch(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
+    permission_required = 'hesa.delete_batch'
+    model = models.Batch
+    template_name = 'core/delete_form.html'
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, f'Batch #{self.object.id} deleted')
+        return reverse('hesa:batches')
 
 
 class DownloadXML(PermissionRequiredMixin, generic.View):
