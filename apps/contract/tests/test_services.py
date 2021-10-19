@@ -17,8 +17,9 @@ class TestTutorPendingEmailContract(LoggedInMixin, TestCase):
         # Send message
         services.mail_pending_contracts_signature()
 
-        # Test that one message has been sent.
-        self.assertEqual(len(mail.outbox), 1)
-
         # Verify that the subject of the first message is correct.
         self.assertEqual(mail.outbox[0].subject, 'Tutor contracts awaiting signature')
+        self.assertEqual(mail.outbox[0].from_email, 'test@test.com')
+
+        # Test that one message has been sent.
+        self.assertEqual(len(mail.outbox), 1)
