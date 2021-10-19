@@ -1,12 +1,13 @@
-from django import test
 from django.core import mail
+from django.test import TestCase, override_settings
 
 from apps.contract import services
 from apps.contract.tests.factories import ContractFactory
 from apps.core.utils.tests import LoggedInMixin
 
 
-class TestTutorPendingEmailContract(LoggedInMixin, test.TestCase):
+@override_settings(DEFAULT_FROM_EMAIL='test@test.com')
+class TestTutorPendingEmailContract(LoggedInMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
