@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-import os
 from datetime import datetime
+from pathlib import Path
 
-from django_resized import ResizedImageField
+from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFit
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
-from django.utils.deconstruct import deconstructible
 
 from .utils import postal
 from .utils.models import PhoneField
@@ -86,22 +86,10 @@ class SITSLockingModelMixin:
         return set(self.sits_managed_fields) if self.is_sits_record else set()
 
 
-@deconstructible
-class PathAndRename(object):
-    """See https://stackoverflow.com/q/25767787/9461432"""
-
-    def __init__(self, sub_path):
-        self.path = sub_path
-
-    def __call__(self, instance, filename):
-        ext = filename.split('.')[-1]
-        # get filename
-        filename = f'{instance.username}.{ext}'
-        # return the whole path to the file
-        return os.path.join(self.path, filename)
-
-
-rename_profile_image = PathAndRename('images/staff_profile/')
+def get_profile_image_filename(instance: 'User', filename: str) -> str:
+    ext = Path(filename).suffix
+    filename = f'{instance.username}{ext}'
+    return f'images/staff/{filename}'
 
 
 class User(SignatureModel, AbstractUser):
@@ -117,7 +105,14 @@ class User(SignatureModel, AbstractUser):
         null=True,
     )
     role = models.CharField(max_length=512, blank=True, null=True)
-    image = ResizedImageField(upload_to=rename_profile_image, null=True, blank=True)
+    image = ProcessedImageField(
+        upload_to=get_profile_image_filename,
+        null=True,
+        blank=True,
+        processors=[ResizeToFit(1000, 1000)],
+        format='JPEG',
+        options={'quality': 70},
+    )
     phone = PhoneField(max_length=512, blank=True, null=True)
     room = models.CharField(max_length=512, blank=True, null=True)
     on_facewall = models.BooleanField(default=True)
