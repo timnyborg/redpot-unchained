@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import factory
 
 from apps.module.tests.factories import ModuleFactory
@@ -13,3 +15,5 @@ class EnrolmentFactory(factory.django.DjangoModelFactory):
     module = factory.SubFactory(ModuleFactory)
     qa = factory.SubFactory(QualificationAimFactory)
     status_id = models.Statuses.CONFIRMED
+    created_on = factory.LazyFunction(datetime.now)
+    modified_on = factory.LazyFunction(datetime.now)

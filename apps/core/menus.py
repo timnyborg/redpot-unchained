@@ -88,7 +88,7 @@ finance_children = [
     MenuItem("Invoices", reverse("invoice:search"), icon="file-invoice-dollar"),
     MenuItem(
         "Change requests",
-        reverse("invoice:search"),
+        '#',
         icon="pencil-alt",
         children=(
             MenuItem("Approve", reverse("amendment:approve"), icon="check"),
