@@ -19,7 +19,7 @@
                     <td>{{ batch.created_by }}</td>
                     <td>{{ batch.created_on }}</td>
                     <td>
-                        <a href="download/batchid">{{ batch.filename|default:'None' }}</a>
+                        <a href="{% url 'hesa:xml' batch.id %}">{{ batch.filename|default:'None' }}</a>
                     </td>
                     <td>
                         <a href="xml/batchid">{% if batch.filename %}Replace{% else %}Create{% endif %}</a>

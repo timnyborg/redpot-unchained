@@ -1,5 +1,4 @@
 import itertools
-import os
 import re
 from datetime import date
 from typing import Iterable, Optional
@@ -7,6 +6,7 @@ from typing import Iterable, Optional
 from celery_progress.backend import ProgressRecorder
 from lxml import etree
 
+from django.conf import settings
 from django.db.models import F, FilteredRelation, OuterRef, Prefetch, Q, Subquery
 
 from apps.enrolment.models import Enrolment
@@ -38,12 +38,7 @@ def create_return(
     academic_year, created_by, *, recorder: Optional[ProgressRecorder] = None, run_xml=False
 ) -> models.Batch:
     """The schedulable routine which call the magic below"""
-    hesa = HESAReturn(academic_year, created_by, recorder=recorder)
-    batch = hesa.create()
-    if run_xml:
-        # Todo: figure out adding to recorder progress here
-        save_xml(batch.id, 'TODO')  # todo: pathing
-    return batch
+    return HESAReturn(academic_year, created_by, recorder=recorder).create()
 
 
 class HESAReturn:
@@ -73,7 +68,7 @@ class HESAReturn:
 
     def create(self) -> models.Batch:
         """Populate the tables in order, updating the status after each"""
-        steps = 11
+        steps = 12
         self._set_progress(1, steps, 'Institution')
         self._institution()
         self._set_progress(2, steps, 'Student')
@@ -495,12 +490,14 @@ def _generate_tree(batch: int) -> str:
     return etree.tostring(root, pretty_print=True).decode('utf8')
 
 
-def save_xml(batch_id: int, path: str) -> None:
-    batch = models.Batch.objects.get(id=batch_id)
+def save_xml(batch: models.Batch) -> None:
+    # create the media subfolder if required
+    file_path = settings.PROTECTED_MEDIA_ROOT / 'hesa'
+    file_path.mkdir(parents=True, exist_ok=True)
 
     filename = f'conted_batch_{batch.id}.xml'
-    filepath = os.path.join(path, filename)
-    with open(filepath, 'w') as f:
+    fullpath = file_path / filename
+    with open(fullpath, 'w') as f:
         xml_string = _generate_tree(batch.id)
         f.write(xml_string)
     batch.filename = filename
