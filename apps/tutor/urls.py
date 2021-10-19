@@ -16,10 +16,20 @@ tutor_module_patterns = (
     'module',
 )
 
+activity_patterns = (
+    [
+        path('new/<int:tutor_id>', views.CreateTutorActivity.as_view(), name='new'),  # tutor:activity:new
+        path('edit/<int:pk>', views.EditTutorActivity.as_view(), name='edit'),
+        path('delete/<int:pk>', views.DeleteTutorActivity.as_view(), name='delete'),
+    ],
+    'activity',
+)
+
 urlpatterns = [
     path('edit/<int:pk>', views.Edit.as_view(), name='edit'),  # tutor:edit
     path('right-to-work/<int:pk>', views.RightToWork.as_view(), name='right-to-work'),
     path('tutor-module/', include(tutor_module_patterns)),
+    path('activity/', include(activity_patterns)),
     # Todo: overhaul this whole expense-form url structure
     path(
         'expense-form/module/<int:pk>/<str:template>',

@@ -210,22 +210,41 @@ class TutorSubject(SignatureModel):
 
 
 class ActivityType(models.Model):
-    description = models.CharField(max_length=128, blank=True, null=True)
-    is_active = models.BooleanField()
+    description = models.CharField(max_length=128)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'activity'
 
+    def __str__(self) -> str:
+        return str(self.description)
+
 
 class TutorActivity(SignatureModel):
     tutor = models.ForeignKey(
-        Tutor, models.DO_NOTHING, db_column='tutor', related_name='tutor_activities', blank=True, null=True
+        Tutor,
+        models.DO_NOTHING,
+        db_column='tutor',
+        related_name='tutor_activities',
     )
     activity = models.ForeignKey(
-        ActivityType, models.DO_NOTHING, db_column='activity', related_name='tutor_activities', blank=True, null=True
+        ActivityType,
+        models.DO_NOTHING,
+        db_column='activity',
+        related_name='tutor_activities',
+        limit_choices_to={'is_active': True},
     )
-    date = models.DateField(blank=True, null=True)
-    note = models.TextField(blank=True, null=True)
+    date = models.DateField()
+    note = models.CharField(max_length=128, blank=True)  # todo: truncate and apply length on legacy db
 
     class Meta:
         db_table = 'tutor_activity'
+
+    def get_absolute_url(self) -> str:
+        return self.tutor.student.get_absolute_url() + '#tutor-activity'
+
+    def get_edit_url(self) -> str:
+        return reverse('tutor:activity:edit', args=[self.pk])
+
+    def get_delete_url(self) -> str:
+        return reverse('tutor:activity:delete', args=[self.pk])

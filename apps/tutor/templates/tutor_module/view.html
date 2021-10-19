@@ -127,8 +127,13 @@
             </a>
         {% endif %}
         {% if 'weekly_syllabus' in add_buttons %}
-            <a href="tutor-payment/syllabus/{{ object.id }}" class="btn btn-primary">
-                <i class="fas fa-fw fa-text"></i> New syllabus
+            <a class="btn btn-primary"
+               data-bs-toggle="modal"
+               data-bs-target="#commonModal"
+               data-modal-body="Are you sure you wish to add a syllabus preparation fee?"
+               data-modal-href="{% url 'tutor-payment:quick:syllabus' object.id %}"
+            >
+                <i class="fas fa-fw fa-file-alt"></i> New syllabus
             </a>
         {% endif %}
     {% endif %}

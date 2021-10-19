@@ -383,6 +383,8 @@ CKEDITOR_CONFIGS = {
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 DJANGO_TABLES2_TEMPLATE = 'utility/bootstrap5_table.html'
 
+HIJACK_INSERT_BEFORE = None  # Disable built-in popup
+
 # Contract configuration - todo: consider moving into a settings table once we have one, consider a file:// url fetcher
 CONTRACT_SIGNATORY = env('CONTRACT_SIGNATORY', default='')
 CONTRACT_SIGNATURE_IMAGE = env('CONTRACT_SIGNATURE_IMAGE', default='')  # a path within the media folder

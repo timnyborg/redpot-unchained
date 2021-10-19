@@ -18,6 +18,7 @@ def load_fixture(apps, schema_editor):
     call_command('loaddata', 'nationality.yaml')
     call_command('loaddata', 'payment_plan_status.yaml')
     call_command('loaddata', 'payment_plan_type.yaml')
+    call_command('loaddata', 'points_level.yaml')
     call_command('loaddata', 'portfolio.yaml')
     call_command('loaddata', 'qualification.yaml')
     call_command('loaddata', 'religion.yaml')

@@ -11,11 +11,11 @@ class TestExpenseTemplateOptions(SimpleTestCase):
     def test_accredited_module(self):
         module = Module(non_credit_bearing=False)
         options = template_options(module)
-        self.assertIn('day-weekend', options)
+        self.assertIn('day_weekend', options)
         self.assertNotIn('nonaccredited', options)
 
     def test_nonaccredited_module(self):
         module = Module(non_credit_bearing=True)
         options = template_options(module)
         self.assertIn('nonaccredited', options)
-        self.assertNotIn('day-weekend', options)
+        self.assertNotIn('day_weekend', options)

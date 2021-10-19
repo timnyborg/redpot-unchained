@@ -5,21 +5,23 @@ from django import http
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import FilteredRelation, Q, QuerySet
 from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
 
+from apps.core.utils.mail_merge import MailMergeView
 from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.module.models import Module
 
 from . import forms
-from .models import Tutor, TutorModule
-from .utils.mail_merge import MailMergeView
+from .models import Tutor, TutorActivity, TutorModule
 
 
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
     model = Tutor
     template_name = 'core/form.html'
+    success_message = 'Tutor details updated'
 
     def get_form_class(self):
         # Show a full or reduced form depending on the user's rights
@@ -118,94 +120,11 @@ class TutorOnModuleDelete(PageTitleMixin, DeletionFailedMessageMixin, LoginRequi
         return super().on_failure(request, *args, **kwargs)
 
 
-"""
-For example, the below CBV, but as a FBV
-
-def expense_form(request, pk, mode, template):
-    if mode == 'module':
-        queryset = TutorModule.objects.filter(module=pk)
-    elif mode == 'record':
-        queryset = TutorModule.objects.filter(pk=pk)
-    elif mode == 'modules':
-        # Wildcard based matching
-        queryset = TutorModule.objects.filter(module__code__like=kwargs['search'])
-    else:
-        raise Exception('Invalid arguments')
-
-    # Join in required tables
-    # Todo: remove test limiting the results while docx-mailmerge is still buggy
-    records = queryset.select_related('module', 'tutor__student').all()[:2]
-    record = records[0]
-
-    if mode == 'module':
-        filename = '%s_expense_forms.docx' % record.module.code
-    elif mode == 'record':
-        filename = f'{record.tutor.student.firstname}_{record.tutor.student.surname}' \
-                    '_{record.module.code}_expense_form.docx'.replace(' ', '_')
-    else:
-        filename = 'batch_expense_form.docx'
-
-    template = f'tutor_expense_forms/{template}.docx'
-    path = os.path.join(pathlib.Path(__file__).parent.absolute(), 'utils/templates', template)
-
-    try:
-        with open(path, 'rb') as file:
-            doc = mail_merge(
-                docx_file=file,
-                filename=filename,
-                records=[dict(
-                    tutor_name="('%(title)s %(firstname)s %(surname)s' % record.tutor.student).strip()",
-                    nickname=record.tutor.student.nickname,
-                    birthdate=record.tutor.student.birthdate.strftime('%d %B %y')
-                              if record.tutor.student.birthdate else '',
-                    gender=record.tutor.student.gender,
-
-                    line1='record.address.line1',
-                    line2='record.address.line2',
-                    line3='record.address.line3',
-                    town='record.address.town',
-                    county_state='record.address.countystate',
-                    country='record.address.country',
-                    postcode='record.address.postcode',
-
-                    bankname=record.tutor.bankname,
-                    branchaddress=record.tutor.branchaddress,
-                    sortcode=record.tutor.sortcode,
-                    accountno=record.tutor.accountno,
-                    accountname=record.tutor.accountname,
-                    iban=record.tutor.iban,
-                    swift=record.tutor.swift,
-
-                    nino=record.tutor.nino or "record.nationality.name",
-                    appointment_id=record.tutor.appointment_id,
-                    employee_no=record.tutor.employee_no,
-
-                    title=record.module.title,
-                    code=record.module.code,
-                    start_date=record.module.start_date.strftime('%d %B %y') if record.module.start_date else '',
-                    end_date=record.module.end_date.strftime('%d %B %y') if record.module.end_date else '',
-                    accredited=u'□' if record.module.non_credit_bearing else u'X',
-                    cost_centre=record.module.cost_centre,
-                    activity=record.module.activity_code,
-                    source_of_funds=record.module.source_of_funds,
-                ) for record in records]
-            )
-    except FileNotFoundError:
-        raise Http404
-
-    response = HttpResponse(
-        doc, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    )
-    response['Content-disposition'] = 'attachment; filename=%s' % re.sub('[,()\']', '', str(filename))
-    return response
-"""
-
-
 class ExpenseFormView(MailMergeView):
-    def get_filename(self, queryset):
+    def get_filename(self, queryset) -> str:
         record = queryset[0]
         if self.kwargs['mode'] == 'module':
-            return '%s_expense_forms.docx' % record.module.code
+            return f'{record.module.code}_expense_forms.docx'
         elif self.kwargs['mode'] == 'single':
             return (
                 f'{record.tutor.student.firstname}_{record.tutor.student.surname}'
@@ -214,15 +133,19 @@ class ExpenseFormView(MailMergeView):
         else:
             return 'batch_expense_form.docx'
 
-    def get_template_file(self, queryset):
+    def get_template_file(self, queryset) -> str:
         return os.path.join(
             pathlib.Path(__file__).parent.absolute(),
             'templates/tutor_expense_forms',
             self.kwargs['template'] + '.docx',
         )
 
-    def get_queryset(self):
-        queryset = TutorModule.objects
+    def get_queryset(self) -> QuerySet:
+        # select_related on a FilteredRelation lets us bring in the default address very easily
+        queryset = TutorModule.objects.annotate(
+            address=FilteredRelation('tutor__student__address', condition=Q(tutor__student__address__is_default=True))
+        ).select_related('address', 'module', 'tutor__student')
+
         if self.kwargs['mode'] == 'module':
             return queryset.filter(module=self.kwargs['pk'])
         elif self.kwargs['mode'] == 'single':
@@ -231,22 +154,22 @@ class ExpenseFormView(MailMergeView):
             # Wildcard based matching
             return queryset.filter(module__code__like=self.kwargs['search'])
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_merge_data(self) -> list:
         return [
             {
-                'tutor_name': "('%(title)s %(firstname)s %(surname)s' % record.tutor.student).strip()",
+                'tutor_name': f'{record.tutor.student.firstname} {record.tutor.student.surname}'.strip(),
                 'nickname': record.tutor.student.nickname,
                 'birthdate': (
-                    record.tutor.student.birthdate.strftime('%d %B %y') if record.tutor.student.birthdate else ''
+                    record.tutor.student.birthdate.strftime('%d %b %Y') if record.tutor.student.birthdate else ''
                 ),
                 'gender': record.tutor.student.gender,
-                'line1': 'record.address.line1',
-                'line2': 'record.address.line2',
-                'line3': 'record.address.line3',
-                'town': 'record.address.town',
-                'county_state': 'record.address.countystate',
-                'country': 'record.address.country',
-                'postcode': 'record.address.postcode',
+                'line1': record.address.line1 if hasattr(record, 'address') else '',
+                'line2': record.address.line2 if hasattr(record, 'address') else '',
+                'line3': record.address.line3 if hasattr(record, 'address') else '',
+                'town': record.address.town if hasattr(record, 'address') else '',
+                'county_state': record.address.countystate if hasattr(record, 'address') else '',
+                'country': record.address.country if hasattr(record, 'address') else '',
+                'postcode': record.address.postcode if hasattr(record, 'address') else '',
                 'bankname': record.tutor.bankname,
                 'branchaddress': record.tutor.branchaddress,
                 'sortcode': record.tutor.sortcode,
@@ -254,7 +177,7 @@ class ExpenseFormView(MailMergeView):
                 'accountname': record.tutor.accountname,
                 'iban': record.tutor.iban,
                 'swift': record.tutor.swift,
-                'nino': record.tutor.nino or "record.nationality.name",
+                'nino': record.tutor.nino or record.tutor.student.nationality.name,
                 'appointment_id': record.tutor.appointment_id,
                 'employee_no': record.tutor.employee_no,
                 'title': record.module.title,
@@ -266,5 +189,37 @@ class ExpenseFormView(MailMergeView):
                 'activity': record.module.activity_code,
                 'source_of_funds': record.module.source_of_funds,
             }
-            for record in self.queryset.all()[:2]
+            for record in self.queryset.all()[:20]  # todo: remove limit once docx-mailmerge updated
         ]
+
+
+class CreateTutorActivity(
+    LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView
+):
+    form_class = forms.TutorActivityForm
+    template_name = 'core/form.html'
+    model = TutorActivity
+    success_message = 'Activity added'
+
+    def get_initial(self) -> dict:
+        return {'tutor': get_object_or_404(Tutor, pk=self.kwargs['tutor_id'])}
+
+
+class EditTutorActivity(
+    LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView
+):
+    form_class = forms.TutorActivityForm
+    template_name = 'core/form.html'
+    model = TutorActivity
+    success_message = 'Activity updated'
+    subtitle_object = None
+
+
+class DeleteTutorActivity(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = TutorActivity
+    template_name = 'core/delete_form.html'
+    subtitle_object = None
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Activity deleted')
+        return self.object.get_absolute_url()

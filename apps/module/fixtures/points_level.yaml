@@ -1,0 +1,25 @@
+- model: module.pointslevel
+  pk: 1
+  fields:
+    description: Undergraduate 1st year (Certificate/NVQ Level 4 or equivalent)
+    fheq_level: 4
+- model: module.pointslevel
+  pk: 2
+  fields:
+    description: Undergraduate 2nd year undergraduate (Intermediate)
+    fheq_level: 5
+- model: module.pointslevel
+  pk: 3
+  fields:
+    description: Undergraduate 3rd year undergraduate (Honours)
+    fheq_level: 6
+- model: module.pointslevel
+  pk: 4
+  fields:
+    description: Masters
+    fheq_level: 7
+- model: module.pointslevel
+  pk: 5
+  fields:
+    description: Doctorate
+    fheq_level: 8
