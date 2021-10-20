@@ -444,7 +444,7 @@ span.noLocations {
 }
 
 .section .section-footer {
-    margin: 0px -30px -20px -30px;
+    margin: 1rem -30px -20px -30px;  /* mt-3 equivalent for top, negatives negate .section margin */
     padding: 7px 15px;
     background-color: #f5f5f5;
     border-top: 1px solid #D0D0D0;

@@ -179,6 +179,12 @@ other_children = (
         icon='graduation-cap',
         check=lambda request: request.user.has_perm('transcript.batch_print'),
     ),
+    MenuItem(
+        'HESA returns',
+        reverse('hesa:list'),
+        icon='code',
+        check=lambda request: request.user.has_perm('hesa.view_batch'),
+    ),
 )
 
 Menu.add_item("main", MenuItem("Other", '#', children=other_children))
