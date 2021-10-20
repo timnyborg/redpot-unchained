@@ -134,6 +134,67 @@ class Extras(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleObje
         return super().form_valid(form)
 
 
+class OnlineTeaching(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, generic.FormView):
+    model = TutorModule
+    template_name = 'core/form.html'
+    success_message = 'Fees added'
+    form_class = forms.OnlineTeachingForm
+    title = 'Tutor payment'
+    subtitle = 'Teaching'
+
+    def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
+        self.object = self.get_object()
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form) -> http.HttpResponse:
+        # All variations of the form include the schedule field
+        services.create_teaching_fee(
+            tutor_module=self.object,
+            amount=form.cleaned_data['amount'].amount,
+            rate=models.PaymentRate.objects.lookup('online_hourly_rate'),
+            schedule=form.cleaned_data['schedule'],
+            approver=form.cleaned_data['approver'],
+            raised_by=self.request.user,
+        )
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return self.object.get_absolute_url()
+
+
+class WeeklyTeaching(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, generic.FormView):
+    model = TutorModule
+    template_name = 'core/form.html'
+    success_message = 'Fees added'
+    form_class = forms.WeeklyTeachingForm
+    title = 'Tutor payment'
+    subtitle = 'Teaching'
+
+    def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
+        self.object = self.get_object()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self) -> dict:
+        return {
+            'rate': models.PaymentRate.objects.lookup('weekly_hourly_rate'),
+            'no_meetings': self.object.module.no_meetings,
+        }
+
+    def form_valid(self, form) -> http.HttpResponse:
+        services.create_teaching_fee(
+            tutor_module=self.object,
+            amount=form.cleaned_data['length'] * form.cleaned_data['rate'] * form.cleaned_data['no_meetings'],
+            rate=form.cleaned_data['rate'],
+            schedule=form.cleaned_data['schedule'],
+            approver=form.cleaned_data['approver'],
+            raised_by=self.request.user,
+        )
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return self.object.get_absolute_url()
+
+
 class AddSyllabusFee(LoginRequiredMixin, generic.View):
     """Adds a syllabus prep fee for a weekly class"""
 

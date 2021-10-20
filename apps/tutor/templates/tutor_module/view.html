@@ -80,10 +80,10 @@
                 <td>£{{ payment.amount | floatformat:2 }}</td>
                 <td>{{ payment.type }}</td>
                 <td>{{ payment.details | truncatechars:50 }}</td> {#  todo: add abbr #}
-                <td>{{ payment.raised_by }}</td>
-                <td>{{ payment.raised_on }}</td>
+                <td>{{ payment.raised_by.get_full_name }}</td>
+                <td>{{ payment.raised_on | date }}</td>
                 <td>{{ payment.pay_after | date:'M Y' | default:'–' }}</td>
-                <td>{{ payment.transferred_on | default:'–' }}</td>
+                <td>{{ payment.transferred_on | date | default:'–' }}</td>
                 <td>
                     <a href="{{ payment.get_edit_url }}?next={{ request.get_full_path }}">
                         <i class="fas fa-fw fa-pencil-alt"></i>
@@ -117,12 +117,12 @@
             </a>
         {% endif %}
         {% if 'online_teaching' in add_buttons %}
-            <a href="tutor-payment/teaching/online/{{ object.id }}" class="btn btn-primary">
+            <a href="{% url 'tutor-payment:quick:online-teaching' object.id %}" class="btn btn-primary">
                 <i class="fas fa-fw fa-graduation-cap"></i> Online teaching
             </a>
         {% endif %}
         {% if 'weekly_teaching' in add_buttons %}
-            <a href="tutor-payment/teaching/weekly/{{ object.id }}" class="btn btn-primary">
+            <a href="{% url 'tutor-payment:quick:weekly-teaching' object.id %}" class="btn btn-primary">
                 <i class="fas fa-fw fa-graduation-cap"></i> Weekly class teaching
             </a>
         {% endif %}

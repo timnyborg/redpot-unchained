@@ -8,6 +8,8 @@ quick_payments_patterns = (
     [
         path('extras/<int:pk>', views.Extras.as_view(), name='extras'),  # 'tutor-payment:quick:extras'
         path('syllabus/<int:pk>', views.AddSyllabusFee.as_view(), name='syllabus'),
+        path('teaching/online/<int:pk>', views.OnlineTeaching.as_view(), name='online-teaching'),
+        path('teaching/weekly/<int:pk>', views.WeeklyTeaching.as_view(), name='weekly-teaching'),
     ],
     'quick',
 )

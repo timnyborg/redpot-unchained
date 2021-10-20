@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import date, datetime
 from decimal import Decimal
 
@@ -273,3 +274,26 @@ class PaymentType(models.Model):
     def short_form(self) -> str:
         # Todo: reverse this.  Remove (hourly) from the descriptions, then update UI that needs it to add it
         return str(self).replace(' (hourly)', '')
+
+
+@dataclass
+class Schedule:
+    months: int
+    first_month: int
+    label: str
+
+
+schedules = [
+    # (Payment count, starting month, label)
+    # 3-Payments begin the month after the course starts, excepting michaelmas, where it's october (the same month)
+    # 2-Payments begin a month later, concluding at the same time (half-length courses generally start later)
+    Schedule(3, 10, 'Michaelmas - 3 payments (Oct-Dec)'),
+    Schedule(2, 10, 'Michaelmas - 2 payments (Oct-Nov)'),
+    Schedule(3, 2, 'Hilary - 3 payments (Feb-Apr)'),
+    Schedule(2, 2, 'Hilary - 2 payments (Feb-Mar)'),
+    Schedule(3, 5, 'Trinity - 3 payments (May-Jul)'),
+    Schedule(2, 6, 'Trinity - 2 payments (Jun-Jul)'),
+    Schedule(2, 7, 'Summer - 2 payments (Jul-Aug)'),
+    Schedule(6, 10, '2-Term Michaelmas & Hilary - 6 payments (Oct-Mar)'),
+    Schedule(6, 2, '2-Term Hilary & Trinity - 6 payments (Feb-Jul)'),
+]
