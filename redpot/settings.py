@@ -381,7 +381,7 @@ CKEDITOR_CONFIGS = {
         'width': '100%',
     },
 }
-CKEDITOR_STORAGE_BACKEND = 'redpot.storages.WebsiteStorage'
+CKEDITOR_STORAGE_BACKEND = 'redpot.storage_backends.WebsiteStorage'
 CKEDITOR_UPLOAD_PATH = 'uploads/'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 DJANGO_TABLES2_TEMPLATE = 'utility/bootstrap5_table.html'

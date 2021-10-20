@@ -13,7 +13,7 @@ from django.utils.text import slugify
 
 from apps.core.models import SignatureModel
 from apps.module.models import Module, Subject
-from redpot import storages
+from redpot import storage_backends
 
 
 class TutorManager(models.Manager):
@@ -81,7 +81,7 @@ class Tutor(SignatureModel):
 
     biography = models.TextField(blank=True, null=True)
     image = ProcessedImageField(
-        storage=storages.website_storage,
+        storage=storage_backends.WebsiteStorage(),
         upload_to=get_image_filename,
         blank=True,
         processors=[ResizeToFit(600, 600)],
