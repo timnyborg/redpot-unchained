@@ -181,7 +181,7 @@ other_children = (
     ),
     MenuItem(
         'HESA returns',
-        reverse('hesa:batches'),
+        reverse('hesa:list'),
         icon='code',
         check=lambda request: request.user.has_perm('hesa.view_batch'),
     ),

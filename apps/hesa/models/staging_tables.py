@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Iterable
 
 from django.db import models
+from django.urls import reverse
 
 INSTITUTION_CODE = 10007774
 
@@ -31,6 +32,12 @@ class Batch(XMLStagingModel, models.Model):
 
     class Meta:
         db_table = 'hesa_batch'
+
+    def __str__(self) -> str:
+        return f'Batch #{self.pk}'
+
+    def get_absolute_url(self) -> str:
+        return reverse('hesa:view', kwargs={'pk': self.pk})
 
 
 class Course(XMLStagingModel, models.Model):
