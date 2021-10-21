@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import csv
 from datetime import date
 from urllib.parse import urlencode
 
@@ -231,3 +234,98 @@ class AddSyllabusFee(LoginRequiredMixin, generic.View):
 
         messages.success(request, f'Syllabus fee added (£{amount:.2f})')
         return redirect(tutor_module.get_absolute_url() + '#payments')
+
+
+class Export(PermissionRequiredMixin, generic.View):
+    """Produces a CSV of a batch of payments"""
+
+    permission_required = 'tutor_payment.transfer'
+
+    columns = {
+        'surname': 'Surname',
+        'initial': 'Initial',
+        'employee_no': 'Employee number',
+        'appointment_id': 'Appointment ID',
+        'limited_hours': 'Hours limited by visa?',
+        'week_ending': 'Week/period ending',
+        'pay_code': 'Pay code',
+        'cash_value': 'Cash value',
+        'hours_value': 'Hours value',
+        'hourly_rate': 'Rate of pay',
+        'cost_centre': 'Cost centre',
+        'project': 'Project',
+        'comment': 'Comment',
+        'batch': 'Batch',
+        'weeks': 'Weeks',
+    }
+
+    def get(self, request, batch: int, *args, **kwargs) -> http.HttpResponse:
+        response = http.HttpResponse(
+            content_type='text/csv',
+            headers={'Content-Disposition': f'attachment; filename="tutor_payment_batch_{batch}.csv"'},
+        )
+        writer = csv.DictWriter(response, fieldnames=self.columns)
+        writer.writerow(self.columns)
+        for row in self.get_csv_rows(batch):
+            writer.writerow(row)
+        return response
+
+    @staticmethod
+    def get_csv_rows(batch: int) -> list[dict]:
+        payments = (
+            models.TutorPayment.objects.filter(batch=batch).select_related(
+                'type',
+                'tutor_module__module',
+                'tutor_module__tutor',
+                'tutor_module__tutor__student',
+                'tutor_module__tutor__rtw_document_type',
+            )
+            # Keep casual and main payroll as groups, and individuals grouped together
+            .order_by('tutor_module__tutor__appointment_id')
+        )
+
+        fees = []
+
+        for payment in payments:
+            module = payment.tutor_module.module
+            tutor = payment.tutor_module.tutor
+
+            common = {
+                'surname': tutor.student.surname,
+                'initial': tutor.student.firstname[0],
+                'employee_no': tutor.employee_no,
+                'appointment_id': tutor.appointment_id,
+                'limited_hours': 'Yes' if tutor.rtw_document_type and tutor.rtw_document_type.limited_hours else 'No',
+                'week_ending': '',
+                'pay_code': payment.type.code,
+                'cost_centre': f'{module.cost_centre}00{module.source_of_funds}' if module.finance_code else '',
+                'project': '',
+                'comment': '',
+                'batch': payment.batch,
+                'weeks': payment.weeks,
+            }
+
+            if tutor.is_casual:
+                # Casual payroll needs to be split by week
+                for _ in range(payment.weeks):  # Create a row for every week
+                    fees.append(
+                        {
+                            # Divided per week
+                            'cash_value': payment.amount / payment.weeks if not payment.hours_worked else '',
+                            'hours_value': payment.hours_worked / payment.weeks if payment.hours_worked else '',
+                            'hourly_rate': payment.hourly_rate,
+                            **common,
+                        }
+                    )
+            else:
+                # Main payroll has a single payment.
+                # A function might be in order which takes 'divide_weeks=False'
+                fees.append(
+                    {
+                        'cash_value': payment.amount if not payment.hours_worked else '',  # Full amount
+                        'hours_value': payment.hours_worked or '',  # Full amount
+                        'hourly_rate': payment.hourly_rate,
+                        **common,
+                    }
+                )
+        return fees
