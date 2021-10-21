@@ -5,6 +5,8 @@ from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
 
+from django.db.models import Max, Q
+
 from apps.core.models import User
 from apps.tutor.models import TutorModule
 from apps.tutor_payment import models
@@ -71,3 +73,25 @@ def create_teaching_fee(
         raised_by=raised_by,
         raised_on=raised_on,
     )
+
+
+def next_batch() -> int:
+    """Return the next batch number available for use"""
+    largest = models.TutorPayment.objects.aggregate(Max('batch'))['batch__max'] or 0
+    return largest + 1
+
+
+def transfer_payments(*, pay_after: datetime, transferred_by: str) -> tuple[int, int]:
+    """Batches all approved payments payable on the given date (pay_after before the date, or not set)"""
+    batch = next_batch()
+
+    count = models.TutorPayment.objects.filter(
+        Q(pay_after__lte=pay_after) | Q(pay_after__isnull=True),
+        status_id=models.Statuses.APPROVED,
+    ).update(
+        status_id=models.Statuses.TRANSFERRED,
+        transferred_by=transferred_by,
+        transferred_on=datetime.now(),
+        batch=batch,
+    )
+    return batch, count

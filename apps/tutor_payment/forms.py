@@ -184,3 +184,7 @@ class WeeklyTeachingForm(forms.Form):
 
     def clean(self) -> None:
         self.cleaned_data['schedule'] = models.schedules[self.cleaned_data['schedule']]
+
+
+class TransferForm(forms.Form):
+    pay_after = forms.DateTimeField(widget=widgets.MonthPickerInput())

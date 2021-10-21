@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
@@ -82,10 +82,14 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     title = 'Tutor payment'
     subtitle = 'Search'
-    template_name = 'core/search.html'
+    template_name = 'tutor_payment/search.html'
 
     table_class = datatables.SearchTable
     filterset_class = datatables.SearchFilter
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return {**context, 'transfer_form': forms.TransferForm()}
 
 
 class Approve(PermissionRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
@@ -236,6 +240,26 @@ class AddSyllabusFee(LoginRequiredMixin, generic.View):
         return redirect(tutor_module.get_absolute_url() + '#payments')
 
 
+class Transfer(PermissionRequiredMixin, generic.FormView):
+    """Produces a CSV of a batch of payments"""
+
+    permission_required = 'tutor_payment.transfer'
+    template_name = 'core/form.html'
+    form_class = forms.TransferForm
+
+    def form_valid(self, form):
+        batch, count = services.transfer_payments(
+            pay_after=form.cleaned_data['pay_after'],
+            transferred_by=self.request.user.username,
+        )
+        if count:
+            messages.success(self.request, f'{count} records transferred, as part of batch {batch}')
+            return redirect(reverse('tutor-payment:search') + f'?batch={batch}')
+        else:
+            messages.error(self.request, 'No records transferred')
+            return redirect('tutor-payment:search')
+
+
 class Export(PermissionRequiredMixin, generic.View):
     """Produces a CSV of a batch of payments"""
 
@@ -259,7 +283,10 @@ class Export(PermissionRequiredMixin, generic.View):
         'weeks': 'Weeks',
     }
 
-    def get(self, request, batch: int, *args, **kwargs) -> http.HttpResponse:
+    def get(self, request, *args, **kwargs) -> http.HttpResponse:
+        batch = request.GET.get('batch', '')
+        if not batch.isnumeric:
+            raise http.Http404
         response = http.HttpResponse(
             content_type='text/csv',
             headers={'Content-Disposition': f'attachment; filename="tutor_payment_batch_{batch}.csv"'},
