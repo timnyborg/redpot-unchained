@@ -12,3 +12,4 @@ class PaymentFactory(factory.django.DjangoModelFactory):
     tutor_module = factory.SubFactory(TutorModuleFactory)
     type_id = 2  # todo: an enum
     amount = 100
+    weeks = 1
