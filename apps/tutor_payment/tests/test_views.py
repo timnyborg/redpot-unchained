@@ -1,5 +1,6 @@
 from datetime import date
-from unittest.mock import patch
+from decimal import Decimal
+from unittest.mock import MagicMock, patch
 
 from django import test
 from django.contrib.auth import get_user_model
@@ -182,3 +183,47 @@ class TestApprove(LoggedInViewTestMixin, test.TestCase):
         self.assertEqual(response.status_code, 302)
         self.payment.refresh_from_db()
         self.assertEqual(self.payment.status_id, models.Statuses.APPROVED)
+
+
+class TestTeachingPaymentViews(LoggedInMixin, test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        permissions = [
+            Permission.objects.get(content_type__app_label='tutor_payment', codename='raise'),
+            Permission.objects.get(content_type__app_label='tutor_payment', codename='approve'),
+        ]
+        models.PaymentRate.objects.create(tag='online_hourly_rate', amount=Decimal(20))
+        models.PaymentRate.objects.create(tag='weekly_hourly_rate', amount=Decimal(20))
+        cls.online_payment_rate = models.PaymentRate.objects.create(type='online_teaching', amount=Decimal(500))
+        cls.tutor_module = TutorModuleFactory(module__start_date=date(2020, 1, 1))
+        cls.user.user_permissions.add(*permissions)
+
+    def test_get_weekly(self):
+        response = self.client.get(reverse('tutor-payment:quick:weekly-teaching', args=[self.tutor_module.id]))
+        self.assertEqual(response.status_code, 200)
+
+    @patch('apps.tutor_payment.services.create_teaching_fee')
+    def test_post_weekly(self, create_teaching_fee: MagicMock):
+        """Check that posting succeeds and calls the service with the correct total"""
+        response = self.client.post(
+            reverse('tutor-payment:quick:weekly-teaching', args=[self.tutor_module.id]),
+            data={'schedule': 1, 'length': Decimal(2), 'no_meetings': 10, 'approver': self.user.username},
+        )
+        self.assertEqual(response.status_code, 302)
+        create_teaching_fee.assert_called_once()
+        self.assertEqual(create_teaching_fee.call_args[1]['amount'], Decimal(2 * 10 * 20))
+
+    def test_get_online(self):
+        response = self.client.get(reverse('tutor-payment:quick:online-teaching', args=[self.tutor_module.id]))
+        self.assertEqual(response.status_code, 200)
+
+    @patch('apps.tutor_payment.services.create_teaching_fee')
+    def test_post_online(self, create_teaching_fee: MagicMock):
+        """Check that posting succeeds and calls the service"""
+        response = self.client.post(
+            reverse('tutor-payment:quick:online-teaching', args=[self.tutor_module.id]),
+            data={'schedule': 1, 'amount': self.online_payment_rate.id, 'approver': self.user.username},
+        )
+        self.assertEqual(response.status_code, 302)
+        create_teaching_fee.assert_called_once()

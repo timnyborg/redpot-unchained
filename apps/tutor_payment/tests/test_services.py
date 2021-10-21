@@ -1,7 +1,12 @@
+from datetime import date
+from decimal import Decimal
 from unittest.mock import patch
 
 from django import test
 from django.contrib.auth import get_user_model
+
+from apps.core.tests.factories import UserFactory
+from apps.tutor.tests.factories import TutorModuleFactory
 
 from .. import models, services
 from . import factories
@@ -32,3 +37,24 @@ class TestApprovePayments(test.TestCase):
         self.payment.save()
         result = services.approve_payments(payment_ids=[self.payment.id], username=self.user.username)
         self.assertEqual(result, 0)
+
+
+class TestCreateTeachingFee(test.TestCase):
+    def test_create(self):
+        user = UserFactory()
+        tutor_module = TutorModuleFactory(module__start_date=date(2020, 1, 1))
+        services.create_teaching_fee(
+            tutor_module=tutor_module,
+            amount=Decimal(100),
+            rate=Decimal(20),
+            schedule=models.Schedule(months=3, first_month=3, label='Test Schedule'),
+            raised_by=user,
+            approver=user,
+        )
+        payments = list(tutor_module.payments.all())
+        self.assertEqual(len(payments), 4)  # 1 per month + 1 holiday pay
+        self.assertEqual(sum(payment.amount for payment in payments), Decimal(100))
+        self.assertEqual(
+            {payment.pay_after for payment in payments},
+            {date(2020, 3, 1), date(2020, 4, 1), date(2020, 5, 1)},  # Correct month generation from the schedule
+        )
