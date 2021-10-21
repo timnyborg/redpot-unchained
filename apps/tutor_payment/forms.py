@@ -158,7 +158,7 @@ schedule_choices = [(i, schedule.label) for i, schedule in enumerate(models.sche
 
 
 class OnlineTeachingForm(forms.Form):
-    amount = forms.ModelChoiceField(models.PaymentRate.objects.filter(type='online_teaching'), to_field_name='amount')
+    amount = forms.ModelChoiceField(models.PaymentRate.objects.filter(type='online_teaching'))
     schedule = forms.TypedChoiceField(choices=schedule_choices, coerce=int)
     approver = ApproverChoiceField('tutor_payment.approve')
 
