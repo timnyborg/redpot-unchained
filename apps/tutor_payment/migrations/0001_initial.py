@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                 ('batch', models.PositiveIntegerField(blank=True, null=True)),
                 ('hourly_rate', models.DecimalField(blank=True, decimal_places=4, max_digits=19, null=True)),
                 ('hours_worked', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True)),
-                ('weeks', models.IntegerField(blank=True, null=True)),
+                ('weeks', models.IntegerField()),
                 ('approver', models.CharField(max_length=32)),
                 ('raised_by', models.CharField(editable=False, max_length=50)),
                 ('raised_on', models.DateTimeField(default=datetime.datetime.now)),

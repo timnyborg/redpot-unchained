@@ -157,6 +157,10 @@ class Tutor(SignatureModel):
     def rtw_expires_soon(self) -> bool:
         return self.rtw_end_date is not None and self.rtw_end_date < date.today() + relativedelta(months=6)
 
+    @property
+    def is_casual(self) -> bool:
+        return 'cas' in (self.appointment_id or '').lower()
+
 
 class TutorModule(SignatureModel):
     module = models.ForeignKey(

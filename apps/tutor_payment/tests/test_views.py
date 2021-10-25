@@ -11,7 +11,7 @@ from django.urls import reverse
 from apps.core.utils.tests import LoggedInMixin, LoggedInViewTestMixin
 from apps.tutor.tests.factories import TutorModuleFactory
 
-from .. import models
+from .. import models, views
 from . import factories
 
 
@@ -227,3 +227,45 @@ class TestTeachingPaymentViews(LoggedInMixin, test.TestCase):
         )
         self.assertEqual(response.status_code, 302)
         create_teaching_fee.assert_called_once()
+
+
+class TestExportCSV(LoggedInMixin, test.TestCase):
+    superuser = True
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.payment = factories.PaymentFactory(
+            tutor_module__tutor__student__surname='Smith',
+            batch=1,
+            type_id=models.Types.TEACHING,
+            status_id=models.Statuses.TRANSFERRED,
+            raised_by=cls.user,
+            amount=Decimal(100),
+            weeks=4,
+        )
+
+    def test_permanent_staff_payments_undivided(self):
+        # permanent staff
+        self.payment.tutor_module.tutor.appointment_id = 'perm'
+        self.payment.tutor_module.tutor.save()
+
+        result = views.Export.get_csv_rows(batch=1)
+
+        self.assertEqual(result[0]['cash_value'], Decimal('100'))
+        self.assertEqual(len(result), 1)
+
+    def test_casual_staff_payments_divided_by_week(self):
+        # casual staff
+        self.payment.tutor_module.tutor.appointment_id = 'castch1'
+        self.payment.tutor_module.tutor.save()
+
+        result = views.Export.get_csv_rows(batch=1)
+
+        self.assertEqual(result[0]['cash_value'], Decimal('25'))
+        self.assertEqual(len(result), 4)
+
+    def test_response_data(self):
+        response = self.client.get(reverse('tutor-payment:export'), data={'batch': 1})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Smith')

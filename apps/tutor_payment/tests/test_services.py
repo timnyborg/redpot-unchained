@@ -58,3 +58,51 @@ class TestCreateTeachingFee(test.TestCase):
             {payment.pay_after for payment in payments},
             {date(2020, 3, 1), date(2020, 4, 1), date(2020, 5, 1)},  # Correct month generation from the schedule
         )
+
+
+class TestTransfer(test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = UserFactory()
+
+    def test_past_and_undated_payments_transferred(self):
+        past_payment = factories.PaymentFactory(
+            pay_after=date(2010, 1, 1), status_id=models.Statuses.APPROVED, raised_by=self.user
+        )
+        undated_payment = factories.PaymentFactory(
+            pay_after=None, status_id=models.Statuses.APPROVED, raised_by=self.user
+        )
+
+        services.transfer_payments(pay_after=date(2020, 1, 1), transferred_by='test_user')
+
+        past_payment.refresh_from_db()
+        undated_payment.refresh_from_db()
+
+        self.assertEqual(past_payment.status_id, models.Statuses.TRANSFERRED)
+        self.assertEqual(undated_payment.status_id, models.Statuses.TRANSFERRED)
+
+        self.assertIsNotNone(undated_payment.batch)
+        self.assertEqual(undated_payment.transferred_by, 'test_user')
+        self.assertIsNotNone(undated_payment.transferred_on)
+
+    def test_future_payments_ignored(self):
+        future_payment = factories.PaymentFactory(
+            pay_after=date(2025, 1, 1), status_id=models.Statuses.APPROVED, raised_by=self.user
+        )
+
+        services.transfer_payments(pay_after=date(2020, 1, 1), transferred_by='test_user')
+
+        future_payment.refresh_from_db()
+        self.assertEqual(future_payment.status_id, models.Statuses.APPROVED)
+        self.assertIsNone(future_payment.batch)
+        self.assertIsNone(future_payment.transferred_by)
+
+    def test_non_approved_ignored(self):
+        payment = factories.PaymentFactory(pay_after=None, status_id=models.Statuses.RAISED, raised_by=self.user)
+
+        services.transfer_payments(pay_after=date(2020, 1, 1), transferred_by='test_user')
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status_id, models.Statuses.RAISED)
+        self.assertIsNone(payment.batch)
+        self.assertIsNone(payment.transferred_by)
