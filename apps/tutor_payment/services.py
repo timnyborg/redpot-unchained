@@ -81,7 +81,7 @@ def next_batch() -> int:
     return largest + 1
 
 
-def transfer_payments(*, pay_after: datetime, transferred_by: str) -> tuple[int, int]:
+def transfer_payments(*, pay_after: date, transferred_by: str) -> tuple[int, int]:
     """Batches all approved payments payable on the given date (pay_after before the date, or not set)"""
     batch = next_batch()
 

@@ -291,14 +291,14 @@ class Export(PermissionRequiredMixin, generic.View):
             content_type='text/csv',
             headers={'Content-Disposition': f'attachment; filename="tutor_payment_batch_{batch}.csv"'},
         )
-        writer = csv.DictWriter(response, fieldnames=self.columns)
+        writer = csv.DictWriter(response, fieldnames=list(self.columns))
         writer.writerow(self.columns)
-        for row in self.get_csv_rows(batch):
+        for row in self.get_csv_rows(batch=batch):
             writer.writerow(row)
         return response
 
     @staticmethod
-    def get_csv_rows(batch: int) -> list[dict]:
+    def get_csv_rows(*, batch: int) -> list[dict]:
         payments = (
             models.TutorPayment.objects.filter(batch=batch).select_related(
                 'type',
