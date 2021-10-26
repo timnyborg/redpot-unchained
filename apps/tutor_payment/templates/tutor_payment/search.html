@@ -1,0 +1,41 @@
+{% extends 'core/search.html' %}
+{% load redpot_tags %}
+
+{% block after-sections %}
+    {% if perms.tutor_payment.transfer %}
+        <div class="section">
+            <h3>Transfer approved fees</h3>
+            <form method="post" action="{% url 'tutor-payment:transfer' %}">
+                <div class="row">
+                    <div class="col-6">
+                        {% bootstrap_form transfer_form %}
+                        {% csrf_token %}
+                    </div>
+                    <div class="col-3">
+                        {% bootstrap_submit 'Transfer' %}
+                    </div>
+                </div>
+            </form>
+            {{ transfer_form.media }}
+        </div>
+
+        <div class="section">
+            <h3>Export batch</h3>
+            <form method="get" action="{% url 'tutor-payment:export' %}">
+                <div class="row">
+                    <div class="col-1">
+                        <label for="batch">Batch #</label>
+                    </div>
+                    <div class="col-4">
+                        <div class="input-group">
+                            <input class="form-control" type="number" required name="batch" id="batch">
+                            <button class="btn btn-outline-primary" type="submit">
+                                <i class="fas fa-save"></i> Export (.csv)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}

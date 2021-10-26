@@ -1,4 +1,5 @@
 from ckeditor.widgets import CKEditorWidget
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from dal import autocomplete
 from django_select2.forms import Select2MultipleWidget, Select2Widget
 
@@ -137,7 +138,7 @@ class EditForm(forms.ModelForm):  # noqa: DJ06
             'direct_enrolment': widgets.ToggleWidget(attrs={'data-on': 'Allowed', 'data-off': 'Not allowed'}),
             'note': Textarea(),
             'notification': CKEditorWidget(config_name='links_only'),
-            **{field: CKEditorWidget() for field in HTML_FIELDS},
+            **{field: CKEditorUploadingWidget() for field in HTML_FIELDS},
             **{field: widgets.DatePickerInput() for field in DATE_FIELDS},
             'start_time': widgets.TimePickerInput(),
             'end_time': widgets.TimePickerInput(),

@@ -1,14 +1,19 @@
-from datetime import date
+from datetime import date, datetime
+from pathlib import Path
 
 from dateutil.relativedelta import relativedelta
+from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFit
 
 from django.core import validators
 from django.db import models
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.text import slugify
 
 from apps.core.models import SignatureModel
 from apps.module.models import Module, Subject
+from redpot import storage_backends
 
 
 class TutorManager(models.Manager):
@@ -22,6 +27,14 @@ class RightToWorkType(models.IntegerChoices):
     LIMITED = (2, 'List B (limited)')
     PRE_1997 = (3, 'Started pre-1997')
     OVERSEAS = (4, 'Working overseas - RTW not required')
+
+
+def get_image_filename(instance: 'Tutor', filename: str) -> str:
+    """Generate a filename for in the format 'tutors/2021/firstname_lastname.jpg'"""
+    year = datetime.now().year
+    name_slug = slugify(f'{instance.student.firstname}_{instance.student.surname}')
+    ext = Path(filename).suffix
+    return f'images/tutors/{year}/{name_slug}{ext}'
 
 
 class Tutor(SignatureModel):
@@ -67,7 +80,14 @@ class Tutor(SignatureModel):
     oracle_supplier_number = models.IntegerField(blank=True, null=True)
 
     biography = models.TextField(blank=True, null=True)
-    image = models.ImageField(blank=True)
+    image = ProcessedImageField(
+        storage=storage_backends.WebsiteStorage(),
+        upload_to=get_image_filename,
+        blank=True,
+        processors=[ResizeToFit(600, 600)],
+        format='JPEG',
+        options={'quality': 70},
+    )
 
     # todo: longterm - move rtw data into a one-to-one table (easier permissioning)
     rtw_type = models.IntegerField(
@@ -136,6 +156,10 @@ class Tutor(SignatureModel):
 
     def rtw_expires_soon(self) -> bool:
         return self.rtw_end_date is not None and self.rtw_end_date < date.today() + relativedelta(months=6)
+
+    @property
+    def is_casual(self) -> bool:
+        return 'cas' in (self.appointment_id or '').lower()
 
 
 class TutorModule(SignatureModel):

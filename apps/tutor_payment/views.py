@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import csv
 from datetime import date
 from urllib.parse import urlencode
 
@@ -11,7 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
@@ -79,10 +82,14 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     title = 'Tutor payment'
     subtitle = 'Search'
-    template_name = 'core/search.html'
+    template_name = 'tutor_payment/search.html'
 
     table_class = datatables.SearchTable
     filterset_class = datatables.SearchFilter
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return {**context, 'transfer_form': forms.TransferForm()}
 
 
 class Approve(PermissionRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
@@ -134,6 +141,67 @@ class Extras(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleObje
         return super().form_valid(form)
 
 
+class OnlineTeaching(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, generic.FormView):
+    model = TutorModule
+    template_name = 'core/form.html'
+    success_message = 'Fees added'
+    form_class = forms.OnlineTeachingForm
+    title = 'Tutor payment'
+    subtitle = 'Teaching'
+
+    def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
+        self.object = self.get_object()
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form) -> http.HttpResponse:
+        # All variations of the form include the schedule field
+        services.create_teaching_fee(
+            tutor_module=self.object,
+            amount=form.cleaned_data['amount'].amount,
+            rate=models.PaymentRate.objects.lookup('online_hourly_rate'),
+            schedule=form.cleaned_data['schedule'],
+            approver=form.cleaned_data['approver'],
+            raised_by=self.request.user,
+        )
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return self.object.get_absolute_url()
+
+
+class WeeklyTeaching(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleObjectMixin, generic.FormView):
+    model = TutorModule
+    template_name = 'core/form.html'
+    success_message = 'Fees added'
+    form_class = forms.WeeklyTeachingForm
+    title = 'Tutor payment'
+    subtitle = 'Teaching'
+
+    def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
+        self.object = self.get_object()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self) -> dict:
+        return {
+            'rate': models.PaymentRate.objects.lookup('weekly_hourly_rate'),
+            'no_meetings': self.object.module.no_meetings,
+        }
+
+    def form_valid(self, form) -> http.HttpResponse:
+        services.create_teaching_fee(
+            tutor_module=self.object,
+            amount=form.cleaned_data['length'] * form.cleaned_data['rate'] * form.cleaned_data['no_meetings'],
+            rate=form.cleaned_data['rate'],
+            schedule=form.cleaned_data['schedule'],
+            approver=form.cleaned_data['approver'],
+            raised_by=self.request.user,
+        )
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return self.object.get_absolute_url()
+
+
 class AddSyllabusFee(LoginRequiredMixin, generic.View):
     """Adds a syllabus prep fee for a weekly class"""
 
@@ -170,3 +238,121 @@ class AddSyllabusFee(LoginRequiredMixin, generic.View):
 
         messages.success(request, f'Syllabus fee added (£{amount:.2f})')
         return redirect(tutor_module.get_absolute_url() + '#payments')
+
+
+class Transfer(PermissionRequiredMixin, generic.FormView):
+    """Produces a CSV of a batch of payments"""
+
+    permission_required = 'tutor_payment.transfer'
+    template_name = 'core/form.html'
+    form_class = forms.TransferForm
+
+    def form_valid(self, form):
+        batch, count = services.transfer_payments(
+            pay_after=form.cleaned_data['pay_after'],
+            transferred_by=self.request.user.username,
+        )
+        if count:
+            messages.success(self.request, f'{count} records transferred, as part of batch {batch}')
+            return redirect(reverse('tutor-payment:search') + f'?batch={batch}')
+        else:
+            messages.error(self.request, 'No records transferred')
+            return redirect('tutor-payment:search')
+
+
+class Export(PermissionRequiredMixin, generic.View):
+    """Produces a CSV of a batch of payments"""
+
+    permission_required = 'tutor_payment.transfer'
+
+    columns = {
+        'surname': 'Surname',
+        'initial': 'Initial',
+        'employee_no': 'Employee number',
+        'appointment_id': 'Appointment ID',
+        'limited_hours': 'Hours limited by visa?',
+        'week_ending': 'Week/period ending',
+        'pay_code': 'Pay code',
+        'cash_value': 'Cash value',
+        'hours_value': 'Hours value',
+        'hourly_rate': 'Rate of pay',
+        'cost_centre': 'Cost centre',
+        'project': 'Project',
+        'comment': 'Comment',
+        'batch': 'Batch',
+        'weeks': 'Weeks',
+    }
+
+    def get(self, request, *args, **kwargs) -> http.HttpResponse:
+        batch = request.GET.get('batch', '')
+        if not batch.isnumeric:
+            raise http.Http404
+        response = http.HttpResponse(
+            content_type='text/csv',
+            headers={'Content-Disposition': f'attachment; filename="tutor_payment_batch_{batch}.csv"'},
+        )
+        writer = csv.DictWriter(response, fieldnames=list(self.columns))
+        writer.writerow(self.columns)
+        for row in self.get_csv_rows(batch=batch):
+            writer.writerow(row)
+        return response
+
+    @staticmethod
+    def get_csv_rows(*, batch: int) -> list[dict]:
+        payments = (
+            models.TutorPayment.objects.filter(batch=batch).select_related(
+                'type',
+                'tutor_module__module',
+                'tutor_module__tutor',
+                'tutor_module__tutor__student',
+                'tutor_module__tutor__rtw_document_type',
+            )
+            # Keep casual and main payroll as groups, and individuals grouped together
+            .order_by('tutor_module__tutor__appointment_id')
+        )
+
+        fees = []
+
+        for payment in payments:
+            module = payment.tutor_module.module
+            tutor = payment.tutor_module.tutor
+
+            common = {
+                'surname': tutor.student.surname,
+                'initial': tutor.student.firstname[0],
+                'employee_no': tutor.employee_no,
+                'appointment_id': tutor.appointment_id,
+                'limited_hours': 'Yes' if tutor.rtw_document_type and tutor.rtw_document_type.limited_hours else 'No',
+                'week_ending': '',
+                'pay_code': payment.type.code,
+                'cost_centre': f'{module.cost_centre}00{module.source_of_funds}' if module.finance_code else '',
+                'project': '',
+                'comment': '',
+                'batch': payment.batch,
+                'weeks': payment.weeks,
+            }
+
+            if tutor.is_casual:
+                # Casual payroll needs to be split by week
+                for _ in range(payment.weeks):  # Create a row for every week
+                    fees.append(
+                        {
+                            # Divided per week
+                            'cash_value': payment.amount / payment.weeks if not payment.hours_worked else '',
+                            'hours_value': payment.hours_worked / payment.weeks if payment.hours_worked else '',
+                            'hourly_rate': payment.hourly_rate,
+                            **common,
+                        }
+                    )
+            else:
+                # Main payroll has a single payment.
+                # A function might be in order which takes 'divide_weeks=False'
+                fees.append(
+                    {
+                        'cash_value': payment.amount if not payment.hours_worked else '',  # Full amount
+                        'hours_value': payment.hours_worked or '',  # Full amount
+                        'hourly_rate': payment.hourly_rate,
+                        **common,
+                    }
+                )
+        return fees

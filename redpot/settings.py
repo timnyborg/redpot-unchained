@@ -78,6 +78,7 @@ PROJECT_APPS = [
 
 THIRD_PARTY_APPS = [
     'ckeditor',  # django-ckeditor
+    'ckeditor_uploader',
     'hijack',  # django-hijack
     'menu',  # django-simple-menu
     'django_select2',
@@ -239,9 +240,9 @@ MEDIA_ROOT: Path = env.path('MEDIA_ROOT', default=BASE_DIR / 'media')
 # separate path and URL for media only accessible via an X-Accel-Redirect header
 PROTECTED_MEDIA_URL = env('PROTECTED_MEDIA_URL', default='/protected-media/')
 PROTECTED_MEDIA_ROOT: Path = env.path('PROTECTED_MEDIA_ROOT', default=BASE_DIR / 'protected_media')
-
-DJANGORESIZED_DEFAULT_QUALITY = 75
-DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'PNG': ".png"}
+# separate path and URL for public website media in production.
+WEBSITE_MEDIA_URL = env('WEBSITE_MEDIA_URL', default=MEDIA_URL)
+WEBSITE_MEDIA_ROOT: Path = env.path('WEBSITE_MEDIA_ROOT', default=MEDIA_ROOT)
 
 # Login customization
 LOGIN_REDIRECT_URL = '/'
@@ -364,6 +365,7 @@ CKEDITOR_CONFIGS = {
             ]
         ),
         'width': '100%',
+        'removeDialogTabs': 'image:advanced;link:advanced',
     },
     'links_only': {
         'toolbar': 'custom',
@@ -379,7 +381,8 @@ CKEDITOR_CONFIGS = {
         'width': '100%',
     },
 }
-
+CKEDITOR_STORAGE_BACKEND = 'redpot.storage_backends.WebsiteStorage'
+CKEDITOR_UPLOAD_PATH = 'uploads/'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 DJANGO_TABLES2_TEMPLATE = 'utility/bootstrap5_table.html'
 

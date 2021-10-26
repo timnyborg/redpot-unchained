@@ -1,4 +1,4 @@
-from ckeditor.widgets import CKEditorWidget
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from dal import autocomplete
 from django_select2.forms import Select2MultipleWidget
 
@@ -24,7 +24,7 @@ class BasicEdit(forms.ModelForm):
             'subjects',
         ]
         widgets = {
-            'biography': CKEditorWidget(),
+            'biography': CKEditorUploadingWidget(),
             'subjects': Select2MultipleWidget(),
         }
 
@@ -54,7 +54,7 @@ class Edit(forms.ModelForm):
             'subjects',
         ]
         widgets = {
-            'biography': CKEditorWidget(),
+            'biography': CKEditorUploadingWidget(),
             'subjects': Select2MultipleWidget(),
         }
 
@@ -109,7 +109,7 @@ class TutorModuleEditForm(forms.ModelForm):
             'director_of_studies',
             'biography',
         ]
-        widgets = {'biography': CKEditorWidget()}
+        widgets = {'biography': CKEditorUploadingWidget()}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -141,7 +141,7 @@ class TutorModuleCreateForm(forms.ModelForm):
                 url='autocomplete:tutor',
                 attrs={'data-minimum-input-length': 3},
             ),
-            'biography': CKEditorWidget(),
+            'biography': CKEditorUploadingWidget(),
         }
 
     def __init__(self, *args, **kwargs):
