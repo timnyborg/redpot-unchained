@@ -1,0 +1,37 @@
+{% extends 'feedback_layout_bs4.html' %}
+
+{% block center %}
+    <div class="section">
+        <h4>Past 4 Years</h4>
+        <table class="table table-condensed table-striped hide-rows table-bordered">
+            <tr style="text-align: right">
+                <th>Year</th>
+                <th>Satisfied (%)</th>
+                <th>Average</th>
+                <th>Teaching</th>
+                <th>Content</th>
+                <th>Facilities</th>
+                <th>Admin</th>
+                <th>Catering</th>
+                <th>Accomm</th>
+                <th>Sent</th>
+                <th>Returned</th>
+            </tr>
+            {% for year, data in feedback_years.items %}
+                <tr style="text-align: right">
+                    <td><a href="{% url 'feedback:results-year' year %}">{{ year }}</a></td>
+                    <td>{{ data.satisfied | default:'-'}}</td>
+                    <td>{{ data.average }}</td>
+                    <td>{{ data.avg_teaching }}</td>
+                    <td>{{ data.avg_content }}</td>
+                    <td>{{ data.avg_facilities }}</td>
+                    <td>{{ data.avg_admin }}</td>
+                    <td>{{ data.avg_catering }}</td>
+                    <td>{{ data.avg_accommodation }}</td>
+                    <td>{{ data.sent }}</td>
+                    <td>{{ data.returned | default:'-'}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
