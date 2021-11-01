@@ -3,6 +3,7 @@ from datetime import datetime
 from django.conf import settings
 from django.core import mail
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils import html
 
 from apps.contract import models
@@ -72,3 +73,27 @@ def sign_contracts(*, contract_ids: list, user: User) -> int:
         signed_by=user.username,
         signed_on=datetime.now(),
     )
+
+
+def mail_pending_contracts_signature() -> int:
+    """Email reminder to sign pending contracts"""
+    outstanding = models.Contract.objects.filter(status=Statuses.APPROVED_AWAITING_SIGNATURE).count()
+
+    if outstanding:
+        context = {
+            'outstanding': outstanding,
+            'name': settings.CONTRACT_SIGNATORY,
+            'url': settings.CANONICAL_URL + reverse('contract:sign'),
+        }
+        message = render_to_string('contract/email/pending_tutor_contracts_signatures.html', context=context)
+
+        recipients = [settings.SUPPORT_EMAIL] if settings.DEBUG else settings.CONTRACT_SIGNATURE_EMAILS
+        mail.send_mail(
+            recipient_list=recipients,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            subject='Tutor contracts awaiting signature',
+            message=html.strip_tags(message),
+            html_message=message,
+        )
+
+    return outstanding

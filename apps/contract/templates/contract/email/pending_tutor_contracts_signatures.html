@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <style>
+      body {
+        font-family: calibri, arial;
+      }
+    </style>
+  </head>
+    <body>
+        <p>Dear {{ name }},</p>
+        {% if outstanding == 1 %}
+            <p>There is 1 tutor contract awaiting your signature.</p>
+        {% else %}
+            <p>There are {{ outstanding }} tutor contracts awaiting your signature.</p>
+        {% endif %}
+
+        <p><a href="{{ url }}">View pending contracts awaiting signature</a></p>
+    </body>
+</html>
