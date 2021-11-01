@@ -442,6 +442,42 @@ class DeleteMoodleID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
         return self.object.student.get_absolute_url() + '#other_ids'
 
 
+# --- Emergency contact views ---
+
+
+class CreateOrEditEmergencyContact(
+    LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView
+):
+    model = EmergencyContact
+    form_class = forms.EmergencyContactForm
+    template_name = 'core/form.html'
+    success_message = 'Emergency contact details updated'
+    subtitle_object = False
+
+    def get_object(self, queryset=None):
+        student = get_object_or_404(Student, pk=self.kwargs['student_id'])
+        obj, created = EmergencyContact.objects.get_or_create(
+            student=student,
+            defaults={'created_by': self.request.user.username, 'modified_by': self.request.user.username},
+        )
+        return obj
+
+    def get_success_url(self):
+        return self.object.student.get_absolute_url()
+
+
+class DeleteEmergencyContact(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = EmergencyContact
+    template_name = 'core/delete_form.html'
+
+    def get_subtitle(self) -> str:
+        return f'Delete – {self.object.name}'
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Emergency contact details deleted')
+        return self.object.student.get_absolute_url()
+
+
 # --- Other child views ---
 
 
@@ -465,27 +501,6 @@ class CreateOrEditDiet(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, 
     def get_object(self, queryset=None):
         student = get_object_or_404(Student, pk=self.kwargs['student_id'])
         obj, created = Diet.objects.get_or_create(student=student)
-        return obj
-
-    def get_success_url(self):
-        return self.object.student.get_absolute_url()
-
-
-class CreateOrEditEmergencyContact(
-    LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView
-):
-    model = EmergencyContact
-    fields = ['name', 'phone', 'email']
-    template_name = 'core/form.html'
-    success_message = 'Emergency contact details updated'
-    subtitle_object = False
-
-    def get_object(self, queryset=None):
-        student = get_object_or_404(Student, pk=self.kwargs['student_id'])
-        obj, created = EmergencyContact.objects.get_or_create(
-            student=student,
-            defaults={'created_by': self.request.user.username, 'modified_by': self.request.user.username},
-        )
         return obj
 
     def get_success_url(self):

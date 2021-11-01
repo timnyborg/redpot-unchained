@@ -93,25 +93,26 @@
                 <dt class="col-sm-4">Special diet</dt><dd class="col-sm-8 mb-0">{{ diet.get_type_display }}</dd>
                 <dt class="col-sm-4">Details</dt><dd class="col-sm-8 mb-0">{{ diet.note }}</dd>
                 {% else %}
-                None
+                <dt></dt><dd class="col-sm-9 mb-0">None</dd>
                 {% endif %}
             </dl>
             <h5>
                 <a data-bs-toggle="collapse" href="#collapse-emergency" class="link-dark">Emergency contact</a>
                 <!-- TODO: Create emergency contact page  -->
-                <a href="{% url 'student:edit-emergency-contact' student.id %}">
+                <a href="{% url 'student:emergency-contact:edit' student.id %}">
                     <small><span class="fas fa-fw fa-pencil-alt"></span></small>
                 </a>
             </h5>
-            {% if emergency_contact %}
                 <dl class="row collapse" id="collapse-emergency">
+                    {% if emergency_contact %}
                     <dt class="col-sm-3">Name</dt><dd class="col-sm-9 mb-0">{{ emergency_contact.name }}</dd>
                     <dt class="col-sm-3">Email</dt><dd class="col-sm-9 mb-0">{{ emergency_contact.email }}</dd>
                     <dt class="col-sm-3">Phone</dt><dd class="col-sm-9 mb-0">{{ emergency_contact.phone }}</dd>
+                    {% else %}
+                    <dt></dt><dd class="col-sm-9 mb-0">None</dd>
+                    {% endif %}
                 </dl>
-            {% else %}
-                None
-            {% endif %}
+
             <hr>
             <h5>Marketing</h5>
             <h6>Email</h6>
