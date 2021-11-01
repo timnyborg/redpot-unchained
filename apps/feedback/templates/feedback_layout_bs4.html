@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block site_files %}
+    <link href="{% static 'css/feedback.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% load menu %}
+{% block mainmenu %}
+    {% generate_menu %}
+    {% with menu=menus.feedback %}
+        {% include 'menu/bootstrap_menu.html' %}
+    {% endwith %}
+{% endblock %}

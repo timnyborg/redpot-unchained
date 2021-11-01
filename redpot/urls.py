@@ -48,6 +48,7 @@ urlpatterns = [
     path('autocomplete/', include('apps.autocomplete.urls')),
     path('user/', include('apps.user.urls')),
     path('staff-list/', include('apps.staff_list.urls')),
+    path('feedback/', include('apps.feedback.urls')),
     path('staff-forms/', include('apps.staff_forms.urls')),
     path('task/', include('apps.task_progress.urls', namespace='task')),
     path('website-account/', include('apps.website_account.urls')),

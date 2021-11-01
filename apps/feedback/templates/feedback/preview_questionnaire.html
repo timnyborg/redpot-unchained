@@ -1,0 +1,18 @@
+{% extends 'feedback_layout_bs4.html' %}
+
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% block center %}
+    <div class="section">
+        <h4>Which module would you like to see a preview questionnaire for?</h4>
+        <p>This will display a print copy that you can also use for those without email</p>
+
+        <form method="POST" action=''>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" value="Next">
+        </form>
+        {{ form.media }}
+    </div>
+{% endblock %}

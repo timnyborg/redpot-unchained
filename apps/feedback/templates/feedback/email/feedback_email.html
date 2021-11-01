@@ -1,0 +1,15 @@
+<div style="font-family:Calibri;">
+    <p>Dear {{firstname}},</p>
+    <p>We hope you enjoyed <i><b>{{module_title}}.</b></i></p>
+    <p>Your feedback is valuable to us, so we would be very grateful if you could take a few moments to complete this short questionnaire.</p>
+    <div style="padding:5px 0 15px 0">
+        <table style="min-width:200px;">
+            <tr>
+                <td style="background-color:#002147;text-align:center;padding:15px">
+                    <a style="font-family:Calibri;text-decoration:none;color:white;" href="{% url 'feedback:submit' module_id %}"><strong style="text-decoration:none; color: #FFFFFF;">View questionnaire</strong></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <p>Department for Continuing Education, University of Oxford</p>
+</div>
