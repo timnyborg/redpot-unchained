@@ -3,6 +3,7 @@ from datetime import datetime
 from django.conf import settings
 from django.core import mail
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils import html
 
 from apps.contract import models
@@ -81,9 +82,8 @@ def mail_pending_contracts_signature() -> int:
     if outstanding:
         context = {
             'outstanding': outstanding,
-            'name': 'Sean Faughnan',
-            'email': 'personnel@conted.ox.ac.uk',
-            'url': settings.CANONICAL_URL + '/contract/need-signature',
+            'name': settings.CONTRACT_SIGNATORY,
+            'url': settings.CANONICAL_URL + reverse('contract:sign'),
         }
         message = render_to_string('contract/email/pending_tutor_contracts_signatures.html', context=context)
 
