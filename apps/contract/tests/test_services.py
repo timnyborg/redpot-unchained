@@ -6,7 +6,7 @@ from apps.contract import services
 from apps.contract.tests.factories import ContractFactory
 
 
-@override_settings(CONTRACT_SIGNATURE_EMAILS='test@test.com')
+@override_settings(CONTRACT_SIGNATURE_EMAILS=['test@test.com'])
 class TestTutorPendingEmailContract(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -19,7 +19,7 @@ class TestTutorPendingEmailContract(TestCase):
         # Verify that the subject of the first message is correct.
         self.assertIn('Tutor contracts awaiting signature', mail.outbox[0].subject)
         self.assertIn(settings.DEFAULT_FROM_EMAIL, mail.outbox[0].from_email)
-        self.assertIn(settings.CONTRACT_SIGNATURE_EMAILS, mail.outbox[0].to[0])
+        self.assertEqual(mail.outbox[0].to, settings.CONTRACT_SIGNATURE_EMAILS)
 
         # Test that one message has been sent.
         self.assertEqual(len(mail.outbox), 1)

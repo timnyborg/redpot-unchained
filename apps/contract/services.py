@@ -87,7 +87,7 @@ def mail_pending_contracts_signature() -> int:
         }
         message = render_to_string('contract/email/pending_tutor_contracts_signatures.html', context=context)
 
-        recipients = [settings.SUPPORT_EMAIL if settings.DEBUG else settings.CONTRACT_SIGNATURE_EMAILS]
+        recipients = [settings.SUPPORT_EMAIL] if settings.DEBUG else settings.CONTRACT_SIGNATURE_EMAILS
         mail.send_mail(
             recipient_list=recipients,
             from_email=settings.DEFAULT_FROM_EMAIL,
