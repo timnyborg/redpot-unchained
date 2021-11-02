@@ -10,6 +10,8 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from django.contrib import messages
 from django.core.management.utils import get_random_secret_key
 
+from . import ckeditor_backends
+
 # Get environment variables
 env = environs.Env()
 env.read_env('secrets.env')
@@ -383,7 +385,10 @@ CKEDITOR_CONFIGS = {
     },
 }
 CKEDITOR_STORAGE_BACKEND = 'redpot.storage_backends.WebsiteStorage'
+CKEDITOR_FORCE_JPEG_COMPRESSION = True
+CKEDITOR_IMAGE_BACKEND = ckeditor_backends.IMAGE_BACKEND_LABEL
 CKEDITOR_UPLOAD_PATH = 'uploads/'
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 DJANGO_TABLES2_TEMPLATE = 'utility/bootstrap5_table.html'
 
