@@ -37,7 +37,8 @@ class ResultListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     context_object_name = 'results'
 
     def get_queryset(self):
-        four_year_results = Feedback.objects.get_year_range_queryset(3)
+        current_year = datetime.datetime.now().year
+        four_year_results = Feedback.objects.get_year_range(current_year - 3, current_year)
         return four_year_results
 
     def get_context_data(self, **kwargs):
@@ -48,7 +49,7 @@ class ResultListView(LoginRequiredMixin, SiteTitleMixin, ListView):
         years = range(from_year, current_year + 1)
         feedback_years = {}
         for year in years:
-            year_fields = Feedback.objects.get_year_range_queryset(1)
+            year_fields = Feedback.objects.get_year_range(year)
             data = {}
             data['avg_teaching'] = get_mean_value(
                 year_fields.values_list('rate_tutor', flat=True).filter(rate_tutor__gt=0)
@@ -105,8 +106,7 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
         return f'Results - Academic Year ({self.year} - {self.year+1})'
 
     def get_queryset(self):
-        year_results = Feedback.objects.get_year_range_queryset(1)
-        return year_results
+        return Feedback.objects.get_year_range(self.year)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
