@@ -37,3 +37,17 @@ class TestEmailing(LoggedInMixin, test.TestCase):
 
         self.assertEqual(models.Feedback.objects.count(), 1)
         self.assertEqual(len(mail.outbox), 2)
+
+
+class TestYearRangeMethod(test.TestCase):
+    """Check that the query selects the right start and end dates"""
+
+    def test_start_only(self):
+        query = str(models.Feedback.objects.get_year_range(2012).query)
+        self.assertIn('2012-08-31', query)
+        self.assertIn('2013-09-01', query)
+
+    def test_start_and_end(self):
+        query = str(models.Feedback.objects.get_year_range(2012, 2015).query)
+        self.assertIn('2012-08-31', query)
+        self.assertIn('2016-09-01', query)
