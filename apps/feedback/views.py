@@ -106,7 +106,7 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
         return f'Results - Academic Year ({self.year} - {self.year+1})'
 
     def get_queryset(self):
-        year_results = Feedback.objects.get_year_range_queryset()
+        year_results = Feedback.objects.get_year_range_queryset(1)
         return year_results
 
     def get_context_data(self, **kwargs):
