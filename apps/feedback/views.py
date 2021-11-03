@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
-from django.shortcuts import redirect, render, reverse
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.views import View
@@ -19,12 +19,12 @@ from .forms import CommentAndReportForm, FeedbackRequestForm, PreviewQuestionnai
 from .models import Feedback, FeedbackAdmin
 
 
-class SiteTitleMixin(PageTitleMixin):
-    title = 'Feedback'
-
-
 def home(request):
     return render(request, 'feedback/home.html')
+
+
+class SiteTitleMixin(PageTitleMixin):
+    title = 'Feedback'
 
 
 def get_mean_value(list_of_ints):  # Takes a list of integers and returns a mean value
@@ -38,11 +38,7 @@ class ResultListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     context_object_name = 'results'
 
     def get_queryset(self):
-        current_year = datetime.datetime.now().year
-        from_year = current_year - 3
-        four_year_results = Feedback.objects.filter(
-            module__start_date__gt=str(from_year) + '-08-31', module__start_date__lt=str(current_year + 1) + '-09-01'
-        )
+        four_year_results = Feedback.objects.get_year_range_queryset(3)
         return four_year_results
 
     def get_context_data(self, **kwargs):
@@ -53,9 +49,7 @@ class ResultListView(LoginRequiredMixin, SiteTitleMixin, ListView):
         years = range(from_year, current_year + 1)
         feedback_years = {}
         for year in years:
-            year_fields = self.object_list.filter(
-                module__start_date__gt=str(year) + '-08-31', module__start_date__lt=str(year + 1) + '-09-01'
-            )
+            year_fields = Feedback.objects.get_year_range_queryset(1)
             data = {}
             data['avg_teaching'] = get_mean_value(
                 year_fields.values_list('rate_tutor', flat=True).filter(rate_tutor__gt=0)
@@ -75,7 +69,7 @@ class ResultListView(LoginRequiredMixin, SiteTitleMixin, ListView):
             data['avg_accommodation'] = get_mean_value(
                 year_fields.values_list('rate_accommodation', flat=True).filter(rate_accommodation__gt=0)
             )
-            data['average'] = get_mean_value(
+            data['average'] = get_mean_value(  # todo get the database to do the averaging work
                 [
                     data['avg_teaching'],
                     data['avg_content'],
@@ -112,9 +106,7 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
         return f'Results - Academic Year ({self.year} - {self.year+1})'
 
     def get_queryset(self):
-        year_results = Feedback.objects.filter(
-            module__start_date__gt=str(self.year) + '-08-31', module__start_date__lt=str(self.year + 1) + '-09-01'
-        )
+        year_results = Feedback.objects.get_year_range_queryset()
         return year_results
 
     def get_context_data(self, **kwargs):
@@ -380,7 +372,7 @@ class PreviewView(LoginRequiredMixin, SiteTitleMixin, ListView):
 
     def dispatch(self, *args, **kwargs):
         self.module_id = self.kwargs.get('module_id')
-        self.module = Module.objects.get(id=self.module_id)
+        self.module = get_object_or_404(id=self.module_id)
         return super().dispatch(*args, **kwargs)
 
     def get_subtitle(self):
@@ -494,7 +486,7 @@ class RequestFeedback(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         self.module_id = self.kwargs['module_id']
-        self.module = Module.objects.get(id=self.module_id)
+        self.module = get_object_or_404(id=self.module_id)
         self.module_contact = self.module.email if '@conted' in self.module.email else self.module.portfolio.email
         self.module_students = (
             Enrolment.objects.filter(
