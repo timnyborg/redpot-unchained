@@ -31,3 +31,9 @@ class TestEmailing(LoggedInMixin, test.TestCase):
         self.assertEqual(models.Feedback.objects.count(), 1)
         self.assertEqual(len(mail.outbox), 2)
         self.assertIsNotNone(models.Feedback.objects.first().reminder)
+
+        # Check the third posting does nothing
+        self.client.post(url)
+
+        self.assertEqual(models.Feedback.objects.count(), 1)
+        self.assertEqual(len(mail.outbox), 2)

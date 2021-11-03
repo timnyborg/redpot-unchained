@@ -5,15 +5,13 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-from apps.enrolment.models import Enrolment
 from apps.feedback.models import Feedback
 from apps.module.models import Module
 
 
-def process_and_send_emails(module):
+def process_and_send_emails(module: Module) -> None:
     enrolments = (
-        Enrolment.objects.filter(
-            module=module,
+        module.enrolments.filter(
             status__in=[10, 71, 90],
             qa__student__email__email__isnull=False,
             qa__student__email__is_default=True,
@@ -39,39 +37,35 @@ def process_and_send_emails(module):
         )
     )
 
-    email_context = {}
-    for student in enrolments:
-        email_context['firstname'] = student['qa__student__firstname']
-        email_context['email'] = student['qa__student__email__email']
-        email_context['module'] = student['module']
-        email_context['module_id'] = student['module__id']
-        email_context['module_title'] = student['module__title']
-        email_context['enrolment'] = student['id']
-        mod_contact = student['module__email'] if student['module__email'] else student['module__portfolio__email']
+    for enrolment in enrolments:
+        email_context = {
+            'firstname': enrolment['qa__student__firstname'],
+            'email': enrolment['qa__student__email__email'],
+            'module': enrolment['module'],
+            'module_id': enrolment['module__id'],
+            'module_title': enrolment['module__title'],
+            'enrolment': enrolment['id'],
+        }
+        mod_contact = (
+            enrolment['module__email'] if enrolment['module__email'] else enrolment['module__portfolio__email']
+        )
 
-        student_feedback = Feedback.objects.filter(enrolment=email_context['enrolment'])
+        # Create object in table if object didn't exist
+        student_feedback, created = Feedback.objects.get_or_create(enrolment=email_context['enrolment'], module=module)
 
-        if not student_feedback:
-            subject = 'Your feedback on ' + email_context['module_title']
+        subject = f"Your feedback on {email_context['module_title']}"
+        to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [email_context['email']]
+        if created:
             html_message = render_to_string('feedback/email/feedback_email.html', email_context)
-            plain_message = strip_tags(html_message)
-            from_email = mod_contact
             # todo: determine if it's worthwhile to bcc webmaster
-            to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [email_context['email']]
-            send_mail(subject, plain_message, from_email, to, html_message=html_message)
+            send_mail(subject, strip_tags(html_message), mod_contact, to, html_message=html_message)
 
-            # Create object in table if object didn't exist
-            Feedback.objects.create(
-                module=Module.objects.get(id=email_context['module_id']),
-                enrolment=email_context['enrolment'],
-                notified=datetime.datetime.now(),
-            )
+            student_feedback.notified = datetime.datetime.now()
+            student_feedback.save()
 
-        elif not student_feedback.first().reminder:
-            subject = 'Your feedback on ' + email_context['module_title']
+        elif not student_feedback.reminder:
             html_message = render_to_string('feedback/email/feedback_email_reminder.html', email_context)
-            plain_message = strip_tags(html_message)
-            from_email = mod_contact
-            to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [email_context['email']]
-            send_mail(subject, plain_message, from_email, to, html_message=html_message)
-            Feedback.objects.filter(enrolment=email_context['enrolment']).update(reminder=datetime.datetime.now())
+            send_mail(subject, strip_tags(html_message), mod_contact, to, html_message=html_message)
+
+            student_feedback.reminder = datetime.datetime.now()
+            student_feedback.save()
