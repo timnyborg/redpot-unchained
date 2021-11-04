@@ -172,3 +172,9 @@ class MoodleIDForm(forms.ModelForm):
     class Meta:
         model = models.MoodleID
         fields = ['moodle_id', 'first_module_code']
+
+
+class EmergencyContactForm(forms.ModelForm):
+    class Meta:
+        model = models.EmergencyContact
+        fields = ['name', 'phone', 'email']
