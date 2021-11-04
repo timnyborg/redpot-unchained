@@ -461,3 +461,54 @@ class TestLookup(LoggedInMixin, TestCase):
     def test_failed_lookup(self):
         response = self.client.post(self.url, data={'husid': 789})
         self.assertRedirects(response, reverse('student:search'))
+
+
+class TestDiet(LoggedInViewTestMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.student = factories.DietFactory()
+        cls.url = reverse('student:edit-diet', kwargs={'student_id': cls.student.student_id})
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_edit_diet(self):
+        self.assertIsNone(self.student.type)
+        response = self.client.post(self.url, data={'type': models.Diet.Types.GLUTEN_FREE.value})
+
+        self.student.refresh_from_db()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.student.type, models.Diet.Types.GLUTEN_FREE.value)
+
+
+class TestEmergencyContact(LoggedInViewTestMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.emergency_contact = factories.EmergencyContactFactory()
+        cls.url = reverse('student:emergency-contact:edit', kwargs={'student_id': cls.emergency_contact.student_id})
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_edit_emergency_contact(self):
+        response = self.client.post(self.url, data={'name': 'testname', 'email': 'test@test.com'})
+
+        self.emergency_contact.refresh_from_db()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.emergency_contact.name, 'testname')
+        self.assertEqual(self.emergency_contact.email, 'test@test.com')
+
+    def test_delete_emergency_contact(self):
+        self.client.post(reverse('student:emergency-contact:delete', kwargs={'pk': self.emergency_contact.pk}))
+        with self.assertRaises(models.EmergencyContact.DoesNotExist):
+            self.emergency_contact.refresh_from_db()
