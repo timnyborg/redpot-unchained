@@ -469,6 +469,9 @@ class EmergencyContact(SignatureModel):
     class Meta:
         db_table = 'emergency_contact'
 
+    def get_delete_url(self) -> str:
+        return reverse('student:emergency-contact:delete', kwargs={'pk': self.pk})
+
 
 class Phone(SITSLockingModelMixin, SignatureModel):
     sits_managed_fields = ['type', 'number']
