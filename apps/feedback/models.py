@@ -1,17 +1,16 @@
 import datetime
 import uuid
+from typing import Optional
 
 from django.db import models
 
 
-class FeedbackQueryset(models.QuerySet):
-    def get_year_range_queryset(self, diff):
-        current_year = datetime.datetime.now().year
-        self.from_year = current_year - diff
-        self.to_year = current_year
+class FeedbackQuerySet(models.QuerySet):
+    def get_year_range(self, start_year: int, end_year: Optional[int] = None) -> models.QuerySet:
+        end_year = end_year or start_year
         return self.filter(
-            module__start_date__gt=datetime.date(self.from_year, 8, 31),
-            module__start_date__lt=datetime.date(self.to_year, 9, 1),
+            module__start_date__gt=datetime.date(start_year, 8, 31),
+            module__start_date__lt=datetime.date(end_year + 1, 9, 1),
         )
 
 
@@ -35,7 +34,7 @@ class Feedback(models.Model):
     class Meta:
         db_table = 'feedback'
 
-    objects = FeedbackQueryset.as_manager()
+    objects = FeedbackQuerySet.as_manager()
 
 
 class FeedbackAdmin(models.Model):
