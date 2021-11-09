@@ -7,7 +7,7 @@ from django.db import transaction
 from apps.tutor.models import Tutor
 
 from .. import models
-from .archive_serializers import StudentSerializer
+from . import archive_serializers
 
 
 class CannotMergeError(Exception):
@@ -46,21 +46,31 @@ def merge_multiple_students(students: list[models.Student]) -> dict:
 
 
 @transaction.atomic
-def merge_students(*, source: models.Student, target: models.Student):
-    # todo: docstring
-    # todo: refactor into testable sub-functions
+def merge_students(*, source: models.Student, target: models.Student) -> None:
+    """Merge the source student record into the target record"""
     if hasattr(source, 'tutor') and hasattr(target, 'tutor'):
         raise CannotMergeError("Both records are tutors.  This can't be handled yet.")
     if source.sits_id and target.sits_id and source.sits_id != target.sits_id:
         raise CannotMergeError('Conflicting SITS IDs')
 
-    create_merge_archive_record(source=source, target=target)
+    _create_merge_archive_record(source=source, target=target)
+
+    _merge_properties(source=source, target=target)
+    _merge_children(source=source, target=target)
+    _merge_one_to_ones(source=source, target=target)
+    _merge_qualification_aims(source=source, target=target)
+
+    target.save()
+    source.delete()
+
+
+def _merge_properties(*, source: models.Student, target: models.Student) -> None:
+    """Overwrite the target's student properties if they are None or unknown"""
 
     def get_default(field: str) -> Any:
         return models.Student._meta.get_field(field).default
 
-    # Overwrite a number of target's student items if it is None or in the unknowns, while source isn't
-    field_unknowns = {
+    field_unknown_values = {
         'birthdate': [],
         'ethnicity_id': [get_default('ethnicity')],
         'domicile_id': [get_default('domicile')],
@@ -76,51 +86,42 @@ def merge_students(*, source: models.Student, target: models.Student):
         'mail_optin_on': [],
         'mail_optin_method': [''],
     }
-
-    for field, unknowns in field_unknowns.items():
+    for field, unknowns in field_unknown_values.items():
         if getattr(target, field) in [None] + unknowns and getattr(source, field) not in [None] + unknowns:
             setattr(target, field, getattr(source, field))
 
-    # Mergeable data - reassign source data that doesn't yet exist on the target to the target
+
+def _merge_children(*, source: models.Student, target: models.Student) -> None:
+    """Reassign the source's child record (reverse foreign keys) to the target"""
     # todo: consider replicating redpot-legacy's existence checking, to avoid duplicates
     source.emails.update(student=target)
     source.phones.update(student=target)
     source.addresses.update(student=target)
     source.other_ids.update(student=target)
     source.website_accounts.update(student=target)
+    source.enquiries.update(student=target)
+    source.suspensions.update(student=target)
+    source.waitlists.update(student=target)
 
-    # Set contact defaults to last modified if any exist
-    # for table in (
-    #     'address',
-    #     'email',
-    #     'phone',
-    # ):
-    #     newest_data = idb((idb[table].student == target.id)).select(orderby=~idb[table].modified_on).first()
-    #     if newest_data:
-    #         newest_data.update_record(is_default=True)
+    # For contacts, make most recently modified the default
+    for model in ('addresses', 'emails', 'phones'):
+        children = getattr(target, model)
+        children.update(is_default=False)
+        latest_record = children.order_by('-modified_on').first()
+        if latest_record:
+            latest_record.is_default = True
+            latest_record.save()
 
-    # For logins, make most recently modified in combined set active
+    # For logins, make most recently modified active
     target.website_accounts.update(is_disabled=True)
     newest_login = target.website_accounts.order_by('-modified_on').first()
     if newest_login:
         newest_login.is_disabled = False
         newest_login.save()
 
-    # Child tables that follow a normal many-to-one structure (data never overlaps)
-    # todo: move up?
-    source.enquiries.update(student=target)
-    source.suspensions.update(student=target)
-    source.waitlists.update(student=target)
 
+def _merge_one_to_ones(*, source: models.Student, target: models.Student) -> None:
     Tutor.objects.filter(student=source).update(student=target)
-    merge_one_to_ones(source=source, target=target)
-    merge_qualification_aims(source=source, target=target)
-
-    target.save()
-    source.delete()
-
-
-def merge_one_to_ones(*, source: models.Student, target: models.Student) -> None:
     for model in ('moodle_id', 'diet', 'emergency_contact'):
         source_child = getattr(source, model, None)
         if source_child:
@@ -131,7 +132,7 @@ def merge_one_to_ones(*, source: models.Student, target: models.Student) -> None
                 source_child.save()
 
 
-def merge_qualification_aims(*, source: models.Student, target: models.Student) -> None:
+def _merge_qualification_aims(*, source: models.Student, target: models.Student) -> None:
     for qa in source.qualification_aims.all():
         # Check for a matching qualification aim on the target, and check that the source isn't award bearing
         matching_qa = target.qualification_aims.filter(programme_id=qa.programme_id).first()
@@ -145,11 +146,7 @@ def merge_qualification_aims(*, source: models.Student, target: models.Student) 
             qa.save()
 
 
-def create_merge_archive_record(*, source: models.Student, target: models.Student) -> None:
-    ...
-
-
-def student_to_archive_dict(student: models.Student) -> dict:
-    return StudentSerializer(student).data
-
-    # idb.student_archive.insert(source=source.id, target=target.id, husid=source.husid, json=archive)
+def _create_merge_archive_record(*, source: models.Student, target: models.Student) -> None:
+    """Serializes the source student and creates an archive record"""
+    archive_data = archive_serializers.StudentSerializer(source).data
+    models.StudentArchive.objects.create(source=source.id, target=target.id, json=archive_data)

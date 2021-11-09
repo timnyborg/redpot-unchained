@@ -177,10 +177,9 @@ class Student(SITSLockingModelMixin, SignatureModel):
 
 
 class StudentArchive(SignatureModel):
-    husid = models.BigIntegerField(blank=True, null=True)
-    source = models.IntegerField(blank=True, null=True)
-    target = models.IntegerField(blank=True, null=True)
-    json = models.TextField(blank=True, null=True)
+    source = models.IntegerField()
+    target = models.IntegerField()
+    json = models.JSONField()
 
     class Meta:
         db_table = 'student_archive'
