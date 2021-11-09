@@ -95,6 +95,7 @@ class Student(SITSLockingModelMixin, SignatureModel):
     class Meta:
         db_table = 'student'
         verbose_name = 'Person'
+        permissions = [('merge_student', 'Merge student records')]
 
     def __str__(self):
         return f'{self.first_or_nickname} {self.surname}'

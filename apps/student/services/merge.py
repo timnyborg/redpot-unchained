@@ -20,29 +20,13 @@ def _order_by_husid(student: models.Student) -> tuple:
     return student.husid is None, year < 90, year
 
 
-def merge_multiple_students(students: list[models.Student]) -> dict:
+@transaction.atomic
+def merge_multiple_students(students: list[models.Student]) -> models.Student:
     """Merge multiple students, their ids passed in a list"""
     target, *sources = sorted(students, key=_order_by_husid)
-
-    results = {'target': target.id, 'merges': []}
-
     for source in sources:
-        merge_result = {
-            # todo: why?
-            'id': source.id,
-            'name': str(source),
-            'husid': source.husid,
-        }
-
-        try:
-            merge_students(source=source, target=target)
-            merge_result['error'] = False
-        except CannotMergeError as error:
-            merge_result['error'] = error
-
-        results['merges'].append(merge_result)
-
-    return results
+        merge_students(source=source, target=target)
+    return target
 
 
 @transaction.atomic
