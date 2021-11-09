@@ -146,7 +146,7 @@ def _merge_qualification_aims(*, source: models.Student, target: models.Student)
             qa.save()
 
 
-def _create_merge_archive_record(*, source: models.Student, target: models.Student) -> None:
+def _create_merge_archive_record(*, source: models.Student, target: models.Student) -> models.StudentArchive:
     """Serializes the source student and creates an archive record"""
     archive_data = archive_serializers.StudentSerializer(source).data
-    models.StudentArchive.objects.create(source=source.id, target=target.id, json=archive_data)
+    return models.StudentArchive.objects.create(source=source.id, target=target.id, json=archive_data)

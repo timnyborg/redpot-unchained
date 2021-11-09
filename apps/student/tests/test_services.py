@@ -4,6 +4,8 @@ from parameterized import parameterized
 
 from django.test import SimpleTestCase, TestCase
 
+from apps.enrolment.tests.factories import EnrolmentFactory
+from apps.programme.tests.factories import ProgrammeFactory
 from apps.tutor.tests.factories import TutorFactory
 
 from .. import models, services
@@ -53,11 +55,52 @@ class TestMerge(TestCase):
         source = factories.StudentFactory(birthdate=date(2000, 1, 1), nationality_id=100)
         target = factories.StudentFactory(birthdate=None, nationality_id=models.NOT_KNOWN_NATIONALITY)
 
-        services.merge.merge_students(source=source, target=target)
+        services.merge._merge_properties(source=source, target=target)
 
-        target.refresh_from_db()
         self.assertEqual(source.birthdate, target.birthdate)  # standard field
         self.assertEqual(source.nationality_id, target.nationality_id)  # notnull foreign key
+
+    def test_merging_non_award_qas(self):
+        """Enrolments should be moved"""
+        programme = ProgrammeFactory(qualification_id=61)  # UG Credit
+        source_enrolment = EnrolmentFactory(qa__programme=programme)
+        target_enrolment = EnrolmentFactory(qa__programme=programme)
+
+        services.merge._merge_qualification_aims(
+            source=source_enrolment.qa.student, target=target_enrolment.qa.student
+        )
+
+        source_enrolment.refresh_from_db()
+        self.assertEqual(source_enrolment.qa_id, target_enrolment.qa_id)
+
+    def test_merging_award_qas(self):
+        """Source QA should be moved"""
+        programme = ProgrammeFactory(qualification_id=33)  # UG Cert
+        source_enrolment = EnrolmentFactory(qa__programme=programme)
+        target_enrolment = EnrolmentFactory(qa__programme=programme)
+
+        services.merge._merge_qualification_aims(
+            source=source_enrolment.qa.student, target=target_enrolment.qa.student
+        )
+
+        source_enrolment.refresh_from_db()
+        self.assertNotEqual(source_enrolment.qa_id, target_enrolment.qa_id)
+        self.assertEqual(source_enrolment.qa.student_id, target_enrolment.qa.student_id)
+
+    def test_archiving(self):
+        source, target = factories.StudentFactory.create_batch(size=2)
+        result = services.merge._create_merge_archive_record(source=source, target=target)
+        self.assertEqual(result.source, source.id)
+        self.assertEqual(result.target, target.id)
+        self.assertEqual(result.json['firstname'], source.firstname)
+
+    def test_full_merge(self):
+        """Check that the full merge method creates an archive and deletes the source student"""
+        source, target = factories.StudentFactory.create_batch(size=2)
+        services.merge.merge_students(source=source, target=target)
+        with self.assertRaises(models.Student.DoesNotExist):
+            source.refresh_from_db()
+        self.assertEqual(models.StudentArchive.objects.count(), 1)
 
 
 class TestHUSIDSort(SimpleTestCase):
