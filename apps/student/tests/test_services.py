@@ -40,20 +40,20 @@ class TestGettingNextHUSID(TestCase):
 class TestMerge(TestCase):
     def test_merging_tutors_raises_error(self):
         source, target = TutorFactory.create_batch(size=2)
-        with self.assertRaisesRegex(services.CannotMergeError, 'tutor'):
-            services.merge_students(source=source.student, target=target.student)
+        with self.assertRaisesRegex(services.merge.CannotMergeError, 'tutor'):
+            services.merge.merge_students(source=source.student, target=target.student)
 
     def test_merging_sits_students_raises_error(self):
         source = factories.StudentFactory(sits_id=1)
         target = factories.StudentFactory(sits_id=2)
-        with self.assertRaisesRegex(services.CannotMergeError, 'SITS'):
-            services.merge_students(source=source, target=target)
+        with self.assertRaisesRegex(services.merge.CannotMergeError, 'SITS'):
+            services.merge.merge_students(source=source, target=target)
 
     def test_merging_overrides_defaults(self):
         source = factories.StudentFactory(birthdate=date(2000, 1, 1), nationality_id=100)
         target = factories.StudentFactory(birthdate=None, nationality_id=models.NOT_KNOWN_NATIONALITY)
 
-        services.merge_students(source=source, target=target)
+        services.merge.merge_students(source=source, target=target)
 
         target.refresh_from_db()
         self.assertEqual(source.birthdate, target.birthdate)  # standard field
@@ -69,4 +69,4 @@ class TestHUSIDSort(SimpleTestCase):
 
         unordered = [_2005, no_husid, _2020, _1999]
         expected = [_1999, _2005, _2020, no_husid]
-        self.assertEqual(sorted(unordered, key=services._order_by_husid), expected)
+        self.assertEqual(sorted(unordered, key=services.merge._order_by_husid), expected)
