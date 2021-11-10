@@ -8,9 +8,9 @@ from typing import IO, Iterable, Optional
 
 from django.contrib import auth
 from django.db import transaction
-from django.db.models import Max
 
 from apps.core.models import User
+from apps.core.utils.db import next_in_sequence
 from apps.enrolment.models import Enrolment
 from apps.finance import services as finance_services
 from apps.finance.models import Ledger, TransactionTypes
@@ -20,9 +20,7 @@ from . import models
 
 def next_invoice_number() -> int:
     """Return the next invoice number available for use"""
-    # todo: sort out using the max() method in redpot-legacy, or use the autonumber here (no!)
-    largest = models.Invoice.objects.aggregate(Max('number'))['number__max'] or 0
-    return largest + 1
+    return next_in_sequence('invoice_number_sequence')
 
 
 @transaction.atomic()
