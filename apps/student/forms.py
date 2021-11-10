@@ -1,11 +1,14 @@
+from __future__ import annotations
+
 import re
 from datetime import date, datetime
 from typing import Optional
 
 from dateutil.relativedelta import relativedelta
-from ukpostcodeutils import validation
+from ukpostcodeutils.validation import is_valid_postcode
 
 from django import forms
+from django.core import validators
 from django.core.exceptions import ValidationError
 
 from apps.core.utils import widgets
@@ -120,7 +123,7 @@ class AddressForm(SITSLockingFormMixin, forms.ModelForm):
         postcode = self.cleaned_data.get('postcode')
         if postcode and country and 'United Kingdom' in country.name:
             spaceless_postcode = re.sub(r'\s', '', postcode).upper()
-            if not validation.is_valid_postcode(spaceless_postcode):
+            if not is_valid_postcode(spaceless_postcode):
                 raise ValidationError('Invalid UK postcode')
             postcode = f'{spaceless_postcode[:-3]} {spaceless_postcode[-3:]}'
 
@@ -178,3 +181,17 @@ class EmergencyContactForm(forms.ModelForm):
     class Meta:
         model = models.EmergencyContact
         fields = ['name', 'phone', 'email']
+
+
+class MergeForm(forms.Form):
+    records = forms.ModelMultipleChoiceField(
+        queryset=models.Student.objects.none(),
+        label='Records',
+        widget=forms.CheckboxSelectMultiple(),
+        validators=[validators.MinLengthValidator(2, message='Please select at least two records')],
+    )
+
+    def __init__(self, record_ids: list[int], *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['records'].label_from_instance = lambda obj: f'{obj.firstname} {obj.surname} ({obj.husid})'
+        self.fields['records'].queryset = models.Student.objects.filter(pk__in=record_ids)

@@ -5,7 +5,8 @@ from typing import Iterator
 
 from django.db.models import Max
 
-from . import models
+from .. import models
+from . import merge
 
 
 def next_husid(academic_year: int) -> int:
