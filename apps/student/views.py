@@ -5,7 +5,7 @@ from django_tables2.views import SingleTableMixin
 
 from django import http
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import models
 from django.db.models import Prefetch, Q
@@ -19,7 +19,7 @@ from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin
 from apps.enrolment.models import Enrolment
 from apps.tutor.models import Tutor
 
-from . import datatables, forms, pdfs
+from . import datatables, forms, pdfs, services
 from .models import Address, Diet, Email, EmergencyContact, Enquiry, MoodleID, OtherID, Phone, Student, StudentArchive
 
 
@@ -261,6 +261,30 @@ class MakeTutor(LoginRequiredMixin, generic.View):
         )
         messages.success(request, 'Tutor record created')
         return redirect(tutor.get_edit_url())
+
+
+class Merge(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
+    permission_required = 'student.merge_student'
+    template_name = 'student/merge.html'
+    form_class = forms.MergeForm
+    title = 'Person'
+    subtitle = 'Merge'
+
+    def get_form_kwargs(self) -> dict:
+        kwargs = super().get_form_kwargs()
+        record_ids = [int(i) for i in self.request.GET.getlist('student') if i.isnumeric()]
+        return {**kwargs, 'record_ids': record_ids}
+
+    def form_valid(self, form) -> http.HttpResponse:
+        records = form.cleaned_data['records']
+        try:
+            target = services.merge.merge_multiple_students(records)
+        except services.merge.CannotMergeError as e:
+            form.add_error('records', e)
+            return self.form_invalid(form)
+
+        messages.success(self.request, f'{len(records)-1} records merged into {target}')
+        return redirect(target)
 
 
 # --- Email views ---

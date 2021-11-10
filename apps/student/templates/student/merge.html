@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% load crispy_forms_tags %}
+{% block center %}
+    <div class='section'>
+        <h4>Select which records you wish to merge</h4>
+        <form action="" enctype="multipart/form-data" method="post" id="mergeForm">
+            {% csrf_token %}
+            {{ form | crispy }}
+            <div class="form-group mt-3">
+                <a class='btn btn-primary'
+                   data-bs-toggle='modal'
+                   data-bs-target='#commonModal'
+                   data-modal-body="Are you sure you wish to merge these records?  This cannot be undone"
+                   data-modal-confirm-text="Merge"
+                   data-modal-form="mergeForm"
+                   href='#'
+                >Merge</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

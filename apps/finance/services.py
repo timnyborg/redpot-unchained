@@ -6,10 +6,10 @@ from decimal import Decimal
 from typing import Any, Optional
 
 from django.db import transaction
-from django.db.models import Max
 
 from apps.booking.models import Accommodation, Catering
 from apps.core.models import User
+from apps.core.utils.db import next_in_sequence
 from apps.enrolment.models import Enrolment
 from apps.fee.models import Fee
 from apps.module.models import Module
@@ -19,9 +19,12 @@ from . import models
 
 def next_allocation() -> int:
     """Return the next allocation number available for use"""
-    # todo: sort out using the max() method in redpot-legacy
-    largest = models.Ledger.objects.aggregate(Max('allocation'))['allocation__max'] or 0
-    return largest + 1
+    return next_in_sequence('ledger_allocation_sequence')
+
+
+def next_batch() -> int:
+    """Return the next batch available for use"""
+    return next_in_sequence('ledger_batch_sequence')
 
 
 @dataclass
@@ -253,10 +256,3 @@ def transfer_funds(
         enrolment_id=target_enrolment.id,
         **common_args,
     )
-
-
-def next_batch() -> int:
-    """Return the next batch available for use"""
-    # todo: sort out using the max() method in redpot-legacy, or use the autonumber here (no!)
-    largest = models.Ledger.objects.aggregate(Max('batch'))['batch__max'] or 0
-    return largest + 1

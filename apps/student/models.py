@@ -95,6 +95,7 @@ class Student(SITSLockingModelMixin, SignatureModel):
     class Meta:
         db_table = 'student'
         verbose_name = 'Person'
+        permissions = [('merge_student', 'Merge student records')]
 
     def __str__(self):
         return f'{self.first_or_nickname} {self.surname}'
@@ -177,10 +178,9 @@ class Student(SITSLockingModelMixin, SignatureModel):
 
 
 class StudentArchive(SignatureModel):
-    husid = models.BigIntegerField(blank=True, null=True)
-    source = models.IntegerField(blank=True, null=True)
-    target = models.IntegerField(blank=True, null=True)
-    json = models.TextField(blank=True, null=True)
+    source = models.IntegerField()
+    target = models.IntegerField()
+    json = models.JSONField()
 
     class Meta:
         db_table = 'student_archive'

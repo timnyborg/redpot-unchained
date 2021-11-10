@@ -1,3 +1,6 @@
+from unittest.mock import patch
+from urllib.parse import urlencode
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse, reverse_lazy
@@ -7,7 +10,7 @@ from apps.qualification_aim.tests.factories import QualificationAimFactory
 from apps.tutor.models import Tutor
 from apps.tutor.tests.factories import TutorFactory, TutorModuleFactory
 
-from .. import models
+from .. import models, services
 from . import factories
 
 
@@ -512,3 +515,33 @@ class TestEmergencyContact(LoggedInViewTestMixin, TestCase):
         self.client.post(reverse('student:emergency-contact:delete', kwargs={'pk': self.emergency_contact.pk}))
         with self.assertRaises(models.EmergencyContact.DoesNotExist):
             self.emergency_contact.refresh_from_db()
+
+
+class TestMerge(LoggedInViewTestMixin, TestCase):
+    superuser = True
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.student_a, cls.student_b = factories.StudentFactory.create_batch(size=2)
+        querystring = urlencode({'student': [cls.student_a.pk, cls.student_b.pk]}, doseq=True)
+        cls.url = reverse('student:merge') + '?' + querystring
+
+    def test_merge(self):
+        response = self.client.post(self.url, data={'records': [self.student_a.pk, self.student_b.pk]})
+        self.assertEqual(response.status_code, 302)
+        with self.assertRaises(models.Student.DoesNotExist):
+            self.student_a.refresh_from_db()
+            self.student_b.refresh_from_db()
+
+    def test_requires_two(self):
+        response = self.client.post(self.url, data={'records': [self.student_a.pk]})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'].errors)
+
+    @patch('apps.student.services.merge.merge_multiple_students')
+    def test_merge_errors_displayed(self, patched_method):
+        patched_method.side_effect = services.merge.CannotMergeError('test message')
+        response = self.client.post(self.url, data={'records': [self.student_a.pk, self.student_b.pk]})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'test message')
