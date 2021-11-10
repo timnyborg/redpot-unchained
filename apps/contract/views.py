@@ -203,6 +203,8 @@ class Search(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableMixin, F
 
 
 class Approve(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableView):
+    """Page that lets managers to view outstanding contracts that requires approval"""
+
     permission_required = 'contract.approve'
     template_name = 'contract/approve.html'
     table_class = datatables.OutstandingTable

@@ -97,3 +97,29 @@ def mail_pending_contracts_signature() -> int:
         )
 
     return outstanding
+
+
+def mail_pending_contracts_approval() -> int:
+    """Email reminder to approve pending contracts"""
+
+    outstanding_contracts = User.objects.filter(approver_contract__status=Statuses.AWAITING_APPROVAL)
+
+    for contract in outstanding_contracts.distinct():
+        context = {
+            'contract': outstanding_contracts.filter(approver_contract__approver=contract.username).count(),
+            'first_name': contract.first_name,
+            'url': settings.CANONICAL_URL + reverse('contract:approve'),
+        }
+        message = render_to_string('contract/email/pending_tutor_contracts_approval.html', context=context)
+
+        recipients = [settings.SUPPORT_EMAIL] if settings.DEBUG else contract.approver.username
+
+        mail.send_mail(
+            recipient_list=recipients,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            subject='Tutor contracts awaiting your approval',
+            message=html.strip_tags(message),
+            html_message=message,
+        )
+
+    return outstanding_contracts
