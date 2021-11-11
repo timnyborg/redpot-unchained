@@ -112,7 +112,7 @@ def mail_pending_contracts_approval() -> int:
         }
         message = render_to_string('contract/email/pending_tutor_contracts_approval.html', context=context)
 
-        recipients = [settings.SUPPORT_EMAIL] if settings.DEBUG else contract.approver.username
+        recipients = [settings.SUPPORT_EMAIL] if settings.DEBUG else [contract.email]
 
         mail.send_mail(
             recipient_list=recipients,
