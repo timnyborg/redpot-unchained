@@ -350,18 +350,6 @@ class ProposalStatus(models.Model):
         db_table = 'proposal_status'
 
 
-class Room(models.Model):
-    id = models.CharField(primary_key=True, max_length=12)
-    size = models.IntegerField()
-    bookable = models.BooleanField()
-    building = models.CharField(max_length=12, blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'room'
-
-
 class TermsAndConditions(models.Model):
     description = models.CharField(max_length=64)
     url = models.CharField(max_length=256)

@@ -18,11 +18,12 @@ from apps.discount.models import Discount
 from apps.enrolment.models import Enrolment
 from apps.invoice.models import ModulePaymentPlan
 from apps.tutor.utils import expense_forms
+from apps.tutor_payment.models import Statuses as PaymentStatuses
 from apps.tutor_payment.models import TutorPayment
 
 from . import exports, forms, services
 from .datatables import BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
-from .models import Module, ModuleStatus, TutorFeeStatus
+from .models import Module, ModuleStatus
 
 
 class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.CreateView):
@@ -346,7 +347,7 @@ class Cancel(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.Up
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         future_fees = TutorPayment.objects.filter(
-            tutor_module__module=self.object, status_id__in=[TutorFeeStatus.APPROVED, TutorFeeStatus.RAISED]
+            tutor_module__module=self.object, status_id__in=[PaymentStatuses.APPROVED, PaymentStatuses.RAISED]
         ).select_related('status', 'tutor_module__tutor__student')
 
         return {'future_fees': future_fees, **context}

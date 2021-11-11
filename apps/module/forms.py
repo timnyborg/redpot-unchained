@@ -47,8 +47,7 @@ DATE_FIELDS = [
 ]
 
 
-class EditForm(forms.ModelForm):  # noqa: DJ06
-    # todo: replace exclude
+class EditForm(forms.ModelForm):
     class Meta:
         model = models.Module
         fields = [
@@ -75,6 +74,8 @@ class EditForm(forms.ModelForm):  # noqa: DJ06
             'publish_date',
             'unpublish_date',
             'location',
+            'room',
+            'room_setup',
             'max_size',
             'single_places',
             'twin_places',
@@ -142,11 +143,13 @@ class EditForm(forms.ModelForm):  # noqa: DJ06
             **{field: widgets.DatePickerInput() for field in DATE_FIELDS},
             'start_time': widgets.TimePickerInput(),
             'end_time': widgets.TimePickerInput(),
+            'location': Select2Widget(),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['subjects'].label_from_instance = lambda obj: f'{obj.name} ({obj.area})'
+        self.fields['room'].label_from_instance = lambda obj: obj.long_name
 
 
 class LookupForm(forms.Form):
