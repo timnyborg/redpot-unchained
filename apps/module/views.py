@@ -309,23 +309,16 @@ class EditHESASubjects(LoginRequiredMixin, PageTitleMixin, generic.detail.Single
         return self.object.get_absolute_url()
 
 
-class Uncancel(LoginRequiredMixin, PageTitleMixin, generic.UpdateView):
+class Uncancel(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
     model = Module
     form_class = forms.UncancelForm
     template_name = 'module/uncancel.html'
     subtitle = 'Uncancel'
+    success_message = 'Course uncancelled'
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> http.HttpResponse:
         form.instance.is_cancelled = False
-        form.save()
         return super().form_valid(form)
-
-    def dispatch(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_success_url(self) -> str:
-        return self.object.get_absolute_url()
 
 
 class Cancel(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
@@ -333,18 +326,19 @@ class Cancel(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.Up
     form_class = forms.CancelForm
     template_name = 'module/cancel.html'
     subtitle = 'Cancel'
+    success_message = 'Course cancelled'
 
-    def post(self, request, **kwargs):
-        module = get_object_or_404(Module, pk=kwargs['pk'])
+    def form_valid(self, form) -> http.HttpResponse:
+        module = self.object
+        # todo: turn cancel & uncancel into services or model methods
         module.status = ModuleStatus.objects.get(id=33)
         module.is_cancelled = True
         module.auto_feedback = False
         module.auto_reminder = False
-        module.save()
-        messages.success(request, 'Course cancelled')
-        return redirect(module.get_absolute_url())
 
-    def get_context_data(self, **kwargs):
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         future_fees = TutorPayment.objects.filter(
             tutor_module__module=self.object, status_id__in=[PaymentStatuses.APPROVED, PaymentStatuses.RAISED]
