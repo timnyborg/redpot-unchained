@@ -37,5 +37,4 @@ class TestMailPendingContractsApproval(TestCase):
 
         # Verify that the subject of the first message is correct.
         self.assertIn('Tutor contracts awaiting your approval', mail.outbox[0].subject)
-        self.assertEqual(1, contracts_sent.count())
-        self.assertEqual(2, contracts_sent[0].approver_contracts.first().status)
+        self.assertEqual(1, contracts_sent)
