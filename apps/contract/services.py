@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Counter
 
 from django.conf import settings
 from django.core import mail
+from django.db.models import Count
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import html
@@ -104,7 +104,7 @@ def mail_pending_contracts_approval() -> int:
     """Email reminder to approve pending contracts"""
 
     approvers = User.objects.filter(approver_contract__status=Statuses.AWAITING_APPROVAL).annotate(
-        contract_count=Counter('approver_contract')
+        contract_count=Count('approver_contract__approver')
     )
 
     for approver in approvers:
