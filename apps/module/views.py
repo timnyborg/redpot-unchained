@@ -1,3 +1,5 @@
+import pathlib
+
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
@@ -6,12 +8,14 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
+from django.db.models import FilteredRelation, Q, QuerySet
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.text import slugify
 from django.views import generic
 
 from apps.core.utils.dates import academic_year
+from apps.core.utils.mail_merge import MailMergeView
 from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitleMixin
 from apps.discount.models import Discount
@@ -375,3 +379,73 @@ class RemovePaymentPlan(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin,
     def get_success_url(self) -> str:
         messages.success(self.request, f'Payment plan removed: {self.object.plan_type}')
         return self.object.module.get_absolute_url() + '#payment-plans'
+
+
+class ClassRegister(LoginRequiredMixin, MailMergeView):
+    def get(self, request, *args, **kwargs) -> http.HttpResponse:
+        self.module: Module = get_object_or_404(Module, pk=self.kwargs['pk'])
+        return super().get(request, *args, **kwargs)
+
+    def get_filename(self, queryset) -> str:
+        return f'{self.module.code}_register.docx'
+
+    def get_template_file(self, queryset) -> str:
+        template = {
+            17: 'online_classes.docx',
+            32: 'weekly_classes.docx',
+            30: 'award_courses.docx',
+        }.get(self.module.portfolio.id, 'weekly_classes.docx')
+        return str(pathlib.Path(__file__).parent / 'templates/class_registers' / template)
+
+    def get_queryset(self) -> QuerySet:
+        return (
+            self.module.enrolments.filter(status__takes_place=True)
+            .annotate(
+                default_email=FilteredRelation('qa__student__email', condition=Q(qa__student__email__is_default=True)),
+            )
+            .select_related('default_email', 'qa__programme')
+            .order_by('qa__student__surname', 'qa__student__firstname')
+        )
+
+    def get_merge_data(self) -> dict:
+        enrolments = self.get_queryset()
+
+        tutor_module = self.module.tutor_modules.filter(is_teaching=True).first()
+        tutor_name = str(tutor_module.tutor.student) if tutor_module else ''
+
+        enrolment_rows = [
+            {
+                'index': str(index),
+                'student': f'{e.qa.student.surname} {e.qa.student.first_or_nickname}',
+                'firstname': e.qa.student.firstname,
+                'surname': e.qa.student.surname,
+                'email': e.default_email.email if hasattr(e, 'default_email') else '',
+                'for_credit': 'Yes' if e.for_credit else 'No',
+                'cert_he': 'Yes' if e.qa.programme.is_certhe else 'No',
+            }
+            for index, e in enumerate(enrolments, 1)
+        ]
+
+        if len(enrolments) < 25:
+            enrolment_rows += [
+                # Add a bunch of empty rows to 25
+                {'index': str(index + 1)}
+                for index in range(len(enrolments), 25)
+            ]
+
+        if self.module.start_time and self.module.end_time:
+            meeting_time = f"{self.module.start_time:%H:%M} - {self.module.end_time:%H:%M}"
+        else:
+            meeting_time = self.module.meeting_time
+
+        return {
+            'module_code': self.module.code,
+            'module_title': self.module.title,
+            'day': self.module.start_date.strftime('%A') if self.module.start_date else '',
+            'meeting_time': meeting_time,
+            'start_date': self.module.start_date.strftime('%d %b %Y') if self.module.start_date else '',
+            'end_date': self.module.end_date.strftime('%d %b %Y') if self.module.end_date else '',
+            'address': str(self.module.location),
+            'tutor_name': tutor_name,
+            'row': enrolment_rows,
+        }

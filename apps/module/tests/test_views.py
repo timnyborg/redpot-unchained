@@ -345,3 +345,16 @@ class TestPaymentPlanViews(LoggedInMixin, TestCase):
         response = self.client.post(reverse('module:remove-payment-plan', args=[self.module.id, self.plan_type.id]))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.module.payment_plans.count(), 0)
+
+
+class TestClassRegister(LoggedInViewTestMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.enrolment = EnrolmentFactory(module__portfolio_id=32)
+
+    def test_get(self):
+        """Check the view renders at all - we can't inspect the docx file's contents"""
+        response = self.client.get(path=reverse('module:class-register', args=[self.enrolment.module.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('word', response['content-type'])
