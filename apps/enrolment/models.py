@@ -108,6 +108,11 @@ class Enrolment(SignatureModel):
         ledger_balance = self.ledger_set.debts().total()
         return ledger_balance or Decimal(0)
 
+    # todo: implement as a column (take logic out of status, removing values 11 & 90)
+    @property
+    def for_credit(self) -> bool:
+        return self.status_id in (10, 11)
+
 
 class EnrolmentResult(SignatureModel):
     """

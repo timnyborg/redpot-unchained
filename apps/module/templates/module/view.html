@@ -305,7 +305,7 @@
                 <li><a class="dropdown-item" href="catering/{{ module.id }}"><span class="fas fa-fw fa-utensils"></span> Catering</a></li>
                 <li><a class="dropdown-item" href="accommodation/{{ module.id }}"><span class="fas fa-fw fa-hotel"></span> Accommodation</a></li>
                 <li><a class="dropdown-item" href="module', 'refund_request/{{ module.id }}"><span class="fas fa-fw fa-pound-sign"></span> Refund request (.docx)</a></li>
-                <li><a class="dropdown-item" href="class_register/{{ module.id }}"><span class="fas fa-fw fa-file-word"></span> Class register (.docx)</a></li>
+                <li><a class="dropdown-item" href="{% url 'module:class-register' module.id %}"><span class="fas fa-fw fa-file-word"></span> Class register (.docx)</a></li>
                 {# todo: better portfolio logic, relying on tags #}
                 {% if module.portfolio  in '32, 17' %}
                     <li><a class="dropdown-item" href="syllabus/{{ module.id }}"><span class="fas fa-fw fa-th-list"></span> Weekly class syllabus</a></li>

@@ -28,6 +28,7 @@ urlpatterns = [
     # reports
     path('student-list/<int:pk>', views.StudentList.as_view(), name='student-list'),
     path('moodle-list/<int:pk>', views.MoodleList.as_view(), name='moodle-list'),
+    path('class-register/<int:pk>', views.ClassRegister.as_view(), name='class-register'),
     # apis
     path('update-api/<int:pk>', api.ModuleUpdateAPI.as_view(), name='update-api'),
 ]
