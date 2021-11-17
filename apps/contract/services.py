@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.conf import settings
 from django.core import mail
+from django.db.models import Count
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import html
@@ -97,3 +98,31 @@ def mail_pending_contracts_signature() -> int:
         )
 
     return outstanding
+
+
+def mail_pending_contracts_approval() -> int:
+    """Email reminder to approve pending contracts"""
+
+    approvers = User.objects.filter(approver_contract__status=Statuses.AWAITING_APPROVAL).annotate(
+        contract_count=Count('approver_contract__approver')
+    )
+
+    for approver in approvers:
+        context = {
+            'contract': approver.contract_count,
+            'first_name': approver.first_name,
+            'url': settings.CANONICAL_URL + reverse('contract:approve'),
+        }
+        message = render_to_string('contract/email/pending_tutor_contracts_approval.html', context=context)
+
+        recipients = [settings.SUPPORT_EMAIL] if settings.DEBUG else [approver.email]
+
+        mail.send_mail(
+            recipient_list=recipients,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            subject='Tutor contracts awaiting your approval',
+            message=html.strip_tags(message),
+            html_message=message,
+        )
+
+    return len(approvers)
