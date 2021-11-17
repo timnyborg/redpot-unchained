@@ -30,11 +30,14 @@ class Statuses(models.IntegerChoices):
     FULL = 35
 
 
-class TutorFeeStatus(models.IntegerChoices):
-    RAISED = 1
-    APPROVED = 2
-    TRANSFERRED = 3
-    FAILED = 4
+class RoomSetups(models.TextChoices):
+    SEMINR = 'SEMINR', 'Seminar'
+    ECTR = 'ECTR', 'Computer teaching'
+    BOARD = 'BOARD', 'Boardroom'
+    CLASS = 'CLASS', 'Classroom'
+    LECT = 'LECT', 'Lecture'
+    UCHRS = 'UCHRS', 'U of chairs'
+    UTBLS = 'UTBLS', 'U of tables'
 
 
 class ModuleManager(models.Manager):
@@ -113,6 +116,8 @@ class Module(SignatureModel):
     single_places = models.IntegerField(blank=True, null=True, verbose_name='Single rooms')
     twin_places = models.IntegerField(blank=True, null=True, verbose_name='Twin rooms')
     location = models.ForeignKey('Location', models.DO_NOTHING, db_column='location', blank=True, null=True)
+    room = models.ForeignKey('Room', models.PROTECT, db_column='room', blank=True, null=True)
+    room_setup = models.CharField(max_length=12, choices=RoomSetups.choices, blank=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     meeting_time = models.CharField(
         max_length=32, blank=True, null=True, help_text='Optional. It is better to provide start and end times'
@@ -185,8 +190,6 @@ class Module(SignatureModel):
     further_details = models.TextField(blank=True, null=True)
     is_repeat = models.BooleanField(default=False)
     reminder_sent_on = models.DateTimeField(blank=True, null=True)
-    room = models.CharField(max_length=12, blank=True, null=True)
-    room_setup = models.CharField(max_length=12, blank=True, null=True)
 
     mailing_list = models.CharField(max_length=25, blank=True, null=True)
     notification = models.CharField(
@@ -531,22 +534,40 @@ class ModuleFormat(models.Model):
 
 
 class Location(SignatureModel):
-    address = models.CharField(max_length=128)
-    city = models.CharField(max_length=64, blank=True, null=True)
-    postcode = models.CharField(max_length=50, blank=True, null=True)
-    longitude = models.FloatField(blank=True, null=True)
-    latitude = models.FloatField(blank=True, null=True)
-    building = models.CharField(max_length=64, blank=True, null=True)
+    building = models.CharField(max_length=64)
+    address = models.CharField(max_length=128, blank=True)
+    city = models.CharField(max_length=64, blank=True)
+    postcode = models.CharField(max_length=50, blank=True)
+    longitude = models.FloatField(blank=True)
+    latitude = models.FloatField(blank=True)
 
     class Meta:
         db_table = 'location'
+        ordering = ('building', 'city')
 
     def __str__(self) -> str:
-        if self.city and self.building:
+        if self.city:
             return f'{self.building}, {self.city}'
-        elif self.building:
-            return self.building
-        return 'Invalid: no city or building'
+        return str(self.building)
+
+
+class Room(models.Model):
+    id = models.CharField(primary_key=True, max_length=12)  # CABS ids.  Will be a problem if numbers ever clash
+    size = models.IntegerField()
+    bookable = models.BooleanField(default=True)
+    building = models.CharField(max_length=12)  # todo: this is too low if we ever add venues
+    notes = models.TextField(blank=True)
+
+    class Meta:
+        db_table = 'room'
+        ordering = ['building', 'id']
+
+    def __str__(self) -> str:
+        return str(self.id)
+
+    @property
+    def long_name(self) -> str:
+        return f'{self.id}, {self.building} ({self.size})'
 
 
 class Waitlist(models.Model):
