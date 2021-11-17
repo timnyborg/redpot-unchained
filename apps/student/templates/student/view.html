@@ -59,6 +59,9 @@
                 <dt class="col-sm-4">Ethnicity</dt><dd class="col-sm-8 mb-0">{{ student.ethnicity.name }}</dd>
                 <dt class="col-sm-4">Home/EU?</dt><dd class="col-sm-8 mb-0">{{ student.is_eu | default:'Unknown'  }}</dd>
                 <dt class="col-sm-4">Occupation</dt><dd class="col-sm-8 mb-0">{{ student.occupation | default:'–'  }}</dd>
+                <dt class="col-sm-4">Sexual Orientation</dt><dd class="col-sm-8 mb-0">{{ student.sexual_orientation.name | default:'–'  }}</dd>
+                <dt class="col-sm-4">Parental Education</dt><dd class="col-sm-8 mb-0">{{ student.parental_education.name | default:'–'  }}</dd>
+                <dt class="col-sm-4">Gender Identity</dt><dd class="col-sm-8 mb-0">{{ student.gender_identity.name | default:'–'  }}</dd>
                 <dt class="col-sm-4">Note</dt><dd class="col-sm-8 mb-0">{{ student.note | default:'–' }}</dd>
             </dl>
             {% if last_merger %}

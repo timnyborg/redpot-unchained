@@ -149,7 +149,16 @@ class Lookup(LoginRequiredMixin, generic.View):
 
 
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
-    queryset = Student.objects.select_related('nationality', 'domicile', 'diet', 'disability', 'ethnicity')
+    queryset = Student.objects.select_related(
+        'nationality',
+        'domicile',
+        'diet',
+        'disability',
+        'ethnicity',
+        'sexual_orientation',
+        'parental_education',
+        'gender_identity',
+    )
     template_name = 'student/view.html'
 
     def get_context_data(self, **kwargs):
