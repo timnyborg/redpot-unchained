@@ -15,7 +15,7 @@ class FeedbackQuerySet(models.QuerySet):
 
 
 class Feedback(models.Model):
-    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', null=False, default=37130)
+    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', null=False)
     rate_tutor = models.IntegerField(blank=True, null=True)
     rate_content = models.IntegerField(blank=True, null=True)
     rate_admin = models.IntegerField(blank=True, null=True)
@@ -38,7 +38,7 @@ class Feedback(models.Model):
 
 
 class FeedbackAdmin(models.Model):
-    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', null=False, default=37130)
+    module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module', null=False)
     updated = models.DateTimeField(blank=True, null=True)
     admin_comments = models.TextField(blank=True, null=True)
     person = models.TextField(blank=True, null=True)

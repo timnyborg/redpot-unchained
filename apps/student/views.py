@@ -155,9 +155,6 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         'diet',
         'disability',
         'ethnicity',
-        'sexual_orientation',
-        'parental_education',
-        'gender_identity',
     )
     template_name = 'student/view.html'
 

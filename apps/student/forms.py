@@ -85,8 +85,6 @@ class EditForm(SITSLockingFormMixin, forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.user = user
-
         # dynamically remove a field
         if not user.has_perm('view_restricted_fields'):
             for f in ['sexual_orientation', 'parental_education', 'gender_identity']:
