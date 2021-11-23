@@ -82,6 +82,16 @@ class EditForm(SITSLockingFormMixin, forms.ModelForm):
             'note': forms.Textarea(),
         }
 
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.user = user
+
+        # dynamically remove a field
+        if not user.has_perm('view_restricted_fields'):
+            for f in ['sexual_orientation', 'parental_education', 'gender_identity']:
+                del self.fields[f]
+
     def clean_birthdate(self) -> Optional[date]:
         """Prevent ages < 12 (arbitrary) to avoid common data entry errors (current date, 2067 instead of 1967, etc."""
         birthdate = self.cleaned_data['birthdate']

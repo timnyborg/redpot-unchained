@@ -116,7 +116,10 @@ class Student(SITSLockingModelMixin, SignatureModel):
     class Meta:
         db_table = 'student'
         verbose_name = 'Person'
-        permissions = [('merge_student', 'Merge student records')]
+        permissions = [
+            ('merge_student', 'Merge student records'),
+            ('view_restricted_fields', 'Can View and Edit restricted fields'),
+        ]
 
     def __str__(self):
         return f'{self.first_or_nickname} {self.surname}'

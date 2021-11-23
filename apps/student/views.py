@@ -247,6 +247,10 @@ class Edit(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessag
     form_class = forms.EditForm
     success_message = 'Record updated'
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        return {'user': self.request.user, **kwargs}
+
 
 class Delete(LoginRequiredMixin, PageTitleMixin, DeletionFailedMessageMixin, generic.DeleteView):
     model = Student
