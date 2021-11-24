@@ -246,7 +246,7 @@ class Edit(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessag
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        return {'user': self.request.user, **kwargs}
+        return {'edit_restricted_fields': self.request.user.has_perm('view_restricted_fields'), **kwargs}
 
 
 class Delete(LoginRequiredMixin, PageTitleMixin, DeletionFailedMessageMixin, generic.DeleteView):

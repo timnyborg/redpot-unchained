@@ -82,11 +82,11 @@ class EditForm(SITSLockingFormMixin, forms.ModelForm):
             'note': forms.Textarea(),
         }
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, edit_restricted_fields: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # dynamically remove a field
-        if not user.has_perm('view_restricted_fields'):
+        if not edit_restricted_fields:
             for f in ['sexual_orientation', 'parental_education', 'gender_identity']:
                 del self.fields[f]
 
