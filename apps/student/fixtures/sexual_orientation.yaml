@@ -1,0 +1,28 @@
+- model: student.sexualorientation
+  pk: 1
+  fields:
+    name: Bisexual
+- model: student.sexualorientation
+  pk: 2
+  fields:
+    name: Gayman
+- model: student.sexualorientation
+  pk: 3
+  fields:
+    name: "Gay woman/lesbian"
+- model: student.sexualorientation
+  pk: 4
+  fields:
+    name: Heterosexual
+- model: student.sexualorientation
+  pk: 5
+  fields:
+    name: Other
+- model: student.sexualorientation
+  pk: 98
+  fields:
+    name: "Information refused\r\n"
+- model: student.sexualorientation
+  pk: 99
+  fields:
+    name: "Not available\r\n"

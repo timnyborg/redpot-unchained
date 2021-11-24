@@ -14,6 +14,9 @@ NOT_KNOWN_DOMICILE = 181
 NOT_KNOWN_NATIONALITY = 181
 NOT_KNOWN_ETHNICITY = 90
 NOT_KNOWN_RELIGION = 99
+NOT_AVAILABLE_SEXUAL_ORIENTATION = 99
+NOT_AVAILABLE_PARENTAL_EDUCATION = 8
+NOT_AVAILABLE_GENDER_IDENTITY = 99
 
 
 class Student(SITSLockingModelMixin, SignatureModel):
@@ -74,6 +77,24 @@ class Student(SITSLockingModelMixin, SignatureModel):
     disability = models.ForeignKey('Disability', models.DO_NOTHING, db_column='disability', null=True, blank=True)
     disability_detail = models.CharField(max_length=2048, blank=True, null=True)
     disability_action = models.CharField(max_length=256, blank=True, null=True)
+    sexual_orientation = models.ForeignKey(
+        'SexualOrientation',
+        models.DO_NOTHING,
+        db_column='sexual_orientation',
+        default=NOT_AVAILABLE_SEXUAL_ORIENTATION,
+    )
+    parental_education = models.ForeignKey(
+        'ParentalEducation',
+        models.DO_NOTHING,
+        db_column='parental_education',
+        default=NOT_AVAILABLE_PARENTAL_EDUCATION,
+    )
+    gender_identity = models.ForeignKey(
+        'GenderIdentity',
+        models.DO_NOTHING,
+        db_column='gender_identity',
+        default=NOT_AVAILABLE_GENDER_IDENTITY,
+    )
     dars_optout = models.BooleanField(default=True)
     termtime_accommodation = models.IntegerField(blank=True, null=True)
     sits_id = models.IntegerField(blank=True, null=True, verbose_name='SITS ID')
@@ -95,7 +116,10 @@ class Student(SITSLockingModelMixin, SignatureModel):
     class Meta:
         db_table = 'student'
         verbose_name = 'Person'
-        permissions = [('merge_student', 'Merge student records')]
+        permissions = [
+            ('merge_student', 'Merge student records'),
+            ('view_restricted_fields', 'Can View and Edit restricted fields'),
+        ]
 
     def __str__(self):
         return f'{self.first_or_nickname} {self.surname}'
@@ -546,3 +570,36 @@ class Suspension(SignatureModel):
 
     class Meta:
         db_table = 'suspension'
+
+
+class SexualOrientation(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=64)
+
+    class Meta:
+        db_table = 'sexual_orientation'
+
+    def __str__(self) -> str:
+        return str(self.name)
+
+
+class ParentalEducation(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=64)
+
+    class Meta:
+        db_table = 'parental_education'
+
+    def __str__(self) -> str:
+        return str(self.name)
+
+
+class GenderIdentity(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=64)
+
+    class Meta:
+        db_table = 'gender_identity'
+
+    def __str__(self) -> str:
+        return str(self.name)

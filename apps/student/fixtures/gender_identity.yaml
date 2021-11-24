@@ -1,0 +1,16 @@
+- model: student.genderidentity
+  pk: 1
+  fields:
+    name: 'Yes'
+- model: student.genderidentity
+  pk: 2
+  fields:
+    name: 'No'
+- model: student.genderidentity
+  pk: 98
+  fields:
+    name: Information refused
+- model: student.genderidentity
+  pk: 99
+  fields:
+    name: Not available
