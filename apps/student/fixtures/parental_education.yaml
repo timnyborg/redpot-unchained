@@ -1,0 +1,20 @@
+- model: student.parentaleducation
+  pk: 1
+  fields:
+    name: 'Yes'
+- model: student.parentaleducation
+  pk: 2
+  fields:
+    name: 'No'
+- model: student.parentaleducation
+  pk: 7
+  fields:
+    name: No response given
+- model: student.parentaleducation
+  pk: 8
+  fields:
+    name: Don't know
+- model: student.parentaleducation
+  pk: 9
+  fields:
+    name: Information refused

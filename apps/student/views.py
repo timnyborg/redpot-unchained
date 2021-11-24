@@ -149,7 +149,13 @@ class Lookup(LoginRequiredMixin, generic.View):
 
 
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
-    queryset = Student.objects.select_related('nationality', 'domicile', 'diet', 'disability', 'ethnicity')
+    queryset = Student.objects.select_related(
+        'nationality',
+        'domicile',
+        'diet',
+        'disability',
+        'ethnicity',
+    )
     template_name = 'student/view.html'
 
     def get_context_data(self, **kwargs):
@@ -237,6 +243,10 @@ class Edit(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessag
     template_name = 'core/form.html'
     form_class = forms.EditForm
     success_message = 'Record updated'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        return {'edit_restricted_fields': self.request.user.has_perm('view_restricted_fields'), **kwargs}
 
 
 class Delete(LoginRequiredMixin, PageTitleMixin, DeletionFailedMessageMixin, generic.DeleteView):

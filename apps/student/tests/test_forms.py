@@ -76,3 +76,11 @@ class TestEditPersonForm(test.SimpleTestCase):
             form.clean_birthdate()
         except ValidationError:
             self.fail('Valid birthdate failed validation')
+
+    def test_display_restricted_fields(self):
+        form = forms.EditForm(edit_restricted_fields=True)
+        self.assertTrue('gender_identity' in form.fields)
+
+    def test_hide_restricted_fields(self):
+        form = forms.EditForm(edit_restricted_fields=False)
+        self.assertFalse('gender_identity' in form.fields)
