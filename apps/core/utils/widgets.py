@@ -8,7 +8,7 @@ Contains:
 from datetime import datetime
 from typing import Type
 
-import bootstrap_datepicker_plus
+import bootstrap_datepicker_plus.widgets as bootstrap_widgets
 
 from django.conf import settings
 from django.db import models
@@ -26,16 +26,16 @@ class PickerOptionsMixin:
     }
 
 
-class DateTimePickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.DateTimePickerInput):
+class DateTimePickerInput(PickerOptionsMixin, bootstrap_widgets.DateTimePickerInput):
     format: str = settings.DATETIME_INPUT_FORMATS[0]
     options = {'useCurrent': 'day'}  # Defaults to 00:00 rather than the current time
 
 
-class DatePickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.DatePickerInput):
+class DatePickerInput(PickerOptionsMixin, bootstrap_widgets.DatePickerInput):
     format: str = settings.DATE_INPUT_FORMATS[0]
 
 
-class MonthPickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.DatePickerInput):
+class MonthPickerInput(PickerOptionsMixin, bootstrap_widgets.DatePickerInput):
     format: str = '%B %Y'
 
     def value_from_datadict(self, data, files, name):
@@ -50,7 +50,7 @@ class MonthPickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.DatePickerI
             return value
 
 
-class TimePickerInput(PickerOptionsMixin, bootstrap_datepicker_plus.TimePickerInput):
+class TimePickerInput(PickerOptionsMixin, bootstrap_widgets.TimePickerInput):
     template_name = 'widgets/timepicker_input.html'
 
 

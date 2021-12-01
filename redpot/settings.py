@@ -285,9 +285,9 @@ DATETIME_INPUT_FORMATS = [
 # Email settings
 EMAIL_HOST = env('EMAIL_HOST', default=None)
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='redpot-support@conted.ox.ac.uk', validate=validate.Email())
-SUPPORT_EMAIL = env(
-    'SUPPORT_EMAIL', default='redpot-support@conted.ox.ac.uk', validate=validate.Email()
-)  # custom setting
+# custom email settings
+SUPPORT_EMAIL = env('SUPPORT_EMAIL', default='redpot-support@conted.ox.ac.uk', validate=validate.Email())
+PERSONNEL_EMAIL = env('PERSONNEL_EMAIL', 'personnel@conted.ox.ac.uk', validate=validate.Email())
 
 # custom url settings
 ANALYTICS_URL = env('ANALYTICS_URL', default=None, validate=validate.URL())

@@ -1,0 +1,25 @@
+{% load static %}
+<html>
+<div style="font-family:Calibri;">
+    <p>Dear {{ firstname }},</p>
+    <p>Your banking information was updated in our payroll records:</p>
+    <ul>
+        <li>Account number ending in *****{{ account|slice:'-3:' }}
+        <li>Sortcode ending in **-**-{{ sortcode|slice:'-2:' }}
+    </ul>
+    <p>
+        If you have not requested this change, it is important that you let us know as soon as possible.
+        If the change(s) above are correct please ignore this email.
+    </p>
+    <p>Best regards,</p>
+    <p>
+        <img src="static/images/signature_logo.jpg" align="left" hspace="20">
+        <b>Central Services</b><br/>
+        University of Oxford<br/>
+        Department for Continuing Education<br/>
+        Rewley House, Wellington Square <br/>
+        Oxford, OX1 2JA<br/>
+        Tel: +44 (0)1865 280152 / 280768<br/>
+    </p>
+</div>
+</html>

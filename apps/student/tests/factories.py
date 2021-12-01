@@ -32,6 +32,7 @@ class EmailFactory(factory.django.DjangoModelFactory):
 
     student = factory.SubFactory(StudentFactory)
     email = factory.Faker('email')
+    is_default = True
 
 
 class MoodleFactory(factory.django.DjangoModelFactory):

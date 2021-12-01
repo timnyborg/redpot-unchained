@@ -17,6 +17,7 @@ from django.views import generic
 from apps.core.utils import strings
 from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.enrolment.models import Enrolment
+from apps.tutor import services as tutor_services
 from apps.tutor.models import Tutor
 
 from . import datatables, forms, pdfs, services
@@ -244,9 +245,16 @@ class Edit(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessag
     form_class = forms.EditForm
     success_message = 'Record updated'
 
-    def get_form_kwargs(self):
+    def get_form_kwargs(self) -> dict:
         kwargs = super().get_form_kwargs()
         return {'edit_restricted_fields': self.request.user.has_perm('view_restricted_fields'), **kwargs}
+
+    def form_valid(self, form) -> http.HttpResponse:
+        if hasattr(form.instance, 'tutor'):
+            tutor_services.email_personnel_change(
+                model=self.object, initial_values=form.initial, changed_data=form.changed_data, user=self.request.user
+            )
+        return super().form_valid(form)
 
 
 class Delete(LoginRequiredMixin, PageTitleMixin, DeletionFailedMessageMixin, generic.DeleteView):
@@ -358,6 +366,13 @@ class EditAddress(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, Succes
     template_name = 'student/edit_address.html'
     form_class = forms.AddressForm
     success_message = "Address updated"
+
+    def form_valid(self, form) -> http.HttpResponse:
+        if hasattr(form.instance.student, 'tutor') and form.instance.is_default:
+            tutor_services.email_personnel_change(
+                model=self.object, initial_values=form.initial, changed_data=form.changed_data, user=self.request.user
+            )
+        return super().form_valid(form)
 
 
 class DeleteAddress(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
