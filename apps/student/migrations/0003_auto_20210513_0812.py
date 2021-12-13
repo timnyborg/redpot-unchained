@@ -97,14 +97,14 @@ class Migration(migrations.Migration):
             model_name='student',
             name='domicile',
             field=models.ForeignKey(
-                db_column='domicile', on_delete=django.db.models.deletion.DO_NOTHING, to='student.Domicile', default=181
+                db_column='domicile', on_delete=django.db.models.deletion.DO_NOTHING, to='student.Domicile', default=181, db_index=False  # to: revert after MSSQL 1.1.1 fixed
             ),
         ),
         migrations.AlterField(
             model_name='student',
             name='nationality',
             field=models.ForeignKey(
-                db_column='nationality', on_delete=django.db.models.deletion.DO_NOTHING, to='student.Nationality', default=181
+                db_column='nationality', on_delete=django.db.models.deletion.DO_NOTHING, to='student.Nationality', default=181, db_index=False
             ),
         ),
     ]
