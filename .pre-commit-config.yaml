@@ -3,8 +3,9 @@ repos:
     rev: v4.0.1
     hooks:
       - id: check-json
+      - id: check-toml
       - id: check-yaml
-        exclude: mkdocs.yml  # doesn't like !! tags
+        args: [--unsafe]  # handle !! constructors in mkdocs.yml
       - id: end-of-file-fixer
         exclude_types: [svg]
       - id: requirements-txt-fixer
@@ -12,12 +13,12 @@ repos:
         exclude_types: [svg]
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.9.3
+    rev: 5.10.1
     hooks:
       - id: isort
 
   - repo: https://github.com/psf/black
-    rev: 21.9b0
+    rev: 21.12b0
     hooks:
       - id: black
 
@@ -34,7 +35,7 @@ repos:
           - flake8-print==4.0.0
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: 'v8.0.0-1'
+    rev: v8.4.1
     hooks:
      - id: eslint
        args: [--fix]
