@@ -16,6 +16,7 @@ urlpatterns = [
     path('view/<int:pk>', views.View.as_view(), name='view'),
     path('cancel/<int:pk>', views.Cancel.as_view(), name='cancel'),
     path('uncancel/<int:pk>', views.Uncancel.as_view(), name='uncancel'),
+    path('email/<int:pk>', views.EmailCourseStudentsView.as_view(), name='email-course-students'),
     # child record views
     path('programme/add/<int:module_id>', views.AddProgramme.as_view(), name='add-programme'),
     path('payment-plan/add/<int:module_id>', views.AddPaymentPlan.as_view(), name='add-payment-plan'),

@@ -449,3 +449,15 @@ class ClassRegister(LoginRequiredMixin, MailMergeView):
             'tutor_name': tutor_name,
             'row': enrolment_rows,
         }
+
+class EmailCourseStudentsView(LoginRequiredMixin, PageTitleMixin, generic.FormView):
+    template_name = 'module/course_students_email.html'
+    title = 'Email Students'
+    form_class = forms.EmailCourseStudentsForm
+    success_url = '/thanks/'
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        # form.send_email()
+        return super().form_valid(form)

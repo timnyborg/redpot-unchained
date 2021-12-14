@@ -14,6 +14,8 @@ from apps.hesa.models import ModuleHECoSSubject
 from apps.invoice.models import ModulePaymentPlan
 from apps.programme.models import ProgrammeModule
 
+from ckeditor.widgets import CKEditorWidget
+
 from . import models
 
 HTML_FIELDS = [
@@ -305,3 +307,9 @@ class ModulePaymentPlanForm(forms.ModelForm):
         model = ModulePaymentPlan
         fields = ['module', 'plan_type']
         error_messages = {NON_FIELD_ERRORS: {'unique_together': 'This plan is already attached to the module'}}
+
+
+class EmailCourseStudentsForm(forms.Form):
+    submit_label = 'Send Emails'
+    subject = forms.CharField(label='Subject', max_length=150, help_text='150 characters max.')
+    email_body = forms.CharField(label='Email Content', widget=CKEditorWidget())
