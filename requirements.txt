@@ -1,7 +1,7 @@
 celery==5.2.1
 celery-progress==0.1.1
 coverage[toml]==6.2
-Django==3.2.9
+Django==3.2.10
 django-auth-ldap==3.0.0
 django-autocomplete-light==3.8.2
 django-bootstrap-datepicker-plus==4.0.0
@@ -24,7 +24,7 @@ environs==9.3.5
 factory-boy==3.2.1
 fpdf==1.7.2
 freezegun==1.1.0
-lxml==4.7.0
+lxml==4.7.1
 marshmallow==3.14.1
 mkdocs==1.2.3
 mkdocs-material==8.1.1
