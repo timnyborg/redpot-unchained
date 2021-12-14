@@ -1,6 +1,6 @@
 import django_filters as filters
 import django_tables2 as tables
-from django_select2.forms import Select2MultipleWidget
+from dal import autocomplete
 
 from django.db.models import Q
 from django.urls import reverse
@@ -44,8 +44,8 @@ class SearchFilter(filters.FilterSet):
         label='Surname',
     )
     raised_by = filters.ModelMultipleChoiceFilter(
-        queryset=User.objects.order_by('first_name', 'last_name'),
-        widget=Select2MultipleWidget(),
+        queryset=User.objects.all(),
+        widget=autocomplete.ModelSelect2Multiple('autocomplete:user'),
     )
 
     class Meta:
