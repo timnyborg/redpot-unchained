@@ -168,6 +168,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='student',
             name='ethnicity',
-            field=models.ForeignKey(db_column='ethnicity', default=99, on_delete=django.db.models.deletion.DO_NOTHING, to='student.ethnicity', db_index=False),  # to: revert after MSSQL 1.1.1 fixed
+            field=models.ForeignKey(db_column='ethnicity', default=99, on_delete=django.db.models.deletion.DO_NOTHING, to='student.ethnicity'),
         ),
     ]

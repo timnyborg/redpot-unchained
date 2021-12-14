@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='student',
             name='domicile',
-            field=models.ForeignKey(db_column='domicile', default=181, limit_choices_to={'is_active': True}, on_delete=django.db.models.deletion.DO_NOTHING, to='student.domicile', db_index=False),  # to: revert after MSSQL 1.1.1 fixed
+            field=models.ForeignKey(db_column='domicile', default=181, limit_choices_to={'is_active': True}, on_delete=django.db.models.deletion.DO_NOTHING, to='student.domicile'),
         ),
         migrations.AlterField(
             model_name='student',
@@ -114,7 +114,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='student',
             name='nationality',
-            field=models.ForeignKey(db_column='nationality', default=181, limit_choices_to={'is_active': True}, on_delete=django.db.models.deletion.DO_NOTHING, to='student.nationality', db_index=False),  # to: revert after MSSQL 1.1.1 fixed
+            field=models.ForeignKey(db_column='nationality', default=181, limit_choices_to={'is_active': True}, on_delete=django.db.models.deletion.DO_NOTHING, to='student.nationality'),
         ),
         migrations.AlterField(
             model_name='student',
