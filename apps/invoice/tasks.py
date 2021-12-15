@@ -16,7 +16,7 @@ def repeating_card_payment_download(filename: str = None) -> str:
     """
 
     # If unspecified, get today's payments file
-    filename = filename or 'RCP_Payments_%s.csv' % date.today().strftime("%d%m%y")
+    filename = filename or f'RCP_Payments_{date.today():%d%m%y}.csv'
     file = _get_file_from_wpm_ftp(filename)
     payments_added = services.add_repeating_payments_from_file(file=file)
 
@@ -35,7 +35,7 @@ def _get_file_from_wpm_ftp(filename: str) -> io.BytesIO:
     ftp.cwd(CONFIG['DIRECTORY'])
 
     if filename not in ftp.nlst():
-        raise FileNotFoundError('RCP file not found on WPM FTP server: %s' % filename)
+        raise FileNotFoundError(f'RCP file not found on WPM FTP server: {filename}')
 
     file = io.BytesIO()
     ftp.retrbinary(f"RETR {filename}", file.write)
