@@ -70,7 +70,7 @@ def _is_valid_repeating_payment(row: dict) -> bool:
 
 def _add_repeating_payment(payment: dict) -> None:
     """Take an RCP dict, and create an invoice payment from it"""
-    payment_date = datetime.strptime(payment['date'], '%d/%m/%y %H:%M')  # noqa: F841 # todo: remove when complete
+    payment_date = datetime.strptime(payment['date'], '%d/%m/%y %H:%M')
     narrative = (
         f"{payment['name']}, card: {payment['card']}, digits: {payment['digits']}, trans: {payment['trans_id']}"[:128]
     )

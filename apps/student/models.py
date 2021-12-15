@@ -240,9 +240,7 @@ class Address(AddressModel, SITSLockingModelMixin, SignatureModel):
     )
     type = models.IntegerField(db_column='type', choices=Types.choices, default=Types.PERMANENT)
     formatted = models.CharField(max_length=1024, blank=True, null=True, editable=False)  # for queries -> print labels
-    is_default = models.BooleanField(
-        default=True, verbose_name='Default?'
-    )  # todo: figure out default and billing logic.  db or save()?
+    is_default = models.BooleanField(default=True, verbose_name='Default?')
     is_billing = models.BooleanField(default=False, verbose_name='Billing?')
     sits_type = models.CharField(max_length=1, blank=True, null=True, editable=False)
 
