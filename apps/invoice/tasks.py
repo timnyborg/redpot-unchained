@@ -1,6 +1,7 @@
-import ftplib
 import io
 from datetime import date
+
+import paramiko
 
 from redpot.celery import app
 from redpot.settings import WPM_FTP as CONFIG
@@ -17,7 +18,7 @@ def repeating_card_payment_download(filename: str = None) -> str:
 
     # If unspecified, get today's payments file
     filename = filename or f'RCP_Payments_{date.today():%d%m%y}.csv'
-    file = _get_file_from_wpm_ftp(filename)
+    file = _get_file_from_wpm_sftp(filename)
     payments_added = services.add_repeating_payments_from_file(file=file)
 
     # Todo: Collect together basic payment info and send a summary to finance
@@ -26,18 +27,21 @@ def repeating_card_payment_download(filename: str = None) -> str:
     return f'{filename}: {payments_added} payments'
 
 
-def _get_file_from_wpm_ftp(filename: str) -> io.BytesIO:
-    """Log into the WPM ftp and download a given RCP result file"""
-    ftp = ftplib.FTP_TLS(CONFIG['HOST'])
-    # They use a self-signed cert, so no loading of the system's ssl context
-    ftp.login(user=CONFIG['USER'], passwd=CONFIG['PASSWORD'])
-    ftp.prot_p()  # Switch to a secure data connection
-    ftp.cwd(CONFIG['DIRECTORY'])
+def _get_file_from_wpm_sftp(filename: str) -> io.BytesIO:
+    """Log into the WPM sftp and download a given RCP result file
+    Opens a connection over SSH, then uses it for an SFTP session.
+    """
+    with paramiko.SSHClient() as client:
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy)
+        client.connect(hostname=CONFIG['HOST'], username=CONFIG['USER'], password=CONFIG['PASSWORD'])
 
-    if filename not in ftp.nlst():
-        raise FileNotFoundError(f'RCP file not found on WPM FTP server: {filename}')
+        with client.open_sftp() as sftp:
+            sftp.chdir(CONFIG['DIRECTORY'])
 
-    file = io.BytesIO()
-    ftp.retrbinary(f"RETR {filename}", file.write)
-    file.seek(0)
-    return file
+            if filename not in sftp.listdir():
+                raise FileNotFoundError(f'RCP file not found on WPM SFTP server: {filename}')
+
+            file = io.BytesIO()
+            sftp.getfo(remotepath=filename, fl=file)
+            file.seek(0)
+            return file
