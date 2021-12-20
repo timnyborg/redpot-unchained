@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='disability',
             name='created_by',
-            field=models.CharField(blank=True, editable=False, max_length=8, null=True),
+            field=models.CharField(blank=True, editable=False, max_length=150, null=True),
         ),
         migrations.AlterField(
             model_name='disability',
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='disability',
             name='modified_by',
-            field=models.CharField(blank=True, editable=False, max_length=8, null=True),
+            field=models.CharField(blank=True, editable=False, max_length=150, null=True),
         ),
         migrations.AlterField(
             model_name='disability',

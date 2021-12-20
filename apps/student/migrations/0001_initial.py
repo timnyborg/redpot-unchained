@@ -17,9 +17,9 @@ class Migration(migrations.Migration):
             name='Student',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('created_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('created_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
-                ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('modified_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('modified_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
                 ('husid', models.BigIntegerField(blank=True, null=True, verbose_name='HUSID')),
                 ('surname', models.CharField(max_length=40)),
@@ -62,9 +62,9 @@ class Migration(migrations.Migration):
             name='Email',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('created_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('created_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
-                ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('modified_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('modified_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
                 ('email', models.CharField(max_length=64)),
                 ('note', models.CharField(blank=True, max_length=128, null=True)),
@@ -88,9 +88,9 @@ class Migration(migrations.Migration):
             name='Address',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('created_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('created_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
-                ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('modified_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('modified_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
                 (
                     'type',
