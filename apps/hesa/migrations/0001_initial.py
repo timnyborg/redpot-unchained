@@ -54,9 +54,9 @@ class Migration(migrations.Migration):
             name='ModuleHECoSSubject',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('created_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('created_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
-                ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('modified_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('modified_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
                 ('percentage', models.IntegerField()),
                 ('hecos_subject', models.ForeignKey(db_column='hecos_subject', on_delete=django.db.models.deletion.DO_NOTHING, to='hesa.HECoSSubject', verbose_name='HECoS subject')),

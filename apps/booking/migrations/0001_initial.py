@@ -22,9 +22,9 @@ class Migration(migrations.Migration):
                     name='Limit',
                     fields=[
                         ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                        ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                        ('created_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                         ('created_on', models.DateTimeField(blank=True, default=datetime.datetime.now, editable=False, null=True)),
-                        ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                        ('modified_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                         ('modified_on', models.DateTimeField(blank=True, default=datetime.datetime.now, editable=False, null=True)),
                         ('description', models.CharField(max_length=128)),
                         ('places', models.IntegerField()),
@@ -39,10 +39,10 @@ class Migration(migrations.Migration):
                     fields=[
                         ('id',
                          models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                        ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                        ('created_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                         ('created_on',
                          models.DateTimeField(blank=True, default=datetime.datetime.now, editable=False, null=True)),
-                        ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                        ('modified_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                         ('modified_on',
                          models.DateTimeField(blank=True, default=datetime.datetime.now, editable=False, null=True)),
                         ('enrolment',
@@ -60,10 +60,10 @@ class Migration(migrations.Migration):
                     fields=[
                         ('id',
                          models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                        ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                        ('created_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                         ('created_on',
                          models.DateTimeField(blank=True, default=datetime.datetime.now, editable=False, null=True)),
-                        ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                        ('modified_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                         ('modified_on',
                          models.DateTimeField(blank=True, default=datetime.datetime.now, editable=False, null=True)),
                         (
