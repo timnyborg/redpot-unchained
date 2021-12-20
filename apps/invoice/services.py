@@ -6,6 +6,8 @@ from datetime import datetime
 from decimal import Decimal
 from typing import IO, Iterable, Optional
 
+import pydantic
+
 from django.contrib import auth
 from django.db import transaction
 
@@ -44,45 +46,70 @@ def create_invoice(*, amount: Decimal, fees: Iterable[Ledger], user: User, **kwa
     return invoice
 
 
+class RepeatingPaymentModel(pydantic.BaseModel):
+    """Validation to ensure an rcp item is a payment that can be applied to an invoice"""
+
+    invoice_no: int
+    name: str
+    digits: int
+    card: str
+    amount: Decimal
+    trans_id: str
+    paid_at: datetime
+    status: str
+
+    @pydantic.validator('amount')
+    def positive_amount(cls, v: Decimal) -> Decimal:
+        if v < 0:
+            raise ValueError('Amount must be positive')
+        return v
+
+    @pydantic.validator('status')
+    def successful_payments(cls, v: str) -> str:
+        if v != 'success':
+            raise ValueError('Successful payments only')
+        return v
+
+    @pydantic.validator('paid_at', pre=True)
+    def paid_at_validate(cls, v: str) -> datetime:
+        return datetime.strptime(v, '%d/%m/%y %H:%M')
+
+
 def add_repeating_payments_from_file(*, file: IO[bytes]) -> int:
     """Create financial records for all RCP payments in a file object, returning the number that succeeded"""
 
-    FIELDNAMES = ['invoice_no', 'blank_1', 'blank_2', 'name', 'digits', 'card', 'amount', 'trans_id', 'date', 'status']
+    FIELDNAMES = ['invoice_no', '_1', '_2', 'name', 'digits', 'card', 'amount', 'trans_id', 'paid_at', 'status']
     # convert BytesIO objects (which file uploads and ftp provide) to return strings, which csv requires
     str_file = io.TextIOWrapper(file)
     payments = csv.DictReader(str_file, delimiter=',', fieldnames=FIELDNAMES)
 
-    valid_payments = list(filter(_is_valid_repeating_payment, payments))
+    valid_payments = []
+    for payment in payments:
+        try:
+            validated_payment = RepeatingPaymentModel(**payment)
+        except pydantic.ValidationError:
+            continue
+        else:
+            valid_payments.append(validated_payment)
+
     for payment in valid_payments:
         _add_repeating_payment(payment)
 
     return len(valid_payments)
 
 
-def _is_valid_repeating_payment(row: dict) -> bool:
-    """Check that an rcp item is a payment that can be applied to an invoice"""
-    return (
-        row['status'] == 'success'
-        and row['invoice_no'].isdigit()  # exclude non-invoice items (FOLL)
-        and Decimal(row['amount']) > 0  # exclude rcp refunds, which will have already been listed in the ledger
-    )
-
-
-def _add_repeating_payment(payment: dict) -> None:
+def _add_repeating_payment(payment: RepeatingPaymentModel) -> None:
     """Take an RCP dict, and create an invoice payment from it"""
-    payment_date = datetime.strptime(payment['date'], '%d/%m/%y %H:%M')
-    narrative = (
-        f"{payment['name']}, card: {payment['card']}, digits: {payment['digits']}, trans: {payment['trans_id']}"[:128]
-    )
-    invoice = models.Invoice.objects.get(number=payment['invoice_no'])
+    narrative = f"{payment.name}, card: {payment.card}, digits: {payment.digits}, trans: {payment.trans_id}"[:128]
+    invoice = models.Invoice.objects.get(number=payment.invoice_no)
     service_user = auth.get_user_model().objects.get(username='service_user')
 
     add_payment(
         invoice=invoice,
-        amount=payment['amount'],
+        amount=payment.amount,
         type_id=TransactionTypes.RCP,
         narrative=narrative,
-        timestamp=payment_date,
+        timestamp=payment.paid_at,
         user=service_user,
     )
 
