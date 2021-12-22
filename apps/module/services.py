@@ -3,6 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
+from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
 from django.contrib.auth.models import User
 
 from apps.student.models import Student
@@ -172,3 +177,47 @@ def assign_moodle_ids(*, module: Module, created_by: str):
         assign_moodle_id(student=student, first_module_code=module.code, created_by=created_by)
 
     return len(students)
+
+
+def email_module_students(module:Module, email_subject, email_message) -> bool:
+    sent = False
+    enrolments = (
+        module.enrolments.filter(
+            status__in=[10, 71, 90],
+            qa__student__email__email__isnull=False,
+            qa__student__email__is_default=True,
+        )
+            .select_related('module', 'qa', 'qa__student', 'qa__student__email')
+            .values(
+            'qa__student__id',
+            'qa__student__firstname',
+            'qa__student__surname',
+            'id',
+            'qa__student__email__email',
+            'module__portfolio__email',
+        )
+            .order_by(
+            '-qa__student__email__email',
+            'qa__student__surname',
+            'qa__student__firstname',
+        )
+    )
+    if enrolments:
+        for enrolment in enrolments:
+            email_context = {
+                'firstname': enrolment['qa__student__firstname'],
+                'email': enrolment['qa__student__email__email'],
+                'module_id': module.id,
+                'module_title': module.title,
+                'module_code': module.code,
+                'module_email': module.email,
+                'email_message': email_message,
+            }
+
+            from_email = email_context['module_email']
+            to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [email_context['email']]
+
+            html_message = render_to_string('module/email/module_students_email.html', email_context)
+            sent = send_mail(email_subject, strip_tags(html_message), from_email, to, html_message=html_message)
+
+    return sent

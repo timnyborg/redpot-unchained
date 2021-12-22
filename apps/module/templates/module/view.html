@@ -461,7 +461,7 @@
         Missing student details
     </a>
 
-    <a href="missing-student-details-list/{{ module.id }}" class="btn btn-success float-end">
+    <a href="{% url 'module:email-course-students' module.id %}" class="btn btn-success float-end">
         <i class="far fa-fw fa-envelope"></i>
         Email students
     </a>

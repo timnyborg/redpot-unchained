@@ -1,5 +1,6 @@
 import pathlib
 
+from django.urls import reverse_lazy, reverse
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 
@@ -454,10 +455,19 @@ class EmailCourseStudentsView(LoginRequiredMixin, PageTitleMixin, generic.FormVi
     template_name = 'module/course_students_email.html'
     title = 'Email Students'
     form_class = forms.EmailCourseStudentsForm
-    success_url = '/thanks/'
 
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        # form.send_email()
+    def dispatch(self, request, *args, **kwargs):
+        self.module_id = kwargs['pk']
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('module:view', kwargs={'pk': self.module_id})
+
+    def form_valid(self, form) -> http.HttpResponse:
+        module = get_object_or_404(Module, id=self.module_id)
+        sent = services.email_module_students(module, email_subject=self.request.POST['subject'], email_message=self.request.POST['email_body'])
+        messages.success(self.request, 'The email has been successfully sent to the students') if sent else messages.error(self.request, 'There was a problem sending email to the students/No enrolments in this module.')
         return super().form_valid(form)
+
+
+

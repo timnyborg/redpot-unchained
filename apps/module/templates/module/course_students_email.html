@@ -5,7 +5,7 @@
 {% block center %}
     <div class='section'>
         <h2>Email Students</h2>
-        <form method="post">{% csrf_token %}
+        <form method="post" action="">{% csrf_token %}
             {{ form|crispy }}
             <input class="btn btn-primary" type="submit" value="Submit">
         </form>
