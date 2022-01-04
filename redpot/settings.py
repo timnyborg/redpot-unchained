@@ -298,6 +298,11 @@ SENTRY_URL = env(
 )
 # hostname used in automated emails sent by celery tasks
 CANONICAL_URL = env('CANONICAL_URL', default='https://redpot-unchained.conted.ox.ac.uk', validate=validate.URL())
+SQUARE_URL = env(
+    'SQUARE_URL',
+    default='https://square.conted.ox.ac.uk/reports',
+    validate=validate.URL(schemes=['https']),
+)
 
 # Celery task queue - TODO: get this using the same settings as the cache
 redis_host = env('REDIS_HOST', default='redis')
