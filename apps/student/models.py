@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import random
 from typing import Optional
 
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models, transaction
 from django.db.models import QuerySet
 from django.urls import reverse
@@ -347,6 +350,17 @@ class MoodleID(SignatureModel):
 
     def get_delete_url(self) -> str:
         return reverse('student:moodle-id:delete', kwargs={'pk': self.pk})
+
+    @property
+    def initial_password(self) -> str:
+        """Create an initial password for new accounts, which must be changed on login"""
+        if not settings.MOODLE_PASSWORD_COMPONENTS:
+            raise ImproperlyConfigured('To generate passwords, MOODLE_PASSWORD_COMPONENTS must be set')
+        random.seed(str(self.moodle_id) + self.first_module_code)
+        password = '-'.join(
+            random.choice(settings.MOODLE_PASSWORD_COMPONENTS) for i in range(settings.MOODLE_PASSWORD_COMPONENT_COUNT)
+        )
+        return password
 
 
 class OtherID(SITSLockingModelMixin, SignatureModel):
