@@ -1,5 +1,6 @@
 import socket
 from typing import Optional, Union
+from urllib import parse
 
 from django import template
 from django.conf import settings
@@ -150,3 +151,18 @@ def duration(seconds: int) -> str:
 def google_tag_manager_script(context: dict) -> str:
     context['google_tag_manager_id'] = settings.GOOGLE_TAG_MANAGER_ID
     return context
+
+
+@register.simple_tag
+def square_url(*args, **kwargs) -> str:
+    """Generates a link to a Square report
+     args: the path of the report
+     kwargs: any querystring data that needs to be included
+
+    Example usage: {% square_url 'Folder' 'Subfolder' 'Report name' module=123 %}
+    """
+    # todo: use a table with report names and urls (relative or absolute?)
+    #  so the report paths can be abstracted out of the system
+    querystring = parse.urlencode(kwargs)
+    path = parse.quote('/'.join(args))
+    return mark_safe(settings.SQUARE_URL + f'/report/{path}?{querystring}')
