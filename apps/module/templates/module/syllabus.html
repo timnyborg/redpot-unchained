@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+{% block center %}
+    <div class="section">
+        <h2 class="float-start">{{ module.title }}</h2>
+        <h4 class="d-print-none float-end">
+            <a href="{{ next_url|default:module.get_absolute_url }}">
+                <i class="fas fa-chevron-left"></i> Back
+            </a>
+        </h4>
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-6">
+                <h4>{{ tutor_module.tutor.student }}</h4>
+                <ul>
+                    <li>{{ module.code }}</li>
+                    <li>{{ module.no_meetings }} weekly meetings</li>
+                    {% if module.start_time %}
+                        <li>{{ module.start_time|time }} &ndash; {{ module.end_time|time }}</li>
+                    {% endif %}
+                    <li>Starting {{ module.start_date|date}}</li>
+                    {% if fee.amount %}
+                        <li>£{{ fee.amount|floatformat:-2 }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="col-6">
+                <h4>Location</h4>
+                {{ module.location.building|default:'' }}<br>
+                {{ module.location.address|default:'' }}<br>
+                {{ module.location.city|default:'' }} {{ module.location.postcode|default:'' }}
+            </div>
+        </div>
+
+        <hr>
+        <h2>Course syllabus</h2>
+        <h4>Overview</h4>
+        {{ module.overview|safe }}
+        <h4>Course aims</h4>
+        {{ module.course_aims|safe }}
+
+        <h4>Programme details</h4>
+        {{ module.programme_details|safe }}
+
+        <h4>Recommended reading</h4>
+        {{ module.recommended_reading|safe }}
+
+        <hr style="margin: 10px 0;">
+        <p><small>If you are planning to purchase books, remember that courses with too few students enrolled will be
+            cancelled.  The Department accepts no responsibility for books bought in anticipation of a course.</small>
+        </p>
+
+        <h4>Learning outcomes</h4>
+        {{ module.teaching_outcomes|safe }}
+
+        <h4>Coursework</h4>
+        {{ module.assessment_methods|safe }}
+
+        <h4>CATS points</h4>
+        {{ module.certification|safe }}
+    </div>
+{% endblock %}

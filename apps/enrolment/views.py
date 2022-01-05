@@ -68,7 +68,7 @@ class Create(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.Fo
         # Weekly classes redirect to a syllabus for printing
         # todo: replace with a portfolio flag
         module = self.enrolment.module
-        if module.portfolio == 32:
+        if module.portfolio_id == 32:
             querystring = urlencode({'next': self.enrolment.get_absolute_url()})
             return reverse('module:syllabus', args=[module.id]) + f'?{querystring}'
         return self.enrolment.get_absolute_url()

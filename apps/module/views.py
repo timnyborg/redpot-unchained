@@ -20,6 +20,7 @@ from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitleMixin
 from apps.discount.models import Discount
 from apps.enrolment.models import Enrolment
+from apps.fee.models import FeeTypes
 from apps.invoice.models import ModulePaymentPlan
 from apps.tutor.utils import expense_forms
 from apps.tutor_payment.models import Statuses as PaymentStatuses
@@ -448,4 +449,22 @@ class ClassRegister(LoginRequiredMixin, MailMergeView):
             'address': str(self.module.location),
             'tutor_name': tutor_name,
             'row': enrolment_rows,
+        }
+
+
+class Syllabus(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
+    """Displays a formatted course syllabus for printing, as part of the weekly classes workflow"""
+
+    model = Module
+    template_name = 'module/syllabus.html'
+    subtitle = 'Syllabus'
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        return {
+            **context,
+            'next_url': next_url_if_safe(self.request),
+            # todo: tutor_module & fee logic could be better and refactored to the models
+            'tutor_module': self.object.tutor_modules.filter(is_teaching=True).first(),
+            'fee': self.object.fees.filter(type=FeeTypes.PROGRAMME).first(),
         }
