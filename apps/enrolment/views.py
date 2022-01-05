@@ -80,11 +80,8 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
     Redpot-legacy fused it all into enrolment/edit, but the edit form has been split off
 
     todo:
-        modals (delete ledger, print amendment)
+        modals (delete ledger)
         cert printable logic (-> model)
-        outstanding amendment table
-        ledger deletion rules and icon display logic
-        'payment allowed' logic
     """
 
     queryset = models.Enrolment.objects.select_related(
