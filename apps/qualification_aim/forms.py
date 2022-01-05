@@ -19,7 +19,7 @@ class CreateForm(forms.ModelForm):
 
 
 class EditForm(SITSLockingFormMixin, forms.ModelForm):
-    # Todo: permissions-based field access
+    # Todo: permissions-based field access for sits_code
     class Meta:
         model = models.QualificationAim
         fields = (

@@ -10,6 +10,7 @@
                 {% edit_button enrolment %}
                 <dl class="row">
                     <dt class="col-4">Student</dt><dd class="col-8 mb-0"><a href="{{ student.get_absolute_url }}">{{ student }}</a></dd>
+                    <dt class="col-4">Module</dt><dd class="col-8 mb-0"><a href="{{ enrolment.module.get_absolute_url }}">{{ enrolment.module }}</a></dd>
                     <dt class="col-4">Qualification aim</dt><dd class="col-8 mb-0"><a href="{{ enrolment.qa.get_absolute_url }}">{{ enrolment.qa.title }}</a></dd>
                     <dt class="col-4">Status</dt><dd class="col-8 mb-0">{{ enrolment.status }}</dd>
                     <dt class="col-4">Result</dt><dd class="col-8 mb-0">{{ enrolment.result }}</dd>

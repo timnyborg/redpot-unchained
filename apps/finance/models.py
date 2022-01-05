@@ -48,7 +48,7 @@ class LedgerQuerySet(models.QuerySet):
         # todo: should the `or Decimal(0)` go in here, making it non optional?
         return self.aggregate(balance=models.Sum('amount'))['balance']
 
-    # Todo: consider renaming payments and non-payments?
+    # Todo: consider renaming to payments and non-payments?
     def non_cash(self) -> models.QuerySet:
         return self.filter(type__is_cash=False)
 
