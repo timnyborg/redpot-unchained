@@ -11,11 +11,7 @@
             hideable_group.classList.add('hideable-input')
 
             function conditional_display() {
-                if (narrative_check.checked) {
-                    hideable_group.classList.remove('hidden')
-                } else {
-                    hideable_group.classList.add('hidden')
-                }
+                hideable_group.classList.toggle('hidden', !narrative_check.checked)
             }
 
             // On page load
@@ -25,9 +21,4 @@
             narrative_check.onchange = conditional_display;
         });
     </script>
-    <style>
-        .hideable-input.hidden {
-            display: none;
-        }
-    </style>
 {% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'core/form.html' %}
+
+{% block after-section %}
+    {% if can_apply_refund %}
+    {# Only applicable to the Edit page #}
+    <div class="section">
+        <h4>Automatically apply the refund to the enrolment</h4>
+        <form method="post" action="{% url 'amendment:apply-online-refund' amendment.id %}" target="_blank">
+        <button type="submit" class="btn btn-primary">
+            {% csrf_token %}
+            <i class="fas fa-fw fa-play"></i> Apply refund
+        </button>
+        </form>
+    </div>
+    {% endif %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const reason = document.getElementById("id_reason");
+            const module_group = document.getElementById("id_transfer_module").closest(".form-group");
+            const enrolment_group = document.getElementById("id_transfer_enrolment").closest(".form-group");
+            const source_invoice_group = document.getElementById("id_source_invoice").closest(".form-group");
+            const transfer_invoice_group = document.getElementById("id_transfer_invoice").closest(".form-group");
+            [module_group, enrolment_group, source_invoice_group, transfer_invoice_group].forEach(obj => {
+                obj.classList.add('hideable-input');
+            });
+            function conditional_display() {
+                module_group.classList.toggle('hidden', reason.value !== '19');
+                enrolment_group.classList.toggle('hidden', reason.value !== '20');
+                source_invoice_group.classList.toggle('hidden', reason.value !== '21');
+                transfer_invoice_group.classList.toggle('hidden', reason.value !== '21');
+            }
+
+            // On page load
+            conditional_display();
+
+            // Dropdown change
+            reason.onchange = conditional_display;
+        });
+    </script>
+{% endblock %}

@@ -785,3 +785,8 @@ span.invalid-feedback {
 .django-ckeditor-widget{
     display: block !important;
 }
+
+/* Classes used for dynamically hiding form elements based on others */
+.hideable-input.hidden {
+    display: none;
+}
