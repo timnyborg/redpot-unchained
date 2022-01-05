@@ -35,7 +35,7 @@ FORM_CLASSES: dict[int, Type[ModelForm]] = {
 class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
     model = models.Amendment
     success_message = 'Request submitted for approval'
-    template_name = 'core/form.html'
+    template_name = 'amendment/form.html'
 
     def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
         self.enrolment = get_object_or_404(Enrolment, pk=self.kwargs['enrolment_id'])
@@ -81,7 +81,7 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
 
 class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
     model = models.Amendment
-    template_name = 'amendment/edit.html'
+    template_name = 'amendment/form.html'
     permission_denied_message = 'You do not have permission to edit this change request'
     success_message = 'Change request updated'
 
