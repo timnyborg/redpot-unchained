@@ -6,11 +6,13 @@ from django.urls import reverse
 
 from apps.core.utils.tests import LoggedInMixin, LoggedInViewTestMixin
 from apps.enrolment.tests.factories import EnrolmentFactory
+from apps.fee.models import FeeTypes
 from apps.fee.tests.factories import FeeFactory
 from apps.hesa.models import HECoSSubject
 from apps.invoice.models import PaymentPlanType
 from apps.programme.models import ProgrammeModule
 from apps.programme.tests.factories import ProgrammeFactory
+from apps.tutor.tests.factories import TutorModuleFactory
 
 from ..models import Module, ModuleStatus
 from . import factories
@@ -358,3 +360,19 @@ class TestClassRegister(LoggedInViewTestMixin, TestCase):
         response = self.client.get(path=reverse('module:class-register', args=[self.enrolment.module.id]))
         self.assertEqual(response.status_code, 200)
         self.assertIn('word', response['content-type'])
+
+
+class TestSyllabus(LoggedInViewTestMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.module = factories.ModuleFactory()
+        FeeFactory(module=cls.module, type_id=FeeTypes.PROGRAMME, amount=500)
+        cls.tutor_module = TutorModuleFactory(module=cls.module, is_teaching=True)
+
+    def test_get(self):
+        response = self.client.get(path=reverse('module:syllabus', args=[self.module.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '£500')
+        self.assertContains(response, self.module.title)
+        self.assertContains(response, str(self.tutor_module.tutor.student))
