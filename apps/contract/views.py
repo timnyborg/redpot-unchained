@@ -131,7 +131,7 @@ class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTim
 
 
 class PDF(PermissionRequiredMixin, generic.View):
-    permission_required = 'tutor_contract.view_contract'
+    permission_required = 'contract.view_contract'
 
     def get(self, request, pk: int, *args, **kwargs) -> http.HttpResponse:
         contract = get_object_or_404(models.Contract, pk=pk)
@@ -172,7 +172,7 @@ class PDF(PermissionRequiredMixin, generic.View):
 
 class View(PermissionRequiredMixin, PageTitleMixin, generic.DetailView):
     model = models.Contract
-    permission_required = 'tutor_contract.view_contract'
+    permission_required = 'contract.view_contract'
     template_name = 'contract/view.html'
     extra_context = {'statuses': models.Statuses}
 
@@ -195,7 +195,7 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
 
 class Search(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableMixin, FilterView):
     queryset = models.Contract.objects.select_related('tutor_module__module', 'tutor_module__tutor__student')
-    permission_required = 'tutor_contract.view_contract'
+    permission_required = 'contract.view_contract'
     template_name = 'core/search.html'
     filterset_class = datatables.SearchFilter
     table_class = datatables.SearchTable
@@ -205,7 +205,7 @@ class Search(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableMixin, F
 class Approve(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableView):
     """Page that lets managers to view outstanding contracts that requires approval"""
 
-    permission_required = 'contract.approve'
+    permission_required = 'contract.approve_contract'
     template_name = 'contract/approve.html'
     table_class = datatables.OutstandingTable
     title = 'Contract'
@@ -226,7 +226,7 @@ class Approve(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableView):
 
 
 class Sign(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableView):
-    permission_required = 'contract.sign'
+    permission_required = 'contract.sign_contract'
     template_name = 'contract/sign.html'
     table_class = datatables.OutstandingTable
     title = 'Contract'
@@ -257,9 +257,9 @@ class SetStatus(LoginRequiredMixin, SingleObjectMixin, generic.View):
         permissions_map: dict[int, str] = {
             Statuses.DRAFT: 'contract.add_contract',
             Statuses.AWAITING_APPROVAL: 'contract.add_contract',
-            Statuses.APPROVED_AWAITING_SIGNATURE: 'contract.approve',
-            Statuses.SIGNED_BY_DEPARTMENT: 'contract.sign',
-            Statuses.CANCELLED: 'contract.cancel',
+            Statuses.APPROVED_AWAITING_SIGNATURE: 'contract.approve_contract',
+            Statuses.SIGNED_BY_DEPARTMENT: 'contract.sign_contract',
+            Statuses.CANCELLED: 'contract.cancel_contract',
         }
         # A user must have the rights level for the current status (can edit) and the target status (can set)
         if not request.user.has_perms([permissions_map[contract.status], permissions_map[status]]):

@@ -247,7 +247,7 @@ class Edit(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessag
 
     def get_form_kwargs(self) -> dict:
         kwargs = super().get_form_kwargs()
-        return {'edit_restricted_fields': self.request.user.has_perm('view_restricted_fields'), **kwargs}
+        return {'edit_restricted_fields': self.request.user.has_perm('student.view_restricted_fields'), **kwargs}
 
     def form_valid(self, form) -> http.HttpResponse:
         if hasattr(form.instance, 'tutor'):

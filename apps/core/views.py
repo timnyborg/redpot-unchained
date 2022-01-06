@@ -35,7 +35,6 @@ class SuperUserRequiredMixin(UserPassesTestMixin):
 
 
 class SystemInfo(SuperUserRequiredMixin, generic.TemplateView):
-    permission_required = 'user.dev'
     template_name = 'core/system_info.html'
 
     def get_context_data(self, **kwargs):

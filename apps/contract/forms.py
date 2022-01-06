@@ -35,7 +35,9 @@ PAYMENT_FREQUENCY_CHOICES = [
 class ContractForm(forms.ModelForm):
     """Base class for the tailored contract forms, with shared definitions and logic"""
 
-    approver = ApproverChoiceField('contract.approve', help_text='Your default approver can be set in your profile')
+    approver = ApproverChoiceField(
+        'contract.approve_contract', help_text='Your default approver can be set in your profile'
+    )
     # Common option fields
     phone = forms.CharField(
         label='Contact phone',

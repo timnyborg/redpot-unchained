@@ -286,7 +286,7 @@ class ReceiptPDF(PermissionRequiredMixin, generic.View):
 class AllBatches(PermissionRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     """Lists batches of financial transactions, plus unbatched items"""
 
-    permission_required = 'finance'  # todo: real finance permission
+    permission_required = 'core.finance'
     table_class = datatables.BatchTable
     filterset_class = datatables.BatchFilter
     template_name = 'core/search.html'

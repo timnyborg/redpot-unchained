@@ -70,7 +70,7 @@ class Edit(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessag
 class New(PermissionRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.CreateView):
     model = Programme
     form_class = ProgrammeNewForm
-    permission_required = 'programme.create'
+    permission_required = 'programme.add_programme'
     template_name = 'core/form.html'
     success_message = 'Programme created'
 

@@ -66,14 +66,14 @@
         <a
             href="{% url 'finance:add-payment' enrolment.id %}"
             class="btn btn-success"
-            {% if payment_disabled and not perms.finance %}disabled{% endif %}
+            {% if payment_disabled and not perms.core.finance %}disabled{% endif %}
         >
             <i class="fas fa-fw fa-pound-sign"></i> Add payment
         </a>
         <a
             href="{% url 'invoice:choose-enrolments' student.id %}?enrolment={{ enrolment.id }}"
             class="btn btn-primary"
-            {% if payment_disabled and not perms.finance %}disabled{% endif %}
+            {% if payment_disabled and not perms.core.finance %}disabled{% endif %}
         >
             <i class="fas fa-fw fa-plus"></i> New invoice
         </a>
@@ -97,7 +97,7 @@
             </a>
         </div>
 
-        {% if perms.finance %}
+        {% if perms.core.finance %}
             <h4 class="mt-3">Finance tools</h4>
             <a class="btn btn-warning" href="/invoice/credit">
                 <span class="fas fa-fw fa-minus"></span> Credit invoice

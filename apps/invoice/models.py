@@ -63,6 +63,12 @@ class Invoice(AddressModel, SignatureModel):
 
     class Meta:
         db_table = 'invoice'
+        permissions = [
+            ('credit_invoice', 'Can credit an invoice'),
+            ('pay_invoice', 'Can add a payment to an invoice'),
+            ('print_invoice', 'Can print an invoice'),
+            ('upload_rcp', 'Can upload RCP invoice payments'),
+        ]
 
     def __str__(self):
         return f'{self.prefix}{self.number}'

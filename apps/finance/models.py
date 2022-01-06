@@ -83,6 +83,7 @@ class Ledger(SignatureModel):
 
     class Meta:
         db_table = 'ledger'
+        permissions = [('print_receipt', 'Can print receipts for payments')]
 
     def get_delete_url(self) -> str:
         return reverse('finance:delete-transaction', kwargs={'allocation': self.allocation})
