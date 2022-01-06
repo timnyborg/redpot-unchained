@@ -76,6 +76,7 @@ PROJECT_APPS = [
     'apps.user',
     'apps.staff_list',
     'apps.staff_forms',
+    'apps.waitlist',
     'apps.website_account',
 ]
 

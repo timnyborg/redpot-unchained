@@ -389,9 +389,11 @@
     </div>
     {% endfor %}
     <a class="btn btn-success" href="{% url 'qualification_aim:new' student.id %}">
-<i class="fas fa-fw fa-plus"></i> Add programme</a>
-    <a class="btn btn-secondary" href="/waitlist/add/{{student.id}}">
-<i class="fas fa-fw fa-list"></i> Add to waiting list</a>
+        <i class="fas fa-fw fa-plus"></i> Add programme
+    </a>
+    <a class="btn btn-secondary" href="{% url 'waitlist:add' student.id %}">
+        <i class="fas fa-fw fa-list"></i> Add to waiting list
+    </a>
 
     <div class="btn-group float-end">
         <button type="button" class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
