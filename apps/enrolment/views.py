@@ -100,7 +100,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         context['finance_table'] = datatables.FinanceTable(
             data=self.object.ledger_set.debts().select_related('invoice_ledger__invoice'),
-            display_finance_columns=self.request.user.has_perm('finance'),  # todo: real permission
+            display_finance_columns=self.request.user.has_perm('core.finance'),
             prefix='finances-',
             request=self.request,
         )

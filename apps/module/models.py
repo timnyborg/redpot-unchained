@@ -244,6 +244,7 @@ class Module(SignatureModel):
     class Meta:
         db_table = 'module'
         base_manager_name = 'objects'
+        permissions = [('upload_to_cabs', 'Can upload module booking details to CABS')]
 
     def __str__(self) -> str:
         return self.title

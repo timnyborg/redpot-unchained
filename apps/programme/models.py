@@ -105,12 +105,7 @@ class Programme(SignatureModel):
         db_table = 'programme'
         ordering = ('title',)
         permissions = [
-            (
-                'edit_registry_fields',
-                'Can edit programme fields like Study Location or Student Load '
-                '(should just be one programme.edit permission',
-            ),
-            ('edit_restricted_fields', 'Can edit dev-restricted fields (is_active, contact_list_display, sits_id'),
+            ('edit_restricted_fields', 'Can edit restricted programme fields (e.g. sits_id)'),
         ]
 
     def __str__(self):

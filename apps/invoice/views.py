@@ -96,7 +96,7 @@ class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic
     model = models.Invoice
     form_class = forms.InvoiceForm
     template_name = 'core/form.html'
-    permission_required = 'invoice.edit'
+    permission_required = 'invoice.change_invoice'
     permission_denied_message = 'Only members of Finance can edit invoices'
     success_message = 'Invoice updated'
 
@@ -236,7 +236,7 @@ class UploadRCP(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
 class EditPaymentPlan(
     PermissionRequiredMixin, SuccessMessageMixin, AutoTimestampMixin, PageTitleMixin, generic.UpdateView
 ):
-    permission_required = 'payment_plan.edit'
+    permission_required = 'invoice.change_paymentplan'
     model = models.PaymentPlan
     form_class = forms.PaymentPlanForm
     template_name = 'core/form.html'
@@ -252,7 +252,7 @@ class EditPaymentPlan(
 class CreatePaymentPlan(
     PermissionRequiredMixin, SuccessMessageMixin, AutoTimestampMixin, PageTitleMixin, generic.CreateView
 ):
-    permission_required = 'payment_plan.create'
+    permission_required = 'invoice.add_paymentplan'
     model = models.PaymentPlan
     form_class = forms.PaymentPlanForm
     template_name = 'core/form.html'
@@ -281,7 +281,7 @@ class CreatePaymentPlan(
 class EditSchedule(PermissionRequiredMixin, PageTitleMixin, generic.DetailView):
     queryset = models.PaymentPlan.objects.prefetch_related('scheduled_payments')
     template_name = 'invoice/edit_schedule.html'
-    permission_required = 'payment_plan.create'
+    permission_required = 'invoice.add_paymentplan'
 
     def get_subtitle(self):
         return f'Edit schedule – {self.object.invoice}'
@@ -342,7 +342,7 @@ class SelectForPayment(PermissionRequiredMixin, PageTitleMixin, generic.FormView
             'student': get_object_or_404(Student, pk=self.kwargs['student_id']),
             # We want to let finance users post adjustments to paid invoices,
             # but keep the list clean of paid invoices for regular users
-            'exclude_paid': not self.request.user.has_perm('user.finance'),  # todo: a proper permission
+            'exclude_paid': not self.request.user.has_perm('core.finance'),  # todo: a proper permission
         }
 
     def form_valid(self, form) -> http.HttpResponse:
@@ -387,7 +387,7 @@ class Payment(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, gene
 class PDF(PermissionRequiredMixin, generic.View):
     """Generate a transcript for a single student"""
 
-    permission_required = 'invoice.print'
+    permission_required = 'invoice.print_invoice'
 
     def get(self, request, pk: int, *args, **kwargs) -> http.HttpResponse:
         invoice = get_object_or_404(models.Invoice, pk=pk)
@@ -402,7 +402,7 @@ class PDF(PermissionRequiredMixin, generic.View):
 class StatementPDF(PermissionRequiredMixin, generic.View):
     """Generate a transcript for a single student"""
 
-    permission_required = 'invoice.print'
+    permission_required = 'invoice.print_invoice'
 
     def get(self, request, pk: int, *args, **kwargs) -> http.HttpResponse:
         invoice = get_object_or_404(models.Invoice, pk=pk)

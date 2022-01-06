@@ -28,16 +28,18 @@ class ProgrammeEditForm(forms.ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        self.user = user
-
-        # dynamically remove a field
-        if not user.has_perm('registry'):
-            for f in ['student_load', 'funding_level', 'funding_source', 'study_mode', 'study_location']:
-                del self.fields[f]
-
+        restricted_fields = [
+            'is_active',
+            'contact_list_display',
+            'sits_code',
+            'student_load',
+            'funding_level',
+            'funding_source',
+            'study_mode',
+            'study_location',
+        ]
         if not user.has_perm('programme.edit_restricted_fields'):
-            for f in ['is_active', 'contact_list_display', 'sits_code']:
+            for f in restricted_fields:
                 del self.fields[f]
 
 
