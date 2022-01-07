@@ -48,6 +48,13 @@ pytest:
     MSSQL_SA_PASSWORD: Test@only
     ACCEPT_EULA: Y
 
+missing-migration-check:
+  stage: test
+  image: $CONTAINER_TEST_IMAGE
+  script:
+    - python manage.py makemigrations --check --dry-run --settings redpot.migration_check_settings
+  allow_failure: true
+
 include:
   - template: Security/SAST.gitlab-ci.yml
 
