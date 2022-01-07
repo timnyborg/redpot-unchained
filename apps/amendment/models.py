@@ -62,6 +62,7 @@ class Amendment(models.Model):
         verbose_name='Mark complete',
     )
     actioned_online = models.BooleanField(default=False)
+    something_else = models.BooleanField()
 
     class Meta:
         db_table = 'amendment'
