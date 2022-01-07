@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import patch
 from urllib.parse import urlencode
 
@@ -545,3 +546,41 @@ class TestMerge(LoggedInViewTestMixin, TestCase):
         response = self.client.post(self.url, data={'records': [self.student_a.pk, self.student_b.pk]})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test message')
+
+
+class TestStudentMarketing(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='testuser')
+        cls.student = factories.StudentFactory()
+        cls.url = reverse('student:marketing', kwargs={'pk': cls.student.pk})
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_email_optin_error(self):
+        self.assertFalse(self.student.email_optin)
+        response = self.client.post(self.url, data={'email_optin': True})
+        self.student.refresh_from_db()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.student.email_optin, False)
+
+    def test_email_optin_success(self):
+        self.assertFalse(self.student.email_optin)
+        response = self.client.post(
+            self.url,
+            data={
+                'email_optin': True,
+                'email_optin_on': datetime(2020, 1, 1, 12),
+                'email_optin_method': models.Student.Marketing_optin_methods.IN_PERSON,
+            },
+        )
+        self.student.refresh_from_db()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.student.email_optin, True)
+        self.assertEqual(self.student.email_optin_on, datetime(2020, 1, 1, 12))
+        self.assertEqual(self.student.email_optin_method, models.Student.Marketing_optin_methods.IN_PERSON)

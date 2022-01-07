@@ -32,6 +32,16 @@ class Student(SITSLockingModelMixin, SignatureModel):
         'nationality',
     ]
 
+    class Marketing_optin_methods(models.TextChoices):
+        APPLICATION_FORM = (('Application form', 'Application form'),)
+        EMAIL = (('Email', 'Email'),)
+        EMAIL_RESUBSCRIBE = (('Email_resubscribe', 'Email resubscribe link'),)
+        IN_PERSON = (('In_person', 'In-person'),)
+        NEWSLETTER = (('Newsletter', 'Newsletter widget'),)
+        OTHER_FORM = (('Other', 'Other form'),)
+        PHONE = (('Phone', 'Phone'),)
+        WESBITE = ('Website', 'Website optin')
+
     class Genders(models.TextChoices):
         MALE = ('M', 'Male')
         FEMALE = ('F', 'Female')
@@ -69,7 +79,7 @@ class Student(SITSLockingModelMixin, SignatureModel):
     occupation = models.CharField(max_length=128, blank=True, null=True)
     termtime_postcode = models.CharField(max_length=32, blank=True, null=True)
     note = models.CharField(max_length=1024, blank=True, null=True)
-    no_publicity = models.BooleanField(blank=True, null=True)
+    no_publicity = models.BooleanField(verbose_name='Mail marketing opt-out', blank=True, null=True)
     is_flagged = models.BooleanField(
         default=False, verbose_name='Student flagged', help_text="Put details in the 'note' field"
     )
@@ -107,11 +117,17 @@ class Student(SITSLockingModelMixin, SignatureModel):
         blank=True,
         null=True,
     )
-    mail_optin = models.BooleanField(default=False)
+    mail_optin = models.BooleanField(default=False, verbose_name='Mail marketing')
     mail_optin_on = models.DateTimeField(blank=True, null=True)
-    mail_optin_method = models.CharField(max_length=64, blank=True, null=True)
-    email_optin = models.BooleanField(default=False)
-    email_optin_method = models.CharField(max_length=64, blank=True, null=True)
+    mail_optin_method = models.CharField(max_length=47, blank=True, null=True, choices=Marketing_optin_methods.choices)
+    email_optin = models.BooleanField(default=False, verbose_name='Email marketing')
+    email_optin_method = models.CharField(
+        max_length=47,
+        blank=True,
+        null=True,
+        choices=Marketing_optin_methods.choices,
+        help_text='How did this person sign up to receive marketing email?',
+    )
     email_optin_on = models.DateTimeField(blank=True, null=True)
 
     class Meta:

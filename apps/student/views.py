@@ -305,6 +305,18 @@ class Merge(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
         return redirect(target)
 
 
+class Marketing(PageTitleMixin, generic.UpdateView):
+    model = Student
+    form_class = forms.MarketingForm
+    template_name = 'student/marketing.html'
+    title = 'Person'
+    subtitle = 'Marketing'
+
+    def get_form_kwargs(self) -> dict:
+        kwargs = super().get_form_kwargs()
+        return {**kwargs}
+
+
 # --- Email views ---
 
 

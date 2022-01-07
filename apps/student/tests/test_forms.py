@@ -1,11 +1,13 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 
 from freezegun import freeze_time
 from parameterized import parameterized
 
 from django import test
 from django.core.exceptions import ValidationError
+
+from apps.student import models
 
 from .. import forms
 from . import factories
@@ -84,3 +86,40 @@ class TestEditPersonForm(test.SimpleTestCase):
     def test_hide_restricted_fields(self):
         form = forms.EditForm(edit_restricted_fields=False)
         self.assertFalse('gender_identity' in form.fields)
+
+
+class TestStudentMarketing(test.SimpleTestCase):
+    def test_mail_optin_field_error(self):
+        form = forms.MarketingForm()
+        form.cleaned_data = {'mail_optin': True}
+        try:
+            form.clean_marketing()
+        except ValidationError:
+            self.fail('Mail optin on and mail optin method required')
+
+    def test_mail_optin_method_error(self):
+        form = forms.MarketingForm()
+        form.cleaned_data = {'mail_optin': True, 'mail_optin_on': datetime(2021, 11, 1, 12)}
+        try:
+            form.clean_marketing()
+        except ValidationError:
+            self.fail('Mail optin method required')
+
+    def test_email_optin_field_error(self):
+        form = forms.MarketingForm()
+        form.cleaned_data = {'email_optin': True}
+        try:
+            form.clean_marketing()
+        except ValidationError:
+            self.fail('Email optin on and email optin method required')
+
+    def test_email_optin_on_error(self):
+        form = forms.MarketingForm()
+        form.cleaned_data = {
+            'email_optin': True,
+            'email_optin_method': models.Student.Marketing_optin_methods.EMAIL_RESUBSCRIBE,
+        }
+        try:
+            form.clean_marketing()
+        except ValidationError:
+            self.fail('Email optin on method required')
