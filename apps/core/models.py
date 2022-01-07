@@ -39,9 +39,9 @@ class SignatureModel(models.Model):
 
     # Todo: consider making these non-nullable.  Would ensure timestamps are applied to all create forms, but wouldn't
     # help ensure on update forms
-    created_by = models.CharField(max_length=8, blank=True, null=True, editable=False)
+    created_by = models.CharField(max_length=150, blank=True, null=True, editable=False)
     created_on = models.DateTimeField(blank=True, null=True, default=datetime.now, editable=False)
-    modified_by = models.CharField(max_length=8, blank=True, null=True, editable=False)
+    modified_by = models.CharField(max_length=150, blank=True, null=True, editable=False)
     modified_on = models.DateTimeField(blank=True, null=True, default=datetime.now, editable=False)
 
     class Meta:
@@ -124,6 +124,21 @@ class User(SignatureModel, AbstractUser):
     def phone_number(self):
         if self.phone:
             return self.phone.replace('+44 (0)1865 2', '')
+
+
+class UserRightsSupport(models.Model):
+    """A dummy model which allow the creation of rights not tied to any actual model (content_type)"""
+
+    class Meta:
+        managed = False  # No database table creation or deletion operations will be performed for this model.
+        default_permissions = ()  # disable "add", "change", "delete" and "view" default permissions
+        permissions = (
+            # Blanket team-level permissions, replicating what existed in w2p, handling rights which don't map
+            # onto a model.  They violate RBAM and couple the codebase to the organization, so avoid using these.
+            # Instead, implement narrower rights that can be given to a group.  # todo: phase out use
+            ('finance', 'Generic finance-team rights'),
+            ('marketing', 'Generic marketing-team rights'),
+        )
 
 
 class Portfolio(models.Model):

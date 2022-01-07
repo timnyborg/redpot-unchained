@@ -100,7 +100,7 @@
             <h5>
             Once payments have been raised for the tutor on this course, you'll see them here
             </h5>
-            {% if perms.tutor.payment_create %}
+            {% if perms.tutor_payment.raise %}
                 <a class="btn btn-success" href="{{ add_url }}">
                     <i class="fas fa-fw fa-plus"></i> Add a new payment
                 </a>

@@ -88,7 +88,7 @@
 <div class="section">
     <div class='row'>
         <div class='col-sm-6'>
-            {% if perms.finance %}
+            {% if perms.core.finance %}
             <div class="float-end">
                 <a href="{% url 'invoice:edit-payment-plan' plan.pk %}" class="btn btn-success btn-xs"><span class="fas fa-fw fa-pencil-alt"></span> Edit plan</a>
             </div>
@@ -107,7 +107,7 @@
             </dl>
         </div>
         <div class='col-sm-6'>
-            {% if plan.is_custom and perms.finance %}
+            {% if plan.is_custom and perms.core.finance %}
                 <div class="float-end">
                     <a href="{% url 'invoice:edit-payment-schedule' plan.id %}" class="btn btn-success btn-xs">
                         <span class="fas fa-fw fa-plus"></span> Edit schedule
@@ -121,7 +121,7 @@
     </div>
     {% timestamp plan %}
 </div>
-{% elif perms.finance %}
+{% elif perms.core.finance %}
 <div class="section">
     <div class="float-end">
         <a href="{% url 'invoice:create-payment-plan' invoice.id %}" class="btn btn-success btn-xs">

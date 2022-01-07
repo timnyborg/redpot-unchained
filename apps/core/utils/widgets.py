@@ -79,14 +79,14 @@ class ReadOnlyModelWidget(widgets.Widget):
 
     def render(self, name, value, attrs=None, renderer=None) -> str:
         instance = self.model.objects.get(pk=value)
-        # -static for b2, -plaintext for bs4.  todo: consider how to move that into the form rendering
+        # form-control-plaintext for bs5.  todo: consider how to move that into the form rendering
         if self.link:
             text = f'<a href="{instance.get_absolute_url()}">{instance}</a>'
         else:
             text = str(instance)
         return f"""
             <input type="hidden" name="{name}" value="{value}">
-            <div class='form-control-static form-control-plaintext'>{text}</div>
+            <div class='form-control-plaintext'>{text}</div>
         """
 
 

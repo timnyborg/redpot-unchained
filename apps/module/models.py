@@ -244,6 +244,7 @@ class Module(SignatureModel):
     class Meta:
         db_table = 'module'
         base_manager_name = 'objects'
+        permissions = [('upload_to_cabs', 'Can upload module booking details to CABS')]
 
     def __str__(self) -> str:
         return self.title
@@ -568,27 +569,6 @@ class Room(models.Model):
     @property
     def long_name(self) -> str:
         return f'{self.id}, {self.building} ({self.size})'
-
-
-class Waitlist(models.Model):
-    """A student's spot on a module waitlist"""
-
-    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module', related_name='waitlists')
-    student = models.ForeignKey('student.Student', models.DO_NOTHING, db_column='student', related_name='waitlists')
-    listed_on = models.DateTimeField(default=datetime.now)
-    emailed_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'module_waitlist'
-
-    def get_absolute_url(self) -> str:
-        return '#'
-
-    def get_edit_url(self) -> str:
-        return '#'
-
-    def get_delete_url(self) -> str:
-        return '#'
 
 
 class Book(models.Model):

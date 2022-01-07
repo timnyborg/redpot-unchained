@@ -1,12 +1,16 @@
+import io
+from datetime import datetime
 from decimal import Decimal
 
 from django import test
 
 import apps.finance.services as finance_services
 from apps.core.models import User
+from apps.core.tests.factories import UserFactory
 from apps.enrolment.tests.factories import EnrolmentFactory
 from apps.fee.tests.factories import FeeFactory
 from apps.finance.models import Accounts, TransactionTypes
+from apps.finance.tests.factories import LedgerFactory
 
 from .. import services
 from . import factories
@@ -85,3 +89,32 @@ class TestAddCredit(test.TestCase):
             account_code=Accounts.TUITION,
         )
         self.assertEqual(self.enrolment.get_balance(), 50)
+
+
+class TestRCP(test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        UserFactory(username='service_user')  # todo: remove once service user added by migrations
+        ledger_item = LedgerFactory(amount=100)
+        cls.invoice = factories.InvoiceFactory(number=10)
+        cls.invoice.ledger_items.add(ledger_item, through_defaults={'allocation': cls.invoice, 'item_no': 1})
+
+    def test_valid_payment(self):
+        file = io.BytesIO(b'10,,,Name,1234,mc,50.00,ref code,01/02/20 00:00,success')
+
+        services.add_repeating_payments_from_file(file=file)
+
+        self.assertEqual(self.invoice.get_payments().count(), 1)
+        payment = self.invoice.get_payments().first()
+        self.assertEqual(payment.timestamp, datetime(2020, 2, 1))
+        self.assertIn('ref code', payment.narrative)
+
+    def test_invalid_amount(self):
+        file = io.BytesIO(b'10,,,Name,1234,mc,-50.00,ref code,01/02/20 00:00,success')
+        services.add_repeating_payments_from_file(file=file)
+        self.assertEqual(self.invoice.get_payments().count(), 0)
+
+    def test_invalid_status(self):
+        file = io.BytesIO(b'10,,,Name,1234,mc,-50.00,ref code,01/02/20 00:00,failure')
+        services.add_repeating_payments_from_file(file=file)
+        self.assertEqual(self.invoice.get_payments().count(), 0)

@@ -51,7 +51,6 @@ class FinanceTable(tables.Table):
     """
 
     request: http.HttpRequest
-    # todo: print-receipt column w/ display logic
     amount = PoundsColumn()
     invoice = tables.Column(
         verbose_name='Invoice',

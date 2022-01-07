@@ -7,8 +7,9 @@ from dateutil.relativedelta import relativedelta
 import django.forms as forms
 
 from apps.core.utils.datatables import DeleteLinkColumn, EditLinkColumn, LinkColumn, ViewLinkColumn
+from apps.waitlist.models import Waitlist
 
-from .models import Book, Module, Waitlist
+from . import models
 
 
 class ModuleSearchFilter(django_filters.FilterSet):
@@ -33,7 +34,7 @@ class ModuleSearchFilter(django_filters.FilterSet):
     )
 
     class Meta:
-        model = Module
+        model = models.Module
         fields = {
             'title': ['unaccent__icontains'],
             'code': ['contains'],
@@ -48,7 +49,7 @@ class ModuleSearchTable(tables.Table):
     end_date = tables.Column(attrs={"td": {"style": "white-space: nowrap;"}})
 
     class Meta:
-        model = Module
+        model = models.Module
         fields = ('code', "title", "start_date", "end_date", "division", "portfolio")
         per_page = 10
         order_by = ('-start_date',)
@@ -56,7 +57,7 @@ class ModuleSearchTable(tables.Table):
 
 class WaitlistTable(tables.Table):
     id = tables.CheckBoxColumn(accessor='id', orderable=False)
-
+    student = tables.Column(linkify=True)
     email = LinkColumn('', icon='envelope', title='Email student', linkify=lambda record: f'email-one/{record.id}')
     delete = DeleteLinkColumn('', title='Remove from waiting list')
 
@@ -70,6 +71,6 @@ class BookTable(tables.Table):
     delete = DeleteLinkColumn('')
 
     class Meta:
-        model = Book
+        model = models.Book
         fields = ('author', 'title', 'type')
         order_by = ('-type', 'author', 'title')

@@ -76,6 +76,7 @@ PROJECT_APPS = [
     'apps.user',
     'apps.staff_list',
     'apps.staff_forms',
+    'apps.waitlist',
     'apps.website_account',
 ]
 
@@ -298,6 +299,11 @@ SENTRY_URL = env(
 )
 # hostname used in automated emails sent by celery tasks
 CANONICAL_URL = env('CANONICAL_URL', default='https://redpot-unchained.conted.ox.ac.uk', validate=validate.URL())
+SQUARE_URL = env(
+    'SQUARE_URL',
+    default='https://square.conted.ox.ac.uk/reports',
+    validate=validate.URL(schemes=['https']),
+)
 
 # Celery task queue - TODO: get this using the same settings as the cache
 redis_host = env('REDIS_HOST', default='redis')
@@ -401,3 +407,7 @@ CONTRACT_SIGNATURE_EMAILS = env.list('CONTRACT_SIGNATURE_EMAILS', default='')
 
 # Tag manager config
 GOOGLE_TAG_MANAGER_ID = env('GOOGLE_TAG_MANAGER_ID', default='')
+
+# Moodle ID config
+MOODLE_PASSWORD_COMPONENTS = env.list('MOODLE_PASSWORD_COMPONENTS', default=[])
+MOODLE_PASSWORD_COMPONENT_COUNT = env.int('MOODLE_PASSWORD_COMPONENT_COUNT', default=5)

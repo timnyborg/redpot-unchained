@@ -790,3 +790,8 @@ span.invalid-feedback {
 .toggle {
     white-space: nowrap;
 }
+
+/* Classes used for dynamically hiding form elements based on others */
+.hideable-input.hidden {
+    display: none;
+}

@@ -18,7 +18,7 @@ module_children = (
         'not-implemented',
         icon="graduation-cap",
         separator=True,
-        check=lambda request: request.user.has_perm('proposal.create'),
+        check=lambda request: request.user.has_perm('proposal.add_proposal'),
     ),
     MenuItem(
         "Upload to Cabs",
@@ -37,7 +37,7 @@ programme_children = (
         reverse("programme:new"),
         icon="plus",
         separator=True,
-        check=lambda request: request.user.has_perm('programme.new'),
+        check=lambda request: request.user.has_perm('programme.add_programme'),
     ),
 )
 
@@ -69,13 +69,13 @@ tutor_children = (
                 "Approve",
                 reverse('contract:approve'),
                 icon="check",
-                check=lambda request: request.user.has_perm('contract.approve'),
+                check=lambda request: request.user.has_perm('contract.approve_contract'),
             ),
             MenuItem(
                 "Sign",
                 reverse("contract:sign"),
                 icon="signature",
-                check=lambda request: request.user.has_perm('contract.sign'),
+                check=lambda request: request.user.has_perm('contract.sign_contract'),
             ),
         ),
     ),
@@ -105,20 +105,20 @@ finance_children = [
         "All batches",
         reverse('finance:all-batches'),
         icon="file-alt",
-        check=lambda request: request.user.has_perm('finance'),
+        check=lambda request: request.user.has_perm('core.finance'),
     ),
     MenuItem(
         "Upload RCP",
         reverse('invoice:upload-rcp'),
         separator=True,
         icon="upload",
-        check=lambda request: request.user.has_perm('finance'),
+        check=lambda request: request.user.has_perm('core.finance'),
     ),
     MenuItem(
         "Paypush",
         'not-implemented',
         icon="credit-card",
-        check=lambda request: request.user.has_perm('finance'),
+        check=lambda request: request.user.has_perm('core.finance'),
     ),
 ]
 
@@ -165,7 +165,7 @@ other_children = (
         "Marketing",
         '#',
         icon='money-bill-wave',
-        check=lambda request: request.user.has_perm('login'),
+        check=lambda request: request.user.has_perm('core.marketing'),
         children=(
             MenuItem('Brochures', 'not-implemented', icon='map'),
             MenuItem('Discounts', reverse('discount:search'), icon='tags'),

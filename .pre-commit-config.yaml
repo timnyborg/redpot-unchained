@@ -3,8 +3,9 @@ repos:
     rev: v4.1.0
     hooks:
       - id: check-json
+      - id: check-toml
       - id: check-yaml
-        exclude: mkdocs.yml  # doesn't like !! tags
+        args: [--unsafe]  # handle !! constructors in mkdocs.yml
       - id: end-of-file-fixer
         exclude_types: [svg]
       - id: requirements-txt-fixer
@@ -34,7 +35,7 @@ repos:
           - flake8-print==4.0.0
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: 'v8.6.0'
+    rev: v8.4.1
     hooks:
      - id: eslint
        args: [--fix]

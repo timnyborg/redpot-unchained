@@ -20,9 +20,9 @@ class Migration(migrations.Migration):
             name='Tutor',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('created_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('created_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
-                ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('modified_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('modified_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
                 ('qualifications', models.CharField(blank=True, max_length=256, null=True)),
                 ('affiliation', models.CharField(blank=True, max_length=256, null=True)),
@@ -53,9 +53,9 @@ class Migration(migrations.Migration):
             name='TutorModule',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('created_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('created_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
-                ('modified_by', models.CharField(blank=True, editable=False, max_length=8, null=True)),
+                ('modified_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
                 ('modified_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
                 ('role', models.CharField(blank=True, max_length=64)),
                 ('biography', models.TextField(blank=True, null=True)),

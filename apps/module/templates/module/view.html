@@ -300,10 +300,10 @@
                 <i class="fas fa-fw fa-file-alt"></i> Reports
             </a>
             <ul class="dropdown-menu" role="menu">
-                <li><a class="dropdown-item" href="http://square/reports/report/Finance/Financial%20report%20per%20module?code={{ module.code }}" target="_blank"><span class="fas fa-fw fa-pound-sign"></span> Financial statement</a></li>
-                <li><a class="dropdown-item" href="financial_statement', args=[module.id, 'summary']"><span class="fas fa-fw fa-pound-sign"></span> Financial statement (summary)</a></li>
-                <li><a class="dropdown-item" href="catering/{{ module.id }}"><span class="fas fa-fw fa-utensils"></span> Catering</a></li>
-                <li><a class="dropdown-item" href="accommodation/{{ module.id }}"><span class="fas fa-fw fa-hotel"></span> Accommodation</a></li>
+                <li><a class="dropdown-item" href="{% square_url 'Redpot' 'Module financial statement' code=module.code %}" target="_blank"><span class="fas fa-fw fa-pound-sign"></span> Financial statement</a></li>
+                <li><a class="dropdown-item" href="{% square_url 'Redpot' 'Module financial summary' module=module.id %}"><span class="fas fa-fw fa-pound-sign"></span> Financial statement (summary)</a></li>
+                <li><a class="dropdown-item" href="{% square_url 'Redpot' 'Module catering' module=module.id %}"><span class="fas fa-fw fa-utensils"></span> Catering</a></li>
+                <li><a class="dropdown-item" href="{% square_url 'Redpot' 'Module accommodation' module=module.id %}"><span class="fas fa-fw fa-hotel"></span> Accommodation</a></li>
                 <li><a class="dropdown-item" href="module', 'refund_request/{{ module.id }}"><span class="fas fa-fw fa-pound-sign"></span> Refund request (.docx)</a></li>
                 <li><a class="dropdown-item" href="{% url 'module:class-register' module.id %}"><span class="fas fa-fw fa-file-word"></span> Class register (.docx)</a></li>
                 {# todo: better portfolio logic, relying on tags #}
@@ -332,7 +332,7 @@
                 <li><a class="dropdown-item" href="{% url 'module:clone' module.id %}"><span class="fas fa-fw fa-clone"></span> Clone this module</a></li>
                 <li><a class="dropdown-item" href="{% url 'module:copy-web-fields' module.id %}"><span class="fas fa-fw fa-paste"></span> Copy web fields</a></li>
                 <li><a class="dropdown-item" href="import_from_template/{{ module.id }}"><span class="fas fa-fw fa-upload"></span> Import students from template</a></li>
-                {% if perms.cabs and module.portfolio == 32 and module.room and module.room_setup %}
+                {% if perms.module.upload_to_cabs and module.portfolio == 32 and module.room and module.room_setup %}
                     {# todo: handle this logic better (elsewhere as can_send_to_cabs or something) #}
                     <li><a class="dropdown-item" href="cabs_booking/{{ module.id }}"><span class="fas fa-fw fa-taxi"></span> Book course into CABS</a></li>
                 {% endif %}
@@ -607,15 +607,12 @@
     <a href="rebuild_reading_list/{{ module.id }}" class="btn btn-secondary">
         <i class="fas fa-fw fa-redo"></i> Rebuild reading list
     </a>
-    {% if perms.books.export_list %}
-        {#  Todo: figure out to do with square & other external urls. simple key-value table? #}
-        <a href="https://square.conted.ox.ac.uk/reports/report/Library/Weekly%20classes%20reading%20list%20items%20by%20course?code={{ module.code }}"
-           target='_blank'
-           class="btn btn-secondary"
-        >
-            <span class="fas fa-fw fa-check-square"></span> Export list (square)
-        </a>
-    {% endif %}
+    <a href="{% square_url "Library" "Weekly classes reading list items by course" code=module.code %}"
+       target='_blank'
+       class="btn btn-secondary"
+    >
+        <span class="fas fa-fw fa-check-square"></span> Export list (square)
+    </a>
 </div>
 {% endif %}
 

@@ -68,7 +68,7 @@ class Create(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.Fo
         # Weekly classes redirect to a syllabus for printing
         # todo: replace with a portfolio flag
         module = self.enrolment.module
-        if module.portfolio == 32:
+        if module.portfolio_id == 32:
             querystring = urlencode({'next': self.enrolment.get_absolute_url()})
             return reverse('module:syllabus', args=[module.id]) + f'?{querystring}'
         return self.enrolment.get_absolute_url()
@@ -80,11 +80,8 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
     Redpot-legacy fused it all into enrolment/edit, but the edit form has been split off
 
     todo:
-        modals (delete ledger, print amendment)
+        modals (delete ledger)
         cert printable logic (-> model)
-        outstanding amendment table
-        ledger deletion rules and icon display logic
-        'payment allowed' logic
     """
 
     queryset = models.Enrolment.objects.select_related(
@@ -103,7 +100,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         context['finance_table'] = datatables.FinanceTable(
             data=self.object.ledger_set.debts().select_related('invoice_ledger__invoice'),
-            display_finance_columns=self.request.user.has_perm('finance'),  # todo: real permission
+            display_finance_columns=self.request.user.has_perm('core.finance'),
             prefix='finances-',
             request=self.request,
         )

@@ -22,5 +22,7 @@ class UserChoiceField(forms.ModelChoiceField):
 
 class ImpersonateForm(forms.Form):
     user_pk = UserChoiceField(
-        queryset=models.User.objects.order_by('last_name', 'first_name'), widget=Select2(), label='User'
+        queryset=models.User.objects.filter(is_active=True).order_by('last_name', 'first_name'),
+        widget=Select2(),
+        label='User',
     )

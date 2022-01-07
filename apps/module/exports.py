@@ -89,10 +89,10 @@ class MoodleListExport(resources.ModelResource):
     course_title = fields.Field(attribute='module__title')
 
     def dehydrate_password(self, enrolment: Enrolment) -> str:
-        # todo: deterministic but random default password.  Should be based on an auto uuid field per row
         try:
-            if enrolment.qa.student.moodle_id.first_module_code == enrolment.module.code:
-                return 'TODO: PASSWORD'
+            moodle_id = enrolment.qa.student.moodle_id
+            if moodle_id.first_module_code == enrolment.module.code:
+                return moodle_id.initial_password
             return 'the same as before'
         except MoodleID.DoesNotExist:
             return ''

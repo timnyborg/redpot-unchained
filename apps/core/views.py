@@ -8,6 +8,7 @@ import django_redis
 
 import django
 from django import http
+from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.views import generic
@@ -34,7 +35,6 @@ class SuperUserRequiredMixin(UserPassesTestMixin):
 
 
 class SystemInfo(SuperUserRequiredMixin, generic.TemplateView):
-    permission_required = 'user.dev'
     template_name = 'core/system_info.html'
 
     def get_context_data(self, **kwargs):
@@ -60,6 +60,10 @@ class SystemInfo(SuperUserRequiredMixin, generic.TemplateView):
             'library_versions': {
                 'python': platform.python_version(),
                 'django': django.get_version(),
+            },
+            'db': {
+                'host': settings.DATABASES['default']['HOST'],
+                'name': settings.DATABASES['default']['NAME'],
             },
         }
 
