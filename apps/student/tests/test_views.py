@@ -562,13 +562,6 @@ class TestStudentMarketing(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    def test_email_optin_error(self):
-        self.assertFalse(self.student.email_optin)
-        response = self.client.post(self.url, data={'email_optin': True})
-        self.student.refresh_from_db()
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(self.student.email_optin, False)
-
     def test_email_optin_success(self):
         self.assertFalse(self.student.email_optin)
         response = self.client.post(
