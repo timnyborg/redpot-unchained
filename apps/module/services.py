@@ -179,8 +179,8 @@ def assign_moodle_ids(*, module: Module, created_by: str):
     return len(students)
 
 
-def email_module_students(module:Module, email_subject, email_message) -> bool:
-    sent = False
+def email_module_students(module:Module, email_subject, email_message) -> int:
+    sent = 0
     enrolments = (
         module.enrolments.filter(
             status__in=[10, 71, 90],
@@ -218,6 +218,6 @@ def email_module_students(module:Module, email_subject, email_message) -> bool:
             to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [email_context['email']]
 
             html_message = render_to_string('module/email/module_students_email.html', email_context)
-            sent = send_mail(email_subject, strip_tags(html_message), from_email, to, html_message=html_message)
+            sent += send_mail(email_subject, strip_tags(html_message), from_email, to, html_message=html_message)
 
     return sent

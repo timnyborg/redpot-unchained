@@ -4,8 +4,11 @@ from unittest.mock import MagicMock
 from django.test import SimpleTestCase, TestCase
 
 from apps.fee.tests.factories import FeeFactory
+from .factories import ModuleFactory
 
 from .. import models, services
+from apps.enrolment.tests.factories import EnrolmentFactory
+from ...student.tests.factories import EmailFactory
 
 
 class TestClone(SimpleTestCase):
@@ -56,3 +59,17 @@ class TestCopyFees(TestCase):
         fees = self.target.fees.all()
         self.assertEqual(len(fees), 1)
         self.assertEqual(fees.first().amount, 100)
+
+class TestEmailingModuleStudents(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.module = ModuleFactory()
+        cls.enrolments = EnrolmentFactory.create_batch(
+            size=2,
+            module=cls.module
+        )
+        EmailFactory(student=cls.enrolments[0].qa.student)
+
+    def test_email_module_students(self):
+        result = services.email_module_students(module=self.module, email_subject='test', email_message='test message')
+        self.assertEqual(result, 1)
