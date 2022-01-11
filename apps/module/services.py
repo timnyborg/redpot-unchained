@@ -94,7 +94,7 @@ def clone_fields(*, source: Module, target: Module, copy_url: bool = False, copy
         'points_level',  # todo: convert to _id after table implemented
         'portfolio_id',
         'status_id',
-        'terms_and_conditions',  # todo: convert to _id aftertable implemented
+        'terms_and_conditions',  # todo: convert to _id after table implemented
     ] + WEB_FIELDS
 
     if copy_url:
@@ -179,7 +179,7 @@ def assign_moodle_ids(*, module: Module, created_by: str):
     return len(students)
 
 
-def email_module_students(module:Module, email_subject, email_message) -> int:
+def email_module_students(module: Module, email_subject, email_message) -> int:
     sent = 0
     enrolments = (
         module.enrolments.filter(
@@ -187,8 +187,8 @@ def email_module_students(module:Module, email_subject, email_message) -> int:
             qa__student__email__email__isnull=False,
             qa__student__email__is_default=True,
         )
-            .select_related('module', 'qa', 'qa__student', 'qa__student__email')
-            .values(
+        .select_related('module', 'qa', 'qa__student', 'qa__student__email')
+        .values(
             'qa__student__id',
             'qa__student__firstname',
             'qa__student__surname',
@@ -196,7 +196,7 @@ def email_module_students(module:Module, email_subject, email_message) -> int:
             'qa__student__email__email',
             'module__portfolio__email',
         )
-            .order_by(
+        .order_by(
             '-qa__student__email__email',
             'qa__student__surname',
             'qa__student__firstname',
