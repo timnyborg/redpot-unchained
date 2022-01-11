@@ -57,6 +57,7 @@ python-safety:
   image: pipelinecomponents/python-safety:latest
   script:
     - safety check --full-report -r requirements.txt
+  allow_failure: true
 
 release-image:
   stage: release
