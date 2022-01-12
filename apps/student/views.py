@@ -305,6 +305,14 @@ class Merge(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
         return redirect(target)
 
 
+class Marketing(PageTitleMixin, generic.UpdateView):
+    model = Student
+    form_class = forms.MarketingForm
+    template_name = 'student/marketing.html'
+    title = 'Person'
+    subtitle = 'Marketing'
+
+
 # --- Email views ---
 
 

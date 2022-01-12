@@ -1,0 +1,12 @@
+{% extends 'core/form.html' %}
+
+{% block after-section %}
+<script>
+    // HR line
+    const hr_tag = document.createElement("hr");
+    const mail_optin_toggle= document.getElementById('id_mail_optin').closest(".form-group");
+    const parent_tag = mail_optin_toggle.closest("form");
+    parent_tag.insertBefore(hr_tag, mail_optin_toggle);
+</script>
+<script src="/static/js/marketing_form.js"></script>
+{% endblock %}

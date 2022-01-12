@@ -1,11 +1,13 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 
 from freezegun import freeze_time
 from parameterized import parameterized
 
 from django import test
 from django.core.exceptions import ValidationError
+
+from apps.student import models
 
 from .. import forms
 from . import factories
@@ -84,3 +86,26 @@ class TestEditPersonForm(test.SimpleTestCase):
     def test_hide_restricted_fields(self):
         form = forms.EditForm(edit_restricted_fields=False)
         self.assertFalse('gender_identity' in form.fields)
+
+
+class TestStudentMarketing(test.SimpleTestCase):
+    def test_mail_optin_field_error(self):
+        form = forms.MarketingForm(data={'mail_optin': True})
+        self.assertIn('mail_optin_method', form.errors)
+
+    def test_mail_optin_method_error(self):
+        form = forms.MarketingForm(data={'mail_optin': True, 'mail_optin_on': datetime(2021, 11, 1, 12)})
+        self.assertIn('mail_optin_method', form.errors)
+
+    def test_email_optin_field_error(self):
+        form = forms.MarketingForm(data={'email_optin': True})
+        self.assertIn('email_optin_on', form.errors)
+
+    def test_email_optin_on_error(self):
+        form = forms.MarketingForm(
+            data={
+                'email_optin': True,
+                'email_optin_method': models.Student.MarketingOptinMethods.EMAIL_RESUBSCRIBE,
+            }
+        )
+        self.assertIn('email_optin_on', form.errors)
