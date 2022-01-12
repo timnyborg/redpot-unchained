@@ -786,6 +786,11 @@ span.invalid-feedback {
     display: block !important;
 }
 
+/* Needed to fix error after adding HR to student marketing */
+.toggle {
+    white-space: nowrap;
+}
+
 /* Classes used for dynamically hiding form elements based on others */
 .hideable-input.hidden {
     display: none;

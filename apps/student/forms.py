@@ -206,3 +206,72 @@ class MergeForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields['records'].label_from_instance = lambda obj: f'{obj.firstname} {obj.surname} ({obj.husid})'
         self.fields['records'].queryset = models.Student.objects.filter(pk__in=record_ids)
+
+
+class MarketingForm(forms.ModelForm):
+    submit_label = 'Submit'
+    hide_delete_button = True
+
+    class Meta:
+        model = models.Student
+        fields = [
+            'email_optin',
+            'email_optin_on',
+            'email_optin_method',
+            'mail_optin',
+            'mail_optin_on',
+            'mail_optin_method',
+            'no_publicity',
+        ]
+        widgets = {
+            'student': forms.HiddenInput,
+            'mail_optin_on': widgets.DateTimePickerInput(),
+            'email_optin_on': widgets.DateTimePickerInput(),
+            'email_optin': widgets.ToggleWidget(
+                attrs={
+                    'data-on': 'Opted in',
+                    'data-off': 'Not opted in',
+                    'data-onstyle': 'success',
+                    'data-offstyle': 'secondary',
+                }
+            ),
+            'mail_optin': widgets.ToggleWidget(
+                attrs={
+                    'data-on': 'Opted in',
+                    'data-off': 'Not opted in',
+                    'data-onstyle': 'success',
+                    'data-offstyle': 'secondary',
+                }
+            ),
+            'no_publicity': widgets.ToggleWidget(
+                attrs={
+                    'data-on': 'Opted out',
+                    'data-off': 'Not opted-out',
+                    'data-onstyle': 'danger',
+                    'data-offstyle': 'secondary',
+                }
+            ),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email_optin = cleaned_data.get("email_optin")
+        email_optin_method = cleaned_data.get("email_optin_method")
+        email_optin_on = cleaned_data.get("email_optin_on")
+        mail_optin = cleaned_data.get("mail_optin")
+        mail_optin_method = cleaned_data.get("mail_optin_method")
+        mail_optin_on = cleaned_data.get("mail_optin_on")
+
+        # Require details fields
+        if email_optin:
+            if not email_optin_method:
+                self.add_error('email_optin_method', 'Required')
+            if not email_optin_on:
+                self.add_error('email_optin_on', 'Required')
+
+        # Same for mail
+        if mail_optin:
+            if not mail_optin_method:
+                self.add_error('mail_optin_method', 'Required')
+            if not mail_optin_on:
+                self.add_error('mail_optin_on', 'Required')

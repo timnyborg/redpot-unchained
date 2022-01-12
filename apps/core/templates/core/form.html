@@ -9,14 +9,15 @@
             {% bootstrap_form form True %}
             <div class="form-group mb-3">
                 <button type='submit' class='btn btn-primary'>{{ form.submit_label|default:'Save' }}</button>
-                {% if object.get_delete_url %}
+                {% if object.get_delete_url and not form.hide_delete_button %}
+                    {{ form.hide_delete_button }}
                     <a href='{{ object.get_delete_url }}' class='btn btn-danger float-end'>Delete</a>
                 {% endif %}
             </div>
         </form>
+        {{ form.media }}
         {% block after-form %}{% endblock %}
         {% timestamp object %}
     </div>
     {% block after-section %}{% endblock %}
-    {{ form.media }}
 {% endblock %}
