@@ -15,9 +15,9 @@
                 {% endif %}
             </div>
         </form>
+        {{ form.media }}
         {% block after-form %}{% endblock %}
         {% timestamp object %}
     </div>
     {% block after-section %}{% endblock %}
-    {{ form.media }}
 {% endblock %}

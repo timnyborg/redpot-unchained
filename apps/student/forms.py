@@ -253,7 +253,7 @@ class MarketingForm(forms.ModelForm):
             ),
         }
 
-    def clean_marketing(self):
+    def clean(self):
         cleaned_data = super().clean()
         email_optin = cleaned_data.get("email_optin")
         email_optin_method = cleaned_data.get("email_optin_method")
