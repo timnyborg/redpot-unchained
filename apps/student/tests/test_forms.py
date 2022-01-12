@@ -90,36 +90,22 @@ class TestEditPersonForm(test.SimpleTestCase):
 
 class TestStudentMarketing(test.SimpleTestCase):
     def test_mail_optin_field_error(self):
-        form = forms.MarketingForm()
-        form.cleaned_data = {'mail_optin': True}
-        try:
-            form.clean_marketing()
-        except ValidationError:
-            self.fail('Mail optin on and mail optin method required')
+        form = forms.MarketingForm(data={'mail_optin': True})
+        self.assertIn('mail_optin_method', form.errors)
 
     def test_mail_optin_method_error(self):
-        form = forms.MarketingForm()
-        form.cleaned_data = {'mail_optin': True, 'mail_optin_on': datetime(2021, 11, 1, 12)}
-        try:
-            form.clean_marketing()
-        except ValidationError:
-            self.fail('Mail optin method required')
+        form = forms.MarketingForm(data={'mail_optin': True, 'mail_optin_on': datetime(2021, 11, 1, 12)})
+        self.assertIn('mail_optin_method', form.errors)
 
     def test_email_optin_field_error(self):
-        form = forms.MarketingForm()
-        form.cleaned_data = {'email_optin': True}
-        try:
-            form.clean_marketing()
-        except ValidationError:
-            self.fail('Email optin on and email optin method required')
+        form = forms.MarketingForm(data={'email_optin': True})
+        self.assertIn('email_optin_on', form.errors)
 
     def test_email_optin_on_error(self):
-        form = forms.MarketingForm()
-        form.cleaned_data = {
-            'email_optin': True,
-            'email_optin_method': models.Student.MarketingOptinMethods.EMAIL_RESUBSCRIBE,
-        }
-        try:
-            form.clean_marketing()
-        except ValidationError:
-            self.fail('Email optin on method required')
+        form = forms.MarketingForm(
+            data={
+                'email_optin': True,
+                'email_optin_method': models.Student.MarketingOptinMethods.EMAIL_RESUBSCRIBE,
+            }
+        )
+        self.assertIn('email_optin_on', form.errors)
