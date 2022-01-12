@@ -268,16 +268,24 @@ class Module(SignatureModel):
         """Calculate FTE, depending on level
         PG courses 100: FTE = 180 credit points
         UG courses 100: FTE = 120 credit points
-        """
 
-        # Todo: replace hard-coding, ensuring reliant routines do a select_related
-        if self.points_level in [6, 7]:  # PG
+        Ensure points_level is included in select_related if running this on large querysets
+        """
+        if self.is_postgraduate:
             denominator = 180.0
-        elif self.points_level in [1, 2]:  # UG
+        elif self.is_undergraduate:
             denominator = 120.0
         else:
             return 0.0
         return round(100 * (self.credit_points or 0) / denominator)
+
+    @property
+    def is_undergraduate(self) -> bool:
+        return self.points_level and self.points_level.is_undergraduate
+
+    @property
+    def is_postgraduate(self) -> bool:
+        return self.points_level and self.points_level.is_postgraduate
 
     @property
     def long_form(self) -> str:
@@ -663,3 +671,13 @@ class PointsLevel(models.Model):
 
     def __str__(self) -> str:
         return str(self.description)
+
+    @property
+    def is_undergraduate(self) -> bool:
+        # todo: consider converting this and is_postgrad to rely on a column, adding an "None (nonaccredited)" option,
+        #       and make it a notnull default for the module column.  Would simplify null-aware logic
+        return self.id in (1, 2, 3)
+
+    @property
+    def is_postgraduate(self) -> bool:
+        return self.id in (6, 7)
