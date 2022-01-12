@@ -275,6 +275,3 @@ class MarketingForm(forms.ModelForm):
                 self.add_error('mail_optin_method', 'Required')
             if not mail_optin_on:
                 self.add_error('mail_optin_on', 'Required')
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)

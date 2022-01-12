@@ -117,7 +117,7 @@ class TestStudentMarketing(test.SimpleTestCase):
         form = forms.MarketingForm()
         form.cleaned_data = {
             'email_optin': True,
-            'email_optin_method': models.Student.Marketing_optin_methods.EMAIL_RESUBSCRIBE,
+            'email_optin_method': models.Student.MarketingOptinMethods.EMAIL_RESUBSCRIBE,
         }
         try:
             form.clean_marketing()

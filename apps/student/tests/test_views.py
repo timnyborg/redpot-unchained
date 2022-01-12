@@ -569,11 +569,11 @@ class TestStudentMarketing(TestCase):
             data={
                 'email_optin': True,
                 'email_optin_on': datetime(2020, 1, 1, 12),
-                'email_optin_method': models.Student.Marketing_optin_methods.IN_PERSON,
+                'email_optin_method': models.Student.MarketingOptinMethods.IN_PERSON,
             },
         )
         self.student.refresh_from_db()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.student.email_optin, True)
         self.assertEqual(self.student.email_optin_on, datetime(2020, 1, 1, 12))
-        self.assertEqual(self.student.email_optin_method, models.Student.Marketing_optin_methods.IN_PERSON)
+        self.assertEqual(self.student.email_optin_method, models.Student.MarketingOptinMethods.IN_PERSON)

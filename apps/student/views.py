@@ -312,10 +312,6 @@ class Marketing(PageTitleMixin, generic.UpdateView):
     title = 'Person'
     subtitle = 'Marketing'
 
-    def get_form_kwargs(self) -> dict:
-        kwargs = super().get_form_kwargs()
-        return {**kwargs}
-
 
 # --- Email views ---
 
