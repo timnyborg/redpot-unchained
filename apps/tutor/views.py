@@ -63,10 +63,11 @@ class TutorOnModuleView(PageTitleMixin, LoginRequiredMixin, generic.DetailView):
 
         add_buttons = []
         if self.object.module.portfolio_id == 17:  # Online
-            add_buttons = ['online_teaching', 'marking_link']
-        elif self.object.module.portfolio_id == 32:
-            add_buttons = ['weekly_teaching', 'marking_link', 'weekly_syllabus']
-
+            add_buttons.extend(['online_teaching'])
+        elif self.object.module.portfolio_id == 32:  # Weekly
+            add_buttons.extend(['weekly_teaching', 'weekly_syllabus'])
+        if self.object.module.is_undergraduate:
+            add_buttons.extend(['marking'])
         return {
             'payments': payments,
             'add_buttons': add_buttons,

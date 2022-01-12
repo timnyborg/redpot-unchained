@@ -78,7 +78,7 @@
             <tr>
                 <td>{% payment_status_icon payment %}</td>
                 <td>£{{ payment.amount | floatformat:2 }}</td>
-                <td>{{ payment.type }}</td>
+                <td>{{ payment.type.short_form }}</td>
                 <td>{{ payment.details | truncatechars:50 }}</td> {#  todo: add abbr #}
                 <td>{{ payment.raised_by.get_full_name }}</td>
                 <td>{{ payment.raised_on | date }}</td>
@@ -108,10 +108,9 @@
         </div>
     {% endif %}
     {% if add_buttons %}
-        <hr>
         <h4>Add quick fees</h4>
         {# todo: programatize the selection of buttons and display #}
-        {% if 'marking_link' in add_buttons %}
+        {% if 'marking' in add_buttons %}
             <a href="{% url 'tutor-payment:quick:extras' object.id %}" class="btn btn-primary">
                 <i class="fas fa-fw fa-check"></i> Marking & extra students
             </a>
