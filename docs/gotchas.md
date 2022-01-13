@@ -61,6 +61,13 @@ So, if you're uncertain whether a record exists or not, you have two options, `.
         record = None
     ```
 
+## Reverse one-to-one relations throw an error if no record found
+Example: if you want to see if a `Student` has a `Tutor` record attached to it, and it doesn't, calling `student.tutor` will raise a `DoesNotExist` error rather than returning `None`
+
+To work around this, you can either do a `try... except Tutor.DoesNotExist...` block, or use `hasattr(student, 'tutor')`
+
+See: [Django project documentation](https://docs.djangoproject.com/en/4.0/topics/db/examples/one_to_one/)
+
 ## Be careful about accidentally calling a QuerySet
 QuerySets are lazy, so they don't actually execute until you iterate over them, etc.
 If you go to test whether a variable **contains** a lazy queryset or is None, use `if variable is not None:`, not
@@ -86,7 +93,7 @@ class View(PageTitleMixin, DetailView):
 ```
 
 ## Forms require more tailoring
-For example, making sure they have `method='post'`, `enctype='multipart/form-data'` when handling files, and `{{ form.media }}` to support widgets with js/css dependencies.  Much of the boilerplate can be handled with custom tags or resuable templates, though.
+For example, making sure they have `method='post'`, `enctype='multipart/form-data'` when handling files, and `{{ form.media }}` to support widgets with js/css dependencies.  Much of the boilerplate can be handled with custom tags (`{% bootstrap_form %}`) or reusable templates (`core/form.html`), though.
 
 ## Each project is its own wsgi application
 web2py acts as a wsgi application, and allows us to drag and drop into the /applications/ folder.  This means a
@@ -105,8 +112,12 @@ dev environment
 
 ## Migrations and test databases are awkward with unmanaged (legacy) tables
 This is an interesting can of worms.  Django doesn't want to create migrations for unmanaged tables, but those
-migrations are useful for creating dev or test databases for automated unit tests, and for deploying database changes on live.  We may just do manual migrations on live for core tables, and automated migrations for django-controlled tables
+migrations are useful for creating dev or test databases for automated unit tests, and for deploying database changes on live.  We may just do manual migrations on live for core tables (using `sqlmigrate`), and automated migrations for django-controlled tables, or eventually treat everything as 'managed', with a separate (elevated) db user and `DATABASES` entry for running migrations.
 
-## Auth tablenames conflict with web2py tables	(auth_permission, auth_group)
-Simultaneous support could be tricky, but web2py allows us to use different table names, so we could migrate them to
-non-conflicting names.
+## Clipboard access
+The browser clipboard API is not accessible unless accessing the page over https or localhost.  If testing clipboard features using a development server, you may need to whitelist your server.
+
+In Chrome:
+* Go to `chrome://flags`
+* Enable `Insecure origins treated as secure`
+* Add your dev site path to the origin list, including scheme and port, e.g. `http://deltamap:8080`
