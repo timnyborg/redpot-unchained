@@ -19,7 +19,6 @@ DATE_FORMAT = '%-d %b %Y'
 def create_statement(enrolment: models.Enrolment) -> bytes:
     student = enrolment.qa.student
     address = student.get_default_address()
-    # todo: is the student select_related needed? Surely it's always student
     fees = list(enrolment.ledger_set.debts().select_related('type').order_by('timestamp', 'id'))
     return _render_statement(
         enrolment=enrolment,

@@ -79,7 +79,15 @@
                 <td>{% payment_status_icon payment %}</td>
                 <td>£{{ payment.amount | floatformat:2 }}</td>
                 <td>{{ payment.type.short_form }}</td>
-                <td>{{ payment.details | truncatechars:50 }}</td> {#  todo: add abbr #}
+                <td>
+                    {% if payment.details|length > 50 %}
+                        <abbr data-bs-toggle="tooltip" title="{{ payment.details }}">
+                            {{ payment.details | truncatechars:40 }}
+                        </abbr>
+                    {% else %}
+                        {{ payment.details }}
+                    {% endif %}
+                </td>
                 <td>{{ payment.raised_by.get_full_name }}</td>
                 <td>{{ payment.raised_on | date }}</td>
                 <td>{{ payment.pay_after | date:'M Y' | default:'–' }}</td>

@@ -215,7 +215,7 @@ class ExtendedFPDF(FPDF):  # pragma: no cover
         if w == 0:
             w = self.w - self.r_margin - self.x
         wmax = (w - 2 * self.c_margin) * 1000 / self.font_size
-        s = txt.strip("\r")  # TODO: Make sure this translation works
+        s = txt.strip("\r")
         nb = len(s)
         if nb > 0 and s[nb - 1] == "\n":
             nb -= 1

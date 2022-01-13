@@ -7,9 +7,6 @@ from django.utils.functional import cached_property
 from apps.core.models import AddressModel, SignatureModel
 from apps.core.utils.models import PhoneField
 
-CUSTOM_PLAN_TYPE = 16
-CUSTOM_PAYMENT_PENDING_STATUS = 2
-
 
 class InvoiceQuerySet(models.QuerySet):
     def outstanding(self):

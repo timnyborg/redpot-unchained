@@ -20,8 +20,8 @@ class CustomPaymentPlanFactory(factory.django.DjangoModelFactory):
         model = models.PaymentPlan
 
     invoice = factory.SubFactory(InvoiceFactory)
-    type_id = models.CUSTOM_PLAN_TYPE
-    status_id = models.CUSTOM_PAYMENT_PENDING_STATUS
+    type_id = models.PaymentPlan.CUSTOM_TYPE
+    status_id = models.PaymentPlan.CUSTOM_PENDING_STATUS
     amount = factory.Faker('pydecimal', min_value=1, max_value=100000, right_digits=2)
 
 

@@ -130,7 +130,6 @@
                 {% for booking in catering %}
                     <tr>
                         <td>{{ booking.fee.description }}</td>
-                        {# todo: test student related data once implemented #}
                         <td>{{ student.diet.get_type_display | default:'–'  }}</td>
                         <td>{{ student.diet.note | default:'–'  }}
                         </td>

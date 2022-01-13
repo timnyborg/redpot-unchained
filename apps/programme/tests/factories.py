@@ -11,7 +11,7 @@ class ProgrammeFactory(factory.django.DjangoModelFactory):
 
     title = factory.Sequence(lambda n: f'Programme #{n}')
 
-    # todo: replace with enums
+    # todo: replace with enums?
     division_id = 1
     portfolio_id = 1
     qualification_id = 1

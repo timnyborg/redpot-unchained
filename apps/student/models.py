@@ -265,7 +265,7 @@ class AddressQuerySet(models.QuerySet):
 class Address(AddressModel, SITSLockingModelMixin, SignatureModel):
     sits_managed_fields = ['line1', 'line2', 'line3', 'town', 'countystate', 'postcode', 'country']
 
-    # todo: remove the address_type table and convert Address.type to a TextChoice
+    # todo: remove the address_type table once unused by legacy apps.  consider converting types from int -> string
     class Types(models.IntegerChoices):
         PERMANENT = 100, 'Permanent'
         HOME = 110, 'Home'

@@ -12,14 +12,13 @@ from django.utils.functional import cached_property
 from apps.core.models import User
 
 HOLIDAY_RATE = Decimal(0.1207 / 1.1207)
-# Constants used as defaults.  If used more extensively, we may need to use enums
 
 
 class Statuses(models.IntegerChoices):
-    RAISED = (1, 'Raised')
-    APPROVED = (2, 'Approved')
-    TRANSFERRED = (3, 'Transferred')
-    FAILED = (4, 'Failed')
+    RAISED = 1, 'Raised'
+    APPROVED = 2, 'Approved'
+    TRANSFERRED = 3, 'Transferred'
+    FAILED = 4, 'Failed'
 
 
 class Types(models.IntegerChoices):
@@ -144,7 +143,7 @@ class TutorPayment(models.Model):
         TutorPayment.objects.create(
             tutor_module=tutor_module,
             amount=holiday_amount,
-            type_id=12,  # Holiday, todo choices
+            type_id=Types.HOLIDAY_PAY,
             pay_after=holiday_date,  # Last payment date
             details=f'{details} (holiday)',
             approver=approver,
