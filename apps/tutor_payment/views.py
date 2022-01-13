@@ -205,7 +205,7 @@ class WeeklyTeaching(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, Si
 class AddSyllabusFee(LoginRequiredMixin, generic.View):
     """Adds a syllabus prep fee for a weekly class"""
 
-    def post(self, request, *args, **kwargs) -> http.HttpResponse:  # todo: post
+    def post(self, request, *args, **kwargs) -> http.HttpResponse:
         tutor_module = get_object_or_404(TutorModule, **self.kwargs)
 
         if not request.user.default_approver:

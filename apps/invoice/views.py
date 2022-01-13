@@ -342,7 +342,7 @@ class SelectForPayment(PermissionRequiredMixin, PageTitleMixin, generic.FormView
             'student': get_object_or_404(Student, pk=self.kwargs['student_id']),
             # We want to let finance users post adjustments to paid invoices,
             # but keep the list clean of paid invoices for regular users
-            'exclude_paid': not self.request.user.has_perm('core.finance'),  # todo: a proper permission
+            'exclude_paid': not self.request.user.has_perm('core.finance'),
         }
 
     def form_valid(self, form) -> http.HttpResponse:

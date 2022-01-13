@@ -539,11 +539,6 @@ span.noLocations {
     cursor: pointer;
 }
 
-/* Chrome has added an underline to abbrs, leading to an unwanted double-underline */
-abbr[title] {
-    text-decoration: none;
-}
-
 /* Empty state styling */
 .empty-state {
     text-align: center;

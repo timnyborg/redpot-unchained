@@ -9,6 +9,7 @@ from lxml import etree
 from django.conf import settings
 from django.db.models import F, FilteredRelation, OuterRef, Prefetch, Q, Subquery
 
+from apps.core.utils import strings
 from apps.enrolment.models import Enrolment
 from apps.finance.models import Accounts, Ledger
 from apps.module.models import Module
@@ -259,8 +260,7 @@ class HESAReturn:
                 batch=self.batch,
                 module=row.id,
                 modid=row.code,
-                # en-dash to regular hyphen, remove the rare half-moon used in arabic names like ʿattar.
-                mtitle=row.title.replace('–', '-').replace('ʿ', ''),  # todo: regex/normalization method?
+                mtitle=strings.normalize_to_latin1(row.title),
                 fte=row.full_time_equivalent,
                 crdtpts=str(row.credit_points).zfill(3),
                 levlpts=row.points_level_id,

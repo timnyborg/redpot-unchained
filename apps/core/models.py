@@ -38,7 +38,7 @@ class SignatureModel(models.Model):
     """
 
     # Todo: consider making these non-nullable.  Would ensure timestamps are applied to all create forms, but wouldn't
-    # help ensure on update forms
+    #  help ensure on update forms
     created_by = models.CharField(max_length=150, blank=True, null=True, editable=False)
     created_on = models.DateTimeField(blank=True, null=True, default=datetime.now, editable=False)
     modified_by = models.CharField(max_length=150, blank=True, null=True, editable=False)

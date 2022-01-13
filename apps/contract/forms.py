@@ -1,6 +1,7 @@
 from django import forms
 from django.core import validators
 from django.db.models import TextChoices
+from django.template import loader
 from django.utils.safestring import mark_safe
 
 from apps.contract import models
@@ -74,20 +75,7 @@ class CasualTeachingForm(ContractForm):
     supervisor_role = forms.ChoiceField(choices=SUPERVISOR_CHOICES, label="Supervisor's role")
     rate_of_pay = forms.CharField(
         validators=[validators.RegexValidator(r'^.*£', 'Please enter a rate in £s')],
-        # todo: move to a template?
-        help_text=mark_safe(
-            """
-                <a class="float-end" href="#"
-                    data-bs-toggle='modal'
-                    data-bs-target='#calculator_modal'
-                ><span class="fas fa-calculator"></span> Calculator</a>
-                <b>Excluding</b> holiday pay.
-                <br/>E.g. <i>£20/hr</i>.
-                <br/>or <i>£100/day (at a notional rate of £20/hr)</i>
-                <br/>
-                For more complicated payment situations, use an attached schedule of work.
-            """
-        ),
+        help_text=loader.render_to_string('contract/components/rate_of_pay_help_text.html'),
     )
     payment_frequency = forms.ChoiceField(
         choices=PAYMENT_FREQUENCY_CHOICES,

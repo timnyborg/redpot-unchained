@@ -83,8 +83,7 @@
     {% endif %}
 </div>
 
-{# todo: real payment plan permission #}
-{% if plan %}
+{% if perms.invoice.view_paymentplan %}
 <div class="section">
     <div class='row'>
         <div class='col-sm-6'>
