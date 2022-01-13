@@ -73,7 +73,6 @@
             {% endif %}
         </div>
         <div class="col-sm-12 col-md-6">
-            <!-- TODO: Disability dropdown feature needs to be implmented -->
             <h5>
                 <a data-bs-toggle="collapse" href="#collapse-disability" class="link-dark">Disability</a>
             </h5>
@@ -85,7 +84,9 @@
             <h5>
                 <a data-bs-toggle="collapse" href="#collapse-diet" class="link-dark">Dietary preferences</a>
                 <small>
-                    <a href="{% url 'student:edit-diet' student.id %}"><span class="fas fa-fw fa-pencil-alt"></span></a>
+                    <a href="{% url 'student:edit-diet' student.id %}" data-bs-toggle="tooltip" title="Edit diet">
+                        <i class="fas fa-fw fa-pencil-alt"></i>
+                    </a>
                 </small>
             </h5>
             <dl class="row collapse" id="collapse-diet">
@@ -98,9 +99,8 @@
             </dl>
             <h5>
                 <a data-bs-toggle="collapse" href="#collapse-emergency" class="link-dark">Emergency contact</a>
-                <!-- TODO: Create emergency contact page  -->
-                <a href="{% url 'student:emergency-contact:edit' student.id %}">
-                    <small><span class="fas fa-fw fa-pencil-alt"></span></small>
+                <a href="{% url 'student:emergency-contact:edit' student.id %}" data-bs-toggle="tooltip" title="Edit emergency contact">
+                    <small><i class="fas fa-fw fa-pencil-alt"></i></small>
                 </a>
             </h5>
                 <dl class="row collapse" id="collapse-emergency">
@@ -114,43 +114,31 @@
                 </dl>
 
             <hr>
-            <h5>Marketing</h5>
-            <h6>Email</h6>
-            <div class="btn-group">
-                {% if student.email_optin %}
-                    <a class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown">Opted in <span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="/student/marketing/{{ student.id }}">
-                            <i class="fas fa-fw fa-check text-danger">Opt-out</i>
-                        </a></li>
-                    </ul>
-                {% else %}
-                    <a class="btn btn-outline-dark btn-sm dropdown-toggle" data-bs-toggle="dropdown">Not opted-in <span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="/student/marketing/{{ student.id }}">
-                            <i class="fas fa-fw fa-check text-success"></i> Opt-in</a></li>
-                    </ul>
-                {% endif %}
-            </div>
-            <h6>Mail</h6>
-            <div class="btn-group">
-                {% if student.no_publicity %}
-                    <a class="btn btn-danger btn-sm dropdown-toggle" data-bs-toggle="dropdown">Opted-out <span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-check text-success"></span> Opt-in</a></li>
-                    </ul>
-                {% elif student.mail_optin %}
-                    <a class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown">Opted in <span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-remove text-danger"></span> Opt-out</a></li>
-                    </ul>
-                {% else %}
-                    <a class="btn btn-outline-dark btn-sm dropdown-toggle" data-bs-toggle="dropdown">Not opted-in <span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="/student/marketing/{{ student.id }}"><span class="fa fa-check text-danger"></span> Opt-in</a></li>
-                    </ul>
-                {% endif %}
-            </div>
+            <h5>Marketing
+                <a href="{% url 'student:marketing' student.id %}" data-bs-toggle="tooltip" title="Edit preferences">
+                    <small><i class="fas fa-pencil-alt"></i></small>
+                </a>
+            </h5>
+            <dl class="row">
+                <dt class="col-2">Email</dt>
+                <dd class="col-10">
+                    {% if student.email_optin %}
+                        <span class="badge bg-success">Opted-in</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Not opted-in</span>
+                    {% endif %}
+                </dd>
+                <dt class="col-2">Mail</dt>
+                <dd class="col-10">
+                    {% if student.no_publicity %}
+                        <span class="badge bg-danger">Opted-out</span>
+                    {% elif student.mail_optin %}
+                        <span class="badge bg-success">Opted-in</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Not opted-in</span>
+                    {% endif %}
+                </dd>
+            </dl>
         </div>
     </div>
     {% timestamp student %}
@@ -162,7 +150,6 @@
     </div>
         <h2 id='address' class='section-title'>Address</h2>
         {% if addresses %}
-        <!-- TODO : The chevron down doesn't change to chevron up when opened. Js in tools.js (I think)-->
         <ul class="item-list hide-items" data-max-item=2>
         {% for address in addresses %}
             <li class="item" data-created-on="{{ address.created_on }}">
