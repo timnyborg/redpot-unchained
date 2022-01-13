@@ -202,7 +202,7 @@
                                         Set default
                                     </a>
                                 {% endif %}
-                                <a data-bs-toggle="tooltip" placement="top" title="Copy address to clipboard" class="btn btn-outline-dark me-1 copyAddressButton" onclick="copyToClipboardBreakLines('#addressField{{ address.id}}')">
+                                <a data-bs-toggle="tooltip" placement="top" title="Copy address to clipboard" class="btn btn-outline-dark me-1 copyAddressButton" onclick="copyElementToClipboard('addressField{{ address.id}}')">
                                     <span class="far fa-copy">
                                     </span>
                                 </a>
@@ -820,25 +820,7 @@
 </div>
 {% endif %}
 
-<!-- TODO : Does this remain here or do we move this elsewhere? -->
 <script>
-    function copyToClipboard(copiedText) {
-        var newDocumentElement = document.createElement("input");
-        document.body.appendChild(newDocumentElement);
-        newDocumentElement.setAttribute('value', copiedText);
-        newDocumentElement.select();
-        document.execCommand("copy");
-        document.body.removeChild(newDocumentElement);
-    }
-
-    function copyToClipboardBreakLines(element) {
-        var text = $(element).clone().text();
-        text = text.replace(/  /g, "");
-        element = $('<textarea>').appendTo('body').val(text).select();
-        document.execCommand('copy');
-        element.remove();
-    }
-
     // todo: proper generic method
     function api_update() {
         const success_actions = {
