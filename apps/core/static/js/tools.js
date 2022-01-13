@@ -70,3 +70,20 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 });
+
+// Copy-to-clipboard functionality
+function copyToClipboard(text) {
+    if (navigator.clipboard === undefined) {
+        console.error(
+            'navigator.clipboard is undefined, probably because the application is not being served over https' +
+            'or localhost.  If developing in Chrome, add your subdomain to "Insecure origins treated as secure"'
+        );
+    } else {
+        navigator.clipboard.writeText(text);
+    }
+}
+
+function copyElementToClipboard(element_id) {
+    const text = document.getElementById(element_id).innerText;
+    copyToClipboard(text);
+}
