@@ -13,10 +13,6 @@ class ReturnAddresses(TextChoices):
     EWERT = 'Ewert House, Ewert Place, Summertown, OX2 7DD', 'Ewert House, Ewert Place, Summertown, OX2 7DD'
 
 
-EXPENSE_CHOICES = [
-    ('45p', 'Standard expenses text (45p/mi.)'),
-    ('33p', 'Undergraduate text (33p/mi.)'),
-]
 SUPERVISOR_CHOICES = [
     ('', '– Please select –'),
     ('Director of Studies', 'Director of Studies'),
@@ -45,11 +41,6 @@ class ContractForm(forms.ModelForm):
     )
     email = forms.EmailField(label='Contact email')
     venue = forms.CharField(help_text='e.g. Ewert House')
-    expense_details = forms.ChoiceField(
-        choices=EXPENSE_CHOICES,
-        label='Travel expense details',
-        help_text='Which travel expense rate to include in the standard text',
-    )
     return_to = forms.CharField(help_text='The name of the administrator or team')
     return_address = forms.ChoiceField(choices=ReturnAddresses.choices, initial=ReturnAddresses.REWLEY)
 
@@ -133,7 +124,6 @@ class CasualTeachingForm(ContractForm):
         'expected_work',
         'attached_work',
         'references_required',
-        'expense_details',
         'return_to',
         'return_address',
         'email_notification',
@@ -161,7 +151,6 @@ class GuestSpeakerForm(ContractForm):
         'dates_and_times',
         'lecture_no',
         'fee_per_lecture',
-        'expense_details',
         'approver',
         'return_to',
         'return_address',
