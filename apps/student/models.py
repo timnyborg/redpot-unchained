@@ -13,6 +13,7 @@ from django.urls import reverse
 
 from apps.core.models import AddressModel, SignatureModel, SITSLockingModelMixin
 from apps.core.utils.models import PhoneField
+from apps.enrolment.models import Enrolment
 from apps.invoice.models import Invoice
 from apps.module.models import Module
 
@@ -217,6 +218,10 @@ class Student(SITSLockingModelMixin, SignatureModel):
 
     def get_invoices(self) -> QuerySet[Invoice]:
         return Invoice.objects.filter(invoice_ledger__ledger__enrolment__qa__student=self).distinct()
+
+    def get_enrolments(self, **kwargs) -> QuerySet[Enrolment]:
+        """Conveniently get a student's enrolments, regardless of which qualification_aim"""
+        return Enrolment.objects.filter(qa__student=self, **kwargs)
 
     @transaction.atomic
     def set_billing_address(self, address: Address, *, save: bool = True) -> None:
