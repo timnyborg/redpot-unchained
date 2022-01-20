@@ -248,6 +248,8 @@ PROTECTED_MEDIA_ROOT: Path = env.path('PROTECTED_MEDIA_ROOT', default=BASE_DIR /
 # separate path and URL for public website media in production.
 WEBSITE_MEDIA_URL = env('WEBSITE_MEDIA_URL', default=MEDIA_URL)
 WEBSITE_MEDIA_ROOT: Path = env.path('WEBSITE_MEDIA_ROOT', default=MEDIA_ROOT)
+# URL for accessing application attachments managed by a separate app, with its own auth
+APPLICATION_ATTACHMENT_URL = env('APPLICATION_ATTACHMENT_URL', default='')
 
 # Login customization
 LOGIN_REDIRECT_URL = '/'

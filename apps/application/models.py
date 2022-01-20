@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.db import models
+from django.urls import reverse
 
 from apps.core.models import SignatureModel
 
@@ -8,7 +10,7 @@ class Application(SignatureModel):
         'module.Module',
         models.DO_NOTHING,
         db_column='module',
-        related_name='course_applications',
+        related_name='applications',
         related_query_name='application',
     )
     student = models.ForeignKey(
@@ -16,7 +18,7 @@ class Application(SignatureModel):
         models.DO_NOTHING,
         db_column='student',
         null=True,
-        related_name='course_applications',
+        related_name='applications',
         related_query_name='application',
     )
 
@@ -100,19 +102,23 @@ class Application(SignatureModel):
     class Meta:
         db_table = 'course_application'
 
+    def get_absolute_url(self) -> str:
+        return reverse('application:view', kwargs={'pk': self.pk})
+
 
 class Attachment(models.Model):
     application = models.ForeignKey(
         Application, models.CASCADE, related_name='attachments', related_query_name='attachment'
     )
     # todo: rename db columns
-    title = models.CharField(max_length=50, blank=True, null=True, db_column='filename')
-    filename = models.CharField(max_length=255, blank=True, null=True, db_column='attachment')
+    title = models.CharField(max_length=50, db_column='filename')
+    filename = models.CharField(max_length=255, db_column='attachment')
 
     class Meta:
         db_table = 'course_application_attachment'
 
     @property
     def full_url(self) -> str:
-        # todo: implement, probably based on a setting, maybe a storage class
-        return '#'
+        # todo: convert to serving via a shared storage, or fetching and serving the resource over https
+        #  once the application app has it in place
+        return settings.APPLICATION_ATTACHMENT_URL + self.filename

@@ -155,7 +155,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        course_applications = self.object.course_applications.select_related('module').all()
+        applications = self.object.applications.select_related('module').all()
         addresses = self.object.addresses.order_by('-is_default', '-is_billing', 'type', '-modified_on')
         emails = self.object.emails.order_by('-is_default', '-modified_on')
         enquiries = self.object.enquiries.select_related('module').order_by('-date')
@@ -209,7 +209,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
 
         return {
             'addresses': addresses,
-            'course_applications': course_applications,
+            'applications': applications,
             'emails': emails,
             'enquiries': enquiries,
             'diet': diet,
