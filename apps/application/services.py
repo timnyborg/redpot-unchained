@@ -10,6 +10,7 @@ from apps.student.models import (
     NOT_KNOWN_DOMICILE,
     NOT_KNOWN_ETHNICITY,
     NOT_KNOWN_NATIONALITY,
+    NOT_KNOWN_RELIGION,
     Address,
     Domicile,
     Email,
@@ -40,9 +41,9 @@ def create_student_from_application(*, application, user: User) -> Student:
         ethnicity_id=application.ethnicity.id if application.ethnicity else NOT_KNOWN_ETHNICITY,
         nationality_id=application.nationality.id if application.nationality else NOT_KNOWN_NATIONALITY,
         domicile_id=application.domicile.id if application.domicile else NOT_KNOWN_DOMICILE,
+        religion_or_belief_id=application.religion if application.religion else NOT_KNOWN_RELIGION,
         highest_qualification=application.entry_qualification,
         occupation=application.occupation,
-        religion_or_belief=application.religion,
         dars_optout=not application.dars_optin,
         **timestamp_fields,
     )
@@ -64,17 +65,19 @@ def create_student_from_application(*, application, user: User) -> Student:
         Phone.objects.create(student=student, number=application.phone, is_default=True, **timestamp_fields)
 
     # Standard address
-    Address.objects.create(
-        line1=application.address1.strip(),
-        line2=(application.address2 or '').strip(),
-        town=(application.city or '').strip(),
-        countystate=(application.county_state or '').strip(),
-        country=Domicile.objects.get(pk=application.country).name,
-        postcode=(application.postcode or '').strip(),
-        is_default=True,
-        student=student,
-        **timestamp_fields,
-    )
+    if application.address1:
+        domicile = Domicile.objects.filter(pk=application.country).first()
+        Address.objects.create(
+            line1=application.address1.strip(),
+            line2=(application.address2 or '').strip(),
+            town=(application.city or '').strip(),
+            countystate=(application.county_state or '').strip(),
+            country=domicile.name if domicile else '',
+            postcode=(application.postcode or '').strip(),
+            is_default=True,
+            student=student,
+            **timestamp_fields,
+        )
     if application.billing_address1:
         # Set company name on a new line if it exists
         line_1 = application.billing_address1.strip()
@@ -83,6 +86,7 @@ def create_student_from_application(*, application, user: User) -> Student:
         if application.company_name:
             line_1, line_2, line_3 = application.company_name.strip(), line_1, line_2
 
+        domicile = Domicile.objects.filter(pk=application.billing_country).first()
         # Add a billing address
         Address.objects.create(
             line1=line_1,
@@ -90,7 +94,7 @@ def create_student_from_application(*, application, user: User) -> Student:
             line3=line_3,
             town=(application.billing_city or '').strip(),
             countystate=(application.billing_county_state or '').strip(),
-            country=Domicile.objects.get(pk=application.billing_country).name,
+            country=domicile.name if domicile else '',
             postcode=(application.billing_postcode or '').strip(),
             is_billing=True,
             student=student,
