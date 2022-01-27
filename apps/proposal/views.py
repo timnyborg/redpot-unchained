@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
 from django.views import generic
 
 from apps.core.utils.views import PageTitleMixin
@@ -18,3 +19,9 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Upda
 
 
 # todo: remaining proposal views/services
+
+
+class Delete(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = models.Proposal
+    template_name = 'core/delete_form.html'
+    success_url = reverse_lazy('proposal:search')

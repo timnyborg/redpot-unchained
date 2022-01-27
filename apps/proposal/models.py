@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 from apps.core.models import SignatureModel
 from apps.core.utils.web2py_compat import PipeSeparatedIntegersField, PipeSeparatedStringsField
@@ -82,6 +83,9 @@ class Proposal(SignatureModel):
 
     def __str__(self) -> str:
         return f'#{self.pk}: {self.title}'
+
+    def get_delete_url(self) -> str:
+        return reverse('proposal:delete', kwargs={'pk': self.pk})
 
 
 class ProposalMessage(models.Model):
