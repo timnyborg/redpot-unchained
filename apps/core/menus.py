@@ -15,7 +15,7 @@ module_children = (
     MenuItem("New", reverse("module:new"), icon="plus", separator=True),
     MenuItem(
         "Proposals",
-        'not-implemented',
+        reverse("proposal:search"),
         icon="graduation-cap",
         separator=True,
         check=lambda request: request.user.has_perm('proposal.add_proposal'),

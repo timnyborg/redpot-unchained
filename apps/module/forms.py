@@ -29,7 +29,6 @@ HTML_FIELDS = [
     'programme_details',
     'recommended_reading',
     'scholarships',
-    'snippet',
     'teaching_methods',
     'teaching_outcomes',
     'selection_criteria',

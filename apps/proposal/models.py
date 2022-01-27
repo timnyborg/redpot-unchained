@@ -17,26 +17,34 @@ class Statuses(models.IntegerChoices):
 class Proposal(SignatureModel):
     module = models.OneToOneField('module.Module', models.DO_NOTHING, db_column='module')
     status = models.IntegerField(choices=Statuses.choices, default=Statuses.CREATED)
-    title = models.CharField(max_length=80, blank=True, null=True)
+    title = models.CharField(max_length=80)
     subjects = PipeSeparatedIntegersField(blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
-    michaelmas_end = models.DateField(blank=True, null=True)
-    hilary_start = models.DateField(blank=True, null=True)
+    michaelmas_end = models.DateField(blank=True, null=True, verbose_name='End of first term')
+    hilary_start = models.DateField(blank=True, null=True, verbose_name='Start of second term')
     end_date = models.DateField(blank=True, null=True)
-    half_term = models.DateField(blank=True, null=True)
+    half_term = models.DateField(blank=True, null=True, verbose_name='Half term date')
     start_time = models.TimeField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
-    no_meetings = models.IntegerField(blank=True, null=True)
+    no_meetings = models.IntegerField(blank=True, null=True, verbose_name='# of meetings')
     duration = models.FloatField(blank=True, null=True)
-    is_repeat = models.BooleanField(blank=True, null=True)
+    is_repeat = models.BooleanField(blank=True, null=True, verbose_name='Is this a repeat course?')
     previous_run = models.CharField(max_length=12, blank=True, null=True)
-    location = models.CharField(max_length=32, blank=True, null=True)
+    location = models.ForeignKey(
+        'module.Location', on_delete=models.PROTECT, blank=True, null=True, db_column='location'
+    )
     address = models.CharField(max_length=255, blank=True, null=True)
-    room = models.CharField(max_length=12, blank=True, null=True)
-    room_setup = models.CharField(max_length=12, choices=RoomSetups.choices, null=True)
-    max_size = models.IntegerField(blank=True, null=True)
+    room = models.ForeignKey('module.Room', on_delete=models.PROTECT, db_column='room', blank=True, null=True)
+    room_setup = models.CharField(
+        max_length=12,
+        choices=RoomSetups.choices,
+        null=True,
+        verbose_name='Classroom layout',
+        default=RoomSetups.SEMINR,
+    )
+    max_size = models.IntegerField(blank=True, null=True, verbose_name='Class size')
     reduced_size = models.IntegerField(blank=True, null=True)
-    reduction_reason = models.CharField(max_length=50, blank=True, null=True)
+    reduction_reason = models.CharField(max_length=50, blank=True, null=True, verbose_name='Reason for reduction')
     tutor = models.ForeignKey('tutor.Tutor', on_delete=models.PROTECT, db_column='tutor')
     tutor_title = models.CharField(max_length=16, blank=True, null=True)
     tutor_firstname = models.CharField(max_length=40, null=True)
@@ -45,7 +53,7 @@ class Proposal(SignatureModel):
     tutor_qualifications = models.CharField(max_length=256, blank=True, null=True)
     tutor_biography = models.TextField(blank=True, null=True)
     field_trips = models.CharField(max_length=60, blank=True, null=True)
-    risk_form = models.CharField(max_length=255, blank=True, null=True)
+    risk_form = models.CharField(max_length=255, blank=True, null=True, verbose_name='Risk assessment form')
     snippet = models.TextField(blank=True, null=True)
     overview = models.TextField(blank=True, null=True)
     programme_details = models.TextField(blank=True, null=True)
@@ -55,17 +63,26 @@ class Proposal(SignatureModel):
     teaching_methods = models.TextField(blank=True, null=True)
     teaching_outcomes = models.TextField(blank=True, null=True)
     image = models.CharField(max_length=255, blank=True, null=True)
-    equipment = PipeSeparatedIntegersField(blank=True, null=True)
+    equipment = PipeSeparatedIntegersField(blank=True, null=True, verbose_name='Required equipment')
     scientific_equipment = models.CharField(max_length=64, blank=True, null=True)
-    additional_requirements = models.TextField(blank=True, null=True)
+    additional_requirements = models.TextField(blank=True, null=True, verbose_name='Additional class requirements')
     recommended_reading = models.TextField(blank=True, null=True)
-    dos = models.CharField(max_length=16, blank=True, null=True, verbose_name='Director of studies')
-    due_date = models.DateField(blank=True, null=True)
+    dos = models.ForeignKey(
+        'core.User',
+        on_delete=models.PROTECT,
+        db_column='dos',
+        blank=True,
+        null=True,
+        verbose_name='Director of studies',
+    )
+    due_date = models.DateField(blank=True, null=True, verbose_name='Tutor completion due')
     allow_pd_edit = models.BooleanField(
         default=True, verbose_name='Editable programme details', help_text='Can tutor edit Programme details?'
     )
     grammar_points = models.TextField(blank=True, null=True)
-    limited = models.BooleanField(blank=True, null=True)
+    limited = models.BooleanField(
+        default=False, verbose_name='Is this a language course?', help_text='Updatable fields will be limited'
+    )
     updated_fields = PipeSeparatedStringsField(blank=True, null=True)
     tutor_approve = models.DateTimeField(blank=True, null=True)
     dos_approve = models.DateTimeField(blank=True, null=True)
@@ -79,7 +96,7 @@ class Proposal(SignatureModel):
     class Meta:
         db_table = 'proposal'
         verbose_name = 'Course proposal'
-        permissions = [('approve_proposal', 'Can approve course proposals (when assigned as Director of Studies')]
+        permissions = [('approve_proposal', 'Can approve course proposals (when assigned as Director of Studies)')]
 
     def __str__(self) -> str:
         return f'#{self.pk}: {self.title}'

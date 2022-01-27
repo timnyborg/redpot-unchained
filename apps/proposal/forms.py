@@ -4,9 +4,21 @@ from django_select2.forms import Select2MultipleWidget
 from django import forms
 from django.utils.safestring import mark_safe
 
+from apps.core.utils import widgets
 from apps.core.utils.forms import ApproverChoiceField
 from apps.module.models import Equipment, Module, Subject
 from apps.proposal import models
+
+HTML_FIELDS = [
+    'overview',
+    'programme_details',
+    'course_aims',
+    'level_and_demands',
+    'assessment_methods',
+    'teaching_methods',
+    'teaching_outcomes',
+    'recommended_reading',
+]
 
 
 class ProposalForm(forms.ModelForm):
@@ -66,7 +78,12 @@ class ProposalForm(forms.ModelForm):
             'limited',
         ]
         widgets = {
-            'snippet': CKEditorWidget,
+            **{field: CKEditorWidget for field in HTML_FIELDS},
+            'start_date': widgets.DatePickerInput,
+            'end_date': widgets.DatePickerInput,
+            'half_term': widgets.DatePickerInput,
+            'start_time': widgets.TimePickerInput,
+            'end_time': widgets.TimePickerInput,
             # todo: implement other widgets
         }
 
