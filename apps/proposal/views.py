@@ -1,3 +1,6 @@
+from django_filters.views import FilterView
+from django_tables2 import SingleTableMixin
+
 from django import http
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -7,7 +10,7 @@ from django.views import generic
 
 from apps.core.utils.views import PageTitleMixin
 
-from . import forms, models
+from . import datatables, forms, models
 
 
 class Edit(PermissionRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
@@ -31,6 +34,19 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
     model = models.Proposal
     template_name = 'core/delete_form.html'
     success_url = reverse_lazy('proposal:search')
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Proposal deleted')
+        return super().get_success_url()
+
+
+class Search(PermissionRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
+    permission_required = 'proposal.view_proposal'
+    model = models.Proposal
+    template_name = 'proposal/search.html'
+    table_class = datatables.SearchTable
+    filterset_class = datatables.SearchFilter
+    subtitle = 'Search'
 
 
 # todo: remaining proposal views/services

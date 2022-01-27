@@ -101,6 +101,9 @@ class Proposal(SignatureModel):
     def __str__(self) -> str:
         return f'#{self.pk}: {self.title}'
 
+    def get_edit_url(self) -> str:
+        return reverse('proposal:edit', kwargs={'pk': self.pk})
+
     def get_delete_url(self) -> str:
         return reverse('proposal:delete', kwargs={'pk': self.pk})
 
