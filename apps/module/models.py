@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from django.conf import settings
+from django.core import validators
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
@@ -66,6 +67,11 @@ class ModuleManager(models.Manager):
 
     def get_queryset(self) -> models.QuerySet:
         return super().get_queryset().defer(*self.defer_fields)
+
+
+# Common length limits for website text fields
+MAX_WEBFIELD_LENGTH = 10000
+webfield_attrs = {'validators': [validators.MaxLengthValidator(MAX_WEBFIELD_LENGTH)]}
 
 
 class Module(SignatureModel):
@@ -133,25 +139,25 @@ class Module(SignatureModel):
     phone = PhoneField(max_length=256, blank=True, null=True)
 
     source_module_code = models.CharField(max_length=12, blank=True, null=True)
-    overview = models.TextField(blank=True, null=True)
-    accommodation = models.TextField(blank=True, null=True)
-    how_to_apply = models.TextField(blank=True, null=True, db_column='application')
-    assessment_methods = models.TextField(blank=True, null=True)
-    certification = models.TextField(blank=True, null=True)
-    course_aims = models.TextField(blank=True, null=True)
-    level_and_demands = models.TextField(blank=True, null=True)
-    libraries = models.TextField(blank=True, null=True)
-    payment = models.TextField(blank=True, null=True)
-    programme_details = models.TextField(blank=True, null=True)
-    recommended_reading = models.TextField(blank=True, null=True)
-    scholarships = models.TextField(blank=True, null=True, verbose_name='Funding')
+    overview = models.TextField(blank=True, null=True, **webfield_attrs)
+    accommodation = models.TextField(blank=True, null=True, **webfield_attrs)
+    how_to_apply = models.TextField(blank=True, null=True, db_column='application', **webfield_attrs)
+    assessment_methods = models.TextField(blank=True, null=True, **webfield_attrs)
+    certification = models.TextField(blank=True, null=True, **webfield_attrs)
+    course_aims = models.TextField(blank=True, null=True, **webfield_attrs)
+    level_and_demands = models.TextField(blank=True, null=True, **webfield_attrs)
+    libraries = models.TextField(blank=True, null=True, **webfield_attrs)
+    payment = models.TextField(blank=True, null=True, **webfield_attrs)
+    programme_details = models.TextField(blank=True, null=True, **webfield_attrs)
+    recommended_reading = models.TextField(blank=True, null=True, **webfield_attrs)
+    scholarships = models.TextField(blank=True, null=True, verbose_name='Funding', **webfield_attrs)
     snippet = models.CharField(
         max_length=255, blank=True, null=True, help_text='Used in cards and search results. Maximum 255 characters'
     )
-    teaching_methods = models.TextField(blank=True, null=True)
-    teaching_outcomes = models.TextField(blank=True, null=True, verbose_name='Learning outcomes')
-    selection_criteria = models.TextField(blank=True, null=True, verbose_name='Entry requirements')
-    it_requirements = models.TextField(blank=True, null=True)
+    teaching_methods = models.TextField(blank=True, null=True, **webfield_attrs)
+    teaching_outcomes = models.TextField(blank=True, null=True, verbose_name='Learning outcomes', **webfield_attrs)
+    selection_criteria = models.TextField(blank=True, null=True, verbose_name='Entry requirements', **webfield_attrs)
+    it_requirements = models.TextField(blank=True, null=True, **webfield_attrs)
     credit_points = models.IntegerField(blank=True, null=True)
     points_level = models.ForeignKey('PointsLevel', models.DO_NOTHING, db_column='points_level', blank=True, null=True)
     enrol_online = models.BooleanField(blank=True, null=True, verbose_name='Online enrolment')
@@ -187,7 +193,7 @@ class Module(SignatureModel):
         choices=((1, 'Open access courses'), (2, 'Selective short courses')), null=True, blank=True
     )
     apply_url = models.CharField(max_length=512, blank=True, null=True)
-    further_details = models.TextField(blank=True, null=True)
+    further_details = models.TextField(blank=True, null=True, **webfield_attrs)
     is_repeat = models.BooleanField(default=False)
     reminder_sent_on = models.DateTimeField(blank=True, null=True)
 
