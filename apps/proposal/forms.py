@@ -1,0 +1,121 @@
+from ckeditor.widgets import CKEditorWidget
+from django_select2.forms import Select2MultipleWidget
+
+from django import forms
+from django.utils.safestring import mark_safe
+
+from apps.core.utils.forms import ApproverChoiceField
+from apps.module.models import Equipment, Module, Subject
+from apps.proposal import models
+
+
+class ProposalForm(forms.ModelForm):
+    michaelmas_end = forms.DateField(disabled=True, required=False)
+    hilary_start = forms.DateField(disabled=True, required=False)
+    previous_run = forms.ModelChoiceField(queryset=Module.objects.all(), to_field_name='code', required=False)
+    dos = ApproverChoiceField(permission='proposal.approve_proposal', label='Director of studies', required=False)
+    equipment = forms.ModelMultipleChoiceField(
+        queryset=Equipment.objects.all(), required=False, widget=Select2MultipleWidget()
+    )
+    subjects = forms.ModelMultipleChoiceField(
+        queryset=Subject.objects.all(), required=False, widget=Select2MultipleWidget()
+    )
+
+    class Meta:
+        model = models.Proposal
+        fields = [
+            'title',
+            'subjects',
+            'start_date',
+            'michaelmas_end',
+            'hilary_start',
+            'end_date',
+            'half_term',
+            'start_time',
+            'end_time',
+            'no_meetings',
+            'duration',
+            'is_repeat',
+            'previous_run',
+            'location',
+            'address',
+            'room',
+            'room_setup',
+            'max_size',
+            'reduced_size',
+            'reduction_reason',
+            'field_trips',
+            'risk_form',
+            'snippet',
+            'overview',
+            'programme_details',
+            'course_aims',
+            'level_and_demands',
+            'assessment_methods',
+            'teaching_methods',
+            'teaching_outcomes',
+            'image',
+            'equipment',
+            'scientific_equipment',
+            'additional_requirements',
+            'recommended_reading',
+            'dos',
+            'due_date',
+            'allow_pd_edit',
+            'grammar_points',
+            'limited',
+        ]
+        widgets = {
+            'snippet': CKEditorWidget,
+            # todo: implement other widgets
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Limit previous_run to the tutor's other modules
+        self.fields['previous_run'].queryset = self.instance.tutor.modules.exclude(
+            id=self.instance.module_id
+        ).order_by('-start_date')
+        self.fields['previous_run'].label_from_instance = lambda obj: f'{obj.title} ({obj.start_date})'
+
+        # Highlight fields edited by tutor / dos
+        for field in self.instance.updated_fields:
+            # todo: do this with css class
+            self.fields[field].label = mark_safe(
+                f'<span class="text-primary fw-bold">{self.fields[field].label} (edited)</span>'
+            )
+
+    def clean(self) -> None:
+        start_date = self.cleaned_data.get('start_date')
+        end_date = self.cleaned_data.get('end_date')
+        # Check end_date is equal or later to start_date
+        if end_date and not start_date:
+            self.add_error('start_date', 'Please set a start date')
+        if end_date and start_date and end_date < start_date:
+            self.add_error('end_date', 'Cannot be earlier than start date')
+
+        reduced_size = self.cleaned_data.get('reduced_size')
+        reduction_reason = self.cleaned_data.get('reduction_reason')
+        status = self.cleaned_data.get('status')
+        if reduced_size:
+            # Make reason specification obligatory
+            if not reduction_reason:
+                self.add_error('reduction_reason', 'Please specify reason for reduction')
+            # If a reduced class size was filled the admin must move it to the real class size before completion
+            if status == models.Statuses.ADMIN:
+                self.add_error('reduced_size', 'Move value to class size or delete')
+            # Any other status, make sure it's smaller than max
+            elif reduced_size >= self.instance.max_size:
+                self.add_error('reduced_size', 'Reduced size must be smaller than max size')
+
+        # If scientific_equipment is ticked on make sure the specification is filled
+        # todo: sort out '13' logic...
+        equipment = self.cleaned_data.get('equipment')
+        scientific_equipment = self.cleaned_data.get('scientific_equipment')
+        if equipment:
+            equipment_ids = [obj.pk for obj in equipment]
+            if not scientific_equipment and 13 in equipment_ids:
+                self.add_error('scientific_equipment', 'Please specify')
+            elif scientific_equipment and 13 not in equipment_ids:
+                self.cleaned_data['scientific_equipment'] = ''

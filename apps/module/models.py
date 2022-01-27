@@ -245,6 +245,7 @@ class Module(SignatureModel):
         through='ModuleMarketingType',
         help_text='These decide how the course is displayed in the website search results, and in print material',
     )
+    equipment = models.ManyToManyField(to='Equipment', through='ModuleEquipment')
     objects = ModuleManager()
 
     class Meta:
@@ -687,3 +688,25 @@ class PointsLevel(models.Model):
     @property
     def is_postgraduate(self) -> bool:
         return self.id in (6, 7)
+
+
+class Equipment(models.Model):
+    name = models.CharField(max_length=50)
+    ewert_cabs_code = models.CharField(max_length=10)
+    rewley_cabs_code = models.CharField(max_length=10)
+    always_required = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'equipment'
+
+    def __str__(self) -> str:
+        return str(self.name)
+
+
+class ModuleEquipment(SignatureModel):
+    module = models.ForeignKey(Module, models.CASCADE, db_column='module')
+    equipment = models.ForeignKey(Equipment, models.PROTECT, db_column='equipment')
+    note = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'module_equipment'
