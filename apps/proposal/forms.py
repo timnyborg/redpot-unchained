@@ -146,6 +146,7 @@ class NewProposalForm(forms.ModelForm):
     tutor_module = forms.ModelChoiceField(
         TutorModule.objects.all(),
         widget=autocomplete.ModelSelect2(url='autocomplete:tutor-on-module', attrs={'data-minimum-input-length': 3}),
+        label='Tutor and module',
         help_text='Enter a module code or title, then select the tutor',
     )
     dos = ApproverChoiceField(
