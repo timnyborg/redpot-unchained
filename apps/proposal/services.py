@@ -1,14 +1,12 @@
 from apps.proposal.models import Proposal
 
 
-def populate_from_redpot(*, proposal: Proposal, language_course: bool = False) -> None:
+def populate_from_module(*, proposal: Proposal) -> None:
     module = proposal.module
 
-    # Module subjects
     module_subjects = module.subjects.all()
-    proposal_subjects = list(sub.pk for sub in module_subjects)
+    proposal_subjects = [sub.pk for sub in module_subjects]
 
-    # Module equipment
     module_equipment = module.equipment.all()  # Remove duplicates
     proposal_equipment = list({item.pk for item in module_equipment})  # set to deduplicate
 
@@ -21,7 +19,7 @@ def populate_from_redpot(*, proposal: Proposal, language_course: bool = False) -
 
     # todo: move these to template rendering
 
-    if language_course:
+    if proposal.limited:
         recommended_reading_template = f"""<p>All weekly class students may become borrowing members of the Rewley House Continuing Education Library for the duration of their course.
             Prospective students whose courses have not yet started are welcome to use the Library for reference. More information can be found on the&nbsp;<a href="http://www.bodleian.ox.ac.uk/conted">Library website.</a></p>
             <p>There is a&nbsp;<a href="http://ox.libguides.com/conted-weeklyclass">Guide for Weekly Class students</a> which will give you further information.&nbsp;</p>

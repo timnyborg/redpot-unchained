@@ -6,7 +6,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
-from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -51,7 +50,7 @@ class Search(PermissionRequiredMixin, PageTitleMixin, SingleTableMixin, FilterVi
     subtitle = 'Search'
 
 
-class New(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
+class New(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.FormView):
     permission_required = 'proposal.add_proposal'
     model = models.Proposal
     template_name = 'core/form.html'
@@ -62,22 +61,20 @@ class New(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
     @transaction.atomic
     def form_valid(self, form) -> http.HttpResponse:
         tutor_module = form.cleaned_data['tutor_module']
-        # todo: figure out what do do with this 'X' malarkey - flagging to indicate language courses
-        language_course = tutor_module.module.code[7] != 'X'
-        proposal = models.Proposal.objects.create(
+        language_course = form.cleaned_data['limited']
+        self.proposal = models.Proposal.objects.create(
             module=tutor_module.module,
             tutor=tutor_module.tutor,
             dos=form.cleaned_data['dos'],
             due_date=form.cleaned_data['due_date'],
             limited=language_course,
-            field_trips='None' if language_course else None,  # tod what's the point of this
+            field_trips='None' if language_course else None,  # todo: what's the point of this
         )
+        services.populate_from_module(proposal=self.proposal)
+        return super().form_valid(form)
 
-        # Pull in the rest of the data
-        services.populate_from_redpot(proposal=proposal, language_course=language_course)
-
-        messages.success(self.request, self.success_message)
-        return redirect(proposal.get_edit_url())
+    def get_success_url(self) -> str:
+        return self.proposal.get_edit_url()
 
 
 # todo: remaining proposal views/services

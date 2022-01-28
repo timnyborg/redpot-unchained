@@ -140,12 +140,12 @@ class EditProposalForm(forms.ModelForm):
                 self.cleaned_data['scientific_equipment'] = ''
 
 
-class NewProposalForm(forms.Form):
+class NewProposalForm(forms.ModelForm):
     submit_label = 'Create proposal'
 
     tutor_module = forms.ModelChoiceField(
         TutorModule.objects.all(),
-        widget=autocomplete.ModelSelect2('autocomplete:tutor-on-module'),
+        widget=autocomplete.ModelSelect2(url='autocomplete:tutor-on-module', attrs={'data-minimum-input-length': 3}),
         help_text='Enter a module code or title, then select the tutor',
     )
     dos = ApproverChoiceField(
@@ -153,7 +153,11 @@ class NewProposalForm(forms.Form):
         label='Director of studies',
         error_messages={'required': 'Select a director of studies'},
     )
-    due_date = forms.DateField(label='Tutor completion due', widget=widgets.DatePickerInput())
+
+    class Meta:
+        model = models.Proposal
+        fields = ['tutor_module', 'dos', 'due_date', 'limited']
+        widgets = {'due_date': widgets.DatePickerInput()}
 
     def clean(self):
         tutor_module = self.cleaned_data.get('tutor_module')
