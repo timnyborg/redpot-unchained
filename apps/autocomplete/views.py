@@ -6,7 +6,7 @@ from django.db.models import Q
 from apps.core.models import User
 from apps.enrolment.models import Enrolment
 from apps.module.models import Module
-from apps.tutor.models import RightToWorkDocumentType, Tutor
+from apps.tutor.models import RightToWorkDocumentType, Tutor, TutorModule
 
 
 class ModuleAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
@@ -44,6 +44,20 @@ class EnrolmentAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView
 
     def get_result_label(self, result):
         return f'{result.module.code} - {result.qa.student}'
+
+
+class TutorModuleAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = TutorModule.objects.select_related('tutor__student', 'module')
+        if self.q:
+            # Filter on name or code containing the string
+            qs = qs.filter(
+                Q(module__title__unaccent__icontains=self.q) | Q(module__code__icontains=self.q),
+            ).order_by('-id', 'tutor__student__firstname', 'tutor__student__surname')
+        return qs
+
+    def get_result_label(self, result):
+        return f'{result.module.code} - {result.module.title} - {result.tutor.student}'
 
 
 class RtwAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
