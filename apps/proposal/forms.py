@@ -1,4 +1,5 @@
 from ckeditor.widgets import CKEditorWidget
+from dal import autocomplete
 from django_select2.forms import Select2MultipleWidget
 
 from django import forms
@@ -8,6 +9,7 @@ from apps.core.utils import widgets
 from apps.core.utils.forms import ApproverChoiceField
 from apps.module.models import Equipment, Module, Subject
 from apps.proposal import models
+from apps.tutor.models import TutorModule
 
 HTML_FIELDS = [
     'overview',
@@ -21,7 +23,7 @@ HTML_FIELDS = [
 ]
 
 
-class ProposalForm(forms.ModelForm):
+class EditProposalForm(forms.ModelForm):
     michaelmas_end = forms.DateField(disabled=True, required=False)
     hilary_start = forms.DateField(disabled=True, required=False)
     previous_run = forms.ModelChoiceField(queryset=Module.objects.all(), to_field_name='code', required=False)
@@ -136,3 +138,31 @@ class ProposalForm(forms.ModelForm):
                 self.add_error('scientific_equipment', 'Please specify')
             elif scientific_equipment and 13 not in equipment_ids:
                 self.cleaned_data['scientific_equipment'] = ''
+
+
+class NewProposalForm(forms.Form):
+    submit_label = 'Create proposal'
+
+    tutor_module = forms.ModelChoiceField(
+        TutorModule.objects.all(),
+        widget=autocomplete.ModelSelect2('autocomplete:tutor-on-module'),
+        help_text='Enter a module code or title, then select the tutor',
+    )
+    dos = ApproverChoiceField(
+        permission='proposal.approve_proposal',
+        label='Director of studies',
+        error_messages={'required': 'Select a director of studies'},
+    )
+    due_date = forms.DateField(label='Tutor completion due', widget=widgets.DatePickerInput())
+
+    def clean(self):
+        tutor_module = self.cleaned_data.get('tutor_module')
+        if tutor_module and hasattr(tutor_module.module, 'proposal'):
+            self.add_error('tutor_module', 'Proposal for selected module already exists')
+
+        if tutor_module and not tutor_module.tutor.student.get_default_email():
+            self.add_error('tutor_module', 'Selected tutor does not have an email address defined')
+
+        dos = self.cleaned_data.get('dos')
+        if not dos.email:
+            self.add_error('dos', 'Selected director of studies does not have an email address defined')
