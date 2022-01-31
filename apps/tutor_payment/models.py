@@ -288,11 +288,15 @@ schedules = [
     # 2-Payments begin a month later, concluding at the same time (half-length courses generally start later)
     Schedule(3, 10, 'Michaelmas - 3 payments (Oct-Dec)'),
     Schedule(2, 10, 'Michaelmas - 2 payments (Oct-Nov)'),
+    Schedule(1, 1, 'Michaelmas - 1 payment (Jan)'),
     Schedule(3, 2, 'Hilary - 3 payments (Feb-Apr)'),
     Schedule(2, 2, 'Hilary - 2 payments (Feb-Mar)'),
+    Schedule(1, 5, 'Hilary - 1 payment (May)'),
     Schedule(3, 5, 'Trinity - 3 payments (May-Jul)'),
     Schedule(2, 6, 'Trinity - 2 payments (Jun-Jul)'),
+    Schedule(1, 8, 'Trinity - 1 payment (Aug)'),
     Schedule(2, 7, 'Summer - 2 payments (Jul-Aug)'),
+    Schedule(1, 10, 'Summer - 1 payment (Oct)'),
     Schedule(6, 10, '2-Term Michaelmas & Hilary - 6 payments (Oct-Mar)'),
     Schedule(6, 2, '2-Term Hilary & Trinity - 6 payments (Feb-Jul)'),
 ]
