@@ -137,18 +137,16 @@ def _generate_invoice(*, invoice: models.Invoice, fees: list[Ledger]) -> bytes:
     pdf.cell(0, 5, 'Payment methods', ln=1)
     pdf.set_font_size(8)
     pdf.cell(5)
-    pdf.cell(0, 5, '1) Secure online payments (including payment plans)', ln=1)
+    pdf.cell(0, 5, '1) Online payment (including payment plans)', ln=1)
     pdf.set_font('', '', 8)
     pdf.cell(10)
-    pdf.multi_cell(
-        0,
-        4,
-        'Payment can be made using a debit or credit card at the following address:\n'
-        'https://www.conted.ox.ac.uk/invoicepayments',
-        0,
-        'L',
-    )
-    pdf.ln(1)
+    pdf.cell(0, 4, 'You can pay using a debit or credit card at:', ln=1)
+    pdf.ln(2)
+    pdf.cell(10)
+    pdf.set_font('', 'B', 9)
+    pdf.cell(0, 4, 'https://www.conted.ox.ac.uk/invoicepayments', ln=1)
+    pdf.set_font('', '', 8)
+    pdf.ln(2)
     pdf.cell(10)
     pdf.cell(0, 4, 'You should provide the following information:', ln=1)
     pdf.set_font('', 'B', 8)
@@ -162,7 +160,7 @@ def _generate_invoice(*, invoice: models.Invoice, fees: list[Ledger]) -> bytes:
     pdf.cell(
         0,
         5,
-        'If you have been offered the choice to pay an invoice by instalments, the payment options will be displayed.',
+        'If you have been offered the choice to setup a payment plan, your options will be displayed.',
         ln=1,
     )
 
@@ -176,9 +174,10 @@ def _generate_invoice(*, invoice: models.Invoice, fees: list[Ledger]) -> bytes:
     )
     pdf.basic_table('', [[txt]], [160], ['LTRB'], font_type='small', cell_type='multi_cell')
 
-    pdf.ln(1)
     pdf.cell(10)
-    pdf.cell(0, 5, 'Notes for card payments', ln=1)
+    pdf.set_font('', 'B', 8)
+    pdf.cell(0, 5, 'Notes for card payments:', ln=1)
+    pdf.set_font('', '', 8)
     pdf.cell(15)
     pdf.multi_cell(
         0,
@@ -215,7 +214,9 @@ def _generate_invoice(*, invoice: models.Invoice, fees: list[Ledger]) -> bytes:
     pdf.ln(1)
     pdf.cell(10)
 
+    pdf.set_font('', 'B', 8)
     pdf.cell(0, 5, 'Notes for bank transfers:', ln=1)
+    pdf.set_font('', '', 8)
     pdf.cell(15)
     pdf.cell(0, 4, '• Quote the invoice number as a reference for the payment.', ln=1)
     pdf.cell(15)
@@ -240,8 +241,9 @@ def _generate_invoice(*, invoice: models.Invoice, fees: list[Ledger]) -> bytes:
     )
     pdf.ln(1)
     pdf.cell(10)
-
+    pdf.set_font('', 'B', 8)
     pdf.cell(0, 5, 'Notes for other payment methods:', ln=1)
+    pdf.set_font('', '', 8)
     pdf.cell(15)
     pdf.cell(
         0, 4, '• Cheques must be drawn on a UK bank account and made payable to "University of Oxford - OUDCE".', ln=1
