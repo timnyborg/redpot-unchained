@@ -7,7 +7,9 @@ class LoggedInMixin:
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user(username='testuser', is_superuser=cls.superuser)
+        cls.user = User.objects.create_user(
+            username='testuser', is_superuser=cls.superuser, email='testuser@conted.ox.ac.uk'
+        )
 
     def setUp(self):
         self.client.force_login(self.user)

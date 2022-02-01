@@ -39,6 +39,7 @@ urlpatterns = [
     path('hesa/', include('apps.hesa.urls')),
     path('invoice/', include('apps.invoice.urls')),
     path('programme/', include('apps.programme.urls')),
+    path('proposal/', include('apps.proposal.urls')),
     path('module/', include('apps.module.urls')),
     path('qa/', include('apps.qualification_aim.urls')),
     path('student/', include('apps.student.urls')),

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import random
+from datetime import date
 from typing import Optional
 
 from django.conf import settings
+from django.core import validators
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models, transaction
 from django.db.models import QuerySet
@@ -21,6 +23,8 @@ NOT_KNOWN_RELIGION = 99
 NOT_AVAILABLE_SEXUAL_ORIENTATION = 99
 NOT_AVAILABLE_PARENTAL_EDUCATION = 8
 NOT_AVAILABLE_GENDER_IDENTITY = 99
+
+MINIMUM_BIRTHDATE = date(1900, 1, 1)
 
 
 class Student(SITSLockingModelMixin, SignatureModel):
@@ -80,7 +84,7 @@ class Student(SITSLockingModelMixin, SignatureModel):
     nickname = models.CharField(
         max_length=64, blank=True, null=True, help_text='If called something other than first name'
     )
-    birthdate = models.DateField(blank=True, null=True)
+    birthdate = models.DateField(blank=True, null=True, validators=[validators.MinValueValidator(MINIMUM_BIRTHDATE)])
     gender = models.CharField(max_length=1, blank=True, null=True, choices=Genders.choices)
     domicile = models.ForeignKey(
         'Domicile',

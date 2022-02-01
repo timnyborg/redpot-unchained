@@ -9,4 +9,5 @@ urlpatterns = [
     path('enrolment', views.EnrolmentAutocomplete.as_view(), name='enrolment'),
     path('rtw', views.RtwAutocomplete.as_view(), name='rtw'),
     path('user', views.UserAutocomplete.as_view(), name='user'),
+    path('tutor-on-module', views.TutorModuleAutocomplete.as_view(), name='tutor-on-module'),
 ]

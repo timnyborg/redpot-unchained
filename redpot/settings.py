@@ -67,6 +67,7 @@ PROJECT_APPS = [
     'apps.invoice',
     'apps.module',
     'apps.programme',
+    'apps.proposal',
     'apps.qualification_aim',
     'apps.student',
     'apps.task_progress',

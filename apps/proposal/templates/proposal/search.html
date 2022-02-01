@@ -1,0 +1,9 @@
+{% extends 'core/search.html' %}
+
+{% block before-sections %}
+    <div class="section">
+        <a href="{% url 'proposal:new' %}" class="btn btn-success">
+            <span class="fa-fw fas fa-plus"></span> New proposal
+        </a>
+    </div>
+{% endblock %}
