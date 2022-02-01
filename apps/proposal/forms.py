@@ -167,7 +167,3 @@ class NewProposalForm(forms.ModelForm):
 
         if tutor_module and not tutor_module.tutor.student.get_default_email():
             self.add_error('tutor_module', 'Selected tutor does not have an email address defined')
-
-        dos = self.cleaned_data.get('dos')
-        if not dos.email:
-            self.add_error('dos', 'Selected director of studies does not have an email address defined')
