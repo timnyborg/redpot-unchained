@@ -74,6 +74,7 @@ class Proposal(SignatureModel):
         blank=True,
         null=True,
         verbose_name='Director of studies',
+        to_field='username',
     )
     due_date = models.DateField(blank=True, null=True, verbose_name='Tutor completion due')
     allow_pd_edit = models.BooleanField(
