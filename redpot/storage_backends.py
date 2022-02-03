@@ -7,3 +7,4 @@ class WebsiteStorage(FileSystemStorage):
 
     location = settings.WEBSITE_MEDIA_ROOT
     base_url = settings.WEBSITE_MEDIA_URL
+    file_permissions_mode = None  # prevent failed chmod attempts while mounting via smb
