@@ -3,6 +3,9 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Optional
 
+from imagekit.models import ProcessedImageField
+from pilkit.processors import ResizeToFit
+
 from django.conf import settings
 from django.core import validators
 from django.core.exceptions import ValidationError
@@ -115,8 +118,14 @@ class Module(SignatureModel):
     status = models.ForeignKey('ModuleStatus', models.DO_NOTHING, db_column='status', default=10)
     max_size = models.IntegerField(blank=True, null=True)
 
-    image = models.ImageField(
-        upload_to=image_filename, storage=storage_backends.WebsiteStorage(), max_length=512, blank=True, null=True
+    image = ProcessedImageField(
+        storage=storage_backends.WebsiteStorage(),
+        upload_to=image_filename,
+        blank=True,
+        null=True,
+        processors=[ResizeToFit(1600, 1600)],
+        format='JPEG',
+        options={'quality': 70},
     )
 
     start_time = models.TimeField(blank=True, null=True)
