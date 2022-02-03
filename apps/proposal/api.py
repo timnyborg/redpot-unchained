@@ -1,4 +1,4 @@
-from rest_framework import mixins, serializers, viewsets
+from rest_framework import mixins, permissions, serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -20,6 +20,7 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     queryset = models.Proposal.objects.all()
     serializer_class = ProposalSerializer
+    permission_classes = [permissions.DjangoModelPermissions]
 
     @action(detail=True, methods=['post'], url_name='reset')
     def reset(self, request, pk=None):
