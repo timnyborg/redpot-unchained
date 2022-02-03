@@ -412,3 +412,6 @@ GOOGLE_TAG_MANAGER_ID = env('GOOGLE_TAG_MANAGER_ID', default='')
 # Moodle ID config
 MOODLE_PASSWORD_COMPONENTS = env.list('MOODLE_PASSWORD_COMPONENTS', default=[])
 MOODLE_PASSWORD_COMPONENT_COUNT = env.int('MOODLE_PASSWORD_COMPONENT_COUNT', default=5)
+
+# Require authentication for all DRF apis
+REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated']}
