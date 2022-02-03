@@ -40,16 +40,6 @@ class Banner(models.Model):
         db_table = 'banner'
 
 
-class CourseApplicationAttachment(models.Model):
-    application_id = models.IntegerField(blank=True, null=True)
-    filename = models.CharField(max_length=50, blank=True, null=True)
-    attachment = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'course_application_attachment'
-
-
 class Feedback(models.Model):
     module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module')
     rate_tutor = models.IntegerField(blank=True, null=True)

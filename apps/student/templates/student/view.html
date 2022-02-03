@@ -431,12 +431,12 @@
 </div>
 {% endif %}
 
-{% if course_applications %}
+{% if applications %}
 <div class="section">
-    <h2 id='applications' class='section-title' data-badge-text='{{course_applications.count}}'>Applications</h2>
+    <h2 id='applications' class='section-title' data-badge-text='{{ applications|length }}'>Applications</h2>
+    <hr>
     <table class="table table-hover hide-rows" data-display='3'>
-    <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
-    {% for application in course_applications %}
+    {% for application in applications %}
         <tr>
             <td><a href="{{ application.module.get_absolute_url }}">{{ application.module.code }}</a></td>
             <td><a href="{{ application.module.get_absolute_url }}">{{ application.module.title }}</a></td>
@@ -447,7 +447,11 @@
                 <span class="badge bg-secondary">In progress</span>
                 {% endif %}
             </td>
-            <td><a href="/form/view/{{ application.id }}"><span class="fas fa-pencil-alt"></span></a></td>
+            <td>
+                <a href="{{ application.get_absolute_url }}" data-bs-toggle="tooltip" title="View">
+                    <span class="fas fa-search"></span>
+                </a>
+            </td>
         </tr>
     {% endfor %}
     </table>
