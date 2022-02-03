@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 
 from django.conf import settings
@@ -17,6 +17,7 @@ from apps.booking.models import Accommodation
 from apps.core.models import SignatureModel
 from apps.core.utils.dates import academic_year
 from apps.core.utils.models import PhoneField, UpperCaseCharField
+from redpot import storage_backends
 
 
 class Statuses(models.IntegerChoices):
@@ -74,6 +75,12 @@ MAX_WEBFIELD_LENGTH = 10000
 webfield_attrs = {'validators': [validators.MaxLengthValidator(MAX_WEBFIELD_LENGTH)]}
 
 
+def image_filename(instance: Module, filename: str) -> str:
+    """Generates filenames for uploaded images including the module code"""
+    today = date.today()
+    return f'images/modules/{today.year}/{today.month:02}/{instance.code}_{filename}'
+
+
 class Module(SignatureModel):
     code = UpperCaseCharField(
         max_length=12,
@@ -108,9 +115,9 @@ class Module(SignatureModel):
     status = models.ForeignKey('ModuleStatus', models.DO_NOTHING, db_column='status', default=10)
     max_size = models.IntegerField(blank=True, null=True)
 
-    image = models.ImageField(upload_to='uploads/%Y/%m/%d/', max_length=512, blank=True, null=True)
-
-    # type = models.ForeignKey('ModuleType', models.DO_NOTHING, db_column='type', blank=True, null=True)  # noqa: E800
+    image = models.ImageField(
+        upload_to=image_filename, storage=storage_backends.WebsiteStorage(), max_length=512, blank=True, null=True
+    )
 
     start_time = models.TimeField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
