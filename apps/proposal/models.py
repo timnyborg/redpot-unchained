@@ -108,6 +108,10 @@ class Proposal(SignatureModel):
     def get_delete_url(self) -> str:
         return reverse('proposal:delete', kwargs={'pk': self.pk})
 
+    @property
+    def is_complete(self) -> bool:
+        return self.status == Statuses.COMPLETE
+
 
 class ProposalMessage(models.Model):
     proposal = models.IntegerField()

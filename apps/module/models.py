@@ -382,8 +382,8 @@ class Module(SignatureModel):
             errors['format'] = 'Format required'
         if self.enrol_online and not self.finance_code:
             errors['enrol_online'] = 'Finance code components required for online enrolment'
-        # if self.proposal.status < 5:
-        #     errors['proposal'] = 'Proposal unapproved' # Todo: Implement
+        if hasattr(self, 'proposal') and not self.proposal.is_complete:
+            errors['proposal'] = 'Proposal unapproved'
 
         return {
             'success': not errors,
