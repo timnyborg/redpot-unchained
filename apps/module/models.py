@@ -603,16 +603,15 @@ class Room(models.Model):
 
 
 class Book(models.Model):
-    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module', related_name='books')
+    module = models.ForeignKey('Module', models.CASCADE, db_column='module', related_name='books')
     title = models.TextField(blank=True, null=True)
     author = models.TextField(blank=True, null=True)
     type = models.CharField(max_length=24)
     additional_information = models.TextField(blank=True, null=True)
     solo_link = models.TextField(blank=True, null=True)
-    isbn_shelfmark = models.TextField(db_column='ISBN_shelfmark', blank=True, null=True)  # Field name made lowercase.
+    isbn_shelfmark = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
     library_note = models.TextField(blank=True, null=True)
-    status = models.ForeignKey('BookStatus', models.DO_NOTHING, db_column='status')
 
     class Meta:
         db_table = 'book'
@@ -625,17 +624,6 @@ class Book(models.Model):
 
     def get_delete_url(self) -> str:
         return '#'
-
-
-class BookStatus(models.Model):
-    id = models.IntegerField(primary_key=True)
-    status = models.TextField()
-
-    class Meta:
-        db_table = 'book_status'
-
-    def __str__(self) -> str:
-        return str(self.status)
 
 
 class Subject(models.Model):
