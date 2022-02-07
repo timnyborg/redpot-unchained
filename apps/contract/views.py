@@ -186,7 +186,10 @@ class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
     template_name = 'core/delete_form.html'
 
     def has_permission(self) -> bool:
-        return super().has_permission() and self.get_object().is_editable
+        # Signatories can always delete
+        return super().has_permission() and (
+            self.get_object().is_editable or self.request.user.has_perm('contract.sign_contract')
+        )
 
     def get_success_url(self) -> str:
         messages.success(self.request, 'Contract deleted')
