@@ -23,7 +23,6 @@ class Proposal(SignatureModel):
     michaelmas_end = models.DateField(blank=True, null=True, verbose_name='End of first term')
     hilary_start = models.DateField(blank=True, null=True, verbose_name='Start of second term')
     end_date = models.DateField(blank=True, null=True)
-    half_term = models.DateField(blank=True, null=True, verbose_name='Half term date')
     start_time = models.TimeField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
     no_meetings = models.IntegerField(blank=True, null=True, verbose_name='# of meetings')
@@ -77,9 +76,6 @@ class Proposal(SignatureModel):
         to_field='username',
     )
     due_date = models.DateField(blank=True, null=True, verbose_name='Tutor completion due')
-    allow_pd_edit = models.BooleanField(
-        default=True, verbose_name='Editable programme details', help_text='Can tutor edit Programme details?'
-    )
     grammar_points = models.TextField(blank=True, null=True)
     limited = models.BooleanField(
         default=False, verbose_name='Is this a language course?', help_text='Updatable fields will be limited'
@@ -107,6 +103,10 @@ class Proposal(SignatureModel):
 
     def get_delete_url(self) -> str:
         return reverse('proposal:delete', kwargs={'pk': self.pk})
+
+    @property
+    def is_complete(self) -> bool:
+        return self.status == Statuses.COMPLETE
 
 
 class ProposalMessage(models.Model):

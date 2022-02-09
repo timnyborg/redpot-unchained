@@ -1,0 +1,17 @@
+{% extends 'core/form.html' %}
+
+{% block after-section %}
+    <div class="section">
+        <h4>Reading list</h4>
+        <table class="table table-sm">
+            {% for book in books %}
+            <tr>
+                <td>{{ book.type }}</td>
+                <td>{{ book.title }} / {{ book.author }}</td>
+            </tr>
+            {% empty %}
+                No books added
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

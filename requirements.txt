@@ -3,7 +3,7 @@ celery-progress==0.1.2
 coverage[toml]==6.3.1
 Django==3.2.12
 django-auth-ldap==4.0.0
-django-autocomplete-light==3.8.2
+django-autocomplete-light==3.9.1
 django-bootstrap-datepicker-plus==4.0.0
 django-celery-beat==2.2.1
 django-celery-results==2.2.0
@@ -14,7 +14,7 @@ django-hijack==3.1.4
 django-imagekit==4.1.0
 django-import-export==2.7.1
 django-redis==5.2.0
-django-select2==7.9.0
+django-select2==7.10.0
 django-simple-menu==1.2.1
 django-tables2==2.4.1
 django-widget-tweaks==1.4.12
@@ -27,7 +27,7 @@ freezegun==1.1.0
 lxml==4.7.1
 marshmallow==3.14.1
 mkdocs==1.2.3
-mkdocs-material==8.1.9
+mkdocs-material==8.1.10
 mkdocs-material-extensions==1.0.3
 mssql-django==1.1.2
 parameterized==0.8.1

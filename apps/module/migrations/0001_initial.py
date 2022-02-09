@@ -27,22 +27,12 @@ class Migration(migrations.Migration):
                 ('type', models.CharField(max_length=24)),
                 ('additional_information', models.TextField(blank=True, null=True)),
                 ('solo_link', models.TextField(blank=True, null=True)),
-                ('isbn_shelfmark', models.TextField(blank=True, db_column='ISBN_shelfmark', null=True)),
+                ('isbn_shelfmark', models.TextField(blank=True, null=True)),
                 ('price', models.DecimalField(blank=True, decimal_places=4, max_digits=19, null=True)),
                 ('library_note', models.TextField(blank=True, null=True)),
             ],
             options={
                 'db_table': 'book',
-            },
-        ),
-        migrations.CreateModel(
-            name='BookStatus',
-            fields=[
-                ('id', models.IntegerField(primary_key=True, serialize=False)),
-                ('status', models.TextField()),
-            ],
-            options={
-                'db_table': 'book_status',
             },
         ),
         migrations.CreateModel(
@@ -181,7 +171,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ('fee_code', models.CharField(blank=True, max_length=1, null=True)),
-                ('half_term', models.DateField(blank=True, null=True)),
                 ('reading_list_url', models.TextField(blank=True, null=True)),
                 ('reading_list_links', models.BooleanField(blank=True, null=True)),
             ],
