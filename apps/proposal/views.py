@@ -18,16 +18,20 @@ class Edit(PermissionRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic
     permission_required = 'proposal.add_proposal'
     model = models.Proposal
     form_class = forms.EditProposalForm
-    template_name = 'core/form.html'
+    template_name = 'proposal/form.html'
     success_message = 'Changes saved'
     success_url = '#'  # self-redirect, since these have no detail view
     error_message = 'There are errors in the form'
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        return {**context, 'books': self.object.module.books.order_by('type', 'title')}
 
     def form_invalid(self, form) -> http.HttpResponse:
         messages.warning(self.request, self.error_message)
         return super().form_invalid(form)
 
-    # todo: reading list management, image filename modification (why?)
+    # todo: image filename modification (why?)
 
 
 class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
