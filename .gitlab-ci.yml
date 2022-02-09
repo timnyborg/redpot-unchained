@@ -85,5 +85,5 @@ deploy-staging:
   script:
     - export REDPOT_IMAGE=$CONTAINER_TEST_IMAGE
     - cp $SECRETS_FILE secrets.env
-    - docker stack deploy --compose-file $DOCKER_COMPOSE_FILE $DOCKER_STACK_NAME
+    - docker stack deploy --compose-file ./docker/docker-compose.prod.yml $DOCKER_STACK_NAME
 
