@@ -21,8 +21,8 @@ services:
       - 127.0.0.1:8000:8000
     entrypoint: ["/code/docker/prod_static_entrypoint.sh", "uwsgi"]
     volumes:
-      - ${APP_FOLDER:?}/volumes/static:/volumes/static
-      - ${APP_FOLDER:?}/volumes/media:/volumes/media
+      - ${STATIC_FOLDER:?}/static:/volumes/static
+      - ${STATIC_FOLDER:?}/media:/volumes/media
     restart: always
 
   worker:
@@ -33,7 +33,7 @@ services:
     restart: always
     command: celery -A redpot worker -n redpot-worker
     volumes:
-      - ${APP_FOLDER:?}/volumes/media:/volumes/media
+      - ${STATIC_FOLDER:?}/media:/volumes/media
 
   redis:
     image: redis:6.0
