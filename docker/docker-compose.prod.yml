@@ -41,4 +41,4 @@ services:
 
 secrets:
   app_config:
-    file: ${APP_FOLDER:?}/secrets.env
+    file: ../secrets.env
