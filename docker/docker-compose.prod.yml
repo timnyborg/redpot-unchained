@@ -42,3 +42,4 @@ services:
 secrets:
   app_config:
     file: ../secrets.env
+    name: settings-${CI_COMMIT_SHORT_SHA:-0}
