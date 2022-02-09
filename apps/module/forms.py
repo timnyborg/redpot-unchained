@@ -63,7 +63,6 @@ class EditForm(forms.ModelForm):
             'non_credit_bearing',
             'default_non_credit',
             'start_date',
-            'half_term',
             'end_date',
             'start_time',
             'end_time',

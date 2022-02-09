@@ -242,7 +242,6 @@ class Module(SignatureModel):
     )
     fee_code = models.CharField(max_length=1, blank=True, null=True)
 
-    half_term = models.DateField(blank=True, null=True)
     direct_enrolment = models.BooleanField(default=False)
 
     payment_plans = models.ManyToManyField(

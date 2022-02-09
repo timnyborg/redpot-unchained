@@ -44,7 +44,6 @@ class EditProposalForm(forms.ModelForm):
             'michaelmas_end',
             'hilary_start',
             'end_date',
-            'half_term',
             'start_time',
             'end_time',
             'no_meetings',
@@ -75,7 +74,6 @@ class EditProposalForm(forms.ModelForm):
             'recommended_reading',
             'dos',
             'due_date',
-            'allow_pd_edit',
             'grammar_points',
             'limited',
         ]
@@ -83,7 +81,6 @@ class EditProposalForm(forms.ModelForm):
             **{field: CKEditorWidget for field in HTML_FIELDS},
             'start_date': widgets.DatePickerInput,
             'end_date': widgets.DatePickerInput,
-            'half_term': widgets.DatePickerInput,
             'start_time': widgets.TimePickerInput,
             'end_time': widgets.TimePickerInput,
             # todo: implement other widgets

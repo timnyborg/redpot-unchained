@@ -171,7 +171,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ('fee_code', models.CharField(blank=True, max_length=1, null=True)),
-                ('half_term', models.DateField(blank=True, null=True)),
                 ('reading_list_url', models.TextField(blank=True, null=True)),
                 ('reading_list_links', models.BooleanField(blank=True, null=True)),
             ],
