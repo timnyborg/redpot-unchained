@@ -235,19 +235,22 @@ TIME_ZONE = 'Europe/London'
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-)
+
 STATIC_ROOT: Path = BASE_DIR / 'static'
 MEDIA_URL = env('MEDIA_URL', default='/media/')
 MEDIA_ROOT: Path = env.path('MEDIA_ROOT', default=BASE_DIR / 'media')
+
+# separate storage and URL for public website media, with sftp credentials
+WEBSITE_MEDIA_SFTP_HOST = env('WEBSITE_MEDIA_SFTP_HOST', default='')
+WEBSITE_MEDIA_SFTP_PARAMS = env.dict('WEBSITE_MEDIA_SFTP_PARAMS', default={})
+WEBSITE_MEDIA_SFTP_ROOT: Path = env.path('WEBSITE_MEDIA_SFTP_ROOT', default=MEDIA_ROOT)
+WEBSITE_MEDIA_URL = env('WEBSITE_MEDIA_URL', default=MEDIA_URL)
+
 # separate path and URL for media only accessible via an X-Accel-Redirect header
 PROTECTED_MEDIA_URL = env('PROTECTED_MEDIA_URL', default='/protected-media/')
 PROTECTED_MEDIA_ROOT: Path = env.path('PROTECTED_MEDIA_ROOT', default=BASE_DIR / 'protected_media')
-# separate path and URL for public website media in production.
-WEBSITE_MEDIA_URL = env('WEBSITE_MEDIA_URL', default=MEDIA_URL)
-WEBSITE_MEDIA_ROOT: Path = env.path('WEBSITE_MEDIA_ROOT', default=MEDIA_ROOT)
+
+
 # URL for accessing application attachments managed by a separate app, with its own auth
 APPLICATION_ATTACHMENT_URL = env('APPLICATION_ATTACHMENT_URL', default='')
 

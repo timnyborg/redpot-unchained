@@ -77,14 +77,25 @@ release-image:
   only:
     - master
 
-deploy-staging:
+.deploy:
   stage: deploy
-  environment: staging
-  tags:
-    - django-staging
   script:
     - export REDPOT_IMAGE=$CONTAINER_TEST_IMAGE
     - export SETTINGS_TIMESTAMP=$(date +%s)
     - cp $SECRETS_FILE secrets.env
     - docker stack deploy --compose-file ./docker/docker-compose.prod.yml $DOCKER_STACK_NAME
 
+deploy-staging:
+  extends: .deploy
+  environment: staging
+  tags:
+    - django-staging
+
+deploy-production:
+  extends: .deploy
+  environment: production
+  tags:
+    - django-production
+  only:
+    - master
+  when: manual
