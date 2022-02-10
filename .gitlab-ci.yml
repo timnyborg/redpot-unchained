@@ -12,7 +12,8 @@ stages:
   - test
   - lint
   - release
-  - deploy
+  - staging
+  - production
 
 build:
   stage: build
@@ -78,7 +79,6 @@ release-image:
     - master
 
 .deploy:
-  stage: deploy
   script:
     - export REDPOT_IMAGE=$CONTAINER_TEST_IMAGE
     - export SETTINGS_TIMESTAMP=$(date +%s)
@@ -86,12 +86,14 @@ release-image:
     - docker stack deploy --compose-file ./docker/docker-compose.prod.yml $DOCKER_STACK_NAME
 
 deploy-staging:
+  stage: staging
   extends: .deploy
   environment: staging
   tags:
     - django-staging
 
 deploy-production:
+  stage: production
   extends: .deploy
   environment: production
   tags:
