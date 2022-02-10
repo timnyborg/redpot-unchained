@@ -254,11 +254,13 @@ class Module(SignatureModel):
         through='ModuleSubject',
         verbose_name='Subjects (marketing)',
         help_text='These decide how the course is displayed in the website search results, and in print material',
+        blank=True,
     )
     marketing_types = models.ManyToManyField(
         to='MarketingType',
         through='ModuleMarketingType',
         help_text='These decide how the course is displayed in the website search results, and in print material',
+        blank=True,
     )
     equipment = models.ManyToManyField(to='Equipment', through='ModuleEquipment')
     objects = ModuleManager()
