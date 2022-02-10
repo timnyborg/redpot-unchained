@@ -19,6 +19,7 @@ services:
       retries: 3
     ports:
       - 127.0.0.1:8000:8000
+    user: ${REDPOT_DOCKER_USER}  # uid:gid for permissions on bind mounts
     entrypoint: ["/code/docker/prod_static_entrypoint.sh", "uwsgi"]
     volumes:
       - ${STATIC_FOLDER:?}/static:/volumes/static
