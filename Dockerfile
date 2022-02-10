@@ -14,9 +14,6 @@ RUN apt-get update && apt-get install -y curl gnupg \
 # Install packages needed to run your application (not build deps):
 ENV ACCEPT_EULA=Y
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      # uwsgi static serving
-      libpcre3 \
-      mime-support \
       # odbc drivers
       msodbcsql17 \
       # weasyprint prereqs  # cairo is not needed once we move to bullseye and weasyprint >=54
@@ -33,8 +30,6 @@ COPY dependencies.txt /dependencies.txt
 # Install build deps, install python packages, then remove build deps in a single step - key for keeping size down
 RUN BUILD_DEPS=" \
     build-essential \
-    libpcre3-dev \
-    libpq-dev \
     $(cat /dependencies.txt) \
     " \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
@@ -62,17 +57,10 @@ RUN python manage.py collectstatic --noinput \
 ENV UWSGI_WSGI_FILE=redpot/wsgi.py
 
 # Base uWSGI configuration
-ENV UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_HTTP_AUTO_CHUNKED=1 UWSGI_HTTP_KEEPALIVE=1 UWSGI_LAZY_APPS=1 UWSGI_WSGI_ENV_BEHAVIOR=holy
+ENV UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_LAZY_APPS=1
 
 # Number of uWSGI workers and threads per worker
 ENV UWSGI_WORKERS=2 UWSGI_THREADS=4
-
-# uWSGI static file serving configuration
-ENV UWSGI_STATIC_MAP="/static/=/code/static/" UWSGI_STATIC_INDEX="index.html"
-ENV UWSGI_STATIC_EXPIRES_URI="/static/.*\.[a-f0-9]{12,}\.(css|js|png|jpg|jpeg|gif|ico|woff|ttf|otf|svg|scss|map|txt) 315360000"
-
-# Deny invalid hosts before they get to Django (uncomment and change to your hostname(s)):
-# ENV UWSGI_ROUTE_HOST="^(?!localhost:8000$) break:400"
 
 # Change to a non-root user
 USER ${APP_USER}:${APP_USER}
