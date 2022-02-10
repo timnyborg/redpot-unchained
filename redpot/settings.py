@@ -411,6 +411,9 @@ CONTRACT_SIGNATORY = env('CONTRACT_SIGNATORY', default='')
 CONTRACT_SIGNATURE_IMAGE = env('CONTRACT_SIGNATURE_IMAGE', default='')  # a path within the media folder
 CONTRACT_SIGNATURE_EMAILS = env.list('CONTRACT_SIGNATURE_EMAILS', default='')
 
+# background watermark for non-production instances
+WATERMARK = env('WATERMARK', default='')
+
 # Tag manager config
 GOOGLE_TAG_MANAGER_ID = env('GOOGLE_TAG_MANAGER_ID', default='')
 

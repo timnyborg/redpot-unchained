@@ -1,5 +1,5 @@
 import socket
-from typing import Optional, Union
+from typing import Union
 from urllib import parse
 
 from django import template
@@ -89,8 +89,9 @@ def bootstrap_submit(text: str = 'Submit', btn_type: str = 'primary'):
 
 
 @register.simple_tag
-def watermark(text: Optional[str] = None):
-    if not text:
+def watermark():
+    text = settings.WATERMARK
+    if not text and settings.DEBUG:
         text = socket.gethostname()
     return mark_safe(f"<div id='watermark'>{(text + ' ')*150}</div>")
 
