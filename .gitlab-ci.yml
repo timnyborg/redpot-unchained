@@ -84,6 +84,8 @@ release-image:
     - export SETTINGS_TIMESTAMP=$(date +%s)
     - cp $SECRETS_FILE secrets.env
     - docker stack deploy --compose-file ./docker/docker-compose.prod.yml $DOCKER_STACK_NAME
+    # Poll the stack in order to log and fail on service rollbacks
+    - ./docker/docker-stack-wait.sh $DOCKER_STACK_NAME
 
 deploy-staging:
   stage: staging
