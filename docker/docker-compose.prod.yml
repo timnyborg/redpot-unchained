@@ -41,13 +41,18 @@ services:
       - ${STATIC_FOLDER:?}/media:/volumes/media
 
   redis:
-    image: redis:6.0
+    image: redis:6.2
     deploy:
       update_config:
         order: start-first
         failure_action: rollback
+    volumes:
+      - redis_data:/data
 
 secrets:
   app_config:
     file: ../secrets.env
     name: settings-${SETTINGS_TIMESTAMP:-0}
+
+volumes:
+  redis_data:
