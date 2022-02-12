@@ -18,27 +18,30 @@ services:
       timeout: "3s"
       retries: 3
     ports:
-      - 127.0.0.1:8000:8000
+      - 8000:8000
     user: ${REDPOT_DOCKER_USER}  # uid:gid for permissions on bind mounts
     entrypoint: ["/code/docker/prod_static_entrypoint.sh", "uwsgi"]
     volumes:
       - ${STATIC_FOLDER:?}/static:/volumes/static
       - ${STATIC_FOLDER:?}/media:/volumes/media
-    restart: always
 
   worker:
     image: ${REDPOT_IMAGE:?}
     secrets:
       - source: app_config
         target: /code/secrets.env
-    restart: always
-    command: celery -A redpot worker -n redpot-worker
+    # beats embedded, since we use one worker node.  to scale up the worker containers, add a separate beats container
+    command: celery -A redpot worker --beat
+    deploy:
+      update_config:
+        order: stop-first  # avoid multiple beats processes
+        failure_action: rollback
+    user: ${REDPOT_DOCKER_USER}  # uid:gid for permissions on bind mounts
     volumes:
       - ${STATIC_FOLDER:?}/media:/volumes/media
 
   redis:
     image: redis:6.0
-    restart: always
 
 secrets:
   app_config:
