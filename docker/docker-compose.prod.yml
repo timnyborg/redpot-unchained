@@ -42,6 +42,10 @@ services:
 
   redis:
     image: redis:6.0
+    deploy:
+      update_config:
+        order: start-first
+        failure_action: rollback
 
 secrets:
   app_config:
