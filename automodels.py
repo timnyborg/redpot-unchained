@@ -8,26 +8,6 @@
 from django.db import models
 
 
-class AcornPostcodes(models.Model):
-    postcode = models.CharField(max_length=16)
-    no_spaces = models.CharField(max_length=16)
-
-    class Meta:
-        managed = False
-        db_table = 'acorn_postcodes'
-
-
-class AutoNumber(models.Model):
-    id = models.AutoField()
-    name = models.CharField(max_length=32)
-    next_no = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'auto_number'
-        unique_together = (('id', 'name', 'next_no'),)
-
-
 class Banner(models.Model):
     message = models.TextField()
     type = models.IntegerField()
@@ -38,52 +18,6 @@ class Banner(models.Model):
     class Meta:
         managed = False
         db_table = 'banner'
-
-
-class Feedback(models.Model):
-    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module')
-    rate_tutor = models.IntegerField(blank=True, null=True)
-    rate_content = models.IntegerField(blank=True, null=True)
-    rate_admin = models.IntegerField(blank=True, null=True)
-    rate_facilities = models.IntegerField(blank=True, null=True)
-    rate_refreshments = models.IntegerField(blank=True, null=True)
-    rate_accommodation = models.IntegerField(blank=True, null=True)
-    your_name = models.TextField(blank=True, null=True)
-    hash_id = models.CharField(max_length=40, blank=True, null=True)
-    notified = models.DateTimeField(blank=True, null=True)
-    submitted = models.DateTimeField(blank=True, null=True)
-    avg_score = models.DecimalField(max_digits=4, decimal_places=3, blank=True, null=True)
-    reminder = models.DateTimeField(blank=True, null=True)
-    comments = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'feedback'
-
-
-class FeedbackAdmin(models.Model):
-    module = models.ForeignKey('Module', models.DO_NOTHING, db_column='module')
-    updated = models.DateTimeField(blank=True, null=True)
-    admin_comments = models.TextField(blank=True, null=True)
-    person = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'feedback_admin'
-
-
-class Kmi(models.Model):
-    id = models.AutoField()
-    student = models.ForeignKey('Student', models.DO_NOTHING, db_column='student')
-    subject_area = models.CharField(max_length=255, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    created_by = models.CharField(max_length=64, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=64, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'kmi'
 
 
 class ModuleCabsBooking(models.Model):
@@ -193,30 +127,6 @@ class PaymentItem(models.Model):
     class Meta:
         managed = False
         db_table = 'payment_item'
-
-
-class PolarPostcodes(models.Model):
-    no_spaces = models.CharField(primary_key=True, max_length=10)
-    quintile = models.SmallIntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'polar_postcodes'
-
-
-class ProgrammeStaff(models.Model):
-    programme = models.ForeignKey(Programme, models.DO_NOTHING, db_column='programme')
-    staff = models.ForeignKey(AuthUser, models.DO_NOTHING, db_column='staff')
-    role = models.ForeignKey('StaffRole', models.DO_NOTHING, db_column='role')
-    note = models.CharField(max_length=64, blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    created_by = models.CharField(max_length=32, blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.CharField(max_length=32, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'programme_staff'
 
 
 class TermsAndConditions(models.Model):

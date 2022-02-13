@@ -48,6 +48,10 @@ services:
         failure_action: rollback
     volumes:
       - redis_data:/data
+    command:  # act as an lru cache
+      - redis-server
+      - --maxmemory ${REDIS_MAXMEMORY:-500mb}
+      - --maxmemory-policy allkeys-lru
 
 secrets:
   app_config:
