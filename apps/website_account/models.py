@@ -8,6 +8,8 @@ from apps.core.models import SignatureModel
 
 
 class WebsiteAccount(SignatureModel):
+    """Legacy web2py accounts"""
+
     student = models.ForeignKey(
         'student.Student',
         models.DO_NOTHING,
@@ -36,17 +38,25 @@ class WebsiteAccount(SignatureModel):
 
     @cached_property
     def last_login(self) -> Optional[datetime]:
-        """Returns the max value of field time_stamp from PublicAuthEvent with Logged-in description
+        """Returns the max value of field time_stamp from WebsiteAccountEvent with Logged-in description
         If null then take login created on date"""
 
         return (
-            PublicAuthEvent.objects.filter(user_id=self.id, description__contains='Logged-in').aggregate(
+            WebsiteAccountEvent.objects.filter(user_id=self.id, description__contains='Logged-in').aggregate(
                 last=models.Max('time_stamp')
             )['last']
         ) or self.created_on
 
+    def get_history(self) -> models.QuerySet['WebsiteAccountEvent']:
+        """Returns a queryset of auth event records attached to the account
+        Doesn't rely on user_id, which is oddly null for password resets
+        """
+        return WebsiteAccountEvent.objects.filter(description__contains=self.pk)
 
-class PublicAuthEvent(models.Model):
+
+class WebsiteAccountEvent(models.Model):
+    """Record of logins, logouts, password change requests"""
+
     time_stamp = models.DateTimeField(blank=True, null=True)
     client_ip = models.CharField(max_length=512, blank=True, null=True)
     user_id = models.IntegerField(blank=True, null=True)

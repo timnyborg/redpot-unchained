@@ -1,3 +1,4 @@
+from django import http
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import get_object_or_404
@@ -15,14 +16,14 @@ class Create(LoginRequiredMixin, SuccessMessageMixin, AutoTimestampMixin, PageTi
     template_name = 'core/form.html'
     success_message = 'Login %(username)s added'
 
-    def get_subtitle(self):
+    def get_subtitle(self) -> str:
         return f'New – {self.student}'
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
         self.student = get_object_or_404(Student, pk=self.kwargs['student_id'])
         return super().dispatch(request, *args, **kwargs)
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> http.HttpResponse:
         form.instance.student = self.student
         return super().form_valid(form)
 
@@ -34,17 +35,25 @@ class Edit(LoginRequiredMixin, PageTitleMixin, generic.UpdateView):
     # todo: recent login history (may belong elsewhere)
     model = models.WebsiteAccount
     form_class = forms.EditForm
-    template_name = 'core/form.html'
+    template_name = 'website_account/form.html'
     success_message = 'Login %(username)s updated'
 
-    def get_form_kwargs(self):
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        # Display account history (legacy auth event table)
+        return {
+            **context,
+            'history': self.object.get_history().order_by('-time_stamp')[:20],
+        }
+
+    def get_form_kwargs(self) -> dict:
         kwargs = super().get_form_kwargs()
         return {
             'edit_password': self.request.user.has_perm('website_account.edit_password'),
             **kwargs,
         }
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> http.HttpResponse:
         new_password = form.cleaned_data.get('new_password')
         if new_password:
             form.instance.password = passwords.make_legacy_password(new_password)
