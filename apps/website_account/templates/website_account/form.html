@@ -1,0 +1,32 @@
+{% extends 'core/form.html' %}
+
+{% block after-section %}
+    <div class="section">
+        <h2>Most recent logins</h2>
+        <ul class="item-list hide-items" data-max-item=2>
+            {% for row in history %}
+                <li class="item">
+                    <div class="row">
+                        <div class="item-title col-2">
+                            {{ row.time_stamp|date }}
+                        </div>
+                        <div class="item-info col-2">
+                            {{ row.client_ip }}
+                        </div>
+                        <div class="item-info col-2">
+                            {% if 'Logged-in' in row.description %}
+                                <span class="badge bg-success">Login</span>
+                            {% elif 'Logged-out' in row.description %}
+                                <span class="badge bg-warning">Logout</span>
+                            {% elif 'Password reset' in row.description %}
+                                <span class="badge bg-primary">Password reset request</span>
+                            {% else %}
+                                <span class="badge bg-primary">{{ row.description }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
