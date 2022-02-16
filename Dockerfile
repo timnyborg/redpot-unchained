@@ -1,6 +1,6 @@
 # Adapted from https://www.caktusgroup.com/blog/2017/03/14/production-ready-dockerfile-your-python-django-app/
 # Specify debian version to avoid breaking on new version releases (needs syncing with microsoft packages)
-FROM python:3.7-slim-buster
+FROM python:3.9-slim-bullseye
 
 # Create a group and user to run our app
 ARG APP_USER=appuser
@@ -9,28 +9,29 @@ RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USE
 # Add microsoft package repository
 RUN apt-get update && apt-get install -y curl gnupg \
     && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-    && curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
+    && curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
 
 # Install packages needed to run your application (not build deps):
 ENV ACCEPT_EULA=Y
 RUN apt-get update && apt-get install -y --no-install-recommends \
       # odbc drivers
       msodbcsql18 \
-      # weasyprint prereqs  # cairo is not needed once we move to bullseye and weasyprint >=54
-      libcairo2 \
+      # git required while we have repos in requirements
+      git \
+      # weasyprint prereqs
       libpango-1.0-0 \
       libpangoft2-1.0-0 \
-      libpangocairo-1.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Python packages
 COPY requirements.txt /requirements.txt
-COPY dependencies.txt /dependencies.txt
 
 # Install build deps, install python packages, then remove build deps in a single step - key for keeping size down
 RUN BUILD_DEPS=" \
     build-essential \
-    $(cat /dependencies.txt) \
+    unixodbc-dev \
+    libsasl2-dev \
+    libldap2-dev \
     " \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
     && pip install --no-cache-dir -r /requirements.txt \

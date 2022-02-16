@@ -7,7 +7,7 @@ from typing import Type
 import django_tables2 as tables
 from django_filters.views import FilterView
 from weasyprint import CSS, HTML
-from weasyprint.fonts import FontConfiguration
+from weasyprint.text.fonts import FontConfiguration
 
 from django import http
 from django.conf import settings
