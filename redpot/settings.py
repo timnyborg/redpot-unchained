@@ -167,6 +167,11 @@ DATABASES = {
         'TEST': {
             'NAME': env('TEST_DB_NAME', default='redpot_test'),
         },
+        'OPTIONS': {
+            'driver': "ODBC Driver 18 for SQL Server",
+            # accept self-signed certs during CI/CD
+            'extra_params': env('DB_EXTRA_PARAMS', default="TrustServerCertificate=Yes"),
+        },
     }
 }
 

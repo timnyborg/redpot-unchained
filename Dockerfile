@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y curl gnupg \
 ENV ACCEPT_EULA=Y
 RUN apt-get update && apt-get install -y --no-install-recommends \
       # odbc drivers
-      msodbcsql17 \
+      msodbcsql18 \
       # weasyprint prereqs  # cairo is not needed once we move to bullseye and weasyprint >=54
       libcairo2 \
       libpango-1.0-0 \
