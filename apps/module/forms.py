@@ -5,7 +5,7 @@ from django_select2.forms import Select2MultipleWidget, Select2Widget
 
 from django import forms
 from django.core import exceptions
-from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
+from django.core.exceptions import NON_FIELD_ERRORS
 from django.forms import fields
 from django.forms.widgets import Textarea
 
@@ -267,17 +267,14 @@ class BaseHESASubjectFormSet(forms.BaseInlineFormSet):
 
 
 class UncancelForm(forms.ModelForm):
+    status = forms.ModelChoiceField(
+        models.ModuleStatus.objects.exclude(id=models.Statuses.CANCELLED),
+        empty_label='– Choose a new status –',
+    )
+
     class Meta:
         model = models.Module
         fields = ['status']
-
-    def clean(self):
-        cleaned_data = super().clean()
-        module_status = cleaned_data.get('status')
-
-        # Module cancelled status
-        if module_status.id == 33:
-            raise ValidationError({'status': "Please select a different course status to uncancel the course"})
 
 
 class CancelForm(forms.ModelForm):
