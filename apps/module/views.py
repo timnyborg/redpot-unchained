@@ -137,6 +137,12 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestam
     template_name = 'core/form.html'
     success_message = 'Details updated.'
 
+    def form_valid(self, form) -> http.HttpResponse:
+        # Check publication rules after saving
+        response = super().form_valid(form)
+        self.object.update_status()
+        return response
+
 
 class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.CreateView):
     form_class = forms.CreateForm
