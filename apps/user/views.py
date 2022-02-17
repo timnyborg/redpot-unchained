@@ -1,4 +1,4 @@
-from django_auth_ldap.backend import LDAPBackend
+from django_auth_ldap import backend
 
 from django import http
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -46,7 +46,7 @@ class New(PageTitleMixin, SuccessMessageMixin, PermissionRequiredMixin, generic.
     def form_valid(self, form) -> http.HttpResponse:
         username = form.cleaned_data['username']
         # Try populating the user from ldap
-        self.object = LDAPBackend().populate_user(username)
+        self.object = backend.LDAPBackend().populate_user(username)
         if not self.object:
             self.object = User.objects.create_user(username)
         return super().form_valid(form)
