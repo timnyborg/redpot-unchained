@@ -1,5 +1,6 @@
 {% extends 'staff_list_layout.html' %}
 {% load static %}
+{% load redpot_tags %}
 {% block center %}
     <div class="main-body">
           <div class="row gutters-sm">
@@ -27,7 +28,10 @@
                       <h6 class="mb-0"><i class="fas fa-fw fa-user-tag"></i> Full Name</h6>
                     </div>
                     <div class="col-sm-10 text-secondary">
-                      {{ staff.first_name }} {{ staff.last_name }}
+                        {{ staff.first_name }} {{ staff.last_name }}
+                        {% if perms.core.edit_user %}
+                            {% edit_button staff size='small' %}
+                        {% endif %}
                     </div>
                   </div>
                   <hr>

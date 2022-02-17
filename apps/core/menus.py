@@ -172,7 +172,17 @@ other_children = (
             MenuItem('Import opt-ins', 'not-implemented', icon='check'),
         ),
     ),
-    MenuItem("Staff listing", reverse('staff_list:home'), icon='users'),
+    MenuItem(
+        "Manage users",
+        '#',
+        icon='users',
+        check=lambda request: request.user.has_perm('core.add_user'),
+        children=(
+            MenuItem('Search', 'not-implemented', icon='search'),
+            MenuItem('New', reverse('user:new'), icon='user-plus'),
+        ),
+    ),
+    MenuItem("Staff listing", reverse('staff_list:home'), icon='address-card'),
     MenuItem(
         'Transcripts',
         reverse('transcript:create-batch'),
@@ -197,7 +207,7 @@ Menu.add_item("user", MenuItem("Login", reverse("login"), check=lambda request: 
 # Define children for the my account menu
 def myaccount_children(request):
     return [
-        MenuItem("Edit Profile", reverse("user:profile"), icon="user-edit"),
+        MenuItem("Edit Profile", reverse("user:edit"), icon="user-edit"),
         MenuItem("View Profile", request.user.get_absolute_url(), icon="user"),
         MenuItem(
             "Admin",

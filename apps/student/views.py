@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import models
-from django.db.models import Prefetch, Q
+from django.db.models import Count, Prefetch, Q
 from django.forms import Form
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -175,12 +175,11 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         tutor_module_role = self.request.GET.get('tutor_role', '')
         if tutor:
             tutor_activities = tutor.tutor_activities.select_related('activity').order_by('-id')
-            # todo: annotate in the enrolment count, to avoid n+1
             tutor_modules = tutor.tutor_modules.select_related('module').order_by('-module__start_date')
             tutor_roles = tutor.tutor_modules.values_list('role', flat=True).exclude(role=None).distinct()
             tutor_modules_query = (
-                # Todo: annotate enrolment count for the table
                 tutor.tutor_modules.select_related('module')
+                .annotate(enrolment_count=Count('module__enrolment', Q(module__enrolment__status__takes_place=True)))
                 .prefetch_related('contracts')
                 .order_by('-module__start_date')
             )

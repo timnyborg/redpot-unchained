@@ -188,7 +188,7 @@ AUTH_LDAP_BIND_PASSWORD = env('LDAP_PASSWORD', default='')
 AUTH_LDAP_USER_SEARCH = LDAPSearch(env('LDAP_BASE_DN', default=''), ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)")
 AUTH_LDAP_START_TLS = env.bool('LDAP_START_TLS', default=True)
 
-AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
+AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn", "role": "description"}
 AUTH_LDAP_ALWAYS_UPDATE_USER = False  # Only populate fields on the first login
 
 

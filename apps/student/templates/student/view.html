@@ -756,7 +756,7 @@
                 </div>
                 <div class="col-sm-2">
                     {% if not tutor_module.module.is_cancelled %}
-                        {{tutor_module.module.enrolments.count}}/{{ tutor_module.module.max_size | default:'∞' }}
+                        {{tutor_module.enrolment_count}}/{{ tutor_module.module.max_size | default:'∞' }}
                     {% else %}
                         <span class="badge bg-danger">Cancelled</span>
                     {% endif %}

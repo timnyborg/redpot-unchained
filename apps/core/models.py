@@ -118,8 +118,11 @@ class User(SignatureModel, AbstractUser):
     on_facewall = models.BooleanField(default=True)
     division = models.ForeignKey('Division', on_delete=models.CASCADE, db_column='division', default=1)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse('staff_list:profile', args=[self.pk])
+
+    def get_edit_url(self) -> str:
+        return reverse('user:edit', args=[self.pk])
 
     def phone_number(self):
         if self.phone:
