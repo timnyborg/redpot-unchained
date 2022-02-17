@@ -172,7 +172,17 @@ other_children = (
             MenuItem('Import opt-ins', 'not-implemented', icon='check'),
         ),
     ),
-    MenuItem("Staff listing", reverse('staff_list:home'), icon='users'),
+    MenuItem(
+        "Manage users",
+        '#',
+        icon='users',
+        check=lambda request: request.user.has_perm('core.add_user'),
+        children=(
+            MenuItem('Search', 'not-implemented', icon='search'),
+            MenuItem('New', reverse('user:new'), icon='user-plus'),
+        ),
+    ),
+    MenuItem("Staff listing", reverse('staff_list:home'), icon='address-card'),
     MenuItem(
         'Transcripts',
         reverse('transcript:create-batch'),
