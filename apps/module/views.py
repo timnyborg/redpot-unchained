@@ -26,9 +26,7 @@ from apps.tutor.utils import expense_forms
 from apps.tutor_payment.models import Statuses as PaymentStatuses
 from apps.tutor_payment.models import TutorPayment
 
-from . import exports, forms, services
-from .datatables import BookTable, ModuleSearchFilter, ModuleSearchTable, WaitlistTable
-from .models import Module, ModuleStatus
+from . import datatables, exports, forms, models, services
 
 
 class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.CreateView):
@@ -43,7 +41,7 @@ class Clone(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimesta
     def get_form_kwargs(self):
         # Set the source module, and use it to determine which form fields to remove
         module_pk = self.request.GET.get('module') or self.kwargs.get('pk')
-        self.src_module = get_object_or_404(Module, pk=module_pk)
+        self.src_module = get_object_or_404(models.Module, pk=module_pk)
         remove_fields = []
         if self.src_module.portfolio_id != 32:  # todo: consider what to do with this logic
             remove_fields.append('is_repeat')
@@ -91,7 +89,7 @@ class CopyFees(LoginRequiredMixin, PageTitleMixin, generic.FormView):
     title = 'Module'
 
     def dispatch(self, request, *args, **kwargs):
-        self.target_module = get_object_or_404(Module, pk=self.kwargs['module_id'])
+        self.target_module = get_object_or_404(models.Module, pk=self.kwargs['module_id'])
         return super().dispatch(request, *args, **kwargs)
 
     def get_subtitle(self):
@@ -114,7 +112,7 @@ class CopyWebFields(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gen
     title = 'Module'
 
     def dispatch(self, request, *args, **kwargs):
-        self.target_module = get_object_or_404(Module, pk=self.kwargs['module_id'])
+        self.target_module = get_object_or_404(models.Module, pk=self.kwargs['module_id'])
         return super().dispatch(request, *args, **kwargs)
 
     def get_subtitle(self):
@@ -132,7 +130,7 @@ class CopyWebFields(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gen
 
 
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
-    model = Module
+    model = models.Module
     form_class = forms.EditForm
     template_name = 'core/form.html'
     success_message = 'Details updated.'
@@ -147,7 +145,7 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestam
 class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.CreateView):
     form_class = forms.CreateForm
     template_name = 'module/new.html'
-    model = Module
+    model = models.Module
     success_message = 'Module created'
 
     def get_context_data(self, **kwargs):
@@ -165,14 +163,14 @@ class New(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestamp
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
     template_name = 'core/search.html'
-    queryset = Module.objects.select_related('division', 'portfolio')
-    table_class = ModuleSearchTable
-    filterset_class = ModuleSearchFilter
+    queryset = models.Module.objects.select_related('division', 'portfolio')
+    table_class = datatables.ModuleSearchTable
+    filterset_class = datatables.ModuleSearchFilter
     subtitle = 'Search'
 
 
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
-    queryset = Module.objects.defer(None)  # Get all fields
+    queryset = models.Module.objects.defer(None)  # Get all fields
     template_name = 'module/view.html'
 
     def get_subtitle(self):
@@ -196,8 +194,8 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
 
         expense_form_options = expense_forms.template_options(self.object)
 
-        waitlist_table = WaitlistTable(self.object.waitlists.all(), request=self.request)
-        book_table = BookTable(self.object.books.all(), request=self.request)
+        waitlist_table = datatables.WaitlistTable(self.object.waitlists.all(), request=self.request)
+        book_table = datatables.BookTable(self.object.books.all(), request=self.request)
 
         discounts = Discount.objects.matching_module(self.object).with_eligibility()
 
@@ -210,7 +208,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         payment_plans = self.object.payment_plans.all()
         marketing_types = self.object.marketing_types.all()
 
-        statuses = ModuleStatus.objects.all()
+        statuses = models.ModuleStatus.objects.all()
 
         return {
             'enrolments': enrolments,
@@ -241,7 +239,7 @@ class AddProgramme(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gene
     subtitle = 'Attach to programme'
 
     def dispatch(self, request, *args, **kwargs):
-        self.module = get_object_or_404(Module, pk=kwargs['module_id'])
+        self.module = get_object_or_404(models.Module, pk=kwargs['module_id'])
         return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self) -> dict:
@@ -255,7 +253,7 @@ class StudentList(LoginRequiredMixin, ExcelExportView):
     export_class = exports.StudentListExport
 
     def get(self, request, *args, **kwargs):
-        self.module = get_object_or_404(Module, pk=kwargs['pk'])
+        self.module = get_object_or_404(models.Module, pk=kwargs['pk'])
         return super().get(request, *args, **kwargs)
 
     def get_filename(self):
@@ -269,7 +267,7 @@ class MoodleList(LoginRequiredMixin, ExcelExportView):
     export_class = exports.MoodleListExport
 
     def get(self, request, *args, **kwargs):
-        self.module = get_object_or_404(Module, pk=kwargs['pk'])
+        self.module = get_object_or_404(models.Module, pk=kwargs['pk'])
         return super().get(request, *args, **kwargs)
 
     def get_filename(self):
@@ -291,14 +289,14 @@ class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
     # todo: convert to POST once we have a good POST-link solution,
     #  or even better, that link is ajax'ed and handles message popups!
     def get(self, request, module_id: int) -> http.HttpResponse:
-        module = get_object_or_404(Module, pk=module_id)
+        module = get_object_or_404(models.Module, pk=module_id)
         count = services.assign_moodle_ids(module=module, created_by=request.user.username)
         messages.success(request, f'{count} moodle ID(s) generated')
         return redirect(module)
 
 
 class EditHESASubjects(LoginRequiredMixin, PageTitleMixin, generic.detail.SingleObjectMixin, generic.FormView):
-    model = Module
+    model = models.Module
     form_class = forms.HESASubjectFormSet
     template_name = 'module/edit_hesa_subjects.html'
     subtitle = 'HESA subjects'
@@ -321,7 +319,7 @@ class EditHESASubjects(LoginRequiredMixin, PageTitleMixin, generic.detail.Single
 
 
 class Uncancel(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
-    model = Module
+    model = models.Module
     form_class = forms.UncancelForm
     template_name = 'module/uncancel.html'
     subtitle = 'Uncancel'
@@ -333,7 +331,7 @@ class Uncancel(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.
 
 
 class Cancel(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
-    model = Module
+    model = models.Module
     form_class = forms.CancelForm
     template_name = 'module/cancel.html'
     subtitle = 'Cancel'
@@ -342,7 +340,7 @@ class Cancel(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.Up
     def form_valid(self, form) -> http.HttpResponse:
         module = self.object
         # todo: turn cancel & uncancel into services or model methods
-        module.status = ModuleStatus.objects.get(id=33)
+        module.status_id = models.Statuses.CANCELLED
         module.is_cancelled = True
         module.auto_feedback = False
         module.auto_reminder = False
@@ -367,7 +365,7 @@ class AddPaymentPlan(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, ge
     success_message = 'Payment plan added: %(plan_type)s'
 
     def get_initial(self) -> dict:
-        return {'module': get_object_or_404(Module, pk=self.kwargs['module_id'])}
+        return {'module': get_object_or_404(models.Module, pk=self.kwargs['module_id'])}
 
     def get_success_url(self) -> str:
         return self.object.module.get_absolute_url() + '#payment-plans'
@@ -390,7 +388,7 @@ class RemovePaymentPlan(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin,
 
 class ClassRegister(LoginRequiredMixin, MailMergeView):
     def get(self, request, *args, **kwargs) -> http.HttpResponse:
-        self.module: Module = get_object_or_404(Module, pk=self.kwargs['pk'])
+        self.module: models.Module = get_object_or_404(models.Module, pk=self.kwargs['pk'])
         return super().get(request, *args, **kwargs)
 
     def get_filename(self, queryset) -> str:
@@ -461,7 +459,7 @@ class ClassRegister(LoginRequiredMixin, MailMergeView):
 class Syllabus(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
     """Displays a formatted course syllabus for printing, as part of the weekly classes workflow"""
 
-    model = Module
+    model = models.Module
     template_name = 'module/syllabus.html'
     subtitle = 'Syllabus'
 
