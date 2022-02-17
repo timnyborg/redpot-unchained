@@ -207,7 +207,7 @@ Menu.add_item("user", MenuItem("Login", reverse("login"), check=lambda request: 
 # Define children for the my account menu
 def myaccount_children(request):
     return [
-        MenuItem("Edit Profile", reverse("user:profile"), icon="user-edit"),
+        MenuItem("Edit Profile", reverse("user:edit"), icon="user-edit"),
         MenuItem("View Profile", request.user.get_absolute_url(), icon="user"),
         MenuItem(
             "Admin",

@@ -3,7 +3,8 @@ from unittest import mock
 from django import test
 from django.urls import reverse
 
-from apps.core.utils.tests import LoggedInViewTestMixin
+from apps.core.tests.factories import UserFactory
+from apps.core.utils.tests import LoggedInMixin, LoggedInViewTestMixin
 
 
 class TestNewView(LoggedInViewTestMixin, test.TestCase):
@@ -18,3 +19,20 @@ class TestNewView(LoggedInViewTestMixin, test.TestCase):
         self.client.post(self.url, data={'username': 'test'})
 
         instance.populate_user.assert_called_with('test')
+
+
+class TestEditView(LoggedInMixin, test.TestCase):
+    superuser = True
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.other_user = UserFactory()
+
+    def test_own_profile(self):
+        response = self.client.get(reverse('user:edit'))
+        self.assertEqual(response.context['user'], self.user)
+
+    def test_other_profile(self):
+        response = self.client.get(reverse('user:edit', kwargs={'pk': self.other_user.pk}))
+        self.assertEqual(response.context['user'], self.other_user)

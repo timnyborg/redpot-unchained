@@ -122,7 +122,7 @@ class User(SignatureModel, AbstractUser):
         return reverse('staff_list:profile', args=[self.pk])
 
     def get_edit_url(self) -> str:
-        return reverse('user:admin-edit', args=[self.pk])
+        return reverse('user:edit', args=[self.pk])
 
     def phone_number(self):
         if self.phone:

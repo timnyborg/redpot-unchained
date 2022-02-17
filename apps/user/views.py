@@ -52,4 +52,4 @@ class New(PageTitleMixin, SuccessMessageMixin, PermissionRequiredMixin, generic.
         return super().form_valid(form)
 
     def get_success_url(self) -> str:
-        return reverse('user:admin-edit', kwargs={'pk': self.object.pk})
+        return reverse('user:edit', kwargs={'pk': self.object.pk})
