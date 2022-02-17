@@ -42,6 +42,10 @@ def create_teaching_fee(
     # Get the beginning of the first payment month in the module's year
     assert tutor_module.module.start_date, 'Module lacks a start date'
     first_date = date(tutor_module.module.start_date.year, schedule.first_month, 1)
+    # Ensure payments are scheduled after the course begins (e.g. Jan payments for MT courses).
+    # Since payments occur at the end of the listed month, don't check the days
+    if first_date.month < tutor_module.module.start_date.month:
+        first_date += relativedelta(years=1)
     # First day of following months
     dates = [first_date + relativedelta(months=n) for n in range(schedule.months)]
     raised_on = datetime.now()
