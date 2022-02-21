@@ -175,6 +175,19 @@ class Division(models.Model):
         return self.name
 
 
+class ExternalMenuItem(models.Model):
+    """Links to tools and applications, to appear in the menu"""
+
+    name = models.CharField(max_length=64)
+    url = models.URLField(max_length=256)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self) -> str:
+        return str(self.name)
+
+
 @models.CharField.register_lookup
 class UnAccent(models.Transform):
     """A transform that allows us to do accent-insensitive text searching in MSSQL
