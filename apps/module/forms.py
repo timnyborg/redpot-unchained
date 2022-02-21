@@ -10,6 +10,7 @@ from django.forms import fields
 from django.forms.widgets import Textarea
 
 from apps.core.utils import widgets
+from apps.enrolment.models import Enrolment
 from apps.hesa.models import ModuleHECoSSubject
 from apps.invoice.models import ModulePaymentPlan
 from apps.programme.models import ProgrammeModule
@@ -151,6 +152,8 @@ class EditForm(forms.ModelForm):
 
 
 class LookupForm(forms.Form):
+    """Simple module autocomplete, used in a few different lookups"""
+
     module = forms.IntegerField(
         widget=autocomplete.ListSelect2(
             url='autocomplete:module',
@@ -300,3 +303,24 @@ class ModulePaymentPlanForm(forms.ModelForm):
         model = ModulePaymentPlan
         fields = ['module', 'plan_type']
         error_messages = {NON_FIELD_ERRORS: {'unique_together': 'This plan is already attached to the module'}}
+
+
+class AwardPointsForm(forms.ModelForm):
+    class Meta:
+        model = Enrolment
+        fields = ['result']
+
+
+BaseAwardPointsFormSet = forms.inlineformset_factory(
+    parent_model=models.Module,
+    model=Enrolment,
+    form=AwardPointsForm,
+    can_delete=False,
+    extra=0,
+)
+
+
+# Subclassing the factory in order to provide ordering
+class AwardPointsFormSet(BaseAwardPointsFormSet):
+    def get_queryset(self):
+        return super().get_queryset().order_by('qa__student__surname', 'qa__student__firstname')

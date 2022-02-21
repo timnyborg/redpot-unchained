@@ -5,7 +5,7 @@ from django_tables2.views import SingleTableMixin
 
 from django import http
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
 from django.db.models import FilteredRelation, Q, QuerySet
@@ -472,3 +472,34 @@ class Syllabus(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
             'tutor_module': self.object.tutor_modules.filter(is_teaching=True).first(),
             'fee': self.object.fees.filter(type=FeeTypes.PROGRAMME).first(),
         }
+
+
+class AwardPoints(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.FormView):
+    """Allows staff to edit the results of all enrolments on a module at the same time
+    todo: investigate what the ideal tool would look like with colleagues.  Datagrid?  Ajax buttons?
+    """
+
+    permission_required = 'enrolment.edit_mark'
+    template_name = 'module/award_points.html'
+    form_class = forms.AwardPointsFormSet
+    title = 'Module'
+    subtitle = 'Award points'
+    success_message = 'Results updated'
+    success_url = '#'
+
+    def dispatch(self, request, *args, **kwargs):
+        # can take kwargs or query params, to allow switching modules via a lookup form
+        self.object = get_object_or_404(Module, pk=self.kwargs.get('pk') or self.request.GET.get('module'))
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        return {**context, 'switch_module_form': forms.LookupForm}
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        return {**kwargs, 'instance': self.object}
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
