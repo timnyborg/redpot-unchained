@@ -1,7 +1,23 @@
+from __future__ import annotations
+
 from menu import Menu, MenuItem
 
+from django import http
 from django.conf import settings
+from django.core.cache import cache
 from django.urls import reverse
+
+from . import models
+
+
+def get_external_apps(request: http.HttpRequest) -> list[MenuItem]:
+    """Generate menu items for external applications from the table, caching for 10 minutes"""
+    menu_items = cache.get('external_menu_items')
+    if not menu_items:  # check if menu_items are in the cache
+        menu_items = [MenuItem(title=item.name, url=item.url) for item in models.ExternalMenuItem.objects.all()]
+        cache.set('external_menu_items', menu_items, 600)
+    return menu_items
+
 
 student_children = (
     MenuItem("Search", reverse("student:search"), icon="search"),
@@ -125,7 +141,7 @@ finance_children = [
 Menu.add_item("main", MenuItem("Finance", '#', children=finance_children))
 
 
-def dev_children(request):
+def dev_children(request: http.HttpRequest) -> list[MenuItem]:
     return [
         MenuItem("System info", reverse('system-info'), icon="server"),
         MenuItem(
@@ -195,6 +211,7 @@ other_children = (
         icon='code',
         check=lambda request: request.user.has_perm('hesa.view_batch'),
     ),
+    MenuItem("Other apps", '#', icon='external-link-alt', children=get_external_apps, separator=True),
 )
 
 Menu.add_item("main", MenuItem("Other", '#', children=other_children))
@@ -205,7 +222,7 @@ Menu.add_item("user", MenuItem("Login", reverse("login"), check=lambda request: 
 
 
 # Define children for the my account menu
-def myaccount_children(request):
+def myaccount_children(request: http.HttpRequest) -> list[MenuItem]:
     return [
         MenuItem("Edit Profile", reverse("user:edit"), icon="user-edit"),
         MenuItem("View Profile", request.user.get_absolute_url(), icon="user"),

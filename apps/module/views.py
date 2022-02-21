@@ -489,7 +489,7 @@ class AwardPoints(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, 
 
     def dispatch(self, request, *args, **kwargs):
         # can take kwargs or query params, to allow switching modules via a lookup form
-        self.object = get_object_or_404(Module, pk=self.kwargs.get('pk') or self.request.GET.get('module'))
+        self.object = get_object_or_404(models.Module, pk=self.kwargs.get('pk') or self.request.GET.get('module'))
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs) -> dict:
