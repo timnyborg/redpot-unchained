@@ -78,6 +78,16 @@
         </div>
     {% endif %}
 
+    {% if WARNING_BANNER %}
+        <div class="alert-header alert-info">
+            <div class="container">
+                <span class="alert-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </span>
+                <b class="alert-heading">Warning:</b> {{ WARNING_BANNER }}
+            </div>
+        </div>
+    {% endif %}
 
     {% for message in messages %}
         <div
