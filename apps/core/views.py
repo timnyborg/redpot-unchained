@@ -11,6 +11,7 @@ from django import http
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.views import generic
 
 from apps.core.forms import CustomAuthForm, ImpersonateForm
@@ -21,8 +22,9 @@ class Index(generic.TemplateView):
     template_name = 'core/index.html'
 
 
-class CustomLoginView(LoginView):
+class CustomLoginView(SuccessMessageMixin, LoginView):
     authentication_form = CustomAuthForm
+    success_message = 'Logged in'
 
 
 class SuperUserRequiredMixin(UserPassesTestMixin):
