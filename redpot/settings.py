@@ -210,7 +210,7 @@ LOGGING = {
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "loggers": {
         "django_auth_ldap": {
-            "level": "ERROR",
+            "level": env("LDAP_LOGGING_LEVEL", default="ERROR"),
             "handlers": ["console"],
         },
         'django.db.backends': {
