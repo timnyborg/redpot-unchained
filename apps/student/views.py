@@ -474,7 +474,7 @@ class CreateMoodleID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, Suc
         return self.object.student.get_absolute_url() + '#other_ids'
 
 
-class EditMoodleID(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
+class EditMoodleID(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
     model = MoodleID
     template_name = 'core/form.html'
     form_class = forms.MoodleIDForm
@@ -483,9 +483,6 @@ class EditMoodleID(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, 
 class DeleteMoodleID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
     model = MoodleID
     template_name = 'core/delete_form.html'
-
-    def get_subtitle(self) -> str:
-        return f'Delete – {self.object.moodle_id}'
 
     def get_success_url(self) -> str:
         messages.success(self.request, 'Moodle ID deleted')

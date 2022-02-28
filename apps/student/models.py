@@ -380,7 +380,7 @@ class NextHUSID(models.Model):
 class MoodleID(SignatureModel):
     moodle_id = models.IntegerField(
         unique=True, error_messages={'unique': 'Moodle ID already in use'}, verbose_name='Moodle ID'
-    )
+    )  # todo: rename this field
     student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student', related_name='moodle_id')
     first_module_code = models.CharField(max_length=12, blank=True, null=True)
 
@@ -396,6 +396,9 @@ class MoodleID(SignatureModel):
 
     def get_delete_url(self) -> str:
         return reverse('student:moodle-id:delete', kwargs={'pk': self.pk})
+
+    def __str__(self) -> str:
+        return str(self.moodle_id)
 
     @property
     def initial_password(self) -> str:
