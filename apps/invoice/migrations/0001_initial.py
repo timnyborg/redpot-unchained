@@ -106,7 +106,7 @@ class Migration(migrations.Migration):
                 ('modified_on', models.DateTimeField(blank=True, default=datetime.datetime.now, editable=False, null=True)),
                 ('due_date', models.DateField()),
                 ('amount', models.DecimalField(decimal_places=2, max_digits=16)),
-                ('is_deposit', models.BooleanField()),
+                ('is_deposit', models.BooleanField(default=False)),
                 ('payment_plan', models.ForeignKey(db_column='payment_plan', on_delete=django.db.models.deletion.DO_NOTHING, related_name='scheduled_payments', related_query_name='scheduled_payment', to='invoice.paymentplan')),
             ],
             options={
