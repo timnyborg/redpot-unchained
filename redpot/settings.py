@@ -146,6 +146,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'redpot.context_processors.template_settings',
             ],
         },
     },
@@ -413,6 +414,10 @@ CONTRACT_SIGNATURE_EMAILS = env.list('CONTRACT_SIGNATURE_EMAILS', default='')
 
 # background watermark for non-production instances
 WATERMARK = env('WATERMARK', default='')
+
+# a message to display below the topnav on every page.
+# Likely only useful during the transition away from legacy, when non-devs are using test and prod environments
+WARNING_BANNER = env('WARNING_BANNER', default='')
 
 # Tag manager config
 GOOGLE_TAG_MANAGER_ID = env('GOOGLE_TAG_MANAGER_ID', default='')
