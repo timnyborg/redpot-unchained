@@ -56,10 +56,12 @@
                     headers:{"X-CSRFToken": "{{ csrf_token }}"},
                     type: "POST",
                     url: "{% url 'invoice:save-payment-schedule' paymentplan.id %}",
-                }).success(function (data, string, jqXHR) {
-                    location.href = '{{ paymentplan.invoice.get_absolute_url }}#schedule';
-                }).error(function (data, string, jqXHR) {
-                    alert('Error: ' + data.responseText); // todo: a better alert
+                    success: function (data, string, jqXHR) {
+                        location.href = '{{ paymentplan.invoice.get_absolute_url }}#schedule';
+                    },
+                    error: function (data, string, jqXHR) {
+                        alert('Error: ' + data.responseText); // todo: a better alert
+                    }
                 });
             });
         </script>

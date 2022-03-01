@@ -156,7 +156,7 @@ class ScheduledPayment(SignatureModel):
     )
     due_date = models.DateField()
     amount = models.DecimalField(max_digits=16, decimal_places=2)
-    is_deposit = models.BooleanField()  # todo: investigate if this has value
+    is_deposit = models.BooleanField(default=False)  # todo: investigate if this has value
 
     class Meta:
         db_table = 'payment_plan_schedule'

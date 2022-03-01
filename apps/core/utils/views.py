@@ -33,22 +33,22 @@ class PageTitleMixin:
     All can be overridden by setting variables, or overriding the methods
     """
 
-    title = ""
-    subtitle = ""
-    subtitle_object = True
+    title: str = ""
+    subtitle: str = ""
+    subtitle_object: bool = True
 
-    def get_title(self):
+    def get_title(self) -> str:
         if self.title:
             return self.title
         if hasattr(self, 'model') and self.model is not None:
             # Automatically get model name for model views
-            return self.model._meta.verbose_name.capitalize()
+            return self.model._meta.verbose_name[0].upper() + self.model._meta.verbose_name[1:]
         if hasattr(self, 'queryset') and self.queryset is not None:
             # Automatically get model name for views with a queryset.  Is not None is critical, to prevent loading
             # the entire set into memory before casting as True/False!
-            return self.queryset.model._meta.verbose_name.capitalize()
+            return self.queryset.model._meta.verbose_name[0].upper() + self.queryset.model._meta.verbose_name[1:]
 
-    def get_subtitle(self):
+    def get_subtitle(self) -> str:
         if self.subtitle:
             stem = self.subtitle
         elif isinstance(self, generic.UpdateView):
@@ -66,7 +66,7 @@ class PageTitleMixin:
             return f'{stem} – {self.object}'
         return stem
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         kwargs = super().get_context_data(**kwargs)
         kwargs.update(
             {

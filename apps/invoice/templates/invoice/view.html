@@ -83,7 +83,7 @@
     {% endif %}
 </div>
 
-{% if perms.invoice.view_paymentplan %}
+{% if plan and perms.invoice.view_paymentplan %}
 <div class="section">
     <div class='row'>
         <div class='col-sm-6'>
@@ -109,7 +109,7 @@
             {% if plan.is_custom and perms.core.finance %}
                 <div class="float-end">
                     <a href="{% url 'invoice:edit-payment-schedule' plan.id %}" class="btn btn-success btn-xs">
-                        <span class="fas fa-fw fa-plus"></span> Edit schedule
+                        <span class="fas fa-fw fa-pencil-alt"></span> Edit schedule
                     </a>
                 </div>
             {% endif %}

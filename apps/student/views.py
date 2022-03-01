@@ -407,16 +407,10 @@ class EditPhone(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessM
     form_class = forms.PhoneForm
     success_message = 'Phone number updated: %(number)s'
 
-    def get_subtitle(self) -> str:
-        return f'Edit – {self.object.number}'
-
 
 class DeletePhone(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
     model = Phone
     template_name = 'core/delete_form.html'
-
-    def get_subtitle(self) -> str:
-        return f'Delete – {self.object.number}'
 
     def get_success_url(self) -> str:
         messages.success(self.request, 'Phone deleted')
@@ -427,9 +421,9 @@ class DeletePhone(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
 
 
 class CreateOtherID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
+    model = OtherID
     form_class = forms.CreateOtherIDForm
     template_name = 'core/form.html'
-    title = 'Other ID'
     success_message = 'Other ID added'
 
     def get_initial(self) -> dict:
@@ -443,16 +437,12 @@ class EditOtherID(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, Succes
     model = OtherID
     template_name = 'core/form.html'
     form_class = forms.OtherIDForm
-    title = 'Other ID'
     success_message = 'Other ID updated'
 
 
 class DeleteOtherID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
     model = OtherID
     template_name = 'core/delete_form.html'
-
-    def get_subtitle(self) -> str:
-        return f'Delete – {self.object.number}'
 
     def get_success_url(self) -> str:
         messages.success(self.request, 'Other ID deleted')
@@ -474,7 +464,7 @@ class CreateMoodleID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, Suc
         return self.object.student.get_absolute_url() + '#other_ids'
 
 
-class EditMoodleID(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
+class EditMoodleID(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
     model = MoodleID
     template_name = 'core/form.html'
     form_class = forms.MoodleIDForm
@@ -483,9 +473,6 @@ class EditMoodleID(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, 
 class DeleteMoodleID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
     model = MoodleID
     template_name = 'core/delete_form.html'
-
-    def get_subtitle(self) -> str:
-        return f'Delete – {self.object.moodle_id}'
 
     def get_success_url(self) -> str:
         messages.success(self.request, 'Moodle ID deleted')
