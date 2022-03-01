@@ -101,7 +101,7 @@ class Migration(migrations.Migration):
                 ('msfund', models.CharField(blank=True, db_column='MSFUND', max_length=2, null=True)),
                 ('awardbod', models.IntegerField(db_column='AWARDBOD', default=10007774)),
                 ('batch', models.ForeignKey(blank=True, db_column='batch', null=True,
-                                            on_delete=django.db.models.deletion.DO_NOTHING, to='hesa.Batch')),
+                                            on_delete=django.db.models.deletion.CASCADE, to='hesa.Batch')),
             ],
             options={
                 'db_table': 'hesa_course',
@@ -117,7 +117,7 @@ class Migration(migrations.Migration):
                 ('modid', models.CharField(blank=True, db_column='MODID', max_length=16, null=True)),
                 ('modstat', models.IntegerField(db_column='MODSTAT', default=2)),
                 ('modout', models.CharField(blank=True, db_column='MODOUT', max_length=3, null=True)),
-                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.DO_NOTHING,
+                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.CASCADE,
                                             to='hesa.Batch')),
             ],
             options={
@@ -144,7 +144,7 @@ class Migration(migrations.Migration):
                 ('ssn', models.CharField(blank=True, db_column='SSN', max_length=32, null=True)),
                 ('scn', models.IntegerField(blank=True, db_column='SCN', null=True)),
                 ('relblf', models.CharField(blank=True, db_column='RELBLF', max_length=2, null=True)),
-                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.DO_NOTHING,
+                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.CASCADE,
                                             to='hesa.Batch')),
             ],
             options={
@@ -157,7 +157,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('instanceid_fk', models.CharField(blank=True, db_column='INSTANCEID_FK', max_length=16, null=True)),
                 ('qual', models.CharField(blank=True, db_column='QUAL', max_length=3, null=True)),
-                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.DO_NOTHING,
+                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.CASCADE,
                                             to='hesa.Batch')),
             ],
             options={
@@ -172,7 +172,7 @@ class Migration(migrations.Migration):
                 ('costcn', models.IntegerField(blank=True, db_column='COSTCN', null=True)),
                 ('modsbjp', models.IntegerField(db_column='MODSBJP')),
                 ('modsbj', models.CharField(db_column='MODSBJ', max_length=6)),
-                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.DO_NOTHING,
+                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.CASCADE,
                                             to='hesa.Batch')),
             ],
             options={
@@ -193,7 +193,7 @@ class Migration(migrations.Migration):
                 ('crdtpts', models.CharField(blank=True, db_column='CRDTPTS', max_length=3, null=True)),
                 ('levlpts', models.IntegerField(blank=True, db_column='LEVLPTS', null=True)),
                 ('tinst', models.IntegerField(blank=True, db_column='TINST', null=True)),
-                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.DO_NOTHING,
+                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.CASCADE,
                                             to='hesa.Batch')),
             ],
             options={
@@ -207,7 +207,7 @@ class Migration(migrations.Migration):
                 ('instapp', models.IntegerField(db_column='INSTAPP', default=0)),
                 ('recid', models.IntegerField(db_column='RECID')),
                 ('ukprn', models.IntegerField(db_column='UKPRN', default=10007774)),
-                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.DO_NOTHING,
+                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.CASCADE,
                                             to='hesa.Batch')),
             ],
             options={
@@ -251,7 +251,7 @@ class Migration(migrations.Migration):
                 ('elq', models.CharField(blank=True, db_column='ELQ', max_length=2, null=True)),
                 ('rcstdnt', models.IntegerField(blank=True, db_column='RCSTDNT', null=True)),
                 ('mcdate', models.DateField(blank=True, db_column='MCDATE', null=True)),
-                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.DO_NOTHING,
+                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.CASCADE,
                                             to='hesa.Batch')),
                 ('courseid', models.CharField(db_column='COURSEID', max_length=8)),
             ],
@@ -268,7 +268,7 @@ class Migration(migrations.Migration):
                 ('qualent3', models.CharField(blank=True, db_column='QUALENT3', max_length=3, null=True)),
                 ('postcode', models.CharField(blank=True, db_column='POSTCODE', max_length=32, null=True)),
                 ('careleaver', models.IntegerField(blank=True, db_column='CARELEAVER', default=99, null=True)),
-                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.DO_NOTHING,
+                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.CASCADE,
                                             to='hesa.Batch')),
             ],
             options={
@@ -282,7 +282,7 @@ class Migration(migrations.Migration):
                 ('courseid_fk', models.CharField(blank=True, db_column='COURSEID_FK', max_length=8, null=True)),
                 ('sbjca', models.CharField(blank=True, db_column='SBJCA', max_length=6, null=True)),
                 ('sbjpcnt', models.IntegerField(blank=True, db_column='SBJPCNT', null=True)),
-                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.DO_NOTHING,
+                ('batch', models.ForeignKey(db_column='batch', on_delete=django.db.models.deletion.CASCADE,
                                             to='hesa.Batch')),
             ],
             options={

@@ -55,7 +55,7 @@ class Course(XMLStagingModel, models.Model):
         'ttcid',
     ]
 
-    batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch', blank=True, null=True)
+    batch = models.ForeignKey(Batch, models.CASCADE, db_column='batch', blank=True, null=True)
     programme = models.IntegerField(blank=True, null=True)
     ukprn_fk = models.IntegerField(db_column='UKPRN_FK', default=INSTITUTION_CODE)
     courseid = models.CharField(db_column='COURSEID', max_length=8, blank=True, null=True)
@@ -84,7 +84,7 @@ class Course(XMLStagingModel, models.Model):
 class CourseSubject(XMLStagingModel, models.Model):
     xml_fields = ['sbjca', 'sbjpcnt']
 
-    batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
+    batch = models.ForeignKey(Batch, models.CASCADE, db_column='batch')
     courseid_fk = models.CharField(db_column='COURSEID_FK', max_length=8, blank=True, null=True)
     sbjca = models.CharField(db_column='SBJCA', max_length=6, blank=True, null=True)
     sbjpcnt = models.IntegerField(db_column='SBJPCNT', blank=True, null=True)
@@ -96,7 +96,7 @@ class CourseSubject(XMLStagingModel, models.Model):
 class EntryProfile(XMLStagingModel, models.Model):
     xml_fields = ['careleaver', 'domicile', 'pared', 'postcode', 'qualent3']
 
-    batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
+    batch = models.ForeignKey(Batch, models.CASCADE, db_column='batch')
     instanceid_fk = models.CharField(db_column='INSTANCEID_FK', max_length=16, blank=True, null=True)
     domicile = models.CharField(db_column='DOMICILE', max_length=2, blank=True, null=True)
     qualent3 = models.CharField(db_column='QUALENT3', max_length=3, blank=True, null=True)
@@ -143,7 +143,7 @@ class Instance(XMLStagingModel, models.Model):
     ]
     xml_required = ['splength', 'mcdate', 'enddate']
 
-    batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
+    batch = models.ForeignKey(Batch, models.CASCADE, db_column='batch')
     qa = models.IntegerField(blank=True, null=True)
     instanceid = models.CharField(db_column='INSTANCEID', max_length=16, blank=True, null=True)
     ownstu_fk = models.IntegerField(db_column='OWNSTU_FK', blank=True, null=True)
@@ -192,7 +192,7 @@ class Instance(XMLStagingModel, models.Model):
 class Institution(XMLStagingModel, models.Model):
     xml_fields = ['instapp', 'recid', 'ukprn']
 
-    batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
+    batch = models.ForeignKey(Batch, models.CASCADE, db_column='batch')
     instapp = models.IntegerField(db_column='INSTAPP', default=0)
     recid = models.IntegerField(db_column='RECID')
     ukprn = models.IntegerField(db_column='UKPRN', default=INSTITUTION_CODE)
@@ -211,7 +211,7 @@ class Institution(XMLStagingModel, models.Model):
 class Module(XMLStagingModel, models.Model):
     xml_fields = ['modid', 'crdtpts', 'crdtscm', 'fte', 'levlpts', 'mtitle', 'pcolab', 'tinst']
 
-    batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
+    batch = models.ForeignKey(Batch, models.CASCADE, db_column='batch')
     module = models.IntegerField(blank=True, null=True)
     ukprn_fk = models.IntegerField(db_column='UKPRN_FK', default=INSTITUTION_CODE)
     modid = models.CharField(db_column='MODID', max_length=32, blank=True, null=True)
@@ -233,7 +233,7 @@ class Module(XMLStagingModel, models.Model):
 class ModuleSubject(XMLStagingModel, models.Model):
     xml_fields = ['costcn', 'modsbj', 'modsbjp']
 
-    batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
+    batch = models.ForeignKey(Batch, models.CASCADE, db_column='batch')
     modid_fk = models.CharField(db_column='MODID_FK', max_length=32)
     costcn = models.IntegerField(db_column='COSTCN', blank=True, null=True)
     modsbjp = models.IntegerField(db_column='MODSBJP')
@@ -246,7 +246,7 @@ class ModuleSubject(XMLStagingModel, models.Model):
 class QualificationsAwarded(XMLStagingModel, models.Model):
     xml_fields = ['qual_class', 'qual']
 
-    batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
+    batch = models.ForeignKey(Batch, models.CASCADE, db_column='batch')
     instanceid_fk = models.CharField(db_column='INSTANCEID_FK', max_length=16, blank=True, null=True)
     qual = models.CharField(db_column='QUAL', max_length=3, blank=True, null=True)
     qual_class = models.CharField(db_column='CLASS', max_length=2, blank=True, null=True, default=16)
@@ -276,7 +276,7 @@ class Student(XMLStagingModel, models.Model):
     ]
     xml_required = ['birthdte', 'scn', 'ttpcode']
 
-    batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
+    batch = models.ForeignKey(Batch, models.CASCADE, db_column='batch')
     student = models.IntegerField()
     ukprn_fk = models.IntegerField(db_column='UKPRN_FK', default=INSTITUTION_CODE)
     husid = models.CharField(db_column='HUSID', max_length=32, blank=True, null=True)
@@ -306,7 +306,7 @@ class Student(XMLStagingModel, models.Model):
 class StudentOnModule(XMLStagingModel, models.Model):
     xml_fields = ['modid', 'modout', 'modstat']
 
-    batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
+    batch = models.ForeignKey(Batch, models.CASCADE, db_column='batch')
     enrolment = models.IntegerField(blank=True, null=True)
     instanceid_fk = models.CharField(db_column='INSTANCEID_FK', max_length=16, blank=True, null=True)
     modid = models.CharField(db_column='MODID', max_length=16, blank=True, null=True)
