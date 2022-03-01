@@ -470,6 +470,9 @@ def _model_to_node(model: XMLStagingModel) -> etree.Element:
     # Fill with elements
     for column in model.xml_fields:
         value = getattr(model, column)
+        # hack to deal with qualification_awarded.class shadowing a reserved word
+        if column == 'qual_class':
+            column = 'class'
         if value is not None:
             # EMPTY_ELEMENT lets us handle conditionally-returned elements, e.g. postcode and ttpcode: they
             # must not exist for overseas, but can exist and be empty for UK
