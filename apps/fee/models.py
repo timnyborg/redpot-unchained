@@ -41,7 +41,7 @@ class Fee(SignatureModel):
     is_twin_accom = models.BooleanField(
         default=False, verbose_name='Double accommodation', help_text='Includes a double accommodation'
     )
-    credit_fee = models.BooleanField(default=False, help_text='Additional fee to take a weekly class for credit')
+    credit_fee = models.BooleanField(default=False, help_text='Additional fee to take the class for credit')
     end_date = models.DateField(
         blank=True, null=True, help_text='Optional: day on which to remove the fee from the website'
     )

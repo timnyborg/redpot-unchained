@@ -123,7 +123,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'credit_fee',
-                    models.BooleanField(default=False, help_text='Additional fee to take a weekly class for credit'),
+                    models.BooleanField(default=False, help_text='Additional fee to take the class for credit'),
                 ),
                 (
                     'end_date',
