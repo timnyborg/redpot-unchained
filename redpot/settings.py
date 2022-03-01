@@ -32,7 +32,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 sentry_sdk.init(
     dsn=env("SENTRY_DSN", default=None),
     integrations=[DjangoIntegration()],
-    environment='dev' if DEBUG else 'prod',
+    environment=env("SENTRY_ENVIRONMENT", default='dev' if DEBUG else 'unknown'),
     # You may wish to set the sample_rate to 1.0 in dev, but it should be scaled much lower in production
     traces_sample_rate=env.float("SENTRY_SAMPLE_RATE", default=0.01),
     # If you wish to associate users to errors (assuming you are using
