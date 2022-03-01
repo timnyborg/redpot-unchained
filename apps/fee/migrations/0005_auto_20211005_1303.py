@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 migrations.AlterField(
                     model_name='fee',
                     name='limit',
-                    field=models.ForeignKey(blank=True, db_column='limit', help_text='Todo: Manage limits link', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='fees', related_query_name='fee', to='booking.limit'),
+                    field=models.ForeignKey(blank=True, db_column='limit', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='fees', related_query_name='fee', to='booking.limit'),
                 ),
                 migrations.DeleteModel(
                     name='Accommodation',

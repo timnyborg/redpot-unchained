@@ -138,7 +138,6 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         blank=True,
                         db_column='limit',
-                        help_text='Todo: Manage limits link',
                         null=True,
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name='fees',

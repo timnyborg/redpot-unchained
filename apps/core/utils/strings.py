@@ -1,5 +1,11 @@
 import unicodedata
 
+from django.utils.functional import lazy
+from django.utils.safestring import mark_safe
+
+# Utility for lazily rendering reversed urls in html (e.g. in form help_text)
+mark_safe_lazy = lazy(mark_safe, str)
+
 
 def normalize(text: str) -> str:
     """Converts or strips out characters invalid in filenames

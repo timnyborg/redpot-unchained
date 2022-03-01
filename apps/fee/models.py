@@ -53,7 +53,6 @@ class Fee(SignatureModel):
         blank=True,
         null=True,
         db_column='limit',
-        help_text='Todo: Manage limits link',
     )
     allocation = models.IntegerField(blank=True, null=True, default=0)
 
