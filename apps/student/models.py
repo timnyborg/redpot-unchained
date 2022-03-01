@@ -449,6 +449,7 @@ class OtherID(SITSLockingModelMixin, SignatureModel):
 
     class Meta:
         db_table = 'other_id'
+        verbose_name = 'Other ID'
 
     def __str__(self) -> str:
         return f'{self.get_type_display()}: {self.number}'

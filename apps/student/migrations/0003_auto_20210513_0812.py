@@ -67,6 +67,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'other_id',
+                'verbose_name': 'Other ID',
             },
         ),
         migrations.CreateModel(
