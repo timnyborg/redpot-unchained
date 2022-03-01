@@ -17,7 +17,6 @@ class FeeForm(ModelForm):
             'amount',
             'type',
             'description',
-            'allocation',
             'eu_fee',
             'is_visible',
             'is_payable',
@@ -26,6 +25,7 @@ class FeeForm(ModelForm):
             'is_twin_accom',
             'credit_fee',
             'end_date',
+            'allocation',
             'limit',
         )
         widgets = {'amount': PoundInput()}

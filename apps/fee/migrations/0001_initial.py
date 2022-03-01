@@ -131,7 +131,7 @@ class Migration(migrations.Migration):
                         blank=True, help_text='Optional: day on which to remove the fee from the website', null=True
                     ),
                 ),
-                ('allocation', models.IntegerField(blank=True, default=0, null=True)),
+                ('allocation', models.IntegerField(blank=True, null=True, verbose_name='Catering allocation', help_text='Optional: maximum purchasable on the website')),
                 ('catering_bookings', models.ManyToManyField(through='fee.Catering', to='enrolment.Enrolment')),
                 (
                     'limit',

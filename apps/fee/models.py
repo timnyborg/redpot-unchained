@@ -54,7 +54,12 @@ class Fee(SignatureModel):
         null=True,
         db_column='limit',
     )
-    allocation = models.IntegerField(blank=True, null=True, default=0)
+    allocation = models.IntegerField(
+        blank=True,
+        null=True,
+        verbose_name='Catering allocation',
+        help_text='Optional: maximum purchasable on the website',
+    )
 
     catering_bookings = models.ManyToManyField(
         'enrolment.Enrolment',
