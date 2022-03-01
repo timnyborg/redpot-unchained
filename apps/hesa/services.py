@@ -72,7 +72,7 @@ class HESAReturn:
 
     def create(self) -> models.Batch:
         """Populate the tables in order, updating the status after each"""
-        steps = 12
+        steps = 11
         self._set_progress(1, steps, 'Institution')
         self._institution()
         self._set_progress(2, steps, 'Student')
@@ -89,11 +89,9 @@ class HESAReturn:
         self._instance()
         self._set_progress(8, steps, 'Entry profiles')
         self._entry_profile()
-        self._set_progress(9, steps, 'Qualifications awarded')
-        self._qualification_awarded()
-        self._set_progress(10, steps, 'Students on modules')
+        self._set_progress(9, steps, 'Students on modules')
         self._student_on_module()
-        self._set_progress(11, steps, 'Post-processing business rules')
+        self._set_progress(10, steps, 'Post-processing business rules')
         self._post_processing()
 
         return self.batch
@@ -179,6 +177,7 @@ class HESAReturn:
 
         for row in results:
             enrolments: Iterable[Enrolment] = row.returned_enrolments  # type: ignore
+            reason_for_ending = _reason_for_ending(enrolments=enrolments)
             models.Instance.objects.create(
                 batch=self.batch,
                 qa=row.id,
@@ -191,7 +190,7 @@ class HESAReturn:
                 stuload=sum(enrolment.module.full_time_equivalent for enrolment in enrolments),
                 # our short courses don't really have an end date, so it's set to be the end of the academic year
                 enddate=date(self.academic_year + 1, 7, 31),
-                rsnend=_reason_for_ending(enrolments=enrolments),
+                rsnend=reason_for_ending,
                 # feeelig and fundcode get modified in post-processing
                 feeelig=1 if row.student.is_eu else 2,
                 fundcode=1 if row.student.is_eu else 2,
@@ -207,6 +206,12 @@ class HESAReturn:
                 # Required field for our Master's level courses, but we have no research council students
                 rcstdnt=99 if row.programme.qualification.hesa_code[0] in ('E', 'M') else None,
             )
+            if reason_for_ending == 1:  # completed
+                models.QualificationsAwarded.objects.create(
+                    batch=self.batch,
+                    instanceid_fk=self._instance_id(row.id),
+                    qual=row.programme.qualification.hesa_code,
+                )
 
     def _entry_profile(self) -> None:
         in_query = self.base_query.values('qa__id')
@@ -235,23 +240,6 @@ class HESAReturn:
                 if row.student.domicile.hesa_code in ('XF', 'XG', 'XH', 'XI', 'XK', 'XL', 'GG', 'JE', 'IM')
                 else None,
                 pared=row.student.parental_education_id,
-            )
-
-    def _qualification_awarded(self) -> None:
-        in_query = self.base_query.values('qa__id')
-
-        results = (
-            QualificationAim.objects.filter(id__in=Subquery(in_query))
-            .select_related(
-                'programme__qualification',
-            )
-            .order_by('id')
-            .distinct()
-        )
-
-        for row in results:
-            models.QualificationsAwarded.objects.create(
-                batch=self.batch, instanceid_fk=self._instance_id(row.id), qual=row.programme.qualification.hesa_code
             )
 
     def _module(self) -> None:
