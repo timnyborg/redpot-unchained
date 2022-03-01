@@ -273,7 +273,7 @@ class Student(XMLStagingModel, models.Model):
         'ttaccom',
         'ttpcode',
     ]
-    xml_required = ['BIRTHDTE', 'SCN', 'TTPCODE']
+    xml_required = ['birthdte', 'scn', 'ttpcode']
 
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     student = models.IntegerField()

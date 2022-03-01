@@ -50,17 +50,20 @@ class HESAReturn:
 
         # Universal base query
         # could potentially use other Models, but it sits nicely as the m2m between QA and Module
-        self.base_query = Enrolment.objects.filter(
-            module__start_date__gte=date(academic_year, 8, 1),  # This year
-            module__start_date__lt=date(academic_year + 1, 7, 30),
-            module__credit_points__gt=0,  # Exclude Cert HE dummy module, etc
-            qa__programme__qualification__on_hesa_return=True,  # Valid programme
-            status__on_hesa_return=True,  # Confirmed (etc) student
-        ).exclude(
+        self.base_query = (
+            Enrolment.objects.filter(
+                module__start_date__gte=date(academic_year, 8, 1),  # This year
+                module__start_date__lt=date(academic_year + 1, 7, 30),
+                module__credit_points__gt=0,  # Exclude Cert HE dummy module, etc
+                qa__programme__qualification__on_hesa_return=True,  # Valid programme
+                status__on_hesa_return=True,  # Confirmed (etc) student
+            )
             # Exclude students lacking both a domicile and gender (a shorthand for incomplete registrations)
-            Q(qa__student__domicile=UNKNOWN_DOMICILE) | Q(qa__student__gender__isnull=True),
-            qa__study_location_id=OVERSEAS_STUDY_LOCATION,  # We exclude distance learners
-            module__is_cancelled=True,  # No cancelled courses, obviously
+            .exclude(Q(qa__student__domicile=UNKNOWN_DOMICILE) | Q(qa__student__gender__isnull=True))
+            # We exclude distance learners
+            .exclude(qa__study_location_id=OVERSEAS_STUDY_LOCATION)
+            # and cancelled courses
+            .exclude(module__is_cancelled=True)
         )
 
     def _set_progress(self, current: int, total: int, description: str = '') -> None:

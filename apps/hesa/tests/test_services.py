@@ -8,6 +8,7 @@ from apps.programme.tests.factories import ProgrammeFactory
 from apps.qualification_aim.tests.factories import QualificationAimFactory
 from apps.student.tests.factories import StudentFactory
 
+from ...qualification_aim.models import AT_PROVIDER_STUDY_LOCATION
 from .. import models, services
 
 INSTITUTIONAL_CREDIT_QUALIFICATION = 61
@@ -94,10 +95,11 @@ class TestReturnProduction(test.TestCase):
     def setUpTestData(cls):
         """Create a hesa-returnable student record"""
         cls.programme = ProgrammeFactory(qualification_id=INSTITUTIONAL_CREDIT_QUALIFICATION)
-        cls.student = StudentFactory(domicile_id=ENGLAND_DOMICILE)
+        cls.student = StudentFactory(domicile_id=ENGLAND_DOMICILE, gender='F')
         cls.qa = QualificationAimFactory(
             student=cls.student,
             programme=cls.programme,
+            study_location_id=AT_PROVIDER_STUDY_LOCATION,
         )
         cls.module = ModuleFactory(credit_points=10, start_date='2021-01-01')
         cls.enrolment = EnrolmentFactory(
