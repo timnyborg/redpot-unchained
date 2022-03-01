@@ -208,7 +208,7 @@ class HESAReturn:
                 # Required field for our Master's level courses, but we have no research council students
                 rcstdnt=99 if row.programme.qualification.hesa_code[0] in ('E', 'M') else None,
             )
-            if reason_for_ending == 1:  # completed
+            if reason_for_ending == '01':  # completed
                 models.QualificationsAwarded.objects.create(
                     batch=self.batch,
                     instanceid_fk=self._instance_id(row.id),
@@ -385,7 +385,7 @@ class HESAReturn:
                     models.Course.objects.filter(courseid=OuterRef('courseid'), batch=self.batch).values('courseaim')
                 )
             )
-            .filter(Q(fundcode__in=(2, 3, 5)) | Q(courseaim=('M90', 'E90')))
+            .filter(Q(fundcode__in=(2, 3, 5)) | Q(courseaim__in=('M90', 'E90')))
             .values('instanceid')
         )
 
