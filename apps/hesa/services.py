@@ -132,6 +132,8 @@ class HESAReturn:
                 surname=row.surname.upper(),
                 fnames=row.firstname.upper() + (' ' + row.middlename.upper() if row.middlename else ''),
                 sexid=row.sex,
+                sexort=row.sexual_orientation_id,
+                genderid=row.gender_identity_id,
                 nation=row.nationality.hesa_code,
                 ethnic=str(row.ethnicity_id).zfill(2),
                 disable=str(row.disability_id or 0).zfill(2),  # todo: remove 0 once fixture & default are in place
