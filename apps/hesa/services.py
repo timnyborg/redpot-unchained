@@ -200,7 +200,7 @@ class HESAReturn:
                 fundcomp=_completion(enrolments=enrolments),
                 typeyr=row.programme.reporting_year_type,
                 locsdy=row.study_location.hesa_code,
-                disall=5 if row.student.disability != 0 else None,
+                disall=5 if row.student.disability_id != 0 else None,
                 grossfee=_grossfee(enrolments=enrolments),
                 netfee=_netfee(enrolments=enrolments),
                 elq=_elq(qa=row),
@@ -451,14 +451,14 @@ def _elq(*, qa: QualificationAim) -> str:
     return '01'
 
 
-def _grossfee(*, enrolments) -> int:
+def _netfee(*, enrolments) -> int:
     def enrolment_sum(enrolment):
         return sum(line.amount for line in enrolment.fee_ledger_items)
 
     return round(sum(enrolment_sum(enrolment) for enrolment in enrolments))
 
 
-def _netfee(*, enrolments) -> int:
+def _grossfee(*, enrolments) -> int:
     def enrolment_sum(enrolment):
         return sum(line.amount for line in enrolment.fee_ledger_items if line.amount > 0)
 
