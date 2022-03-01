@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
         ('fee', '0004_feetype_account'),
         ('finance', '0001_initial'),
         ('invoice', '0001_initial'),
-        ('qualification_aim', '0001_initial'),
+        ('qualification_aim', '0001_squashed_0004'),
         ('student', '0020_alter_student_options'),
     ]
 
