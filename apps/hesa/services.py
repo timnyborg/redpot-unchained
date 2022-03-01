@@ -72,7 +72,7 @@ class HESAReturn:
 
     def create(self) -> models.Batch:
         """Populate the tables in order, updating the status after each"""
-        steps = 12
+        steps = 11
         self._set_progress(1, steps, 'Institution')
         self._institution()
         self._set_progress(2, steps, 'Student')
@@ -89,11 +89,9 @@ class HESAReturn:
         self._instance()
         self._set_progress(8, steps, 'Entry profiles')
         self._entry_profile()
-        self._set_progress(9, steps, 'Qualifications awarded')
-        self._qualification_awarded()
-        self._set_progress(10, steps, 'Students on modules')
+        self._set_progress(9, steps, 'Students on modules')
         self._student_on_module()
-        self._set_progress(11, steps, 'Post-processing business rules')
+        self._set_progress(10, steps, 'Post-processing business rules')
         self._post_processing()
 
         return self.batch
@@ -134,6 +132,8 @@ class HESAReturn:
                 surname=row.surname.upper(),
                 fnames=row.firstname.upper() + (' ' + row.middlename.upper() if row.middlename else ''),
                 sexid=row.sex,
+                sexort=row.sexual_orientation_id,
+                genderid=row.gender_identity_id,
                 nation=row.nationality.hesa_code,
                 ethnic=str(row.ethnicity_id).zfill(2),
                 disable=str(row.disability_id or 0).zfill(2),  # todo: remove 0 once fixture & default are in place
@@ -179,6 +179,7 @@ class HESAReturn:
 
         for row in results:
             enrolments: Iterable[Enrolment] = row.returned_enrolments  # type: ignore
+            reason_for_ending = _reason_for_ending(enrolments=enrolments)
             models.Instance.objects.create(
                 batch=self.batch,
                 qa=row.id,
@@ -191,7 +192,7 @@ class HESAReturn:
                 stuload=sum(enrolment.module.full_time_equivalent for enrolment in enrolments),
                 # our short courses don't really have an end date, so it's set to be the end of the academic year
                 enddate=date(self.academic_year + 1, 7, 31),
-                rsnend=_reason_for_ending(enrolments=enrolments),
+                rsnend=reason_for_ending,
                 # feeelig and fundcode get modified in post-processing
                 feeelig=1 if row.student.is_eu else 2,
                 fundcode=1 if row.student.is_eu else 2,
@@ -200,13 +201,19 @@ class HESAReturn:
                 fundcomp=_completion(enrolments=enrolments),
                 typeyr=row.programme.reporting_year_type,
                 locsdy=row.study_location.hesa_code,
-                disall=5 if row.student.disability != 0 else None,
+                disall=5 if row.student.disability_id != 0 else None,
                 grossfee=_grossfee(enrolments=enrolments),
                 netfee=_netfee(enrolments=enrolments),
                 elq=_elq(qa=row),
                 # Required field for our Master's level courses, but we have no research council students
                 rcstdnt=99 if row.programme.qualification.hesa_code[0] in ('E', 'M') else None,
             )
+            if reason_for_ending == 1:  # completed
+                models.QualificationsAwarded.objects.create(
+                    batch=self.batch,
+                    instanceid_fk=self._instance_id(row.id),
+                    qual=row.programme.qualification.hesa_code,
+                )
 
     def _entry_profile(self) -> None:
         in_query = self.base_query.values('qa__id')
@@ -234,23 +241,7 @@ class HESAReturn:
                 postcode=_correct_postcode(row.student.termtime_postcode or row.postcode or '')
                 if row.student.domicile.hesa_code in ('XF', 'XG', 'XH', 'XI', 'XK', 'XL', 'GG', 'JE', 'IM')
                 else None,
-            )
-
-    def _qualification_awarded(self) -> None:
-        in_query = self.base_query.values('qa__id')
-
-        results = (
-            QualificationAim.objects.filter(id__in=Subquery(in_query))
-            .select_related(
-                'programme__qualification',
-            )
-            .order_by('id')
-            .distinct()
-        )
-
-        for row in results:
-            models.QualificationsAwarded.objects.create(
-                batch=self.batch, instanceid_fk=self._instance_id(row.id), qual=row.programme.qualification.hesa_code
+                pared=row.student.parental_education_id,
             )
 
     def _module(self) -> None:
@@ -391,10 +382,7 @@ class HESAReturn:
             .annotate(
                 # get the courseaim of the matching course in the same batch
                 courseaim=Subquery(
-                    models.Course.objects.filter(
-                        courseid=OuterRef('courseid'),
-                        batch=self.batch,
-                    ).values('courseaim')
+                    models.Course.objects.filter(courseid=OuterRef('courseid'), batch=self.batch).values('courseaim')
                 )
             )
             .filter(Q(fundcode__in=(2, 3, 5)) | Q(courseaim=('M90', 'E90')))
@@ -404,6 +392,21 @@ class HESAReturn:
         models.EntryProfile.objects.filter(batch=self.batch, instanceid_fk__in=Subquery(instances)).update(
             careleaver=None
         )
+
+        # Pared only returned for fundable UG students
+        instances = (
+            models.Instance.objects.filter(batch=self.batch)
+            .annotate(
+                # get the courseaim of the matching course in the same batch
+                courseaim=Subquery(
+                    models.Course.objects.filter(courseid=OuterRef('courseid'), batch=self.batch).values('courseaim')
+                )
+            )
+            .exclude(fundcode=1, courseaim__startswith='C')  # exclude fundable ug
+            .values('instanceid')
+        )
+
+        models.EntryProfile.objects.filter(batch=self.batch, instanceid_fk__in=Subquery(instances)).update(pared=None)
 
 
 def _correct_postcode(postcode: str) -> str:
@@ -451,14 +454,14 @@ def _elq(*, qa: QualificationAim) -> str:
     return '01'
 
 
-def _grossfee(*, enrolments) -> int:
+def _netfee(*, enrolments) -> int:
     def enrolment_sum(enrolment):
         return sum(line.amount for line in enrolment.fee_ledger_items)
 
     return round(sum(enrolment_sum(enrolment) for enrolment in enrolments))
 
 
-def _netfee(*, enrolments) -> int:
+def _grossfee(*, enrolments) -> int:
     def enrolment_sum(enrolment):
         return sum(line.amount for line in enrolment.fee_ledger_items if line.amount > 0)
 
@@ -470,6 +473,9 @@ def _model_to_node(model: XMLStagingModel) -> etree.Element:
     # Fill with elements
     for column in model.xml_fields:
         value = getattr(model, column)
+        # hack to deal with qualification_awarded.class shadowing a reserved word
+        if column == 'qual_class':
+            column = 'class'
         if value is not None:
             # EMPTY_ELEMENT lets us handle conditionally-returned elements, e.g. postcode and ttpcode: they
             # must not exist for overseas, but can exist and be empty for UK

@@ -126,7 +126,7 @@ class TestReturnProduction(test.TestCase):
         batch = hesa_return.create()
 
         xml = services._generate_tree(batch.id)
-        # todo: add subjects once implemented
+        # todo: add subjects once implemented, test data needed to generate a <qualificationsawarded>
         for element in [
             '<Course>',
             '<Module>',
@@ -134,7 +134,6 @@ class TestReturnProduction(test.TestCase):
             '<Student>',
             '<StudentOnModule>',
             '<Instance>',
-            '<QualificationsAwarded>',
         ]:
             self.assertIn(element, xml)
 

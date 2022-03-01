@@ -244,11 +244,12 @@ class ModuleSubject(XMLStagingModel, models.Model):
 
 
 class QualificationsAwarded(XMLStagingModel, models.Model):
-    xml_fields = ['qual']
+    xml_fields = ['qual_class', 'qual']
 
     batch = models.ForeignKey(Batch, models.DO_NOTHING, db_column='batch')
     instanceid_fk = models.CharField(db_column='INSTANCEID_FK', max_length=16, blank=True, null=True)
     qual = models.CharField(db_column='QUAL', max_length=3, blank=True, null=True)
+    qual_class = models.CharField(db_column='CLASS', max_length=2, blank=True, null=True, default=16)
 
     class Meta:
         db_table = 'hesa_qualifications_awarded'
