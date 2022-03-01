@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('qualification_aim', '0003_auto_20210722_1228'),
+        ('qualification_aim', '0001_squashed_0004'),
         ('enrolment', '0005_auto_20210614_1738'),
     ]
 
