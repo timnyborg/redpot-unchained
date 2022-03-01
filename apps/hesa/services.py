@@ -234,6 +234,7 @@ class HESAReturn:
                 postcode=_correct_postcode(row.student.termtime_postcode or row.postcode or '')
                 if row.student.domicile.hesa_code in ('XF', 'XG', 'XH', 'XI', 'XK', 'XL', 'GG', 'JE', 'IM')
                 else None,
+                pared=row.student.parental_education_id,
             )
 
     def _qualification_awarded(self) -> None:
@@ -391,10 +392,7 @@ class HESAReturn:
             .annotate(
                 # get the courseaim of the matching course in the same batch
                 courseaim=Subquery(
-                    models.Course.objects.filter(
-                        courseid=OuterRef('courseid'),
-                        batch=self.batch,
-                    ).values('courseaim')
+                    models.Course.objects.filter(courseid=OuterRef('courseid'), batch=self.batch).values('courseaim')
                 )
             )
             .filter(Q(fundcode__in=(2, 3, 5)) | Q(courseaim=('M90', 'E90')))
@@ -404,6 +402,21 @@ class HESAReturn:
         models.EntryProfile.objects.filter(batch=self.batch, instanceid_fk__in=Subquery(instances)).update(
             careleaver=None
         )
+
+        # Pared only returned for fundable UG students
+        instances = (
+            models.Instance.objects.filter(batch=self.batch)
+            .annotate(
+                # get the courseaim of the matching course in the same batch
+                courseaim=Subquery(
+                    models.Course.objects.filter(courseid=OuterRef('courseid'), batch=self.batch).values('courseaim')
+                )
+            )
+            .exclude(fundcode=1, courseaim__startswith='C')  # exclude fundable ug
+            .values('instanceid')
+        )
+
+        models.EntryProfile.objects.filter(batch=self.batch, instanceid_fk__in=Subquery(instances)).update(pared=None)
 
 
 def _correct_postcode(postcode: str) -> str:
