@@ -31,8 +31,16 @@ class TutorAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
                 qs.annotate(search_name=Concat('student__firstname', Value(' '), 'student__surname'))
                 .filter(search_name__unaccent__icontains=self.q)
                 .order_by('student__firstname', 'student__surname')
+                .prefetch_related('subjects')
             )
         return qs
+
+    def get_result_label(self, result):
+        subjects = result.subjects.all()
+        if subjects:
+            subject_text = ', '.join(map(str, subjects))
+            return f'{result.student} ({subject_text})'
+        return f'{result.student}'
 
 
 class EnrolmentAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
