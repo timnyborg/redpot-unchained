@@ -1,7 +1,8 @@
 from dal import autocomplete
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.db.models import Q, Value
+from django.db.models.functions import Concat
 
 from apps.core.models import User
 from apps.enrolment.models import Enrolment
@@ -25,10 +26,12 @@ class TutorAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Tutor.objects.select_related('student')
         if self.q:
-            # Filter on name or code containing the string
-            qs = qs.filter(
-                Q(student__firstname__unaccent__icontains=self.q) | Q(student__surname__icontains=self.q)
-            ).order_by('student__firstname', 'student__surname')
+            # Filter on '<first> <last>' containing the string
+            qs = (
+                qs.annotate(search_name=Concat('student__firstname', Value(' '), 'student__surname'))
+                .filter(search_name__unaccent__icontains=self.q)
+                .order_by('student__firstname', 'student__surname')
+            )
         return qs
 
 
