@@ -14,12 +14,16 @@ from django.contrib.auth.views import LoginView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import generic
 
+from apps.banner.models import Banner
 from apps.core.forms import CustomAuthForm, ImpersonateForm
 from apps.core.utils.views import PageTitleMixin
 
 
 class Index(generic.TemplateView):
     template_name = 'core/index.html'
+
+    def get_context_data(self, **kwargs) -> dict:
+        return {'message': Banner.objects.current()}
 
 
 class CustomLoginView(SuccessMessageMixin, LoginView):

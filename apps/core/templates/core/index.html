@@ -3,15 +3,18 @@
 
 
 {% block title %}{% endblock %}
-{% block subtitle  %}{% endblock %}
+{% block subtitle %}{% endblock %}
 
 
 {% block banner %}
-	{% if message %}
-	<div class="broadcast-message" style="background-color: #f1e6b0; color: #7b6338; margin-top: 65px; text-align:center; padding: 10px 0" >
-		<span class="fa fa-bullhorn"></span><b> {{message}} &ndash; <a href="">Find out more!</a></b>
-	</div>
-	{% endif %}
+    {% if message %}
+        <div class="alert-header alert-warning">
+            <div class="container">
+                <i class="me-1 fas fa-bullhorn"></i>
+                {{ message }} &ndash; <a href="{% url 'banner:list' %}">Find out more!</a>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block jumbotron %}

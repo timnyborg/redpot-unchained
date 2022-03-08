@@ -273,10 +273,6 @@ span.noLocations {
     overflow: hidden;
 }
 
-.alert-header .alert-icon {
-    margin-right: 3px;
-}
-
 .alert-header.dismissable {
     cursor: pointer;
 }

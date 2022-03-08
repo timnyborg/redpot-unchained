@@ -65,7 +65,7 @@
     {% if request.user.is_hijacked %}
         <div class="alert-header alert-info" role="navigation">
             <div class="container">
-                <span class="alert-icon"><i class="fas fa-fw fa-mask"></i></span>
+                <i class="me-1 fas fa-fw fa-mask"></i>
                 You are currently impersonating <b>{{ request.user.get_full_name }}</b> ({{ request.user.username }})
                 <button class="btn btn-link btn-xs" type="submit" form="release_impersonate_form" >
                     End impersonation
@@ -81,13 +81,13 @@
     {% if WARNING_BANNER %}
         <div class="alert-header alert-info">
             <div class="container">
-                <span class="alert-icon">
-                    <i class="fas fa-exclamation-circle"></i>
-                </span>
+                <i class="me-1 fas fa-exclamation-circle"></i>
                 <b class="alert-heading">Warning:</b> {{ WARNING_BANNER }}
             </div>
         </div>
     {% endif %}
+
+    {% block banner %}{% endblock %}
 
     {% for message in messages %}
         <div
@@ -95,15 +95,12 @@
             onclick="this.classList.add('alert-hidden');" role="navigation"
         >
             <div class="container">
-                <span class="alert-icon">
-                    <i class="{% message_icon_class message.level_tag %}"></i>
-                </span>
+                <i class="me-1 {% message_icon_class message.level_tag %}"></i>
                 <span class="alert-heading">{{ message.heading }}</span> {{ message }}
             </div>
         </div>
     {% endfor %}
 </div>
-{% block banner %}{% endblock %}
 {% block jumbotron %}{% endblock %}
 
 {% block top %}
@@ -150,7 +147,7 @@
             <a href="mailto:redpot-support@conted.ox.ac.uk" class="text-decoration-none small ms-2">
                 <i class="fas fa-fw fa-comment-dots"></i> Redpot support
             </a>
-            <a href="/banner/view/" class="text-decoration-none small ms-2">
+            <a href="{% url 'banner:list' %}" class="text-decoration-none small ms-2">
                 <i class="fas fa-fw fa-redo"></i> Updates
             </a>
             <a href="https://gitlab.conted.ox.ac.uk/django/redpot-unchained" target="_blank" class="text-decoration-none small ms-2">

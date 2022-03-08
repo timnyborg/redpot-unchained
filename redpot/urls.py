@@ -31,6 +31,7 @@ urlpatterns = [
     path('', core_views.Index.as_view(), name='home'),
     path('index/', core_views.Index.as_view()),
     path('system-info/', core_views.SystemInfo.as_view(), name='system-info'),
+    path('banner/', include('apps.banner.urls')),
     path('booking/', include('apps.booking.urls')),
     path('contract/', include('apps.contract.urls')),
     path('discount/', include('apps.discount.urls')),
