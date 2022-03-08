@@ -56,6 +56,7 @@ PROJECT_APPS = [
     'apps.core',
     'apps.amendment',
     'apps.application',
+    'apps.banner',
     'apps.booking',
     'apps.contract',
     'apps.discount',

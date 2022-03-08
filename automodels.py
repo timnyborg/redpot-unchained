@@ -8,18 +8,6 @@
 from django.db import models
 
 
-class Banner(models.Model):
-    message = models.TextField()
-    type = models.IntegerField()
-    publish = models.DateField(blank=True, null=True)
-    unpublish = models.DateField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'banner'
-
-
 class ModuleCabsBooking(models.Model):
     module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
     mbr_id = models.TextField(blank=True, null=True)

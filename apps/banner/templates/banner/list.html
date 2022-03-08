@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block center %}
+    <div class="section">
+        {% if perms.banner.change_banner %}
+            <a href="{% url 'admin:banner_banner_changelist' %}" class="float-end btn btn-secondary btn-xs">
+                <span class="fa fa-cog"></span> Manage messages
+            </a>
+        {% endif %}
+
+        <h2>Updates</h2>
+        <hr>
+        {% for message in object_list %}
+            <div class="row mb-3">
+                <div class="col-2">
+                    <p class="text-end fw-light">{{ message.publish|date }}</p>
+                </div>
+                <div class="col-10">
+                    <h5 class="fw-bold">{{ message.message }}</h5>
+                    <p>{{ message.description|safe }}</p>
+                </div>
+            </div>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <hr>
+            <p class="fw-semi-bold text-center">
+                <a href="?page={{ page_obj.next_page_number }}">Earlier updates</a>
+            </p>
+        {% endif %}
+    </div>
+{% endblock %}
