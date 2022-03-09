@@ -209,7 +209,7 @@ class TestAssignMoodleIDsView(TestCase):
         self.client.force_login(self.user)
 
     def test_student_list(self):
-        response = self.client.get(self.url)
+        response = self.client.post(self.url)
         self.assertEqual(response.status_code, 302)
         # Check that a moodle record has been created with the right details
         moodle_record = self.enrolment.qa.student.moodle_id

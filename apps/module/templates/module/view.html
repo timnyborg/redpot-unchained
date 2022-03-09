@@ -318,7 +318,7 @@
                 {% if module.portfolio_id == 17 %}
                     <li><a class="dropdown-item" href="{% url 'module:moodle-list' module.id %}"><span class="fas fa-fw fa-file-excel"></span> Moodle student list (.xlsx)</a></li>
                 {% endif %}
-                {% if module.code|slice:'-3:' == 'HEC' %}
+                {% if module.code|slice:'-3:' == 'HEC' %}  # todo: reconsider this logic
                     <li><a class="dropdown-item" href="student','certhe_progress', args=(0,module.id)"><span class="fas fa-fw fa-certificate"></span> CertHE progress report (.docx)</a></li>
                 {% endif %}
             </ul>
@@ -327,7 +327,17 @@
                 <i class="fas fa-fw fa-tools"></i> Tools
             </a>
             <ul class="dropdown-menu" role="menu">
-                <li><a class="dropdown-item" href="{% url 'module:assign-moodle-ids' module.id %}"><span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs</a></li>
+                <li>
+                    <a class="dropdown-item"
+                        href="#"
+                        data-bs-toggle="modal"
+                        data-bs-target="#commonModal"
+                        data-modal-body="Are you sure you wish to assign Moodle IDs to this module's students?"
+                        data-modal-href="{% url 'module:assign-moodle-ids' module.id %}"
+                    >
+                        <span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs
+                    </a>
+                </li>
                 <li><a class="dropdown-item" href="{% url 'module:award-points' module.id %}"><span class="fas fa-fw fa-graduation-cap"></span> Award CATS points</a></li>
                 <li><a class="dropdown-item" href="{% url 'module:clone' module.id %}"><span class="fas fa-fw fa-clone"></span> Clone this module</a></li>
                 <li><a class="dropdown-item" href="{% url 'module:copy-web-fields' module.id %}"><span class="fas fa-fw fa-paste"></span> Copy web fields</a></li>

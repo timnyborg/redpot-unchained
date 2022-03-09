@@ -111,8 +111,6 @@ class AddPayment(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generi
 class AddModuleFees(LoginRequiredMixin, generic.View):
     """POST endpoint for AddFees' table.  Can add multiple fees to an enrolment"""
 
-    http_method_names = ['post']
-
     def post(self, request, *args, **kwargs):
         enrolment = get_object_or_404(Enrolment, pk=self.kwargs['enrolment_id'])
         fee_ids = request.POST.getlist('fee')

@@ -284,11 +284,9 @@ class MoodleList(LoginRequiredMixin, ExcelExportView):
 class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
     """Generates moodle IDs for all a module's students, redirecting back to the module page"""
 
-    http_method_names = ['get']
-
     # todo: convert to POST once we have a good POST-link solution,
     #  or even better, that link is ajax'ed and handles message popups!
-    def get(self, request, module_id: int) -> http.HttpResponse:
+    def post(self, request, module_id: int) -> http.HttpResponse:
         module = get_object_or_404(models.Module, pk=module_id)
         count = services.assign_moodle_ids(module=module, created_by=request.user.username)
         messages.success(request, f'{count} moodle ID(s) generated')
