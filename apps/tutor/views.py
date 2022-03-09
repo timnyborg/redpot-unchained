@@ -196,7 +196,7 @@ class ExpenseFormView(MailMergeView):
                 'activity': record.module.activity_code,
                 'source_of_funds': record.module.source_of_funds,
             }
-            for record in self.queryset.all()[:20]  # todo: remove limit once docx-mailmerge updated
+            for record in self.queryset.all()
         ]
 
 

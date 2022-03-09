@@ -16,6 +16,8 @@ ENV ACCEPT_EULA=Y
 RUN apt-get update && apt-get install -y --no-install-recommends \
       # odbc drivers
       msodbcsql17 \
+      # git for pip while we have repository links in requirements.txt
+      git \
       # ldap reqs
       libldap-common \
       # weasyprint prereqs  # cairo is not needed once we move to bullseye and weasyprint >=54
