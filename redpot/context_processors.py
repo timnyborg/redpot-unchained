@@ -7,4 +7,5 @@ def template_settings(request: http.HttpRequest) -> dict:
     return {
         'WARNING_BANNER': settings.WARNING_BANNER,
         'CANONICAL_URL': settings.CANONICAL_URL,  # todo: this setting needs a better name
+        'PUBLIC_WEBSITE_URL': settings.PUBLIC_WEBSITE_URL,
     }

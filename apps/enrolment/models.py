@@ -22,6 +22,7 @@ class Statuses(models.IntegerChoices):
 
 
 FOR_CREDIT_STATUSES = {Statuses.CONFIRMED, Statuses.CONFIRMED_RETROSPECTIVE_CREDIT}
+CONFIRMED_STATUSES = {Statuses.CONFIRMED, Statuses.CONFIRMED_NON_CREDIT, Statuses.CONFIRMED_NON_CREDIT}
 
 
 class EnrolmentQuerySet(models.QuerySet):

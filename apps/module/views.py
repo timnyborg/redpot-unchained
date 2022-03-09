@@ -19,7 +19,7 @@ from apps.core.utils.mail_merge import MailMergeView
 from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitleMixin
 from apps.discount.models import Discount
-from apps.enrolment.models import Enrolment
+from apps.enrolment.models import CONFIRMED_STATUSES, Enrolment
 from apps.fee.models import FeeTypes
 from apps.invoice.models import ModulePaymentPlan
 from apps.tutor.utils import expense_forms
@@ -277,18 +277,16 @@ class MoodleList(LoginRequiredMixin, ExcelExportView):
     def get_export_queryset(self):
         return Enrolment.objects.filter(
             module=self.module,
-            status__in=[10, 90],  # Todo: use a column or enum
+            status__in=CONFIRMED_STATUSES,
         )
 
 
 class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
     """Generates moodle IDs for all a module's students, redirecting back to the module page"""
 
-    http_method_names = ['get']
-
     # todo: convert to POST once we have a good POST-link solution,
     #  or even better, that link is ajax'ed and handles message popups!
-    def get(self, request, module_id: int) -> http.HttpResponse:
+    def post(self, request, module_id: int) -> http.HttpResponse:
         module = get_object_or_404(models.Module, pk=module_id)
         count = services.assign_moodle_ids(module=module, created_by=request.user.username)
         messages.success(request, f'{count} moodle ID(s) generated')

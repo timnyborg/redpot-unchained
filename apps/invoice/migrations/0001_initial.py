@@ -69,16 +69,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='PaymentPlanStatus',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', models.CharField(max_length=64)),
-            ],
-            options={
-                'db_table': 'payment_plan_status',
-            },
-        ),
-        migrations.CreateModel(
             name='PaymentPlanType',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -116,7 +106,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='paymentplan',
             name='status',
-            field=models.ForeignKey(db_column='status', on_delete=django.db.models.deletion.DO_NOTHING, to='invoice.paymentplanstatus'),
+            field=models.IntegerField(
+                choices=[(1, 'Payment pending (standard schedule)'), (2, 'Payment pending (custom schedule)'),
+                         (3, 'Active'), (4, 'Completed'), (5, 'Cancelled')]),
         ),
         migrations.AddField(
             model_name='paymentplan',

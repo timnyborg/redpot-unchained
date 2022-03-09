@@ -268,7 +268,7 @@ class CreatePaymentPlan(
             'invoice': self.invoice,
             'amount': self.invoice.balance,
             'type': models.PaymentPlan.CUSTOM_TYPE,
-            'status': models.PaymentPlan.CUSTOM_PENDING_STATUS,
+            'status': models.PaymentPlan.Statuses.PENDING_CUSTOM,
         }
 
     def get_subtitle(self):

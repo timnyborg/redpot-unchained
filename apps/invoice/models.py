@@ -120,13 +120,18 @@ class InvoiceLedger(models.Model):
 
 
 class PaymentPlan(SignatureModel):
-    # Constants used in logic - todo: move to enums
+    class Statuses(models.IntegerChoices):
+        PENDING = 1, 'Payment pending (standard schedule)'  # student has selected a plan, but not activated it
+        PENDING_CUSTOM = 2, 'Payment pending (custom schedule)'  # staff have configured a plan, but not activated it
+        ACTIVE = 3, 'Active'
+        COMPLETED = 4, 'Completed'
+        CANCELLED = 5, 'Cancelled'
+
+    # Constants used in logic
     CUSTOM_TYPE = 16
-    PENDING_STATUS = 1  # student has selected a plan, but not activated it
-    CUSTOM_PENDING_STATUS = 2  # staff have configured a plan, but not activated it
 
     type = models.ForeignKey('PaymentPlanType', models.DO_NOTHING, db_column='type')
-    status = models.ForeignKey('PaymentPlanStatus', models.DO_NOTHING, db_column='status')
+    status = models.IntegerField(choices=Statuses.choices)
     # This hasn't strictly been a 1-to-1 relationship, but we've treated it as one for years
     invoice = models.OneToOneField(
         'Invoice',
@@ -140,7 +145,7 @@ class PaymentPlan(SignatureModel):
         db_table = 'payment_plan'
 
     def is_pending_activation(self):
-        return self.status_id == self.PENDING_STATUS
+        return self.status == self.Statuses.PENDING
 
     def is_custom(self):
         return self.type_id == self.CUSTOM_TYPE
@@ -161,17 +166,6 @@ class ScheduledPayment(SignatureModel):
     class Meta:
         db_table = 'payment_plan_schedule'
         ordering = ('due_date',)
-
-
-# Todo: consider whether to remove and convert status to a text field with choices
-class PaymentPlanStatus(models.Model):
-    description = models.CharField(max_length=64)
-
-    class Meta:
-        db_table = 'payment_plan_status'
-
-    def __str__(self):
-        return self.description
 
 
 class PaymentPlanType(SignatureModel):
