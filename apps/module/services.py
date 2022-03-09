@@ -86,7 +86,7 @@ def clone_fields(*, source: Module, target: Module, copy_url: bool = False, copy
         'division_id',
         'format_id',
         'location_id',
-        'points_level',  # todo: convert to _id after table implemented
+        'points_level_id',
         'portfolio_id',
         'status_id',
         'terms_and_conditions',  # todo: convert to _id aftertable implemented

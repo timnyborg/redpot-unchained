@@ -19,7 +19,7 @@ from apps.core.utils.mail_merge import MailMergeView
 from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitleMixin
 from apps.discount.models import Discount
-from apps.enrolment.models import Enrolment
+from apps.enrolment.models import CONFIRMED_STATUSES, Enrolment
 from apps.fee.models import FeeTypes
 from apps.invoice.models import ModulePaymentPlan
 from apps.tutor.utils import expense_forms
@@ -277,7 +277,7 @@ class MoodleList(LoginRequiredMixin, ExcelExportView):
     def get_export_queryset(self):
         return Enrolment.objects.filter(
             module=self.module,
-            status__in=[10, 90],  # Todo: use a column or enum
+            status__in=CONFIRMED_STATUSES,
         )
 
 
