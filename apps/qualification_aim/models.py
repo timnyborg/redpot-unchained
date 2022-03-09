@@ -72,7 +72,7 @@ class QualificationAim(SITSLockingModelMixin, SignatureModel):
 
         # Study location inherited from programmes, with logic for online students, for HESA returns
         if not self.study_location_id:
-            if self.programme.study_location_id == UK_DISTANCE_STUDY_LOCATION and not self.student.domicile.is_uk:
+            if self.programme.study_location_id == UK_DISTANCE_STUDY_LOCATION and not self.student.domicile.in_uk:
                 self.study_location_id = NON_UK_DISTANCE_STUDY_LOCATION  # Distance learning Non-UK based
             else:
                 self.study_location = self.programme.study_location

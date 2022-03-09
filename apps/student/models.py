@@ -487,10 +487,11 @@ class Nationality(models.Model):
 class Domicile(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=64)
-    is_in_eu = models.BooleanField()
+    is_in_eu = models.BooleanField(default=False)
     hesa_code = models.CharField(max_length=8)
-    sort_order = models.IntegerField()
-    is_active = models.BooleanField()
+    sort_order = models.IntegerField(default=1)
+    is_active = models.BooleanField(default=True)
+    in_uk = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'domicile'
@@ -498,11 +499,6 @@ class Domicile(models.Model):
 
     def __str__(self) -> str:
         return str(self.name)
-
-    @property
-    def is_uk(self) -> bool:
-        # Todo: make a UK column
-        return self.pk in [240, 241, 242, 243]
 
 
 class Ethnicity(models.Model):

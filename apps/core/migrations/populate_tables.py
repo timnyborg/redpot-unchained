@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         ('finance', '0001_initial'),
         ('invoice', '0001_initial'),
         ('qualification_aim', '0001_squashed_0004'),
-        ('student', '0020_alter_student_options'),
+        ('student', '0023_uk_domicile_column'),
     ]
 
     operations = [migrations.RunPython(load_fixture)]
