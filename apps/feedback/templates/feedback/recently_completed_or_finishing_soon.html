@@ -1,0 +1,48 @@
+{% extends 'feedback_layout.html' %}
+{% load feedback_tags %}
+
+{% block center %}
+    <div class="section">
+        <h4>Courses that have recently finished, or will finish soon.</h4>
+        <table class="table table-condensed table-striped hide-rows table-bordered">
+            <tr style="text-align: left">
+                <th>Code</th>
+                <th>Title</th>
+                <th>End date</th>
+                <th>Administrator</th>
+                <th>Action</th>
+            </tr>
+
+
+        {% for module in modules %}
+            <tr>
+                <td class="feedback-green">{{ module.code }}</td>
+                <td>{{ module.title }}</td>
+                <td>{{ module.end_date }}</td>
+                <td>{{ module.email }}</td>
+                {% if module.status == 'Send reminder' %}
+                    <td class="{% status_color module.status %}"><a href="{% url 'feedback:preview' module.id %}">{{ module.status }}</a></td>
+                {% elif module.status == 'See results' %}
+                    <td class="{% status_color module.status %}"><a href="{% url 'feedback:results-module' module.code %}">{{ module.status }}</a></td>
+                {% elif module.status == 'Send feedback request' %}
+                    <td class="{% status_color module.status %}"><a href="{% url 'feedback:preview' module.id %}">{{ module.status }}</a></td>
+                {% endif %}
+
+{#                <td class="feedback-green feedback-comment">#}
+{#                    <a href="{% url 'feedback:results-module' module_code %}">{{ module_code }}</a> - {{ data.module_title }}#}
+{#                </td>#}
+{#                <td class="{% score_color data.satisfied %}">{{ data.satisfied }}<br>Satisfied</td>#}
+{#                <td class="{% score_color data.average %}">{{ data.average }}<br>Average</td>#}
+{#                <td class="{% score_color data.avg_teaching %}">{{ data.avg_teaching }}<br>Teaching</td>#}
+{#                <td class="{% score_color data.avg_content %}">{{ data.avg_content }}<br>Content</td>#}
+{#                <td class="{% score_color data.avg_facilities %}">{{ data.avg_facilities }}<br>Facilities</td>#}
+{#                <td class="{% score_color data.avg_admin %}">{{ data.avg_admin }}<br>Admin</td>#}
+{#                <td class="{% score_color data.avg_catering %}">{{ data.avg_catering }}<br>Catering</td>#}
+{##}
+{#                <td class="feedback-gray">{{ data.sent }}<br>Sent</td>#}
+{#                <td class="feedback-gray">{{ data.returned }}<br>Returned</td>#}
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+{% endblock %}

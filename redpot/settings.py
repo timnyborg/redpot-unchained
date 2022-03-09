@@ -330,6 +330,8 @@ DJANGO_CELERY_BEAT_TZ_AWARE = False
 W2P_REDPOT_URL = env('W2P_REDPOT_URL', default='https://redpot-staging.conted.ox.ac.uk', validate=validate.URL())
 # Website url for outbound linking
 PUBLIC_WEBSITE_URL = env('PUBLIC_WEBSITE_URL', default='https://conted.ox.ac.uk', validate=validate.URL())
+PUBLIC_APPS_URL = env('PUBLIC_APPS_URL', default='https://apps.conted.ox.ac.uk', validate=validate.URL())
+
 
 # These may be unnecessary if passed into coverage from command line
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'

@@ -1,10 +1,12 @@
 import datetime
 import statistics
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.template.loader import render_to_string
 from django.views import View
 from django.views.generic import FormView, ListView
@@ -16,10 +18,6 @@ from apps.module.models import Module
 from . import services
 from .forms import CommentAndReportForm, FeedbackRequestForm, PreviewQuestionnaireForm
 from .models import Feedback, FeedbackAdmin
-
-
-def home(request):
-    return render(request, 'feedback/home.html')
 
 
 class SiteTitleMixin(PageTitleMixin):
@@ -115,6 +113,7 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
         year = self.year
         # get year data objects
         year_data = {}
+
         year_data['year'] = year
         year_data['avg_teaching'] = get_mean_value(
             year_results.values_list('rate_tutor', flat=True).filter(rate_tutor__gt=0)
@@ -349,13 +348,18 @@ class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
         return context
 
 
-class PreviewQuestionnaireView(LoginRequiredMixin, SiteTitleMixin, FormView):
+class PreviewQuestionnaireFormView(LoginRequiredMixin, SiteTitleMixin, FormView):
     template_name = 'feedback/preview_questionnaire.html'
     model = Feedback
     form_class = PreviewQuestionnaireForm
 
+    def form_valid(self, form):
+        module_obj = form.cleaned_data['module_code']
+        url = f'{settings.PUBLIC_APPS_URL}/feedback/submit/{module_obj.id}'
+        return redirect(url)
 
-class FeedbackRequestView(LoginRequiredMixin, SiteTitleMixin, FormView):
+
+class FeedbackRequestFormView(LoginRequiredMixin, SiteTitleMixin, FormView):
     template_name = 'feedback/feedback_request.html'
     model = Feedback
     form_class = FeedbackRequestForm
@@ -486,3 +490,41 @@ class RequestFeedback(LoginRequiredMixin, View):
         services.process_and_send_emails(module)
         messages.success(request, 'The email has been sent to students')
         return redirect(reverse('feedback:results-module', kwargs={'code': module.code}))
+
+
+class RecentlyCompletedOrFinishingSoon(LoginRequiredMixin, SiteTitleMixin, ListView):
+    template_name = 'feedback/recently_completed_or_finishing_soon.html'
+    model = Module
+    subtitle = 'Courses that have recently finished, or will finish soon..'
+
+    def dispatch(self, *args, **kwargs):
+        self.past_days = 400
+        self.future_days = 100
+        self.year = 2020
+        return super().dispatch(*args, **kwargs)
+
+    def get_queryset(self):
+        start_date = datetime.date.today() - datetime.timedelta(days=self.past_days)
+        end_date = datetime.date.today() + datetime.timedelta(days=self.future_days)
+        return (
+            Module.objects.filter(~Q(status=33), end_date__range=[start_date, end_date])
+            .values('id', 'code', 'title', 'end_date', 'email')
+            .order_by('end_date')
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        modules_list = self.object_list
+        modules = []
+        for module in modules_list:
+            if Feedback.objects.filter(module=module['id']).count() > 0:
+                module['status'] = 'Send reminder'
+                if Feedback.objects.filter(module=module['id'], reminder__isnull=False).count() > 0:
+                    module['status'] = 'See results'
+            else:
+                module['status'] = 'Send feedback request'
+            modules.append(module)
+
+        context['modules'] = modules
+        return context
