@@ -307,11 +307,15 @@
                 <li><a class="dropdown-item" href="module', 'refund_request/{{ module.id }}"><span class="fas fa-fw fa-pound-sign"></span> Refund request (.docx)</a></li>
                 <li><a class="dropdown-item" href="{% url 'module:class-register' module.id %}"><span class="fas fa-fw fa-file-word"></span> Class register (.docx)</a></li>
                 {# todo: better portfolio logic, relying on tags #}
-                {% if module.portfolio  in '32, 17' %}
-                    <li><a class="dropdown-item" href="syllabus/{{ module.id }}"><span class="fas fa-fw fa-th-list"></span> Weekly class syllabus</a></li>
+                {% if module.portfolio_id == 32 or module.portfolio_id == 17 %}
+                    <li><a class="dropdown-item" href="{% url 'module:syllabus' module.id%}">
+                        <span class="fas fa-fw fa-th-list"></span> Weekly class syllabus
+                    </a></li>
                 {% endif %}
                 {% if module.portfolio_id == 32 %}
-                    <li><a class="dropdown-item" href="WWW_ADDRESS+'/courses/reading-list-pdf/'+module.code"><span class="fas fa-fw fa-file-word"></span> Reading list for students (.pdf)</a></li>
+                    <li><a class="dropdown-item" href="{{ PUBLIC_WEBSITE_URL }}/courses/reading-list-pdf/{{ module.code }}">
+                        <span class="fas fa-fw fa-file-word"></span> Reading list for students (.pdf)
+                    </a></li>
                 {% endif %}
                 <li role="separator" class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{% url 'module:student-list' module.id %}"><span class="fas fa-fw fa-file-excel"></span> Student list (.xlsx)</a></li>
@@ -319,6 +323,7 @@
                     <li><a class="dropdown-item" href="{% url 'module:moodle-list' module.id %}"><span class="fas fa-fw fa-file-excel"></span> Moodle student list (.xlsx)</a></li>
                 {% endif %}
                 {% if module.code|slice:'-3:' == 'HEC' %}  # todo: reconsider this logic
+                    {# todo: convert to a square report? #}
                     <li><a class="dropdown-item" href="student','certhe_progress', args=(0,module.id)"><span class="fas fa-fw fa-certificate"></span> CertHE progress report (.docx)</a></li>
                 {% endif %}
             </ul>
