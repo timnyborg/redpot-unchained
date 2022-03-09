@@ -16,7 +16,6 @@ def load_fixture(apps, schema_editor):
     call_command('loaddata', 'fee_type.yaml')  # depends on account
     call_command('loaddata', 'module_status.yaml')
     call_command('loaddata', 'nationality.yaml')
-    call_command('loaddata', 'payment_plan_status.yaml')
     call_command('loaddata', 'payment_plan_type.yaml')
     call_command('loaddata', 'points_level.yaml')
     call_command('loaddata', 'portfolio.yaml')
