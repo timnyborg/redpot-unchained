@@ -14,6 +14,26 @@
             {% endfor %}
         </table>
     </div>
+
+    <div class="section">
+        <a id='tools' class='nav-anchor'></a>
+        <h4>Admin tools</h4>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" formaction="{% url 'proposal:api:proposal-reset' proposal.id %}" class="btn btn-warning">
+                <i class="fas fa-fw fa-undo"></i> Reset
+            </button>
+            <button type="submit" formaction="{% url 'proposal:api:proposal-submit-as-tutor' proposal.id %}" class="btn btn-warning">
+                <i class="fas fa-fw fa-thumbs-up"></i> Fake tutor submission
+            </button>
+            <button type="submit" formaction="{% url 'proposal:api:proposal-approve-as-dos' proposal.id %}" class="btn btn-warning">
+                <i class="fas fa-fw fa-thumbs-up"></i> Fake DoS approval
+            </button>
+            <button type="submit" formaction="{% url 'proposal:api:proposal-update-from-module' proposal.id %}" class="btn btn-warning">
+                <i class="fas fa-fw fa-redo"></i> Update from module
+            </button>
+        </form>
+    </div>
 {% endblock %}
 
 {% block right_sidebar %}
@@ -22,39 +42,47 @@
             <button class='btn btn-primary' type="submit" form="edit-form">
                 <i class='fas fa-fw fa-save'></i> Save changes
             </button>
-            {% if proposal.status == 1 %}
-                <a href="/send_to_tutor/id" class="btn btn-success">
-                    <i class="fas fa-fw fa-share-square"></i> Send to tutor
-                </a>
-            {% endif %}
-            {% if proposal.status == 2 %}
-                <a href="/send_reminder/id" class="btn btn-success">
-                    <i class="fas fa-fw fa-exclamation"></i> Remind tutor
-                </a>
-            {% endif %}
-            {% if proposal.status == 3 %}
-                <a href="/send_reminder/id" class="btn btn-success">
-                    <i class="fas fa-fw fa-exclamation"></i> Remind DoS
-                </a>
-            {% endif %}
-            {% if proposal.status == 4 %}
-                {% if proposal.image %}
-                    Note: This proposal has an image attached to it which may require use rights verifications.
-                {% endif %}
-                <a href="/mark_complete/id" class="btn btn-success">
-                    <i class="fas fa-fw fa-check"></i> Confirm approved proposal
-                </a>
-            {% endif %}
-            <hr/>
-            <a href="/message_history/id">
-                <i class="fas fa-fw fa-list"></i> View message history ({{ proposal.messages.count }})
-            </a>
-            {% if proposal.status == 5 %}
-                <hr/>
-                <a href="/summary_page/id">
-                    <i class="fas fa-fw fa-print"></i> View message history
-                </a>
-            {% endif %}
         </div>
+        <hr/>
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-grid gap-2">
+                {% if proposal.status == 1 %}
+                    <button type="submit" formaction="{% url 'proposal:api:proposal-send-to-tutor' proposal.id %}" class="btn btn-success">
+                        <i class="fas fa-fw fa-share-square"></i> Send to tutor
+                    </button>
+                {% endif %}
+                {% if proposal.status == 2 %}
+                    <button type="submit" formaction="{% url 'proposal:api:proposal-remind-tutor' proposal.id %}" class="btn btn-success">
+                        <i class="fas fa-fw fa-exclamation"></i> Remind tutor
+                    </button>
+                {% endif %}
+                {% if proposal.status == 3 %}
+                    <button type="submit" formaction="{% url 'proposal:api:proposal-remind-dos' proposal.id %}" class="btn btn-success">
+                        <i class="fas fa-fw fa-exclamation"></i> Remind DoS
+                    </button>
+                {% endif %}
+                {% if proposal.status == 4 %}
+                    {% if proposal.image %}
+                        <p>
+                            <b>Note:</b> This proposal has an image, which may need a rights check
+                        </p>
+                    {% endif %}
+                    <button type="submit" formaction="{% url 'proposal:api:proposal-mark-complete' proposal.id %}" class="btn btn-success">
+                        <i class="fas fa-fw fa-check"></i> Mark complete
+                    </button>
+                {% endif %}
+                <hr/>
+                <a href="/message_history/id">
+                    <i class="fas fa-fw fa-list"></i> View message history ({{ proposal.messages.count }})
+                </a>
+                {% if proposal.status == 5 %}
+                    <hr/>
+                    <a href="/summary_page/id">
+                        <i class="fas fa-fw fa-print"></i> View message history
+                    </a>
+                {% endif %}
+            </div>
+        </form>
     </div>
 {% endblock %}

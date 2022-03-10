@@ -90,7 +90,7 @@ class EditProposalForm(forms.ModelForm):
         self.fields['status'].disabled = True
 
         # Highlight fields edited by tutor / dos
-        for field in self.instance.updated_fields:
+        for field in set(self.instance.updated_fields) & set(self.fields):  # ignore fields that aren't present
             # todo: do this with css class
             self.fields[field].label = mark_safe(
                 f'<span class="text-primary fw-bold">{self.fields[field].label} (edited)</span>'
