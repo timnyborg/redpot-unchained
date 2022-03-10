@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any
 
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 
 from apps.student.models import Student
 from apps.student.services import assign_moodle_id
@@ -175,5 +176,11 @@ def assign_moodle_ids(*, module: Module, created_by: str):
 
 
 def build_recommended_reading(*, module: Module) -> None:
-    # todo: implement
-    ...
+    """Updates a module's recommended reading field with a template populated by the module's books
+    You must call .save() yourself
+    """
+    reading_list = module.books.order_by('-type', 'author', 'title')
+    module.recommended_reading = render_to_string(
+        'module/components/recommended_reading_template.html',
+        context={'module': module, 'reading_list': reading_list},
+    )
