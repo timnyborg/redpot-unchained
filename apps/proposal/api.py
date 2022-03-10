@@ -61,8 +61,9 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         proposal.updated_fields = []
         proposal.save()
 
-        # skip a step of the tutor is a dos
-        # send autoemails
+        # todo: skip a step of the tutor is a dos?
+        services.email_tutor_prompt(proposal=proposal)
+
         messages.success(request, 'Sent for tutor review')
         return redirect(proposal.get_edit_url())
 
@@ -72,14 +73,17 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         proposal.reminded_on = datetime.now()
         proposal.save()
 
-        # send autoemail
+        services.email_tutor_prompt(proposal=proposal, reminder=True)
+
         messages.success(request, 'Reminder sent')
         return redirect(proposal.get_edit_url())
 
     @action(detail=True, methods=['post'])
     def remind_dos(self, request, pk=None):
         proposal = self.get_object()
-        # send autoemail
+
+        services.email_dos_prompt(proposal=proposal, reminder=True)
+
         messages.success(request, 'Reminder sent')
         return redirect(proposal.get_edit_url())
 
@@ -93,8 +97,8 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         proposal.save()
 
         services.update_module(proposal=proposal)
+        services.email_tutor_on_completion(proposal=proposal)
 
-        # email everyone
         messages.success(request, 'Proposal complete – module details updated')
         return redirect(proposal.module)
 
@@ -105,7 +109,10 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         proposal.tutor_approve = datetime.now()
         proposal.save()
 
-        # send autoemail
+        services.email_dos_prompt(proposal=proposal)
+        services.email_tutor_submission_confirmation(proposal=proposal)
+        services.email_admin_submission_confirmation(proposal=proposal)
+
         messages.success(request, 'Sent for DoS approval')
         return redirect(proposal.get_edit_url())
 
@@ -116,7 +123,8 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         proposal.dos_approve = datetime.now()
         proposal.save()
 
-        # send autoemail
+        services.email_admin_prompt(proposal=proposal)
+
         messages.success(request, 'Sent for administrator approval')
         return redirect(proposal.get_edit_url())
 
