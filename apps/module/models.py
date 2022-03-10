@@ -150,7 +150,6 @@ class Module(SignatureModel):
     auto_publish = models.BooleanField(default=False)
 
     is_published = models.BooleanField(default=False)
-    # finance_code = models.CharField(max_length=64, blank=True, null=True)  # noqa: E800 # todo: should this be used?
     email = models.EmailField(max_length=256, blank=True, null=True)
     phone = PhoneField(max_length=256, blank=True, null=True)
 

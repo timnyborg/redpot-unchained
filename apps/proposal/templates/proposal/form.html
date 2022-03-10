@@ -1,17 +1,60 @@
-{% extends 'core/form.html' %}
+{% extends 'core/form_9_3.html' %}
 
 {% block after-section %}
     <div class="section">
         <h4>Reading list</h4>
         <table class="table table-sm">
             {% for book in books %}
-            <tr>
-                <td>{{ book.type }}</td>
-                <td>{{ book.title }} / {{ book.author }}</td>
-            </tr>
+                <tr>
+                    <td>{{ book.type }}</td>
+                    <td>{{ book.title }} / {{ book.author }}</td>
+                </tr>
             {% empty %}
                 No books added
             {% endfor %}
         </table>
+    </div>
+{% endblock %}
+
+{% block right_sidebar %}
+    <div class="card section sticky-sidebar">
+        <div class="d-grid gap-2">
+            <button class='btn btn-primary' type="submit" form="edit-form">
+                <i class='fas fa-fw fa-save'></i> Save changes
+            </button>
+            {% if proposal.status == 1 %}
+                <a href="/send_to_tutor/id" class="btn btn-success">
+                    <i class="fas fa-fw fa-share-square"></i> Send to tutor
+                </a>
+            {% endif %}
+            {% if proposal.status == 2 %}
+                <a href="/send_reminder/id" class="btn btn-success">
+                    <i class="fas fa-fw fa-exclamation"></i> Remind tutor
+                </a>
+            {% endif %}
+            {% if proposal.status == 3 %}
+                <a href="/send_reminder/id" class="btn btn-success">
+                    <i class="fas fa-fw fa-exclamation"></i> Remind DoS
+                </a>
+            {% endif %}
+            {% if proposal.status == 4 %}
+                {% if proposal.image %}
+                    Note: This proposal has an image attached to it which may require use rights verifications.
+                {% endif %}
+                <a href="/mark_complete/id" class="btn btn-success">
+                    <i class="fas fa-fw fa-check"></i> Confirm approved proposal
+                </a>
+            {% endif %}
+            <hr/>
+            <a href="/message_history/id">
+                <i class="fas fa-fw fa-list"></i> View message history ({{ proposal.messages.count }})
+            </a>
+            {% if proposal.status == 5 %}
+                <hr/>
+                <a href="/summary_page/id">
+                    <i class="fas fa-fw fa-print"></i> View message history
+                </a>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
