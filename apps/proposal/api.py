@@ -4,6 +4,7 @@ from rest_framework import mixins, permissions, serializers, viewsets
 from rest_framework.decorators import action
 
 from django.contrib import messages
+from django.db import transaction
 from django.shortcuts import redirect
 
 from apps.proposal import services
@@ -57,6 +58,7 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             return redirect(proposal.get_edit_url())
 
         proposal.status = models.Statuses.TUTOR
+        proposal.updated_fields = []
         proposal.save()
 
         # skip a step of the tutor is a dos
@@ -81,6 +83,7 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         messages.success(request, 'Reminder sent')
         return redirect(proposal.get_edit_url())
 
+    @transaction.atomic
     @action(detail=True, methods=['post'])
     def mark_complete(self, request, pk=None):
         proposal = self.get_object()
@@ -89,10 +92,11 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         proposal.updated_fields = []
         proposal.save()
 
-        # Run the whole module routine
+        services.update_module(proposal=proposal)
+
         # email everyone
         messages.success(request, 'Proposal complete – module details updated')
-        return redirect(proposal.get_edit_url())
+        return redirect(proposal.module)
 
     @action(detail=True, methods=['post'])
     def submit_as_tutor(self, request, pk=None):

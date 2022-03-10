@@ -172,3 +172,8 @@ def assign_moodle_ids(*, module: Module, created_by: str):
         assign_moodle_id(student=student, first_module_code=module.code, created_by=created_by)
 
     return len(students)
+
+
+def build_recommended_reading(*, module: Module) -> None:
+    # todo: implement
+    ...
