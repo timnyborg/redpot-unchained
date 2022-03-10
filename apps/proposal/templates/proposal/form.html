@@ -47,22 +47,22 @@
         <form method="post">
             {% csrf_token %}
             <div class="d-grid gap-2">
-                {% if proposal.status == 1 %}
+                {% if proposal.status == statuses.CREATED %}
                     <button type="submit" formaction="{% url 'proposal:api:proposal-send-to-tutor' proposal.id %}" class="btn btn-success">
                         <i class="fas fa-fw fa-share-square"></i> Send to tutor
                     </button>
                 {% endif %}
-                {% if proposal.status == 2 %}
+                {% if proposal.status == statuses.TUTOR %}
                     <button type="submit" formaction="{% url 'proposal:api:proposal-remind-tutor' proposal.id %}" class="btn btn-success">
                         <i class="fas fa-fw fa-exclamation"></i> Remind tutor
                     </button>
                 {% endif %}
-                {% if proposal.status == 3 %}
+                {% if proposal.status == statuses.DOS %}
                     <button type="submit" formaction="{% url 'proposal:api:proposal-remind-dos' proposal.id %}" class="btn btn-success">
                         <i class="fas fa-fw fa-exclamation"></i> Remind DoS
                     </button>
                 {% endif %}
-                {% if proposal.status == 4 %}
+                {% if proposal.status == statuses.ADMIN %}
                     {% if proposal.image %}
                         <p>
                             <b>Note:</b> This proposal has an image, which may need a rights check
@@ -72,14 +72,12 @@
                         <i class="fas fa-fw fa-check"></i> Mark complete
                     </button>
                 {% endif %}
-                <hr/>
                 <a href="/message_history/id">
-                    <i class="fas fa-fw fa-list"></i> View message history ({{ proposal.messages.count }})
+                    <i class="fas fa-fw fa-list"></i> Message history ({{ proposal.messages.count }})
                 </a>
-                {% if proposal.status == 5 %}
-                    <hr/>
+                {% if proposal.status == statuses.COMPLETE %}
                     <a href="/summary_page/id">
-                        <i class="fas fa-fw fa-print"></i> View message history
+                        <i class="fas fa-fw fa-print"></i> Summary page
                     </a>
                 {% endif %}
             </div>

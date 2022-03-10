@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework import mixins, permissions, serializers, viewsets
 from rest_framework.decorators import action
 
@@ -48,7 +50,15 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     @action(detail=True, methods=['post'])
     def send_to_tutor(self, request, pk=None):
         proposal = self.get_object()
-        # check mandatory fields
+        missing_fields = proposal.missing_fields()
+        if missing_fields:
+            fields = ', '.join(missing_fields).replace('_', ' ')
+            messages.error(request, f"Some fields must be filled by admin first ({fields})")
+            return redirect(proposal.get_edit_url())
+
+        proposal.status = models.Statuses.TUTOR
+        proposal.save()
+
         # skip a step of the tutor is a dos
         # send autoemails
         messages.success(request, 'Sent for tutor review')
@@ -57,7 +67,9 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     @action(detail=True, methods=['post'])
     def remind_tutor(self, request, pk=None):
         proposal = self.get_object()
-        # update reminder
+        proposal.reminded_on = datetime.now()
+        proposal.save()
+
         # send autoemail
         messages.success(request, 'Reminder sent')
         return redirect(proposal.get_edit_url())
@@ -72,16 +84,23 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     @action(detail=True, methods=['post'])
     def mark_complete(self, request, pk=None):
         proposal = self.get_object()
-        # update status, admin_approve, updated_fields
+        proposal.status = models.Statuses.COMPLETE
+        proposal.admin_approve = datetime.now()
+        proposal.updated_fields = []
+        proposal.save()
+
         # Run the whole module routine
         # email everyone
-        messages.success(request, 'Proposal complete')
+        messages.success(request, 'Proposal complete – module details updated')
         return redirect(proposal.get_edit_url())
 
     @action(detail=True, methods=['post'])
     def submit_as_tutor(self, request, pk=None):
         proposal = self.get_object()
-        # update status, tutor_approve stamp
+        proposal.status = models.Statuses.DOS
+        proposal.tutor_approve = datetime.now()
+        proposal.save()
+
         # send autoemail
         messages.success(request, 'Sent for DoS approval')
         return redirect(proposal.get_edit_url())
@@ -89,7 +108,10 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     @action(detail=True, methods=['post'])
     def approve_as_dos(self, request, pk=None):
         proposal = self.get_object()
-        # update status, dos_approve stamp
+        proposal.status = models.Statuses.ADMIN
+        proposal.dos_approve = datetime.now()
+        proposal.save()
+
         # send autoemail
         messages.success(request, 'Sent for administrator approval')
         return redirect(proposal.get_edit_url())

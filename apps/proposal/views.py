@@ -25,7 +25,11 @@ class Edit(PermissionRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        return {**context, 'books': self.object.module.books.order_by('type', 'title')}
+        return {
+            **context,
+            'statuses': models.Statuses,
+            'books': self.object.module.books.order_by('type', 'title'),
+        }
 
     def form_invalid(self, form) -> http.HttpResponse:
         messages.warning(self.request, self.error_message)

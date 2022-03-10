@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import date
 
 from imagekit.models import ProcessedImageField
@@ -122,6 +124,21 @@ class Proposal(SignatureModel):
     @property
     def is_complete(self) -> bool:
         return self.status == Statuses.COMPLETE
+
+    def missing_fields(self) -> list[str]:
+        """Indicates whether all the necessary admin fields have been filled in prior to sending it to the tutor"""
+        mandatory_fields = [
+            'subjects',
+            'snippet',
+            'overview',
+            'programme_details',
+            'course_aims',
+            'assessment_methods',
+            'teaching_methods',
+            'teaching_outcomes',
+            'field_trips',
+        ]
+        return [field for field in mandatory_fields if not getattr(self, field)]
 
 
 class ProposalMessage(models.Model):
