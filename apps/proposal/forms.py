@@ -9,7 +9,7 @@ from apps.core.utils import widgets
 from apps.core.utils.forms import ApproverChoiceField
 from apps.module.models import Equipment, Subject
 from apps.proposal import models
-from apps.tutor.models import TutorModule
+from apps.tutor.models import Tutor, TutorModule
 
 HTML_FIELDS = [
     'overview',
@@ -38,6 +38,7 @@ class EditProposalForm(forms.ModelForm):
         model = models.Proposal
         fields = [
             'status',
+            'tutor',
             'title',
             'limited',
             'is_repeat',
@@ -76,6 +77,7 @@ class EditProposalForm(forms.ModelForm):
             'grammar_points',
         ]
         widgets = {
+            'tutor': widgets.ReadOnlyModelWidget(model=Tutor, link=True),
             **{field: CKEditorWidget for field in HTML_FIELDS},
             'start_date': widgets.DatePickerInput,
             'end_date': widgets.DatePickerInput,
