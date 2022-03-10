@@ -24,9 +24,12 @@ class Statuses(models.IntegerChoices):
 
 
 class FieldTripChoices(models.TextChoices):
-    NONE = 'None'
-    CLASS_VISITS = 'Class visits (museums, art galleries, etc.)'
-    EXTENSIVE_TRIPS = 'Extensive trips (quarry, archaeological site, etc.)'
+    NONE = 'None', 'None'
+    CLASS_VISITS = 'Class visits (museums, art galleries, etc.)', 'Class visits (museums, art galleries, etc.)'
+    EXTENSIVE_TRIPS = (
+        'Extensive trips (quarry, archaeological site, etc.)',
+        'Extensive trips (quarry, archaeological site, etc.)',
+    )
 
 
 def image_filename(instance: 'Proposal', filename: str) -> str:

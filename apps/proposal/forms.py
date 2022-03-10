@@ -20,6 +20,7 @@ HTML_FIELDS = [
     'teaching_methods',
     'teaching_outcomes',
     'recommended_reading',
+    'grammar_points',
 ]
 
 
@@ -84,11 +85,11 @@ class EditProposalForm(forms.ModelForm):
             'due_date': widgets.DatePickerInput,
             'start_time': widgets.TimePickerInput,
             'end_time': widgets.TimePickerInput,
-            # todo: implement other widgets
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['tutor'].disabled = True
         self.fields['status'].disabled = True
 
         # Highlight fields edited by tutor / dos
