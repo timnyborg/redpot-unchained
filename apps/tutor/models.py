@@ -1,3 +1,4 @@
+import uuid
 from datetime import date, datetime
 from pathlib import Path
 
@@ -105,6 +106,8 @@ class Tutor(SignatureModel):
     rtw_check_by = models.CharField(max_length=50, blank=True, null=True, verbose_name='Check done by')
     rtw_start_date = models.DateField(blank=True, null=True, verbose_name='Document issued on')
     rtw_end_date = models.DateField(blank=True, null=True, verbose_name='Document valid until')
+
+    hash_id = models.UUIDField(default=uuid.uuid4, editable=False, null=True)
 
     modules = models.ManyToManyField(
         'module.Module',

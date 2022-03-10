@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -117,6 +118,8 @@ class User(SignatureModel, AbstractUser):
     room = models.CharField(max_length=512, blank=True, null=True)
     on_facewall = models.BooleanField(default=True)
     division = models.ForeignKey('Division', on_delete=models.CASCADE, db_column='division', default=1)
+
+    hash_id = models.UUIDField(default=uuid.uuid4, editable=False, null=True)
 
     def get_absolute_url(self) -> str:
         return reverse('staff_list:profile', args=[self.pk])
