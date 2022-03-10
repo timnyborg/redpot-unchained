@@ -30,7 +30,9 @@ class SearchFilter(filters.FilterSet):
 
 class SearchTable(tables.Table):
     edit = EditLinkColumn(verbose_name='')
-    impersonate = LinkColumn(linkify='#', icon='eye', verbose_name='')  # todo: link up
+    impersonate = LinkColumn(
+        linkify=lambda record: record.get_external_url(), icon='eye', verbose_name='', title='Impersonate tutor'
+    )
 
     class Meta:
         model = models.Proposal

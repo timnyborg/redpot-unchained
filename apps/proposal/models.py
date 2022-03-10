@@ -5,6 +5,7 @@ from datetime import date
 from imagekit.models import ProcessedImageField
 from pilkit.processors import ResizeToFit
 
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
@@ -120,6 +121,10 @@ class Proposal(SignatureModel):
 
     def get_delete_url(self) -> str:
         return reverse('proposal:delete', kwargs={'pk': self.pk})
+
+    def get_external_url(self) -> str:
+        """A link to the administrative view url on the external app"""
+        return settings.COURSE_PROPOSAL_ADMIN_URL + f'&tutor={self.tutor_id}'
 
     @property
     def is_complete(self) -> bool:
