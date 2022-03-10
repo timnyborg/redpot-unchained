@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block center %}
+    <div class="section">
+        <ul class="item-list hide-items" data-max-item=3>
+            {% for message in proposal.messages.all %}
+                <li class="item">
+                    <div class="item-info row">
+                    <span class="col-2 fw-bold">
+                        {% if message.sender == 'dos' %}Director of Studies{% else %}Tutor{% endif %}
+                    </span>
+                        <span class="col-2">{{ message.sent_on|date:'SHORT_DATETIME_FORMAT' }}</span>
+                        <span class="col-8">{{ message.message|safe }}</span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <hr>
+        <a href="{{ proposal.get_edit_url }}">
+            <i class="fas fa-fw fa-arrow-left"></i> Back
+        </a>
+    </div>
+{% endblock %}

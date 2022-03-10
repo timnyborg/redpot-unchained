@@ -85,4 +85,8 @@ class New(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.
         return self.proposal.get_edit_url()
 
 
-# todo: remaining proposal views/services
+class ViewMessages(PermissionRequiredMixin, PageTitleMixin, generic.DetailView):
+    model = models.Proposal
+    permission_required = 'proposal.view_proposal'
+    template_name = 'proposal/view_messages.html'
+    subtitle = 'Message history'

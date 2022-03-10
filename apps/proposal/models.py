@@ -156,3 +156,4 @@ class ProposalMessage(models.Model):
 
     class Meta:
         db_table = 'proposal_message'
+        ordering = ['sent_on']
