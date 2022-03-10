@@ -314,6 +314,9 @@ SQUARE_URL = env(
     default='https://square.conted.ox.ac.uk/reports',
     validate=validate.URL(schemes=['https']),
 )
+PUBLIC_APPS_URL = env(
+    'PUBLIC_APPS_URL', default='https://apps.conted.ox.ac.uk', validate=validate.URL(schemes=['https'])
+)
 
 # Celery task queue - TODO: get this using the same settings as the cache
 redis_host = env('REDIS_HOST', default='redis')

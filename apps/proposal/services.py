@@ -1,10 +1,15 @@
+from django.conf import settings
+from django.core import mail
 from django.db import transaction
 from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
+from apps.core.utils import dates
 from apps.module import services as module_services
 from apps.module.models import Equipment, Subject
-from apps.proposal.models import Proposal
 from apps.tutor.models import Tutor
+
+from .models import Proposal
 
 CLONE_FIELDS = [
     'title',
@@ -116,3 +121,118 @@ def update_module(*, proposal: Proposal) -> None:
             record.save()
 
     module.save()
+
+
+SUBJECT_STEM = 'Weekly Classes and Weekly Oxford Worldwide course proposal request '
+APP_URL = settings.PUBLIC_APPS_URL + '/course-proposal'
+
+
+def email_tutor_prompt(*, proposal: Proposal, reminder: bool = False) -> None:
+    """Sends the proposal's tutor an email directing them to the online form.
+    If a reminder, it includes any messages from the DoS
+    """
+    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.tutor.student.get_default_email()]
+    subject_suffix = '- reminder' if reminder else ''
+    messages = proposal.messages.all() if reminder else []
+    proposal.tutor.populate_hash_id()  # todo: can be removed if all tutors have hash_ids
+    link_hash = proposal.tutor.hash_id
+    body = render_to_string(
+        'proposal/email/tutor_prompt.html',
+        context={
+            'proposal': proposal,
+            'link_hash': link_hash,
+            'messages': messages,
+            'app_url': APP_URL,
+            'academic_year': dates.academic_year(proposal.start_date),
+        },
+    )
+    mail.send_mail(
+        from_email=proposal.module.email,
+        recipient_list=recipient_list,
+        subject=SUBJECT_STEM + subject_suffix,
+        message=strip_tags(body),
+        html_message=body,
+    )
+
+
+def email_tutor_submission_confirmation(*, proposal: Proposal) -> None:
+    """Sends the proposal's tutor an email confirming submission"""
+    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.tutor.student.get_default_email()]
+    subject_suffix = 'submitted and sent for approval'
+    body = render_to_string('proposal/email/tutor_submit.html', context={'proposal': proposal})
+    mail.send_mail(
+        from_email=proposal.module.email,
+        recipient_list=recipient_list,
+        subject=SUBJECT_STEM + subject_suffix,
+        message=strip_tags(body),
+        html_message=body,
+    )
+
+
+def email_dos_prompt(*, proposal: Proposal, reminder: bool = False) -> None:
+    """Sends the proposal's director of studies an email (after tutor submission) directing them to the online form."""
+    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.dos.email]
+    subject_suffix = f'from {proposal.tutor.student} requires your attention'
+    if reminder:
+        subject_suffix += ' - reminder'
+
+    link_hash = proposal.dos.hash_id
+    body = render_to_string(
+        'proposal/email/dos_prompt.html',
+        context={'proposal': proposal, 'link_hash': link_hash, 'app_url': APP_URL},
+    )
+    mail.send_mail(
+        from_email=proposal.module.email,
+        recipient_list=recipient_list,
+        subject=SUBJECT_STEM + subject_suffix,
+        message=strip_tags(body),
+        html_message=body,
+    )
+
+
+def email_admin_submission_confirmation(*, proposal: Proposal) -> None:
+    """Sends admin an email notifying them of tutor submission"""
+    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.module.email]
+    subject_suffix = f'sent to director of studies {proposal.dos.get_full_name()} for review'
+    body = render_to_string(
+        'proposal/email/admin_tutor_submitted.html',
+        context={'proposal': proposal, 'redpot_url': settings.CANONICAL_URL},
+    )
+    mail.send_mail(
+        from_email=proposal.module.email,
+        recipient_list=recipient_list,
+        subject=SUBJECT_STEM + subject_suffix,
+        message=strip_tags(body),
+        html_message=body,
+    )
+
+
+def email_admin_prompt(*, proposal: Proposal) -> None:
+    """Sends admin an email notifying them of director of studies approval, and linking them to redpot"""
+    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.module.email]
+    subject_suffix = 'awaits your final review and approval'
+    body = render_to_string(
+        'proposal/email/admin_prompt.html', context={'proposal': proposal, 'redpot_url': settings.CANONICAL_URL}
+    )
+    mail.send_mail(
+        from_email=proposal.module.email,
+        recipient_list=recipient_list,
+        subject=SUBJECT_STEM + subject_suffix,
+        message=strip_tags(body),
+        html_message=body,
+    )
+
+
+def email_tutor_on_completion(*, proposal: Proposal) -> None:
+    """Sends a proposal's tutor an email notifying them that their proposal has been approved and finalized"""
+    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.tutor.student.get_default_email()]
+    subject_suffix = 'completed successfully'
+    body = render_to_string('proposal/email/tutor_complete.html', context={'proposal': proposal})
+    # todo: determine whether we need to attach/include the summary file: body.append(_summary_file(proposal.id))
+    mail.send_mail(
+        from_email=proposal.module.email,
+        recipient_list=recipient_list,
+        subject=SUBJECT_STEM + subject_suffix,
+        message=strip_tags(body),
+        html_message=body,
+    )

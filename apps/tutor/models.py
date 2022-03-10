@@ -164,6 +164,12 @@ class Tutor(SignatureModel):
     def is_casual(self) -> bool:
         return 'cas' in (self.appointment_id or '').lower()
 
+    def populate_hash_id(self) -> None:
+        """Set a hash_id if missing.  Ensures backwards compatibility with pre-Django tutor records"""
+        if not self.hash_id:
+            self.hash_id = uuid.uuid4()
+            self.save()
+
 
 class TutorModule(SignatureModel):
     module = models.ForeignKey(
