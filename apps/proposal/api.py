@@ -7,9 +7,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import redirect
 
-from apps.proposal import services
-
-from . import models
+from . import models, services
 
 
 class ProposalSerializer(serializers.ModelSerializer):
