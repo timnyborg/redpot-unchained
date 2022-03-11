@@ -87,13 +87,13 @@ def update_module(*, proposal: Proposal) -> None:
     module_services.build_recommended_reading(module=module)
 
     # Module subjects (clear all for a module then add the updated choices)
-    module.subjects.set(Subject.objects.filter(pk__in=proposal.subjects))
+    module.subjects.set(Subject.objects.filter(pk__in=proposal.subjects or []))
 
     # Make sure the default equipment is also set (for CABS)
     module.equipment.set(Equipment.objects.filter(always_required=True))
 
     # Add all the updated choices
-    for equipment in Equipment.objects.filter(pk__in=proposal.equipment):
+    for equipment in Equipment.objects.filter(pk__in=proposal.equipment or []):
         module.equipment.add(
             equipment,
             # Add note for scientific equipment items  # todo: reconsider pk-based logic
