@@ -501,3 +501,12 @@ class AwardPoints(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, 
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+
+class RebuildRecommendedReading(LoginRequiredMixin, generic.View):
+    def post(self, request, *args, **kwargs) -> http.HttpResponse:
+        module = get_object_or_404(models.Module, pk=self.kwargs['pk'])
+        services.build_recommended_reading(module=module)
+        module.save()
+        messages.success(request, 'Reading list text recreated')
+        return redirect(module)

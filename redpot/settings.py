@@ -252,9 +252,11 @@ WEBSITE_MEDIA_URL = env('WEBSITE_MEDIA_URL', default=MEDIA_URL)
 PROTECTED_MEDIA_URL = env('PROTECTED_MEDIA_URL', default='/protected-media/')
 PROTECTED_MEDIA_ROOT: Path = env.path('PROTECTED_MEDIA_ROOT', default=BASE_DIR / 'protected_media')
 
-
 # URL for accessing application attachments managed by a separate app, with its own auth
 APPLICATION_ATTACHMENT_URL = env('APPLICATION_ATTACHMENT_URL', default='')
+
+# URL for accessing the admin section of the course proposal app
+COURSE_PROPOSAL_ADMIN_URL = env('COURSE_PROPOSAL_ADMIN_URL', default='')
 
 # Login customization
 LOGIN_REDIRECT_URL = '/'
@@ -311,6 +313,9 @@ SQUARE_URL = env(
     'SQUARE_URL',
     default='https://square.conted.ox.ac.uk/reports',
     validate=validate.URL(schemes=['https']),
+)
+PUBLIC_APPS_URL = env(
+    'PUBLIC_APPS_URL', default='https://apps.conted.ox.ac.uk', validate=validate.URL(schemes=['https'])
 )
 
 # Celery task queue - TODO: get this using the same settings as the cache

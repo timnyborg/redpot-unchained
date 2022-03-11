@@ -1,3 +1,4 @@
+import uuid
 from datetime import date, datetime
 from pathlib import Path
 
@@ -106,6 +107,8 @@ class Tutor(SignatureModel):
     rtw_start_date = models.DateField(blank=True, null=True, verbose_name='Document issued on')
     rtw_end_date = models.DateField(blank=True, null=True, verbose_name='Document valid until')
 
+    hash_id = models.UUIDField(default=uuid.uuid4, editable=False, null=True)
+
     modules = models.ManyToManyField(
         'module.Module',
         related_name='tutors',
@@ -160,6 +163,12 @@ class Tutor(SignatureModel):
     @property
     def is_casual(self) -> bool:
         return 'cas' in (self.appointment_id or '').lower()
+
+    def populate_hash_id(self) -> None:
+        """Set a hash_id if missing.  Ensures backwards compatibility with pre-Django tutor records"""
+        if not self.hash_id:
+            self.hash_id = uuid.uuid4()
+            self.save()
 
 
 class TutorModule(SignatureModel):

@@ -1,0 +1,15 @@
+<html lang="">
+<div style="font-family:Calibri;">
+    <p>Dear {{ proposal.tutor.student }},</p>
+    <p>Many thanks for submitting your course proposal. The proposal has been passed on to your Director of Studies
+        ({{ proposal.dos.get_full_name }}) for approval. If the proposal is complete and requires no further changes the DoS will
+        approve the course and you will receive confirmation that the course will be advertised as planned.
+    </p>
+    <p>If changes are required then your DoS will contact you with their thoughts and we will send you a new link
+        where the changes can be made. You can then submit any changes as before and we will go through the above
+        approval process once more.
+    </p>
+    <p>If you have any problems or concerns please do let us know at your convenience.</p>
+    {% include 'proposal/email/signature.html' %}
+</div>
+</html>

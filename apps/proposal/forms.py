@@ -7,9 +7,9 @@ from django.utils.safestring import mark_safe
 
 from apps.core.utils import widgets
 from apps.core.utils.forms import ApproverChoiceField
-from apps.module.models import Equipment, Module, Subject
+from apps.module.models import Equipment, Subject
 from apps.proposal import models
-from apps.tutor.models import TutorModule
+from apps.tutor.models import Tutor, TutorModule
 
 HTML_FIELDS = [
     'overview',
@@ -20,13 +20,13 @@ HTML_FIELDS = [
     'teaching_methods',
     'teaching_outcomes',
     'recommended_reading',
+    'grammar_points',
 ]
 
 
 class EditProposalForm(forms.ModelForm):
     michaelmas_end = forms.DateField(disabled=True, required=False)
     hilary_start = forms.DateField(disabled=True, required=False)
-    previous_run = forms.ModelChoiceField(queryset=Module.objects.all(), to_field_name='code', required=False)
     dos = ApproverChoiceField(permission='proposal.approve_proposal', label='Director of studies', required=False)
     equipment = forms.ModelMultipleChoiceField(
         queryset=Equipment.objects.all(), required=False, widget=Select2MultipleWidget()
@@ -38,8 +38,11 @@ class EditProposalForm(forms.ModelForm):
     class Meta:
         model = models.Proposal
         fields = [
+            'status',
+            'tutor',
             'title',
-            'subjects',
+            'limited',
+            'is_repeat',
             'start_date',
             'michaelmas_end',
             'hilary_start',
@@ -47,9 +50,8 @@ class EditProposalForm(forms.ModelForm):
             'start_time',
             'end_time',
             'no_meetings',
+            'subjects',
             'duration',
-            'is_repeat',
-            'previous_run',
             'location',
             'address',
             'room',
@@ -58,7 +60,6 @@ class EditProposalForm(forms.ModelForm):
             'reduced_size',
             'reduction_reason',
             'field_trips',
-            'risk_form',
             'snippet',
             'overview',
             'programme_details',
@@ -75,28 +76,24 @@ class EditProposalForm(forms.ModelForm):
             'dos',
             'due_date',
             'grammar_points',
-            'limited',
         ]
         widgets = {
+            'tutor': widgets.ReadOnlyModelWidget(model=Tutor, link=True),
             **{field: CKEditorWidget for field in HTML_FIELDS},
             'start_date': widgets.DatePickerInput,
             'end_date': widgets.DatePickerInput,
+            'due_date': widgets.DatePickerInput,
             'start_time': widgets.TimePickerInput,
             'end_time': widgets.TimePickerInput,
-            # todo: implement other widgets
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # Limit previous_run to the tutor's other modules
-        self.fields['previous_run'].queryset = self.instance.tutor.modules.exclude(
-            id=self.instance.module_id
-        ).order_by('-start_date')
-        self.fields['previous_run'].label_from_instance = lambda obj: f'{obj.title} ({obj.start_date})'
+        self.fields['tutor'].disabled = True
+        self.fields['status'].disabled = True
 
         # Highlight fields edited by tutor / dos
-        for field in self.instance.updated_fields:
+        for field in set(self.instance.updated_fields) & set(self.fields):  # ignore fields that aren't present
             # todo: do this with css class
             self.fields[field].label = mark_safe(
                 f'<span class="text-primary fw-bold">{self.fields[field].label} (edited)</span>'

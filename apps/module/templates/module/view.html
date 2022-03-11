@@ -619,7 +619,12 @@
     <h2 id="reading-list" class="section-title">Reading list</h2>
     {% render_table book_table %}
     <br>
-    <a href="rebuild_reading_list/{{ module.id }}" class="btn btn-secondary">
+    <a class="btn btn-secondary"
+       data-bs-toggle="modal"
+       data-bs-target="#commonModal"
+       data-modal-body="Are you sure you wish to rebuild this module's recommended reading from the book list?"
+       data-modal-href="{% url 'module:rebuild-recommended-reading' module.id %}"
+    >
         <i class="fas fa-fw fa-redo"></i> Rebuild reading list
     </a>
     <a href="{% square_url "Library" "Weekly classes reading list items by course" code=module.code %}"

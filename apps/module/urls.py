@@ -19,6 +19,11 @@ urlpatterns = [
     path('syllabus/<int:pk>', views.Syllabus.as_view(), name='syllabus'),
     path('award-points/<int:pk>', views.AwardPoints.as_view(), name='award-points'),
     path('award-points', views.AwardPoints.as_view(), name='award-points'),  # for get method
+    path(
+        'rebuild-recommended-reading/<int:pk>',
+        views.RebuildRecommendedReading.as_view(),
+        name='rebuild-recommended-reading',
+    ),
     # child record views
     path('programme/add/<int:module_id>', views.AddProgramme.as_view(), name='add-programme'),
     path('payment-plan/add/<int:module_id>', views.AddPaymentPlan.as_view(), name='add-payment-plan'),
