@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from rest_framework import mixins, permissions, serializers, viewsets
+from rest_framework import authentication, mixins, permissions, serializers, viewsets
 from rest_framework.decorators import action
 
 from django.contrib import messages
@@ -35,6 +35,7 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     queryset = models.Proposal.objects.all()
     serializer_class = ProposalSerializer
+    authentication_classes = [authentication.SessionAuthentication, authentication.BasicAuthentication]
     permission_classes = [permissions.DjangoModelPermissions]
 
     @action(detail=True, methods=['post'])
