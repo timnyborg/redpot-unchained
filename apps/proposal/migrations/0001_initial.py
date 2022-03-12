@@ -77,6 +77,9 @@ class Migration(migrations.Migration):
                 ('module', models.OneToOneField(db_column='module', on_delete=django.db.models.deletion.DO_NOTHING, to='module.module')),
                 ('room', models.ForeignKey(blank=True, db_column='room', null=True, on_delete=django.db.models.deletion.PROTECT, to='module.room')),
                 ('tutor', models.ForeignKey(db_column='tutor', on_delete=django.db.models.deletion.PROTECT, to='tutor.tutor')),
+                ('tutor_title', models.CharField(blank=True, max_length=16, null=True)),
+                ('tutor_nickname', models.CharField(blank=True, max_length=64, null=True)),
+                ('tutor_biography', models.TextField(blank=True, null=True)),
             ],
             options={
                 'verbose_name': 'Course proposal',

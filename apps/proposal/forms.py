@@ -21,6 +21,7 @@ HTML_FIELDS = [
     'teaching_outcomes',
     'recommended_reading',
     'grammar_points',
+    'tutor_biography',
 ]
 
 
@@ -39,8 +40,11 @@ class EditProposalForm(forms.ModelForm):
         model = models.Proposal
         fields = [
             'status',
-            'tutor',
             'title',
+            'tutor',
+            'tutor_title',
+            'tutor_nickname',
+            'tutor_biography',
             'limited',
             'is_repeat',
             'start_date',
