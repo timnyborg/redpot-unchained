@@ -9,7 +9,6 @@ from imagekit.processors import ResizeToFit
 from django.core import validators
 from django.db import models
 from django.urls import reverse
-from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
 from apps.core.models import SignatureModel
@@ -143,16 +142,6 @@ class Tutor(SignatureModel):
             self.swift = self.swift.upper()
         if self.iban:
             self.iban = self.iban.upper()
-
-    def custom_biography(self):
-        if self.biography:
-            return mark_safe(self.biography)
-        else:
-            return mark_safe(
-                """
-            <span class="text-danger">Error: Invalid HTML in biography</span>
-            """
-            )
 
     def rtw_expired(self) -> bool:
         return self.rtw_end_date is not None and self.rtw_end_date < date.today()

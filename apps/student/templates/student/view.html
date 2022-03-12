@@ -681,11 +681,15 @@
     <br>
 
     <h5>Biography</h5>
+    {% if tutor.biography %}
     <div class='card bg-light mb-3'>
         <div class="card-body">
-            {{tutor.custom_biography}}
+            {{ tutor.biography|safe }}
         </div>
     </div>
+    {% else %}
+        <p>None</p>
+    {% endif %}
 
     {% if tutor.tutorsubjects.all %}
         <h5>Subjects</h5>
