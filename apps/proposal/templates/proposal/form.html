@@ -20,16 +20,28 @@
         <h4>Admin tools</h4>
         <form method="post">
             {% csrf_token %}
-            <button type="submit" formaction="{% url 'proposal:api:proposal-reset' proposal.id %}" class="btn btn-warning">
+            <button type="submit" formaction="{% url 'proposal:api:proposal-reset' proposal.id %}" class="btn btn-warning"
+                data-bs-toggle="tooltip"
+                title="Set the proposal back to Created status"
+            >
                 <i class="fas fa-fw fa-undo"></i> Reset
             </button>
-            <button type="submit" formaction="{% url 'proposal:api:proposal-submit-as-tutor' proposal.id %}" class="btn btn-warning">
+            <button type="submit" formaction="{% url 'proposal:api:proposal-submit-as-tutor' proposal.id %}" class="btn btn-warning"
+                data-bs-toggle="tooltip"
+                title="Submit the proposal as the tutor, emailing the tutor, DoS, and admin"
+            >
                 <i class="fas fa-fw fa-thumbs-up"></i> Fake tutor submission
             </button>
-            <button type="submit" formaction="{% url 'proposal:api:proposal-approve-as-dos' proposal.id %}" class="btn btn-warning">
+            <button type="submit" formaction="{% url 'proposal:api:proposal-approve-as-dos' proposal.id %}" class="btn btn-warning"
+                data-bs-toggle="tooltip"
+                title="Approve the proposal as the DoS, emailing the tutor and admin"
+            >
                 <i class="fas fa-fw fa-thumbs-up"></i> Fake DoS approval
             </button>
-            <button type="submit" formaction="{% url 'proposal:api:proposal-update-from-module' proposal.id %}" class="btn btn-warning">
+            <button type="submit" formaction="{% url 'proposal:api:proposal-update-from-module' proposal.id %}" class="btn btn-warning"
+                data-bs-toggle="tooltip"
+                title="Replace the proposal's data with data from the source module"
+            >
                 <i class="fas fa-fw fa-redo"></i> Update from module
             </button>
         </form>

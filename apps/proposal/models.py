@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+from typing import Optional
 
 from imagekit.models import ProcessedImageField
 from pilkit.processors import ResizeToFit
@@ -12,6 +13,7 @@ from django.urls import reverse
 from apps.core.models import SignatureModel
 from apps.core.utils.web2py_compat import PipeSeparatedIntegersField, PipeSeparatedStringsField
 from apps.module.models import RoomSetups
+from apps.tutor.models import TutorModule
 from redpot import storage_backends
 
 
@@ -68,6 +70,12 @@ class Proposal(SignatureModel):
     reduced_size = models.IntegerField(blank=True, null=True)
     reduction_reason = models.CharField(max_length=50, blank=True, null=True, verbose_name='Reason for reduction')
     tutor = models.ForeignKey('tutor.Tutor', on_delete=models.PROTECT, db_column='tutor')
+
+    # fields for submitting tutor record changes
+    tutor_title = models.CharField(max_length=16, blank=True, null=True)
+    tutor_nickname = models.CharField(max_length=64, blank=True, null=True)
+    tutor_biography = models.TextField(blank=True, null=True)
+
     field_trips = models.CharField(max_length=60, blank=True, null=True, choices=FieldTripChoices.choices)
     risk_form = models.CharField(max_length=255, blank=True, null=True, verbose_name='Risk assessment form')
     snippet = models.TextField(blank=True, null=True)
@@ -147,6 +155,11 @@ class Proposal(SignatureModel):
             'field_trips',
         ]
         return [field for field in mandatory_fields if not getattr(self, field)]
+
+    @property
+    def tutor_on_module_record(self) -> Optional[TutorModule]:
+        """Gets the TutorModule record associated with this tutor and module, if one exists"""
+        return self.tutor.tutor_modules.filter(module=self.module).first()
 
 
 class ProposalMessage(models.Model):

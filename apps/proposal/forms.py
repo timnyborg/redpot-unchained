@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 
 from apps.core.utils import widgets
 from apps.core.utils.forms import ApproverChoiceField
-from apps.module.models import Equipment, Subject
+from apps.module.models import Equipment, Module, Subject
 from apps.proposal import models
 from apps.tutor.models import Tutor, TutorModule
 
@@ -21,6 +21,7 @@ HTML_FIELDS = [
     'teaching_outcomes',
     'recommended_reading',
     'grammar_points',
+    'tutor_biography',
 ]
 
 
@@ -39,8 +40,12 @@ class EditProposalForm(forms.ModelForm):
         model = models.Proposal
         fields = [
             'status',
-            'tutor',
+            'module',
             'title',
+            'tutor',
+            'tutor_title',
+            'tutor_nickname',
+            'tutor_biography',
             'limited',
             'is_repeat',
             'start_date',
@@ -78,6 +83,7 @@ class EditProposalForm(forms.ModelForm):
             'grammar_points',
         ]
         widgets = {
+            'module': widgets.ReadOnlyModelWidget(model=Module, link=True),
             'tutor': widgets.ReadOnlyModelWidget(model=Tutor, link=True),
             **{field: CKEditorWidget for field in HTML_FIELDS},
             'start_date': widgets.DatePickerInput,
@@ -89,8 +95,8 @@ class EditProposalForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['tutor'].disabled = True
-        self.fields['status'].disabled = True
+        for field in ['tutor', 'module', 'status']:
+            self.fields[field].disabled = True
 
         # Highlight fields edited by tutor / dos
         for field in set(self.instance.updated_fields) & set(self.fields):  # ignore fields that aren't present

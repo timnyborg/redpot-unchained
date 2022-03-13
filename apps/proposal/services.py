@@ -70,12 +70,21 @@ def populate_from_module(*, proposal: Proposal) -> None:
 
     proposal.grammar_points = weekly_template if proposal.limited else None
 
+    # Fill tutor fields to allow them to suggest changes
+    proposal.tutor_title = proposal.tutor.student.title
+    proposal.tutor_nickname = proposal.tutor.student.nickname
+    proposal.tutor_biography = (
+        proposal.tutor_on_module_record
+        and proposal.tutor_on_module_record.biography  # Module-level bio
+        or proposal.tutor.biography  # or tutor's standard bio
+    )
+
     proposal.save()
 
 
 @transaction.atomic
 def update_module(*, proposal: Proposal) -> None:
-    """Copy the data from a complete proposal to its source module"""
+    """Copy the data from a complete proposal to its source module and tutor"""
 
     module = proposal.module
     module.url = None  # rebuild from proposal title
@@ -119,6 +128,16 @@ def update_module(*, proposal: Proposal) -> None:
         if not created:
             record.director_of_studies = True
             record.save()
+
+    # Update tutor-related fields
+    proposal.tutor.student.title = proposal.tutor_title
+    proposal.tutor.student.nickname = proposal.tutor_nickname
+    proposal.tutor.student.save()
+
+    tutor_on_module = proposal.tutor_on_module_record
+    if tutor_on_module:
+        tutor_on_module.biography = proposal.tutor_biography
+        tutor_on_module.save()
 
     module.save()
 
