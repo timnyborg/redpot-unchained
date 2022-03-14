@@ -51,7 +51,7 @@ class ProposalViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def send_to_tutor(self, request, pk=None):
         proposal = self.get_object()
         missing_fields = proposal.missing_fields()
-        if missing_fields:
+        if proposal.limited and missing_fields:
             fields = ', '.join(missing_fields).replace('_', ' ')
             messages.error(request, f"Some fields must be filled by admin first ({fields})")
             return redirect(proposal.get_edit_url())

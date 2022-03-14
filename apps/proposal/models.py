@@ -141,7 +141,9 @@ class Proposal(SignatureModel):
         return self.status == Statuses.COMPLETE
 
     def missing_fields(self) -> list[str]:
-        """Indicates whether all the necessary admin fields have been filled in prior to sending it to the tutor"""
+        """Indicates whether all the necessary admin fields have been filled in prior to sending it to the tutor
+        (for language courses with limited tutor editing)
+        """
         mandatory_fields = [
             'subjects',
             'snippet',
