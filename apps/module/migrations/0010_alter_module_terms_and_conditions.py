@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='module',
             name='terms_and_conditions',
-            field=models.IntegerField(blank=True, choices=[(1, 'Open access courses'), (2, 'Selective short courses')], null=True),
+            field=models.IntegerField(choices=[(1, 'Open access courses'), (2, 'Selective short courses')], default=1),
         ),
     ]

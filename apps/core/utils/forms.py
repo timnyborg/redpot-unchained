@@ -23,7 +23,7 @@ class ApproverChoiceField(forms.ModelChoiceField):
             perm=permission,
             backend='django.contrib.auth.backends.ModelBackend',
             include_superusers=include_superusers,
-        )
+        ).order_by('first_name', 'last_name')
         super().__init__(queryset, **defaults, **kwargs)
 
     def label_from_instance(self, obj: models.User) -> str:

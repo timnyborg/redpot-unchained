@@ -43,7 +43,7 @@ class TestAutoEmails(test.TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.proposal = factories.ProposalFactory(module__email='admin@conted.ox.ac.uk')
-        cls.tutor_email = EmailFactory(student=cls.proposal.tutor.student)
+        cls.tutor_email = EmailFactory(student=cls.proposal.tutor.student).email
 
     def test_tutor_prompt(self):
         services.email_tutor_prompt(proposal=self.proposal)

@@ -43,7 +43,6 @@ class Migration(migrations.Migration):
                 ('end_time', models.TimeField(blank=True, null=True)),
                 ('no_meetings', models.IntegerField(blank=True, null=True, verbose_name='# of meetings')),
                 ('duration', models.FloatField(blank=True, null=True)),
-                ('is_repeat', models.BooleanField(default=False, verbose_name='Is this a repeat course?')),
                 ('address', models.CharField(blank=True, max_length=255, null=True)),
                 ('room_setup', models.CharField(choices=[('SEMINR', 'Seminar'), ('ECTR', 'Computer teaching'), ('BOARD', 'Boardroom'), ('CLASS', 'Classroom'), ('LECT', 'Lecture'), ('UCHRS', 'U of chairs'), ('UTBLS', 'U of tables')], default='SEMINR', max_length=12, null=True, verbose_name='Classroom layout')),
                 ('max_size', models.IntegerField(blank=True, null=True, verbose_name='Class size')),

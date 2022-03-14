@@ -53,7 +53,6 @@ class Proposal(SignatureModel):
     end_time = models.TimeField(blank=True, null=True)
     no_meetings = models.IntegerField(blank=True, null=True, verbose_name='# of meetings')
     duration = models.FloatField(blank=True, null=True)
-    is_repeat = models.BooleanField(default=False, verbose_name='Is this a repeat course?')
     location = models.ForeignKey(
         'module.Location', on_delete=models.PROTECT, blank=True, null=True, db_column='location'
     )
@@ -142,7 +141,9 @@ class Proposal(SignatureModel):
         return self.status == Statuses.COMPLETE
 
     def missing_fields(self) -> list[str]:
-        """Indicates whether all the necessary admin fields have been filled in prior to sending it to the tutor"""
+        """Indicates whether all the necessary admin fields have been filled in prior to sending it to the tutor
+        (for language courses with limited tutor editing)
+        """
         mandatory_fields = [
             'subjects',
             'snippet',
