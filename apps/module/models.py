@@ -205,7 +205,7 @@ class Module(SignatureModel):
     )
     note = models.CharField(max_length=512, blank=True, null=True)
     terms_and_conditions = models.IntegerField(
-        choices=((1, 'Open access courses'), (2, 'Selective short courses')), null=True, blank=True
+        choices=((1, 'Open access courses'), (2, 'Selective short courses')), default=1
     )
     apply_url = models.CharField(max_length=512, blank=True, null=True)
     further_details = models.TextField(blank=True, null=True, **webfield_attrs)
