@@ -577,9 +577,9 @@
 
 </div>
 
+{% if enquiries %}
 <div class="section">
     <h2 id='enquiries' class='section-title'>Enquiries</h2>
-    {% if enquiries %}
     <table class="table table-hover hide-rows" data-display='3'>
     <thead><tr><th>Date</th><th>Module</th><th>Title</th><th>Details</th><th></th></tr></thead>
     <tbody>
@@ -615,8 +615,8 @@
     {% endfor %}
     </tbody>
     </table>
-    {% endif %}
 </div>
+{% endif %}
 
 {% if tutor.id %}
 <div class="section">
