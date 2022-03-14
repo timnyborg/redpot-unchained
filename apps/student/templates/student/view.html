@@ -526,14 +526,14 @@
             </div>
             <div>
                 Last logged in
-                <span class="timeago"
+                <time class="timeago"
                       datetime="{{ login.last_login}}"
                       data-bs-toggle="tooltip"
                       data-placement="bottom"
                       title="{{ login.last_login | date:'j M Y H:i' }}"
                 >
                     {{ login.last_login }}
-                </span>
+                </time>
             </div>
         </li>
         {% endfor %}

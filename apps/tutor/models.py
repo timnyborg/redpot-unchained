@@ -9,6 +9,7 @@ from imagekit.processors import ResizeToFit
 from django.core import validators
 from django.db import models
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
 from apps.core.models import SignatureModel
@@ -43,7 +44,14 @@ class Tutor(SignatureModel):
     affiliation = models.CharField(max_length=256, blank=True, null=True)
 
     nino = models.CharField(
-        max_length=64, blank=True, null=True, verbose_name='National insurance #', help_text='Enter without spaces'
+        max_length=64,
+        blank=True,
+        null=True,
+        verbose_name='National insurance #',
+        help_text=mark_safe('Enter without spaces, e.g. <i>AB123456C</i>'),
+        validators=[validators.RegexValidator(r'^[A-Z]{2}\d{6}[A-Z]$', message='Must be in the form AB123456C')],
+        unique=True,
+        error_messages={'unique': 'National Insurance number already in use'},
     )
     employee_no = models.CharField(max_length=32, blank=True, null=True, verbose_name='Employee #')
     appointment_id = models.CharField(max_length=32, blank=True, null=True, verbose_name='Appointment ID')
@@ -142,6 +150,8 @@ class Tutor(SignatureModel):
             self.swift = self.swift.upper()
         if self.iban:
             self.iban = self.iban.upper()
+        if self.nino:
+            self.nino = self.nino.upper()
 
     def rtw_expired(self) -> bool:
         return self.rtw_end_date is not None and self.rtw_end_date < date.today()

@@ -25,7 +25,7 @@ def email_personnel_change(
     initial_values: dict,
     changed_data: list[str],
     user: User,
-) -> bool:
+) -> None:
     """Emails the personnel office when a change is detected in a tutor's name, address or bank details"""
     # Discern update source
     if isinstance(model, Tutor):
@@ -88,4 +88,3 @@ def email_personnel_change(
             message=strip_tags(message),
             html_message=message,
         )
-    return True
