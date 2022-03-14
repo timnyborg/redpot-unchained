@@ -31,7 +31,7 @@ class Create(LoginRequiredMixin, SuccessMessageMixin, AutoTimestampMixin, PageTi
         return self.student.get_absolute_url() + '#login'
 
 
-class Edit(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, generic.UpdateView):
+class Edit(LoginRequiredMixin, SuccessMessageMixin, AutoTimestampMixin, PageTitleMixin, generic.UpdateView):
     # todo: recent login history (may belong elsewhere)
     model = models.WebsiteAccount
     form_class = forms.EditForm
