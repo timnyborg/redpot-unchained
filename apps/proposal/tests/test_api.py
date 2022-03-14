@@ -17,10 +17,10 @@ class TestAPIViewSet(LoggedInMixin, test.APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.proposal = factories.ProposalFactory()
+        cls.proposal = factories.ProposalFactory(limited=True)
 
     def test_send_to_tutor_incomplete(self, patched_module: mock.MagicMock):
-        """Will fail to update if columns missing data"""
+        """Will fail to update if columns missing data (limited-editing proposal)"""
         response = self.client.post(reverse('proposal:api:proposal-send-to-tutor', args=[self.proposal.pk]))
 
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)

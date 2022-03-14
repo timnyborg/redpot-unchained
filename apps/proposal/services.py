@@ -149,7 +149,9 @@ def email_tutor_prompt(*, proposal: Proposal, reminder: bool = False) -> None:
     """Sends the proposal's tutor an email directing them to the online form.
     If a reminder, it includes any messages from the DoS
     """
-    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.tutor.student.get_default_email()]
+    # todo: consider email checks
+
+    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.tutor.student.get_default_email().email]
     subject_suffix = '- reminder' if reminder else ''
     messages = proposal.messages.all() if reminder else []
     proposal.tutor.populate_hash_id()  # todo: can be removed if all tutors have hash_ids
@@ -175,7 +177,7 @@ def email_tutor_prompt(*, proposal: Proposal, reminder: bool = False) -> None:
 
 def email_tutor_submission_confirmation(*, proposal: Proposal) -> None:
     """Sends the proposal's tutor an email confirming submission"""
-    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.tutor.student.get_default_email()]
+    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.tutor.student.get_default_email().email]
     subject_suffix = 'submitted and sent for approval'
     body = render_to_string('proposal/email/tutor_submit.html', context={'proposal': proposal})
     mail.send_mail(
@@ -243,7 +245,7 @@ def email_admin_prompt(*, proposal: Proposal) -> None:
 
 def email_tutor_on_completion(*, proposal: Proposal) -> None:
     """Sends a proposal's tutor an email notifying them that their proposal has been approved and finalized"""
-    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.tutor.student.get_default_email()]
+    recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.tutor.student.get_default_email().email]
     subject_suffix = 'completed successfully'
     body = render_to_string('proposal/email/tutor_complete.html', context={'proposal': proposal})
     # todo: determine whether we need to attach/include the summary file: body.append(_summary_file(proposal.id))
