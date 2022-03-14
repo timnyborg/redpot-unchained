@@ -13,7 +13,6 @@ from .models import Proposal
 
 CLONE_FIELDS = [
     'title',
-    'is_repeat',
     'location',
     'address',
     'room',

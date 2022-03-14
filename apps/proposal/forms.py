@@ -47,7 +47,6 @@ class EditProposalForm(forms.ModelForm):
             'tutor_nickname',
             'tutor_biography',
             'limited',
-            'is_repeat',
             'start_date',
             'michaelmas_end',
             'hilary_start',
