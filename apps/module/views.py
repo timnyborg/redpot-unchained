@@ -316,7 +316,7 @@ class EditHESASubjects(LoginRequiredMixin, PageTitleMixin, generic.detail.Single
         return self.object.get_absolute_url()
 
 
-class Uncancel(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+class Uncancel(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
     model = models.Module
     form_class = forms.UncancelForm
     template_name = 'module/uncancel.html'
@@ -328,7 +328,7 @@ class Uncancel(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.
         return super().form_valid(form)
 
 
-class Cancel(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
+class Cancel(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
     model = models.Module
     form_class = forms.CancelForm
     template_name = 'module/cancel.html'

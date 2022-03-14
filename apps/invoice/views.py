@@ -92,7 +92,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         }
 
 
-class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
+class Edit(PermissionRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
     model = models.Invoice
     form_class = forms.InvoiceForm
     template_name = 'core/form.html'

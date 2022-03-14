@@ -31,7 +31,7 @@ class Create(LoginRequiredMixin, generic.View):
             'created_by': self.request.user.username,
         }
         student = Student.objects.create(**kwargs, **signature_fields)
-        if 'email' in kwargs:
+        if kwargs.get('email'):
             Email.objects.create(student=student, email=kwargs['email'], is_default=True, **signature_fields)
         return student
 
@@ -298,7 +298,7 @@ class Merge(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
         return redirect(target)
 
 
-class Marketing(PageTitleMixin, generic.UpdateView):
+class Marketing(PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
     model = Student
     form_class = forms.MarketingForm
     template_name = 'student/marketing.html'
