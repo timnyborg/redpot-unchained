@@ -53,7 +53,6 @@ class Proposal(SignatureModel):
     end_time = models.TimeField(blank=True, null=True)
     no_meetings = models.IntegerField(blank=True, null=True, verbose_name='# of meetings')
     duration = models.FloatField(blank=True, null=True)
-    is_repeat = models.BooleanField(default=False, verbose_name='Is this a repeat course?')
     location = models.ForeignKey(
         'module.Location', on_delete=models.PROTECT, blank=True, null=True, db_column='location'
     )
