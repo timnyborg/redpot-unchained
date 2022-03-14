@@ -298,7 +298,7 @@ class Merge(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
         return redirect(target)
 
 
-class Marketing(PageTitleMixin, generic.UpdateView):
+class Marketing(PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
     model = Student
     form_class = forms.MarketingForm
     template_name = 'student/marketing.html'

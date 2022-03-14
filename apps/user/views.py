@@ -8,12 +8,14 @@ from django.urls import reverse
 from django.views import generic
 
 from apps.core.models import User
-from apps.core.utils.views import PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 
 from . import forms
 
 
-class EditProfile(PageTitleMixin, SuccessMessageMixin, PermissionRequiredMixin, generic.UpdateView):
+class EditProfile(
+    PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, PermissionRequiredMixin, generic.UpdateView
+):
     """Allows a member of staff to edit their own profile / preferences, and admins to edit anyone"""
 
     model = User

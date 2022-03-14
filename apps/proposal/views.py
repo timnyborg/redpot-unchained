@@ -9,12 +9,12 @@ from django.db import transaction
 from django.urls import reverse_lazy
 from django.views import generic
 
-from apps.core.utils.views import PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 
 from . import datatables, forms, models, services
 
 
-class Edit(PermissionRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+class Edit(PermissionRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
     permission_required = 'proposal.add_proposal'
     model = models.Proposal
     form_class = forms.EditProposalForm
