@@ -4,6 +4,7 @@ import datetime
 
 import django.db.models.deletion
 from django.db import migrations, models
+from django.db.models import Q
 
 
 class Migration(migrations.Migration):
@@ -120,7 +121,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('module', models.ForeignKey(db_column='module', on_delete=django.db.models.deletion.DO_NOTHING, to='module.module')),
-                ('plan_type', models.ForeignKey(db_column='plan_type', on_delete=django.db.models.deletion.DO_NOTHING, to='invoice.paymentplantype')),
+                ('plan_type', models.ForeignKey(db_column='plan_type', on_delete=django.db.models.deletion.DO_NOTHING, to='invoice.paymentplantype', limit_choices_to=~Q(id=16))),
             ],
             options={
                 'db_table': 'module_payment_plan',
