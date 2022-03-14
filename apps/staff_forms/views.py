@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.utils.html import strip_tags
 from django.views.generic import CreateView, FormView, TemplateView
 
-from apps.core.utils.views import PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 
 from .forms import LeaverForm, StarterForm
 
@@ -21,7 +21,7 @@ class Home(LoginRequiredMixin, SiteTitleMixin, TemplateView):
     template_name = 'staff_forms/home.html'
 
 
-class StarterFormView(LoginRequiredMixin, SiteTitleMixin, SuccessMessageMixin, CreateView):
+class StarterFormView(LoginRequiredMixin, SiteTitleMixin, AutoTimestampMixin, SuccessMessageMixin, CreateView):
     template_name = 'staff_forms/new_starter.html'
     subtitle = 'Add a new starter'
     form_class = StarterForm

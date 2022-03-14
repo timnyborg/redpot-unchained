@@ -77,6 +77,8 @@ class New(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.
             due_date=form.cleaned_data['due_date'],
             limited=language_course,
             field_trips=models.FieldTripChoices.NONE if language_course else None,  # todo: what's the point of this
+            created_by=self.request.user.username,
+            modified_by=self.request.user.username,
         )
         services.populate_from_module(proposal=self.proposal)
         return super().form_valid(form)
