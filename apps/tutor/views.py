@@ -41,7 +41,7 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestam
 
 class RightToWork(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
     model = Tutor
-    template_name = 'tutor/rtw_form.html'
+    template_name = 'core/form.html'
     form_class = forms.RightToWork
     subtitle = 'Right to work'
     success_message = 'Right to work details updated'
