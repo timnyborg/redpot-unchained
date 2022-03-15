@@ -67,7 +67,7 @@
                 <dt class="col-sm-4">Merged on</dt><dd class="col-sm-8 mb-0">{{ last_merger.modified_on | date:'SHORT_DATE_FORMAT' }}</dd>
             </dl>
             <!-- TODO: Create Merge history link page -->
-            <a href="/student/merge-history/{{ last_merger.target }}" class="btn btn-secondary btn-xs mb-3">
+            <a href="{% url 'student:merge-history' student.id %}" class="btn btn-secondary btn-xs mb-3">
                 <span class="fas fa-layer-group"></span> Merge history
             </a>
             {% endif %}

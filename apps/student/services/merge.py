@@ -4,6 +4,7 @@ from typing import Any
 
 from django.db import transaction
 
+from apps.core.models import User
 from apps.tutor.models import Tutor
 
 from .. import models
@@ -16,28 +17,28 @@ class CannotMergeError(Exception):
 
 def _order_by_husid(student: models.Student) -> tuple:
     """Order husids by priority: Oldest (99 before 00), and student (integer) before enquiry (null)"""
-    year = (student.husid or 0) // 10 ** 11  # e.g. 95, 00, 21
+    year = (student.husid or 0) // 10**11  # e.g. 95, 00, 21
     return student.husid is None, year < 90, year
 
 
 @transaction.atomic
-def merge_multiple_students(students: list[models.Student]) -> models.Student:
+def merge_multiple_students(*, students: list[models.Student], user: User) -> models.Student:
     """Merge multiple students, their ids passed in a list"""
     target, *sources = sorted(students, key=_order_by_husid)
     for source in sources:
-        merge_students(source=source, target=target)
+        merge_students(source=source, target=target, user=user)
     return target
 
 
 @transaction.atomic
-def merge_students(*, source: models.Student, target: models.Student) -> None:
+def merge_students(*, source: models.Student, target: models.Student, user: User) -> None:
     """Merge the source student record into the target record"""
     if hasattr(source, 'tutor') and hasattr(target, 'tutor'):
         raise CannotMergeError("Both records are tutors.  This can't be handled yet.")
     if source.sits_id and target.sits_id and source.sits_id != target.sits_id:
         raise CannotMergeError('Conflicting SITS IDs')
 
-    _create_merge_archive_record(source=source, target=target)
+    _create_merge_archive_record(source=source, target=target, user=user)
 
     _merge_properties(source=source, target=target)
     _merge_children(source=source, target=target)
@@ -130,7 +131,11 @@ def _merge_qualification_aims(*, source: models.Student, target: models.Student)
             qa.save()
 
 
-def _create_merge_archive_record(*, source: models.Student, target: models.Student) -> models.StudentArchive:
+def _create_merge_archive_record(
+    *, source: models.Student, target: models.Student, user: User
+) -> models.StudentArchive:
     """Serializes the source student and creates an archive record"""
     archive_data = archive_serializers.StudentSerializer(source).data
-    return models.StudentArchive.objects.create(source=source.id, target=target.id, json=archive_data)
+    return models.StudentArchive.objects.create(
+        source=source.id, target=target.id, json=archive_data, created_by=user.username, modified_by=user.username
+    )

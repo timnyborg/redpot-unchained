@@ -78,6 +78,7 @@ urlpatterns = [
     path('address/', include(address_urls)),
     path('merge/', views.Merge.as_view(), name='merge'),
     path('marketing/<int:pk>', views.Marketing.as_view(), name='marketing'),
+    path('merge-history/<int:pk>', views.MergeHistory.as_view(), name='merge-history'),
     # apis
     path('api/update-address/<int:pk>', api.AddressUpdate.as_view(), name='address-api'),
     path('api/update-email/<int:pk>', api.EmailUpdate.as_view(), name='email-api'),

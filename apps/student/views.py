@@ -289,12 +289,12 @@ class Merge(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
     def form_valid(self, form) -> http.HttpResponse:
         records = form.cleaned_data['records']
         try:
-            target = services.merge.merge_multiple_students(records)
+            target = services.merge.merge_multiple_students(students=records, user=self.request.user)
         except services.merge.CannotMergeError as e:
             form.add_error('records', e)
             return self.form_invalid(form)
 
-        messages.success(self.request, f'{len(records)-1} records merged into {target}')
+        messages.success(self.request, f'{len(records)-1} record(s) merged into {target}')
         return redirect(target)
 
 
@@ -554,3 +554,13 @@ class StatementPDF(LoginRequiredMixin, generic.View):
         return http.HttpResponse(
             document, content_type='application/pdf', headers={'Content-Disposition': f'inline;filename={filename}'}
         )
+
+
+class MergeHistory(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
+    template_name = 'student/merge_history.html'
+    model = Student
+    subtitle = 'Merge history'
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        return {**context, 'merge_history': StudentArchive.objects.filter(target=self.object.pk)}

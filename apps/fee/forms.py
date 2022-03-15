@@ -2,8 +2,7 @@ from django.forms import ModelForm
 from django.urls import reverse_lazy
 from django.utils.text import format_lazy
 
-from apps.core.utils.strings import mark_safe_lazy
-from apps.core.utils.widgets import PoundInput
+from apps.core.utils import strings, widgets
 
 from .models import Fee
 
@@ -28,12 +27,15 @@ class FeeForm(ModelForm):
             'allocation',
             'limit',
         )
-        widgets = {'amount': PoundInput()}
+        widgets = {'amount': widgets.PoundInput(), 'end_date': widgets.DatePickerInput()}
         help_texts = {
-            'limit': mark_safe_lazy(
+            'limit': strings.mark_safe_lazy(
                 format_lazy("<a href='{}' target='_blank'>Manage limits</a>", reverse_lazy('booking:limit-search'))
             ),
         }
+
+    class Media:
+        js = ('js/fee_form.js',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+
+{% block center %}
+    {% for record in merge_history %}
+        <div class="section">
+            <div class="row">
+                <div class="col-xs-12 ">
+                    <h4 class="collapsed" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}">
+                        {{ forloop.counter }}: {{ record.firstname }} {{ record.surname }}
+                        <i class="fas fa-chevron-down"></i>
+                    </h4>
+                </div>
+                <div class="col-12 collapse" id="collapse{{ forloop.counter }}">
+                    <pre>{{ record.formatted_json }}</pre>
+                </div>
+            </div>
+            <div class="section-footer">
+                <div class="timestamp">
+                    Merged by {{ record.created_by | user_name }}
+                    <time class="timeago"
+                          data-placement="bottom" data-bs-placement="bottom"
+                          title="{{ record.created_on | date:'DATETIME_FORMAT' }}"
+                          data-toggle="tooltip" data-bs-toggle="tooltip"
+                          datetime="{{ record.created_on | date:'DATETIME_FORMAT' }}"
+                    >
+                        {{ record.created_on }}
+                    </time>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

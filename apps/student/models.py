@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import json
 import random
 from datetime import date
-from typing import Optional
+from typing import Optional, Union
 
 from django.conf import settings
 from django.core import validators
@@ -261,6 +262,27 @@ class StudentArchive(SignatureModel):
 
     class Meta:
         db_table = 'student_archive'
+
+    @property
+    def formatted_json(self) -> str:
+        """Bargain-basement way of rendering archive structure"""
+        return json.dumps(self.json, indent=4)
+
+    @property
+    def firstname(self) -> str:
+        """Extract the source firstname, whether in old (web2py) or new structure"""
+        self.json: Union[list, dict]
+        if isinstance(self.json, list):
+            return self.json[0].get('student', {}).get('firstname', 'Unknown')
+        return self.json.get('firstname', 'Unknown')
+
+    @property
+    def surname(self) -> str:
+        """Extract the source surname, whether in old (web2py) or new structure"""
+        self.json: Union[list, dict]
+        if isinstance(self.json, list):
+            return self.json[0].get('student', {}).get('surname', 'Unknown')
+        return self.json.get('surname', 'Unknown')
 
 
 class AddressQuerySet(models.QuerySet):
