@@ -289,12 +289,12 @@ class Merge(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
     def form_valid(self, form) -> http.HttpResponse:
         records = form.cleaned_data['records']
         try:
-            target = services.merge.merge_multiple_students(records)
+            target = services.merge.merge_multiple_students(students=records, user=self.request.user)
         except services.merge.CannotMergeError as e:
             form.add_error('records', e)
             return self.form_invalid(form)
 
-        messages.success(self.request, f'{len(records)-1} records merged into {target}')
+        messages.success(self.request, f'{len(records)-1} record(s) merged into {target}')
         return redirect(target)
 
 
