@@ -115,9 +115,10 @@ class SearchTable(tables.Table):
 
 
 class CreateMatchTable(tables.Table):
-    # Todo view link
+    link = ViewLinkColumn('')
+
     class Meta:
         model = Student
-        fields = ['surname', 'firstname', 'birthdate', 'email_address', 'postcode']
+        fields = ['surname', 'firstname', 'birthdate', 'email_address', 'postcode', 'link']
         per_page = 30
         orderable = False
