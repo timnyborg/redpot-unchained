@@ -42,6 +42,9 @@ class InvoiceForm(forms.ModelForm):
         ]
         widgets = {'due_date': DatePickerInput()}
 
+    class Media:
+        js = ('js/invoice_form.js',)
+
 
 class UploadRCPForm(forms.Form):
     submit_label = 'Upload payments'
