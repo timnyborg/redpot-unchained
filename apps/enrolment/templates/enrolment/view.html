@@ -100,9 +100,6 @@
 
         {% if perms.core.finance %}
             <h4 class="mt-3">Finance tools</h4>
-            <a class="btn btn-warning" href="/invoice/credit">
-                <span class="fas fa-fw fa-minus"></span> Credit invoice
-            </a>
             <a class="btn btn-warning" href="{% url 'finance:transfer' enrolment.id %}">
                 <span class="fas fa-fw fa-arrow-right"></span> Transfer
             </a>
