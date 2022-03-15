@@ -7,7 +7,6 @@ import django_tables2 as tables
 from django_filters.views import FilterView
 
 from django import http
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -29,6 +28,7 @@ FORM_CLASSES: dict[int, Type[ModelForm]] = {
     models.AmendmentTypes.CREDIT_CARD_REFUND: forms.RefundForm,
     models.AmendmentTypes.RCP_REFUND: forms.RefundForm,
     models.AmendmentTypes.BANK_REFUND: forms.RefundForm,
+    models.AmendmentTypes.OTHER_REFUND: forms.RefundForm,
 }
 
 
@@ -41,19 +41,10 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
         self.enrolment = get_object_or_404(Enrolment, pk=self.kwargs['enrolment_id'])
         self.amendment_type = get_object_or_404(models.AmendmentType, pk=self.kwargs['type_id'])
 
-        if self.amendment_type == models.AmendmentTypes.OTHER_REFUND:
-            # Refunds requiring paper forms (BACS?) # Todo - handle this elsewhere - service?  Standalone view?
-            amendment = models.Amendment.objects.create(
-                details='See printed form for details',
-                status_id=models.AmendmentStatuses.APPROVED,
-                requested_by=request.user.username,
-                requested_on=datetime.now(),
-                approved_by=request.user.username,
-                approved_on=datetime.now(),
-            )
-            amendment.narrative = services.get_narrative(amendment=amendment)
-            amendment.save()
-            return redirect(settings.STATIC_URL + 'templates/bacs_refund_form_r12.xls')
+        if self.amendment_type.id == models.AmendmentTypes.OTHER_REFUND:
+            # Shortcut for refunds requiring paper forms (BACS)
+            services.create_paper_refund_request(enrolment=self.enrolment, user=request.user)
+            return redirect(self.get_success_url())
         return super().dispatch(request, *args, **kwargs)
 
     def get_subtitle(self) -> str:
@@ -69,7 +60,6 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
         }
 
     def form_valid(self, form) -> http.HttpResponse:
-        form.instance.requested_on = datetime.now()
         form.instance.requested_by = self.request.user
         form.instance.narrative = services.get_narrative(amendment=form.instance)
         services.send_request_created_email(amendment=form.instance)
