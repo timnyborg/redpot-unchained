@@ -108,10 +108,11 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         context['catering'] = self.object.catering.select_related('fee')
         context['accommodation'] = self.object.accommodation.select_related('limit')
         # Determine which amendments are possible, given the financial history of the enrolment
-        amendment_options = {
+        context['amendment_options'] = {
             'online': self.has_payment_of_type(TransactionTypes.ONLINE),
             'credit_card': self.has_payment_of_type(TransactionTypes.CREDIT_CARD),
             'rcp': self.has_payment_of_type(TransactionTypes.RCP),
+            'any': self.object.ledger_set.count() > 0,
         }
         context['amendment_table'] = datatables.AmendmentTable(
             data=self.object.amendments.filter(is_complete=False)
@@ -120,8 +121,6 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
             prefix='amendments-',
             request=self.request,
         )
-        amendment_options['any'] = any(amendment_options.values())
-        context['amendment_options'] = amendment_options
         context['payment_disabled'] = not self.object.ledger_set.cash().uninvoiced().exists()
         return context
 

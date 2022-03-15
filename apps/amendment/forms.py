@@ -161,3 +161,7 @@ class RefundForm(BaseForm):
         super().__init__(*args, **kwargs)
         if not edit_actioned_online:
             del self.fields['actioned_online']
+        if self.instance.type_id == models.AmendmentTypes.OTHER_REFUND:
+            # todo: this is awkward.  Refunds should just have a shared set of reasons
+            del self.fields['reason']
+            del self.fields['approver']

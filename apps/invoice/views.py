@@ -267,7 +267,7 @@ class CreatePaymentPlan(
         return {
             'invoice': self.invoice,
             'amount': self.invoice.balance,
-            'type': models.PaymentPlan.CUSTOM_TYPE,
+            'type': models.CUSTOM_TYPE,
             'status': models.PaymentPlan.Statuses.PENDING_CUSTOM,
         }
 

@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
                 ('entry_qualification', models.ForeignKey(blank=True, db_column='entry_qualification', limit_choices_to=models.Q(('web_publish', True), ('id__in', ['X00', 'X06']), _connector='OR'), null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='qualification_aim.EntryQualification')),
                 ('programme', models.ForeignKey(db_column='programme', limit_choices_to={'is_active': True}, on_delete=django.db.models.deletion.DO_NOTHING, related_name='qualification_aims', to='programme.Programme')),
                 ('student', models.ForeignKey(db_column='student', on_delete=django.db.models.deletion.DO_NOTHING, to='student.Student')),
-                ('study_location', models.ForeignKey(db_column='study_location', limit_choices_to={'is_active': True}, on_delete=django.db.models.deletion.DO_NOTHING, to='programme.StudyLocation')),
+                ('study_location', models.ForeignKey(db_column='study_location', limit_choices_to={'is_active': True}, on_delete=django.db.models.deletion.DO_NOTHING, to='programme.StudyLocation', null=True, blank=True)),
                 ('sits_code', models.CharField(blank=True, help_text="Maps to SITS' enrolment code", max_length=12, null=True, verbose_name='SITS code')),
                 ('reason_for_ending', models.ForeignKey(blank=True, db_column='reason_for_ending', null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='qualification_aim.ReasonForEnding')),
             ],

@@ -28,10 +28,15 @@
         </a>
     </li>
     <li>
-        <a class="dropdown-item" href="#"
-           data-toggle="modal"
-           data-target="#confirm-print-amendment"
-           data-href="amendment/new/bacs-and-other"
+        <a
+            class="dropdown-item" href="#"
+            data-bs-toggle="modal"
+            data-bs-target="#commonModal"
+            data-modal-body="
+                <p>Please download and complete a <a download href='https://finance.admin.ox.ac.uk/files/r12paymentrequestformxlsx'>Payment Request Form</a>.</p>
+                <p>On hitting submit, an notification will be sent to the finance officer, letting them know to expect it.</p>
+            "
+            data-modal-href="{% url 'amendment:new' enrolment.id 6 %}"
         >
             <span class="fas fa-file-excel fa-fw"></span> Refund (BACS and other) (.xlsx)
         </a>

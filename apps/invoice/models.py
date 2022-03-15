@@ -1,11 +1,15 @@
 from datetime import date, datetime
 
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils.functional import cached_property
 
 from apps.core.models import AddressModel, SignatureModel
 from apps.core.utils.models import PhoneField
+
+# Constants used in logic
+CUSTOM_TYPE = 16
 
 
 class InvoiceQuerySet(models.QuerySet):
@@ -127,9 +131,6 @@ class PaymentPlan(SignatureModel):
         COMPLETED = 4, 'Completed'
         CANCELLED = 5, 'Cancelled'
 
-    # Constants used in logic
-    CUSTOM_TYPE = 16
-
     type = models.ForeignKey('PaymentPlanType', models.DO_NOTHING, db_column='type')
     status = models.IntegerField(choices=Statuses.choices)
     # This hasn't strictly been a 1-to-1 relationship, but we've treated it as one for years
@@ -148,7 +149,7 @@ class PaymentPlan(SignatureModel):
         return self.status == self.Statuses.PENDING
 
     def is_custom(self):
-        return self.type_id == self.CUSTOM_TYPE
+        return self.type_id == CUSTOM_TYPE
 
 
 class ScheduledPayment(SignatureModel):
@@ -190,7 +191,9 @@ class PaymentPlanType(SignatureModel):
 
 class ModulePaymentPlan(models.Model):
     module = models.ForeignKey('module.Module', models.DO_NOTHING, db_column='module')
-    plan_type = models.ForeignKey('PaymentPlanType', models.DO_NOTHING, db_column='plan_type')
+    plan_type = models.ForeignKey(
+        'PaymentPlanType', models.DO_NOTHING, db_column='plan_type', limit_choices_to=~Q(id=CUSTOM_TYPE)
+    )
 
     class Meta:
         db_table = 'module_payment_plan'

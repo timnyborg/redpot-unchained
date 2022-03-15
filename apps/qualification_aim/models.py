@@ -37,6 +37,8 @@ class QualificationAim(SITSLockingModelMixin, SignatureModel):
         models.DO_NOTHING,
         db_column='study_location',
         limit_choices_to={'is_active': True},
+        null=True,
+        blank=True,
     )
     entry_qualification = models.ForeignKey(
         'EntryQualification',
