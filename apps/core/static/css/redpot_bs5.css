@@ -724,13 +724,13 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 }
 
 /*Bootstrap 4 accordion css begins*/
-.accordion .card-header:after {
+.accordion .card-header > .card-title:after {
     font-family: 'FontAwesome';
     content: "\f068"; /* symbol for "uncollapsed" panels */
     float: right;
 }
 
-.accordion .card-header.collapsed:after {
+.accordion .card-header.collapsed > .card-title:after {
     content: "\f067"; /* symbol for "collapsed" panels */
 }
 
