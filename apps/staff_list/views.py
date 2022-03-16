@@ -19,9 +19,7 @@ class StaffListView(LoginRequiredMixin, SiteTitleMixin, SingleTableView):
     template_name = 'staff_list/list.html'
     table_class = StaffListTable
     table_pagination = False
-
-    def get_queryset(self):
-        return User.objects.filter(is_active=True)
+    queryset = User.objects.filter(is_active=True)
 
 
 class StaffDetailView(LoginRequiredMixin, SiteTitleMixin, DetailView):
@@ -42,9 +40,7 @@ class WallListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     subtitle = 'Wall'
     template_name = 'staff_list/wall.html'
     context_object_name = 'staffs'
-
-    def get_queryset(self):
-        return User.objects.filter(is_active=True, on_facewall=True)
+    queryset = User.objects.filter(is_active=True, on_facewall=True).order_by('last_name', 'first_name')
 
 
 class CoursesListView(LoginRequiredMixin, SiteTitleMixin, ListView):
