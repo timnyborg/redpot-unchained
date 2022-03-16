@@ -42,41 +42,21 @@ class Student(SITSLockingModelMixin, SignatureModel):
     ]
 
     class MarketingOptinMethods(models.TextChoices):
-        APPLICATION_FORM = (
-            'Application form',
-            'Application form',
-        )
-        EMAIL = (
-            'Email',
-            'Email',
-        )
-        EMAIL_RESUBSCRIBE = (
-            'Email_resubscribe',
-            'Email resubscribe link',
-        )
-        IN_PERSON = (
-            'In_person',
-            'In-person',
-        )
-        NEWSLETTER = (
-            'Newsletter',
-            'Newsletter widget',
-        )
-        OTHER_FORM = (
-            'Other',
-            'Other form',
-        )
-        PHONE = (
-            'Phone',
-            'Phone',
-        )
-        WESBITE = 'Website', 'Website optin'
+        APPLICATION_FORM = 'Application form', 'Application form'
+        EMAIL = 'Email', 'Email'
+        EMAIL_RESUBSCRIBE = 'Email resubscribe link', 'Email resubscribe link'
+        IN_PERSON = 'In-person', 'In-person'
+        NEWSLETTER = 'Newsletter widget', 'Newsletter widget'
+        OTHER_FORM = 'Other form', 'Other form'
+        PHONE = 'Phone', 'Phone'
+        REGISTRATION_FORM = 'Registration form', 'Registration form'
+        WEBSITE = 'Website optin', 'Website optin'
 
     class Genders(models.TextChoices):
-        MALE = ('M', 'Male')
-        FEMALE = ('F', 'Female')
-        OTHER = ('I', 'Other')
-        UNKNOWN = ('', 'Unknown')
+        MALE = 'M', 'Male'
+        FEMALE = 'F', 'Female'
+        OTHER = 'I', 'Other'
+        UNKNOWN = '', 'Unknown'
 
     husid = models.BigIntegerField(blank=True, null=True, verbose_name='HESA ID')
     surname = models.CharField(max_length=40)

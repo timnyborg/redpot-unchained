@@ -70,6 +70,9 @@ class RightToWork(forms.ModelForm):
             'rtw_document_type': autocomplete.ModelSelect2(url='autocomplete:rtw', forward=['rtw_type']),
         }
 
+    class Media:
+        js = ('js/rtw_form.js',)
+
     def clean(self):
         rtw_type = self.cleaned_data.get('rtw_type')
         document_type = self.cleaned_data.get('rtw_document_type')

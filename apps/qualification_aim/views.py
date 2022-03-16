@@ -77,7 +77,11 @@ class EditCertHEMarks(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixi
         try:
             return self.qualification_aim.certhe_marks
         except models.CertHEMarks.DoesNotExist:
-            return models.CertHEMarks.objects.create(qualification_aim=self.qualification_aim)
+            return models.CertHEMarks.objects.create(
+                qualification_aim=self.qualification_aim,
+                created_by=self.request.user.username,
+                modified_by=self.request.user.username,
+            )
 
     def get_subtitle(self):
         return f'Edit – {self.qualification_aim.student}'
