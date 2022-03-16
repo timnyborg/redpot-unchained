@@ -136,6 +136,13 @@ finance_children = [
         icon="credit-card",
         check=lambda request: request.user.has_perm('core.finance'),
     ),
+    MenuItem(
+        'Discounts',
+        reverse('discount:search'),
+        separator=True,
+        icon='tags',
+        check=lambda request: request.user.has_perm('discount.view_discount'),
+    ),
 ]
 
 Menu.add_item("main", MenuItem("Finance", '#', children=finance_children))
@@ -184,7 +191,6 @@ other_children = (
         check=lambda request: request.user.has_perm('core.marketing'),
         children=(
             MenuItem('Brochures', 'not-implemented', icon='map'),
-            MenuItem('Discounts', reverse('discount:search'), icon='tags'),
             MenuItem('Import opt-ins', 'not-implemented', icon='check'),
         ),
     ),

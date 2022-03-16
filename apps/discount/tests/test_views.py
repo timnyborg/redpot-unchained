@@ -22,6 +22,7 @@ class DiscountFactory(factory.django.DjangoModelFactory):
 
 
 class TestCreate(LoggedInViewTestMixin, test.TestCase):
+    superuser = True
     url = reverse_lazy('discount:create')
 
     def test_post(self):
@@ -34,6 +35,8 @@ class TestCreate(LoggedInViewTestMixin, test.TestCase):
 
 
 class TestEdit(LoggedInViewTestMixin, test.TestCase):
+    superuser = True
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -58,6 +61,7 @@ class TestEdit(LoggedInViewTestMixin, test.TestCase):
 
 @freeze_time(datetime(2020, 1, 1))
 class TestSearch(LoggedInMixin, test.TestCase):
+    superuser = True
     url = reverse_lazy('discount:search')
 
     @classmethod

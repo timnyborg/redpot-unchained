@@ -19,9 +19,7 @@ class StaffListView(LoginRequiredMixin, SiteTitleMixin, SingleTableView):
     template_name = 'staff_list/list.html'
     table_class = StaffListTable
     table_pagination = False
-
-    def get_queryset(self):
-        return User.objects.filter(is_active=True)
+    queryset = User.objects.filter(is_active=True)
 
 
 class StaffDetailView(LoginRequiredMixin, SiteTitleMixin, DetailView):
@@ -42,15 +40,12 @@ class WallListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     subtitle = 'Wall'
     template_name = 'staff_list/wall.html'
     context_object_name = 'staffs'
-
-    def get_queryset(self):
-        return User.objects.filter(is_active=True, on_facewall=True)
+    queryset = User.objects.filter(is_active=True, on_facewall=True).order_by('last_name', 'first_name')
 
 
 class CoursesListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     subtitle = 'Courses list'
     template_name = 'staff_list/courses_list.html'
-    context_object_name = 'programmes'
     queryset = (
         Programme.objects.filter(contact_list_display=True)
         .select_related('division', 'division__manager')
@@ -60,7 +55,7 @@ class CoursesListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['qualifications'] = [
-            ('Non-accredited', 'non-acc', self.object_list.filter(qualification=True)),
+            ('Non-accredited', 'non-acc', self.object_list.filter(qualification=1)),
             ('Undergraduate short courses', 'ug-credit', self.object_list.filter(qualification=61)),
             ('Undergraduate certificates', 'ug-cert', self.object_list.filter(qualification__in=[30, 33])),
             ('Undergraduate diplomas', 'ug-dip', self.object_list.filter(qualification__in=[34, 35])),
