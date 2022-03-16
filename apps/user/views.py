@@ -51,6 +51,9 @@ class New(PageTitleMixin, SuccessMessageMixin, PermissionRequiredMixin, generic.
         self.object = backend.LDAPBackend().populate_user(username)
         if not self.object:
             self.object = User.objects.create_user(username)
+        self.object.created_by = self.request.user.username
+        self.object.modified_by = self.request.user.username
+        self.object.save()
         return super().form_valid(form)
 
     def get_success_url(self) -> str:

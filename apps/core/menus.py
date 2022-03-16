@@ -231,7 +231,7 @@ def myaccount_children(request: http.HttpRequest) -> list[MenuItem]:
             reverse("admin:index"),
             separator=True,
             icon='tools',
-            check=lambda request: request.user.is_superuser,
+            check=lambda request: request.user.is_staff,
         ),
         MenuItem(
             "Logout",
