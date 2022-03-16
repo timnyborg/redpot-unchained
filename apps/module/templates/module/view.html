@@ -529,8 +529,8 @@
                 {% endif %}
             </td>
             <td>
-                <a href="form/view/{{ application.id }}" class="float-end">
-                    <i class="fas fa-fw fa-pencil-alt"></i>
+                <a href="{% url 'application:view' application.id %}" class="float-end">
+                    <i class="fas fa-fw fa-search"></i>
                 </a>
             </td>
         </tr>
@@ -543,13 +543,13 @@
 <div class="section">
     <div class="btn-group btn-group-xs float-end">
         <a href="{% url 'fee:new' module.pk %}" class="btn btn-success" role="button"><span class="fa fa-plus"></span> Add fees</a>
-      <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span class="caret"></span>
-        <span class="sr-only">Toggle Dropdown</span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="{% url 'module:copy-fees' module.id %}"><i class="fas fa-fw fa-pound-sign"></i> Copy fees</a></li>
-      </ul>
+        <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'module:copy-fees' module.id %}"><i class="fas fa-fw fa-pound-sign"></i> Copy fees</a></li>
+        </ul>
     </div>
     <h2 id="fees" class="section-title">Fees</h2>
     {% if fees %}
