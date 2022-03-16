@@ -70,8 +70,12 @@
                         <dd class="col-8 mb-0">{{ object.certhe_marks.is_introductory_course | yesno | title }}</dd>
                     </dl>
                 {% else %}
-                    None
+                    None added
                 {% endif %}
+                <hr/>
+                <a href="{% square_url 'Redpot' 'CertHE progress' qa_id=object.id %}" target="_blank">
+                    View progress report <i class="fas fa-fw fa-external-link-alt"></i>
+                </a>
             {% endif %}
         </div>
     </div>

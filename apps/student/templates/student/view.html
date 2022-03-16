@@ -390,11 +390,6 @@
             <li><a class="dropdown-item" href="{% url 'student:statement' student.id %}" target="_blank">
                 <i class="fas fa-fw fa-pound-sign"></i> Statement
             </a></li>
-            {% if qa_list.qa_certhe %}
-                <li><a class="dropdown-item" href="/student/certhe_progress/{{student.id}}" target="_blank">
-                    <i class="fas fa-fw fa-certificate"></i> CertHE progress report
-                </a></li>
-            {% endif %}
             {% if perms.transcript.print %}
                 <li class="dropdown-divider"></li>
                 <li class="dropdown-header">Transcripts</li>

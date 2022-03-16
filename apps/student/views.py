@@ -197,7 +197,6 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
             )
         )
         qa_list.total_enrolments = sum(qa.enrolments.count() for qa in qa_list)
-        qa_list.qa_certhe = any(qa.programme.is_certhe for qa in qa_list)
 
         for qa in qa_list:
             if qa.programme.qualification.id == 1:
