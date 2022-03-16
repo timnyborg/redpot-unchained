@@ -27,7 +27,7 @@ class EditProfile(
 
     def get_permission_required(self) -> list:
         if self.kwargs.get('pk'):
-            return ['core.edit_user']
+            return ['core.change_user']
         return []
 
     def get_object(self, queryset=None) -> User:

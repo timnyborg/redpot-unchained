@@ -29,7 +29,7 @@
                     </div>
                     <div class="col-sm-10 text-secondary">
                         {{ staff.first_name }} {{ staff.last_name }}
-                        {% if perms.core.edit_user %}
+                        {% if perms.core.change_user %}
                             {% edit_button staff size='small' %}
                         {% endif %}
                     </div>
