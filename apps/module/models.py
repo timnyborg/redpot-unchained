@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from datetime import date, datetime
 from typing import Optional
 
@@ -242,6 +243,7 @@ class Module(SignatureModel):
     fee_code = models.CharField(max_length=1, blank=True, null=True)
 
     direct_enrolment = models.BooleanField(default=False)
+    hash = models.CharField(default=uuid.uuid4, editable=False, null=True, max_length=40)
 
     payment_plans = models.ManyToManyField(
         to='invoice.PaymentPlanType',
@@ -273,6 +275,8 @@ class Module(SignatureModel):
         return self.title
 
     def save(self, *args, **kwargs):
+        if not self.hash:
+            self.hash = uuid.uuid4()  # todo: removable once modules have been back-filled with hashes
         if not self.url:
             self.url = slugify(self.title)
         super().save(*args, **kwargs)
@@ -285,6 +289,10 @@ class Module(SignatureModel):
 
     def get_website_url(self) -> str:
         return f'{settings.PUBLIC_WEBSITE_URL}/courses/{self.url}?code={self.code}'
+
+    def get_direct_enrolment_url(self) -> str:
+        """The URL for adding an enrolment direct the basket, before general enrolment is open"""
+        return f'{settings.PUBLIC_WEBSITE_URL}/basket/add-module/{self.code}?_next=%2Fbasket&_enrolment={self.hash}'
 
     @property
     def full_time_equivalent(self) -> float:
