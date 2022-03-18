@@ -1,0 +1,48 @@
+<html>
+<div style="font-family:Calibri;">
+    <p>Dear {{ first_name }},</p>
+
+    <p>This is a reminder that you are enrolled on the upcoming course,
+        <b><a href='{{ module.get_website_url }}'>{{ module.title }}</a></b>
+    </p>
+    <p>
+        Start: <b>{{ module.start_date|date:'l j M Y'}}</b>
+        {% if module.start_time %}
+            at <b>{{ module.start_time|time:'g:i A' }}</b>
+        {% elif module.meeting_time %}
+            <br/>
+            Time:<b> {{ module.meeting_time}}</b>
+        {% endif %}
+        {% if module.location %}
+            <br/>
+            Location: <b>{{ module.location }}</b>
+            {% if 'online' not in module.location.building.lower %}
+                <a href='https://maps.google.com/?q={{ module.location.full_address}}'>
+                    (view on Google Maps)
+                </a>
+            {% endif %}
+        {% endif %}
+    </p>
+
+
+    {# Todo: replace this hard-coded logic with per-portfolio customization, or just drop this as it's the not the place for specific info #}
+    {% if module.portfolio_id == SHORT_ONLINE_PORTFOLIO %}
+        <p>Joining instructions will be sent to you at this address on {{ module.start_date|date:'l j M Y' }} by midday, UK time.</p>
+        <p>Please see the student handbook:
+            <a href="https://www.conted.ox.ac.uk/mnt/attachments/online-short-courses-student-handbook.pdf" target="_blank">
+                Online short courses student handbook
+            </a>
+        </p>
+        <p>To learn how our online courses work and find a link to our course demonstration site,
+            <a href='https://www.conted.ox.ac.uk/about/how-our-online-short-courses-work'>see our website</a>
+        </p>
+    {% endif %}
+    <p>For detailed course information, see the <a href='{{ module.get_website_url }}'>course page</a></p>
+
+    <p>
+        Best wishes,<br/>
+        Department for Continuing Education<br/>
+        University of Oxford
+    </p>
+</div>
+</html>
