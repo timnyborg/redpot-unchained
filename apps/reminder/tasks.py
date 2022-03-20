@@ -16,9 +16,7 @@ def mail_reminders(*, days: int = 5) -> int:
         reminder_sent_on__isnull=True,
         is_cancelled=False,
         start_date=datetime.today() + timedelta(days=days),  # starting in 5 days
-        # Validity checks
-        email__isnull=False,
-    )
+    ).exclude(email='')
 
     for module in modules:
         services.mail_module_reminders(module=module)

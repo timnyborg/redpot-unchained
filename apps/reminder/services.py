@@ -7,10 +7,16 @@ from django.utils.html import strip_tags
 
 from apps.module.models import Module
 
+SHORT_ONLINE_PORTFOLIO = 17
+
 
 def render_reminder(*, module: Module, first_name: str) -> str:
     """Produce the email text; accessible from both the previewer and automated routine"""
-    context = {'first_name': first_name, 'module': module, 'SHORT_ONLINE_PORTFOLIO': 17}
+    context = {
+        'first_name': first_name,
+        'module': module,
+        'display_short_online_text': module.portfolio_id == SHORT_ONLINE_PORTFOLIO,
+    }
     return render_to_string('reminder/email/message.html', context)
 
 
@@ -23,7 +29,7 @@ def mail_module_reminders(*, module: Module) -> int:
     students = [
         {
             'firstname': enrolment.qa.student.nickname or enrolment.qa.student.firstname,
-            'email': enrolment.qa.student.get_default_email(),
+            'email': enrolment.qa.student.get_default_email().email,
         }
         for enrolment in enrolments
     ]

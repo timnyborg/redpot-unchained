@@ -26,7 +26,7 @@
 
 
     {# Todo: replace this hard-coded logic with per-portfolio customization, or just drop this as it's the not the place for specific info #}
-    {% if module.portfolio_id == SHORT_ONLINE_PORTFOLIO %}
+    {% if display_short_online_text %}
         <p>Joining instructions will be sent to you at this address on {{ module.start_date|date:'l j M Y' }} by midday, UK time.</p>
         <p>Please see the student handbook:
             <a href="https://www.conted.ox.ac.uk/mnt/attachments/online-short-courses-student-handbook.pdf" target="_blank">
