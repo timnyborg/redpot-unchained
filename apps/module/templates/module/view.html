@@ -385,7 +385,7 @@
                         </label>
                     {% endif %}
                     <div class="btn-group" id="preview-eye">
-                        <a href="precourse-notification/preview/{{ module.id }}" class="btn btn-outline-dark" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Preview">
+                        <a href="{% url 'reminder:preview' module.id %}" class="btn btn-outline-dark" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Preview">
                             <i class="fas fa-eye"></i>
                         </a>
                     </div>

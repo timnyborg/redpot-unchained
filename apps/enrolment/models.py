@@ -19,6 +19,7 @@ class Statuses(models.IntegerChoices):
     CONFIRMED_RETROSPECTIVE_CREDIT = 11  # todo: consider ditching this retro. option
     PROVISIONAL = 20
     CONFIRMED_NON_CREDIT = 90
+    WITHDRAWN_UP_TO_3_WEEKS = 70
 
 
 FOR_CREDIT_STATUSES = {Statuses.CONFIRMED, Statuses.CONFIRMED_RETROSPECTIVE_CREDIT}

@@ -70,6 +70,7 @@ PROJECT_APPS = [
     'apps.programme',
     'apps.proposal',
     'apps.qualification_aim',
+    'apps.reminder',
     'apps.student',
     'apps.task_progress',
     'apps.transcript',

@@ -44,6 +44,7 @@ urlpatterns = [
     path('proposal/', include('apps.proposal.urls')),
     path('module/', include('apps.module.urls')),
     path('qa/', include('apps.qualification_aim.urls')),
+    path('reminder/', include('apps.reminder.urls')),
     path('student/', include('apps.student.urls')),
     path('transcript/', include('apps.transcript.urls')),
     path('tutor/', include('apps.tutor.urls')),

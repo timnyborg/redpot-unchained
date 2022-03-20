@@ -590,6 +590,11 @@ class Location(SignatureModel):
             return f'{self.building}, {self.city}'
         return str(self.building)
 
+    @property
+    def full_address(self) -> str:
+        """Render a complete address of the location, useful for google maps queries, for example"""
+        return f'{self.building}, {self.address}, {self.city} {self.postcode}'
+
 
 class Room(models.Model):
     id = models.CharField(primary_key=True, max_length=12)  # CABS ids.  Will be a problem if numbers ever clash

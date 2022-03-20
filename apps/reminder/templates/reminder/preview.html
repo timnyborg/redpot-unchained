@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block center %}
+    <div class="section">
+        <div class="card border-secondary mb-3">
+            <div class="card-header">Subject: <i>Course reminder: {{ module.title }}</i></div>
+            <div class="card-body text-dark">
+                <p class="card-text">{{ preview|safe }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
