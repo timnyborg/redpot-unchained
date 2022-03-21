@@ -334,8 +334,6 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 # Since we have USE_TZ = False, celery beats must also be set to be timezone-naive
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 
-# Legacy redpot url for cross-app mapping
-W2P_REDPOT_URL = env('W2P_REDPOT_URL', default='https://redpot-staging.conted.ox.ac.uk', validate=validate.URL())
 # Website url for outbound linking
 PUBLIC_WEBSITE_URL = env('PUBLIC_WEBSITE_URL', default='https://conted.ox.ac.uk', validate=validate.URL())
 
