@@ -326,6 +326,7 @@ password_component = f':{redis_password}@' if redis_password else ''  # Only add
 CELERY_BROKER_URL = f"redis://{password_component}{redis_host}:{redis_port}/1"
 
 CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_EXPIRES = env.int('CELERY_RESULT_EXPIRES', default=3600 * 24 * 365)  # Keep a year of results by default
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
