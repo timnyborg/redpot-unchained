@@ -29,13 +29,16 @@ nav:
     - Enrolments: enrolment.md
   - About: about.md
   - Development:
-      - Development principles: development-principles.md
-      - Style guide: style-guide.md
-      - Common patterns: common-patterns.md
-      - Pre-commit hooks: pre-commit-hooks.md
-      - App file structure: app-structure.md
-      - Gotchas: gotchas.md
-      - Moving models: moving-models.md
+      - Basics:
+        - Development principles: development-principles.md
+        - Style guide: style-guide.md
+        - Common patterns: common-patterns.md
+        - Pre-commit hooks: pre-commit-hooks.md
+        - App file structure: app-structure.md
+        - Gotchas: gotchas.md
+      - Specific topics:
+        - Scheduled tasks: scheduled-tasks.md
+        - Moving models: moving-models.md
 
 markdown_extensions:
   - admonition
