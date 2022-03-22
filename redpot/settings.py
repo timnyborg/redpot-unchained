@@ -416,7 +416,7 @@ HIJACK_INSERT_BEFORE = None  # Disable built-in popup
 # Contract configuration - todo: consider moving into a settings table once we have one, consider a file:// url fetcher
 CONTRACT_SIGNATORY = env('CONTRACT_SIGNATORY', default='')
 CONTRACT_SIGNATURE_IMAGE = env('CONTRACT_SIGNATURE_IMAGE', default='')  # a path within the media folder
-CONTRACT_SIGNATURE_EMAILS = env.list('CONTRACT_SIGNATURE_EMAILS', default='')
+CONTRACT_SIGNATURE_EMAILS = env.list('CONTRACT_SIGNATURE_EMAILS', default=[PERSONNEL_EMAIL])
 
 # background watermark for non-production instances
 WATERMARK = env('WATERMARK', default='')
