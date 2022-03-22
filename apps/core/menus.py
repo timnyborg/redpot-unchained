@@ -148,37 +148,19 @@ finance_children = [
 Menu.add_item("main", MenuItem("Finance", '#', children=finance_children))
 
 
-def dev_children(request: http.HttpRequest) -> list[MenuItem]:
-    return [
-        MenuItem("System info", reverse('system-info'), icon="server"),
-        MenuItem(
-            "View on redpot-staging",
-            f'https://redpot-staging.conted.ox.ac.uk{request.get_full_path()}',
-            icon="sync",
-            target='_blank',
-        ),
-        MenuItem("Impersonate", reverse('impersonate'), icon="mask"),
-        MenuItem(
-            "sentry.io",
-            settings.SENTRY_URL,
-            icon="bug",
-            target="_blank",
-        ),
-        MenuItem(
-            "Gitlab issues",
-            "https://gitlab.conted.ox.ac.uk/django/redpot-unchained/issues/",
-            icon="gitlab fab",
-            target="_blank",
-            separator=True,
-        ),
-        MenuItem(
-            "Analytics",
-            settings.ANALYTICS_URL,
-            icon="chart-area",
-            target="_blank",
-            separator=True,
-        ),
-    ]
+dev_children = [
+    MenuItem("System info", reverse('system-info'), icon="server"),
+    MenuItem("Impersonate", reverse('impersonate'), icon="mask"),
+    MenuItem("sentry.io", settings.SENTRY_URL, icon="bug", target="_blank"),
+    MenuItem(
+        "Gitlab issues",
+        "https://gitlab.conted.ox.ac.uk/django/redpot-unchained/issues/",
+        icon="gitlab fab",
+        target="_blank",
+        separator=True,
+    ),
+    MenuItem("Analytics", settings.ANALYTICS_URL, icon="chart-area", target="_blank", separator=True),
+]
 
 
 Menu.add_item("main", MenuItem("Dev", '#', children=dev_children, check=lambda request: request.user.is_superuser))

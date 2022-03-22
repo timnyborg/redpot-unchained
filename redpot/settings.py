@@ -259,6 +259,9 @@ APPLICATION_ATTACHMENT_URL = env('APPLICATION_ATTACHMENT_URL', default='')
 # URL for accessing the admin section of the course proposal app
 COURSE_PROPOSAL_ADMIN_URL = env('COURSE_PROPOSAL_ADMIN_URL', default='')
 
+# URL for accessing the documentation/user guide, while it's hosted as a separate project
+REDPOT_DOCS_URL = env('REDPOT_DOCS_URL', default='/docs/')
+
 # Login customization
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login'
@@ -334,8 +337,6 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 # Since we have USE_TZ = False, celery beats must also be set to be timezone-naive
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 
-# Legacy redpot url for cross-app mapping
-W2P_REDPOT_URL = env('W2P_REDPOT_URL', default='https://redpot-staging.conted.ox.ac.uk', validate=validate.URL())
 # Website url for outbound linking
 PUBLIC_WEBSITE_URL = env('PUBLIC_WEBSITE_URL', default='https://conted.ox.ac.uk', validate=validate.URL())
 
@@ -418,7 +419,7 @@ HIJACK_INSERT_BEFORE = None  # Disable built-in popup
 # Contract configuration - todo: consider moving into a settings table once we have one, consider a file:// url fetcher
 CONTRACT_SIGNATORY = env('CONTRACT_SIGNATORY', default='')
 CONTRACT_SIGNATURE_IMAGE = env('CONTRACT_SIGNATURE_IMAGE', default='')  # a path within the media folder
-CONTRACT_SIGNATURE_EMAILS = env.list('CONTRACT_SIGNATURE_EMAILS', default='')
+CONTRACT_SIGNATURE_EMAILS = env.list('CONTRACT_SIGNATURE_EMAILS', default=[PERSONNEL_EMAIL])
 
 # background watermark for non-production instances
 WATERMARK = env('WATERMARK', default='')
