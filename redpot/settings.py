@@ -259,6 +259,9 @@ APPLICATION_ATTACHMENT_URL = env('APPLICATION_ATTACHMENT_URL', default='')
 # URL for accessing the admin section of the course proposal app
 COURSE_PROPOSAL_ADMIN_URL = env('COURSE_PROPOSAL_ADMIN_URL', default='')
 
+# URL for accessing the documentation/user guide, while it's hosted as a separate project
+REDPOT_DOCS_URL = env('REDPOT_DOCS_URL', default='/docs/')
+
 # Login customization
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login'
