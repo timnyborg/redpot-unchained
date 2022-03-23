@@ -10,7 +10,6 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
-from apps.module.models import Equipment, Subject
 
 from . import datatables, forms, models, services
 
@@ -101,13 +100,4 @@ class Summary(PermissionRequiredMixin, generic.DetailView):
     template_name = 'proposal/summary.html'
 
     def get_context_data(self, **kwargs) -> dict:
-        context = super().get_context_data(**kwargs)
-        context['course_reading'] = self.object.module.books.filter(type='Course reading')
-        context['prep_reading'] = self.object.module.books.filter(type='Preparatory reading')
-
-        subjects = Subject.objects.filter(pk__in=self.object.subjects)
-        context['subjects'] = ', '.join(item.name for item in subjects)
-
-        equipment = Equipment.objects.filter(pk__in=self.object.equipment)
-        context['equipment'] = ', '.join(item.name for item in equipment)
-        return context
+        return services.get_summary_context(proposal=self.object)
