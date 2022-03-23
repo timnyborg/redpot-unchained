@@ -56,7 +56,6 @@ class Proposal(SignatureModel):
     location = models.ForeignKey(
         'module.Location', on_delete=models.PROTECT, blank=True, null=True, db_column='location'
     )
-    address = models.CharField(max_length=255, blank=True, null=True)
     room = models.ForeignKey('module.Room', on_delete=models.PROTECT, db_column='room', blank=True, null=True)
     room_setup = models.CharField(
         max_length=12,

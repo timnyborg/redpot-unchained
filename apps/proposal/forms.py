@@ -57,7 +57,6 @@ class EditProposalForm(forms.ModelForm):
             'subjects',
             'duration',
             'location',
-            'address',
             'room',
             'room_setup',
             'max_size',

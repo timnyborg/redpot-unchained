@@ -88,7 +88,7 @@
                     <i class="fas fa-fw fa-list"></i> Message history ({{ proposal.messages.count }})
                 </a>
                 {% if proposal.status == statuses.COMPLETE %}
-                    <a href="/summary_page/id">
+                    <a href="{% url 'proposal:summary' proposal.id %}">
                         <i class="fas fa-fw fa-print"></i> Summary page
                     </a>
                 {% endif %}

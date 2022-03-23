@@ -15,6 +15,7 @@ urlpatterns = [
     path('delete/<int:pk>', views.Delete.as_view(), name='delete'),
     path('search', views.Search.as_view(), name='search'),
     path('messages/<int:pk>', views.ViewMessages.as_view(), name='messages'),
+    path('summary/<int:pk>', views.Summary.as_view(), name='summary'),
     # api
     path('api/', include((router.urls, 'api'))),
 ]

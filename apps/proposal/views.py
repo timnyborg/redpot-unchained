@@ -92,3 +92,12 @@ class ViewMessages(PermissionRequiredMixin, PageTitleMixin, generic.DetailView):
     permission_required = 'proposal.view_proposal'
     template_name = 'proposal/view_messages.html'
     subtitle = 'Message history'
+
+
+class Summary(PermissionRequiredMixin, generic.DetailView):
+    model = models.Proposal
+    permission_required = 'proposal.view_proposal'
+    template_name = 'proposal/summary.html'
+
+    def get_context_data(self, **kwargs) -> dict:
+        return services.get_summary_context(proposal=self.object)

@@ -14,7 +14,6 @@ from .models import Proposal
 CLONE_FIELDS = [
     'title',
     'location',
-    'address',
     'room',
     'start_date',
     'michaelmas_end',
@@ -248,11 +247,28 @@ def email_tutor_on_completion(*, proposal: Proposal) -> None:
     recipient_list = [settings.SUPPORT_EMAIL] if settings.DEBUG else [proposal.tutor.student.get_default_email().email]
     subject_suffix = 'completed successfully'
     body = render_to_string('proposal/email/tutor_complete.html', context={'proposal': proposal})
-    # todo: determine whether we need to attach/include the summary file: body.append(_summary_file(proposal.id))
-    mail.send_mail(
+
+    message = mail.EmailMultiAlternatives(
         from_email=proposal.module.email,
-        recipient_list=recipient_list,
+        to=recipient_list,
         subject=SUBJECT_STEM + subject_suffix,
-        message=strip_tags(body),
-        html_message=body,
+        body=strip_tags(body),
     )
+    message.attach_alternative(body, 'text/html')
+    # Attach an HTML summary file
+    summary = render_to_string('proposal/summary.html', context=get_summary_context(proposal=proposal))
+    message.attach(filename=f'proposal-{proposal.module.code}.html', content=summary, mimetype='text/html')
+    message.send()
+
+
+def get_summary_context(*, proposal: Proposal) -> dict:
+    """Produce the context needed to render the summary template, whether as a view or email attachment"""
+    subjects = Subject.objects.filter(pk__in=proposal.subjects or [])
+    equipment = Equipment.objects.filter(pk__in=proposal.equipment or [])
+    return {
+        'proposal': proposal,
+        'course_reading': proposal.module.books.filter(type='Course reading'),
+        'prep_reading': proposal.module.books.filter(type='Preparatory reading'),
+        'subjects': ', '.join(item.name for item in subjects),
+        'equipment': ', '.join(item.name for item in equipment),
+    }

@@ -1,0 +1,76 @@
+<html lang="en">
+
+<body>
+<h2><b>Course proposal summary - {{ proposal.title }}</b></h2>
+<hr>
+<p><b>Title</b>: {{ proposal.tutor.student.title }}</p>
+<p><b>First name</b>: {{ proposal.tutor.student.firstname }}</p>
+<p><b>Surname</b>: {{ proposal.tutor.student.surname }}</p>
+<p><b>Biography</b>: {{ proposal.tutor_biography|safe }}</p>
+<hr>
+<p><b>Title</b>: {{ proposal.title }}</p>
+<p><b>Subjects</b>: {{ subjects|default:'None' }}</p>
+<p><b>Location</b>: {{ proposal.location }}</p>
+<p><b>Room</b>: {{ proposal.room }}</p>
+<p><b>Start date</b>: {{ proposal.start_date|date }}</p>
+<p><b>End date</b>: {{ proposal.end_date|date }}</p>
+<p><b>Start time</b>: {{ proposal.start_time|time }}</p>
+<p><b>End time</b>: {{ proposal.end_time|time }}</p>
+<p><b>Meetings</b>: {{ proposal.no_meetings }}</p>
+<p><b>Class size</b>: {{ proposal.max_size }}</p>
+{% if proposal.reduced_size %}
+    <p><b>Reduced size</b>: {{ proposal.reduced_size }}</p>
+    <p><b>Reduction reason</b>: {{ proposal.reduction_reason }}</p>
+{% endif %}
+<p><b>Director of Studies</b>: {{ proposal.dos.get_full_name }}</p>
+<hr>
+
+<p><b>Snippet</b>: {{ proposal.snippet|safe }}</p>
+<p><b>Overview</b>: {{ proposal.overview|safe }}</p>
+<p><b>Programme details</b>: {{ proposal.programme_details|safe }}</p>
+<p><b>Course aims</b>: {{ proposal.course_aims|safe }}</p>
+<p><b>Level and demands</b>: {{ proposal.level_and_demands|safe }}</p>
+<p><b>Assessment methods</b>: {{ proposal.assessment_methods|safe }}</p>
+<p><b>Teaching methods</b>: {{ proposal.teaching_methods|safe }}</p>
+<p><b>Teaching outcomes</b>: {{ proposal.teaching_outcomes|safe }}</p>
+<p><b>Image</b>: {{ proposal.image|yesno:'Yes,No' }}</p>
+<p><b>Room setup</b>: {{ proposal.get_room_setup_display }}</p>
+<p><b>Equipment</b>: {{ equipment|default:'None' }}</p>
+<p><b>Scientific equipment</b>: {{ proposal.scientific_equipment|default:'None' }}</p>
+<p><b>Additional requirements</b>: {{ proposal.additional_requirements|default:'None' }}</p>
+<p><b>Field trips</b>: {{ proposal.get_field_trips_display }}</p>
+<p><b>Risk form</b>: {{ proposal.risk_form|yesno:'Yes,No' }}</p>
+<hr>
+{% if prep_reading %}
+    <h4>{% if proposal.limited %}Coursebook{% else %}Preparatory reading list{% endif %}</h4>
+    <ul>
+        {% for book in prep_reading %}
+            <li>
+                {{ book.title }} / {{ book.author }}
+                {% if book.additional_information %}
+                    ({{ book.additional_information }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% if course_reading %}
+    <h4>Course reading list</h4>
+    <ul>
+        {% for book in course_reading %}
+            <li>
+                {{ book.title }} / {{ book.author }}
+                {% if book.additional_information %}
+                    ({{ book.additional_information }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+<style>
+    body {
+        font-family: Calibri, sans-serif;
+    }
+</style>
+</body>
+</html>
