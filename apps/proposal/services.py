@@ -14,7 +14,6 @@ from .models import Proposal
 CLONE_FIELDS = [
     'title',
     'location',
-    'address',
     'room',
     'start_date',
     'michaelmas_end',
