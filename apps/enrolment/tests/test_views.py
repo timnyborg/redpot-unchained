@@ -3,11 +3,15 @@ from datetime import date
 from freezegun import freeze_time
 
 from django import test
+from django.core import mail
 from django.urls import reverse
 
-from apps.core.utils.tests import LoggedInViewTestMixin
+from apps.core.utils.tests import LoggedInMixin, LoggedInViewTestMixin
 from apps.fee.tests.factories import FeeFactory
+from apps.finance import services as finance_services
 from apps.finance.services import add_enrolment_fee
+from apps.invoice import services as invoice_services
+from apps.invoice.tests.factories import InvoiceFactory
 from apps.module.tests.factories import ModuleFactory
 from apps.qualification_aim.tests.factories import QualificationAimFactory
 
@@ -96,3 +100,41 @@ class TestDeleteView(LoggedInViewTestMixin, test.TestCase):
         self.client.post(self.url)
         with self.assertRaises(models.Enrolment.DoesNotExist):
             self.enrolment.refresh_from_db()
+
+
+class TestConfirmationEmail(LoggedInMixin, test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        # Connect an invoice to an enrolment.  todo: a more complex factory for these use cases
+        cls.invoice = InvoiceFactory()
+        fee = FeeFactory(amount=100)
+        cls.enrolment = factories.EnrolmentFactory(module=fee.module)
+        transaction = finance_services.add_enrolment_fee(enrolment_id=cls.enrolment.id, fee_id=fee.id, user=cls.user)
+        invoice_services.attach_transaction_to_invoice(transaction=transaction, invoice=cls.invoice)
+
+    def test_get_by_enrolment(self):
+        response = self.client.get(reverse('enrolment:confirmation-email', kwargs={'enrolment': self.enrolment.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [self.user.email])
+        self.assertEqual(len(message.attachments), 1)
+
+    def test_get_by_invoice(self):
+        response = self.client.get(
+            reverse('enrolment:confirmation-email-by-invoice', kwargs={'invoice': self.invoice.pk})
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [self.user.email])
+        self.assertEqual(len(message.attachments), 1)
+
+    def test_fails_if_lacking_email(self):
+        self.user.email = ''
+        self.user.save()
+        self.client.get(reverse('enrolment:confirmation-email', kwargs={'enrolment': self.enrolment.pk}))
+        self.assertEqual(len(mail.outbox), 0)
