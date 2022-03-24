@@ -31,8 +31,7 @@
                     </a>
                 {% endif %}
                 <a
-                        href="generate-email"
-                        target="_blank"
+                        href="{% url 'enrolment:confirmation-email' enrolment.id %}"
                         class="btn btn-info btn-block"
                         {% if not enrolment.status.takes_place %}disabled{% endif %}
                         data-bs-toggle="tooltip"

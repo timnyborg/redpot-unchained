@@ -10,4 +10,10 @@ urlpatterns = [
     path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
     path('delete/<int:pk>', views.Delete.as_view(), name='delete'),
     path('statement/<int:pk>', views.StatementPDF.as_view(), name='statement'),
+    path('confirmation-email/<int:enrolment>', views.ConfirmationEmail.as_view(), name='confirmation-email'),
+    path(
+        'confirmation-email/invoice/<int:invoice>',
+        views.ConfirmationEmail.as_view(),
+        name='confirmation-email-by-invoice',
+    ),
 ]

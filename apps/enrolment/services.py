@@ -1,7 +1,16 @@
+from __future__ import annotations
+
+from django.conf import settings
+from django.core import mail
+from django.template.loader import render_to_string
+
+import apps.invoice.pdfs as invoice_pdfs
 from apps.core.models import User
 from apps.core.utils.dates import academic_year
+from apps.invoice.models import Invoice
 from apps.module.models import Module
 from apps.qualification_aim.models import QualificationAim
+from apps.student.models import Student
 from apps.student.services import next_husid
 
 from . import models
@@ -34,3 +43,25 @@ def create_enrolment(
         created_by=user.username,
         modified_by=user.username,
     )
+
+
+def send_confirmation_email(
+    *, student: Student, enrolments: list[models.Enrolment], invoices: list[Invoice], user: User
+) -> None:
+    """Sends a confirmation email to the admin, which they can amend and send to the student.  Attaches invoices"""
+    context = {'enrolments': enrolments, 'invoices': invoices, 'student': student, 'sender': user}
+    body = render_to_string('enrolment/email/confirmation.html', context=context)
+
+    recipients = [settings.SUPPORT_EMAIL] if settings.DEBUG else [user.email]
+    email = mail.EmailMessage(
+        subject=f'Enrolment confirmation for {student}',
+        body=body,
+        to=recipients,
+    )
+    email.content_subtype = 'html'
+
+    for invoice in invoices:
+        content = invoice_pdfs.create_invoice(invoice)
+        email.attach(filename=f'Invoice-{invoice}.pdf', content=content, mimetype='application/pdf')
+
+    email.send()

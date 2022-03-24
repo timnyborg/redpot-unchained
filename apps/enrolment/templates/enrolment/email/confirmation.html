@@ -1,0 +1,39 @@
+{% load static %}
+
+<html lang="en">
+<body>
+<div style="width:100%; background-color:#fcf8e3; border:1px solid #faebcc; color: #8a6d3b; font-family:Calibri; margin:10px;">
+    <h3>Please review this email and then forward it to the student: <i>[email: {{ student.get_default_email.email }}]</i></h3>
+</div>
+{% if not invoices %}
+    <div style="width:100%; background-color:#fcf8e3; border:1px solid #faebcc; color: #8a6d3b; font-family:Calibri; margin:10px;">
+        <h3><b>Note:</b> No invoice was found for enrolment and so none was attached</h3>
+    </div>
+{% elif invoices|length > 1 %}
+    <div style="width:100%; background-color:#fcf8e3; border:1px solid #faebcc; color: #8a6d3b; font-family:Calibri; margin:10px;">
+        <h3><b>Note:</b> Multiple invoices were found for the enrolment and all are attached. Please make sure to forward
+            the correct one.</h3>
+    </div>
+{% endif %}
+<div style="font-family:Calibri;"><p>Dear {{ student.firstname }} {{ student.surname }},</p>
+    <p> Thank you for your application to the following:<br/>
+        {% for enrolment in enrolments %}
+            &bull; <a href='{{ enrolment.module.get_website_url}}'>{{ enrolment.module.title}}</a>
+            ({{ enrolment.module.start_date|date}} - {{ enrolment.module.end_date|date}})<br/>
+        {% endfor %}
+    </p>
+    <p>
+        I’ve reserved a place for you on this course, subject to payment, and your invoice is attached. <br/>
+        We will send joining instructions in due course, and I look forward to welcoming you to Oxford! <br/>
+    </p>
+    <p>
+        Thank you,<br/>
+        {{ sender.get_full_name }}<br/>
+        University of Oxford<br/>
+        Department for Continuing Education<br/>
+        Rewley House, 1 Wellington Square, Oxford OX1 2JA<br/>
+        www.conted.ox.ac.uk
+    </p>
+</div>
+</body>
+</html>
