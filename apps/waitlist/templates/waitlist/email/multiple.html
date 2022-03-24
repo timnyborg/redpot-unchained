@@ -1,0 +1,27 @@
+<html lang="en">
+<body>
+<div style="width:100%; background-color:#fcf8e3; border:1px solid #faebcc; color: #8a6d3b; font-family:Calibri; margin:10px;">
+    <h3>Please review this email and then send it to the student(s) on the waiting list using <b>BCC</b>:
+        <i>[email(s): {{ student_emails|join:'; ' }}]</i>
+    </h3>
+</div>
+<div style="font-family:Calibri;">
+    <p>Dear waiting list,</p>
+    <p>
+        {% if new_run %}
+            This is to let you know that {{ student.title }} {{ student.firstname }} {{ student.surname }}
+            has agreed to run the course <I>{{ module.title }}</I> again due to popular demand,
+            and it is taking place on {{ module.start_date|date:'l j M Y' }} ({{ module.location }}).
+        {% else %}
+            This is to let you know that a place has just become available on the course <I>{{ module.title }}</I>
+            that is taking place on {{ module.start_date|date:'l j M Y' }} ({{ module.location }}).
+        {% endif %}
+    </p>
+    <p>
+        If you would like to make a booking, then please do so <a href={{ module.get_absolute_url }}>online on our website</a>,
+        and follow the booking instructions, first come, first served. <br/>
+    </p>
+    {% include 'waitlist/email/signature.html' %}
+</div>
+</body>
+</html>
