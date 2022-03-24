@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.ResultListView.as_view(), name='home'),
     path('results', views.ResultListView.as_view(), name='results'),
     path('results/year/<int:year>', views.ResultYearListView.as_view(), name='results-year'),
+    path('results/this_week', views.ResultWeekListView.as_view(), name='results-last-week'),
     path('results/module/<str:code>', views.ResultModuleListView.as_view(), name='results-module'),
     path('previewquestions', views.PreviewQuestionnaireFormView.as_view(), name='previewquestions'),
     path('feedback_request', views.FeedbackRequestFormView.as_view(), name='feedbackrequest'),

@@ -1,0 +1,34 @@
+{% extends 'feedback_layout.html' %}
+{% load feedback_tags %}
+
+{% block center %}
+    <div class="section">
+        {% if feedback_set %}
+        {% for feedback in feedback_set.values %}
+            <table class = "table table-striped table-hover table-bordered">
+                <tbody>
+                    <tr>
+                        <td class="feedback-green feedback-comment">
+                            <b>{{ feedback.student_name }}</b> submitted at {{ feedback.submitted_on }} <br>
+                            <a href="{% url 'feedback:results-module' feedback.module_code %}">{{ feedback.module_title }}</a>
+                            ({{ feedback.tutors_list|join:", " }})
+                        </td>
+                        <td class="{% score_color feedback.average %}">{{ feedback.average | default:'-' }}<br>Average</td>
+                        <td class="{% score_color feedback.rate_tutor %}">{{ feedback.rate_tutor | default:'-' }}<br>Teaching</td>
+                        <td class="{% score_color feedback.rate_content %}">{{ feedback.rate_content | default:'-' }}<br>Content</td>
+                        <td class="{% score_color feedback.rate_facility %}">{{ feedback.rate_facility | default:'-' }}<br>Facilities</td>
+                        <td class="{% score_color feedback.rate_admin %}">{{ feedback.rate_admin | default:'-' }}<br>Admin</td>
+                        <td class="{% score_color feedback.rate_refreshments %}">{{ feedback.rate_refreshments | default:'-' }}<br>Catering</td>
+                        <td class="{% score_color feedback.rate_accommodation %}">{{ feedback.rate_accommodation | default:'-' }}<br>Accomm</td>
+                    </tr>
+                    <tr>
+                        <td colspan="8">{{ feedback.comment | default:'None'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endfor %}
+        {% else %}
+        <p>No feedback found in the last 7 days.</p>
+        {% endif %}
+    </div>
+{% endblock %}

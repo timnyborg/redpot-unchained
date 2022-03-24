@@ -202,6 +202,52 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
         return context
 
 
+class ResultWeekListView(LoginRequiredMixin, SiteTitleMixin, ListView):
+    template_name = 'feedback/this_week.html'
+    model = Feedback
+
+    def dispatch(self, *args, **kwargs):
+        self.end_date = datetime.datetime.now().date()
+        self.start_date = self.end_date - datetime.timedelta(days=7)
+        return super().dispatch(*args, **kwargs)
+
+    def get_subtitle(self):
+        return f'Student feedback submitted between ({self.start_date} - {self.end_date})'
+
+    def get_queryset(self):
+        return Feedback.objects.filter(submitted__gt=self.start_date).order_by('submitted')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        feedback_list = self.object_list
+
+        feedback_set = {}
+        for feedback in feedback_list:
+            feedback_dict = {}
+
+            feedback_dict['feedback_id'] = feedback.id
+            feedback_dict['module_code'] = feedback.module.code
+            feedback_dict['module_title'] = feedback.module.title
+            feedback_dict['submitted_on'] = feedback.submitted.strftime('%H:%M on %d-%b-%Y')
+            feedback_dict['student_name'] = feedback.your_name if feedback.your_name else 'Anonymous'
+            feedback_dict['rate_tutor'] = feedback.rate_tutor
+            feedback_dict['rate_content'] = feedback.rate_content
+            feedback_dict['rate_admin'] = feedback.rate_admin
+            feedback_dict['rate_facility'] = feedback.rate_facilities
+            feedback_dict['rate_accommodation'] = feedback.rate_accommodation
+            feedback_dict['rate_refreshments'] = feedback.rate_refreshments
+            feedback_dict['average'] = round(float(feedback.avg_score or 0), 1)
+            feedback_dict['comment'] = feedback.comments
+            tutors = feedback.module.tutor_modules.all().order_by('tutor')
+            feedback_dict['tutors_list'] = [
+                f'{tutor.tutor.student.firstname} {tutor.tutor.student.surname}' for tutor in tutors
+            ]
+            feedback_set[feedback_dict['feedback_id']] = feedback_dict
+
+            context['feedback_set'] = feedback_set
+        return context
+
+
 class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
     template_name = 'feedback/results_module.html'
     model = Feedback
