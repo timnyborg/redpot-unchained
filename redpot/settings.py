@@ -10,8 +10,6 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from django.contrib import messages
 from django.core.management.utils import get_random_secret_key
 
-from . import ckeditor_backends
-
 # Get environment variables
 env = environs.Env()
 env.read_env('secrets.env')
@@ -356,11 +354,6 @@ WPM_FTP = env.dict(
 )
 
 CKEDITOR_CONFIGS = {
-    # todo: implement old config features where still required:
-    #       - image upload (django-ckeditor's inbuilt handling may be preferable)
-    #       - website css rules
-    #       - basehref
-    #       - default image alignment (config.js)
     'default': {
         'toolbar': 'custom',
         'toolbar_custom': [
@@ -381,7 +374,6 @@ CKEDITOR_CONFIGS = {
             [
                 # element[attributes]{styles}(classes)
                 # See: https://ckeditor.com/docs/ckeditor4/latest/guide/dev_allowed_content_rules.html
-                # Todo: triage these rules and make them stricter (esp. attributes)
                 'audio[*]',
                 'video[*]',
                 'source[*]',
@@ -391,6 +383,15 @@ CKEDITOR_CONFIGS = {
         ),
         'width': '100%',
         'removeDialogTabs': 'image:advanced;link:advanced',
+        'contentsCss': [
+            # css to replicate website styling
+            'https://code.cdn.mozilla.net/fonts/fira.css',
+            'https://use.fontawesome.com/releases/v5.7.2/css/all.css',
+            PUBLIC_WEBSITE_URL + '/static/vendor/bootstrap/css/bootstrap.min.css',
+            CANONICAL_URL + STATIC_URL + 'css/ckeditor.css',  # absolute to avoid relative to baseHref
+        ],
+        'baseHref': WEBSITE_MEDIA_URL,
+        'filebrowserBrowseUrl': '',  # no browse button
     },
     'links_only': {
         'toolbar': 'custom',
@@ -408,7 +409,7 @@ CKEDITOR_CONFIGS = {
 }
 CKEDITOR_STORAGE_BACKEND = 'redpot.storage_backends.WebsiteStorage'
 CKEDITOR_FORCE_JPEG_COMPRESSION = True
-CKEDITOR_IMAGE_BACKEND = ckeditor_backends.IMAGE_BACKEND_LABEL
+CKEDITOR_IMAGE_BACKEND = 'redpot.ckeditor_backends.ResizingPillowBackend'
 CKEDITOR_UPLOAD_PATH = 'uploads/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

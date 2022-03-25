@@ -7,7 +7,8 @@ django-autocomplete-light==3.9.4
 django-bootstrap-datepicker-plus==4.0.0
 django-celery-beat==2.2.1
 django-celery-results==2.2.0
-django-ckeditor==6.2.0
+# django-ckeditor from git while waiting for a new release (>6.2.0)
+git+https://github.com/django-ckeditor/django-ckeditor@50cd4ab#egg=django-ckeditor
 django-crispy-forms==1.14.0
 django-filter==21.1
 django-hijack==3.1.6
@@ -26,6 +27,7 @@ environs==9.5.0
 factory-boy==3.2.1
 fpdf==1.7.2
 freezegun==1.2.1
+jinja2==3.0.0  # remove once mkdocs > 1.2.3
 lxml==4.8.0
 marshmallow==3.15.0
 mkdocs==1.2.3
