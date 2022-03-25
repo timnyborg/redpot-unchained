@@ -13,10 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from ckeditor_uploader.views import upload
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.urls import include, path
 from django.views.defaults import page_not_found
 
@@ -61,8 +64,8 @@ urlpatterns = [
     path('impersonate', core_views.Impersonate.as_view(), name='impersonate'),
     path('impersonate-api/', include('hijack.urls')),
     path('unimplemented', page_not_found, {'exception': 'Haven\'t built it yet'}, name='unimplemented'),
-    # django-ckeditor urls for uploads
-    path('ckeditor/', include('ckeditor_uploader.urls')),
+    # django-ckeditor upload url done manually, to use login_required rather than staff_member_required
+    path('ckeditor/upload/', login_required(upload), name='ckeditor_upload'),
 ]
 
 if settings.DEBUG:
