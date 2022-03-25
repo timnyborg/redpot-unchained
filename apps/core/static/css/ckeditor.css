@@ -1,0 +1,15 @@
+/*
+Rules taken from ckeditor's contents.css, which we wish to retain while applying our own house css
+Mostly, the border in the body of a ckeditor widget
+*/
+
+body {
+    /* Remove the background color to make it transparent */
+    background-color: #fff;
+    margin: 20px;
+}
+
+img[style*="float:left"] {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}

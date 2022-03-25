@@ -1,13 +1,11 @@
 from io import BytesIO
 
-from ckeditor_uploader.backends import PillowBackend, registry
+from ckeditor_uploader.backends import PillowBackend
 from PIL import Image
 
 from django.conf import settings
 
 MAX_WIDTH, MAX_HEIGHT = getattr(settings, "MAX_IMAGE_DIMENSIONS", (1600, 1600))
-
-IMAGE_BACKEND_LABEL = 'ResizingPillowBackend'
 
 
 class ResizingPillowBackend(PillowBackend):
@@ -21,6 +19,3 @@ class ResizingPillowBackend(PillowBackend):
         image_tmp = BytesIO()
         image.save(image_tmp, format="JPEG", quality=quality, optimize=True)
         return image_tmp
-
-
-registry.register(IMAGE_BACKEND_LABEL, ResizingPillowBackend)
