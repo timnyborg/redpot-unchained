@@ -39,7 +39,7 @@ class StarterFormView(LoginRequiredMixin, SiteTitleMixin, AutoTimestampMixin, Su
         cc_email = self.request.user.email
         cc = [cc_email]
 
-        to = [settings.SUPPORT_EMAIL] if settings.DEBUG else []
+        to = [settings.SUPPORT_EMAIL] if settings.HIJACK_ALL_EMAIL else []
 
         send_mail(subject, plain_message, from_email, to, cc, html_message=html_message)
 
@@ -62,7 +62,7 @@ class LeaverFormView(LoginRequiredMixin, SiteTitleMixin, SuccessMessageMixin, Fo
         cc_email = self.request.user.email
         cc = [cc_email]
 
-        to = [settings.SUPPORT_EMAIL] if settings.DEBUG else []
+        to = [settings.SUPPORT_EMAIL] if settings.HIJACK_ALL_EMAIL else []
 
         send_mail(subject, plain_message, from_email, to, cc, html_message=html_message)
 

@@ -27,7 +27,7 @@ def mail_pending_tutor_payments() -> int:
         )
         mail.send_mail(
             subject='Tutor payments awaiting your approval',
-            recipient_list=[settings.SUPPORT_EMAIL] if settings.DEBUG else [user.email],
+            recipient_list=[settings.SUPPORT_EMAIL] if settings.HIJACK_ALL_EMAIL else [user.email],
             message=strip_tags(message),
             html_message=message,
             from_email=None,

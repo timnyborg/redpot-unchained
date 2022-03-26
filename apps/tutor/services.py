@@ -65,7 +65,7 @@ def email_personnel_change(
     }
     message = render_to_string(template_name='email/personnel_info_change.html', context=context)
     mail.send_mail(
-        recipient_list=[settings.SUPPORT_EMAIL if settings.DEBUG else settings.PERSONNEL_EMAIL],
+        recipient_list=[settings.SUPPORT_EMAIL if settings.HIJACK_ALL_EMAIL else settings.PERSONNEL_EMAIL],
         from_email=settings.DEFAULT_FROM_EMAIL,
         subject='Tutor details update',
         message=strip_tags(message),
@@ -82,7 +82,7 @@ def email_personnel_change(
         }
         message = render_to_string(template_name='email/tutor_info_change.html', context=context)
         mail.send_mail(
-            recipient_list=[settings.SUPPORT_EMAIL if settings.DEBUG else tutor_email],
+            recipient_list=[settings.SUPPORT_EMAIL if settings.HIJACK_ALL_EMAIL else tutor_email],
             from_email=settings.DEFAULT_FROM_EMAIL,
             subject='Department for Continuing Education - payroll information',
             message=strip_tags(message),

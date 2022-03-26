@@ -47,7 +47,7 @@ def update_module_statuses() -> int:
             message = EmailMessage(
                 subject='Module status change: %s' % module.title,
                 # Only send to dev while testing
-                to=[settings.SUPPORT_EMAIL if settings.DEBUG else module.email],
+                to=[settings.SUPPORT_EMAIL if settings.HIJACK_ALL_EMAIL else module.email],
                 bcc=[settings.SUPPORT_EMAIL],
                 from_email=settings.SUPPORT_EMAIL,
                 body=body,

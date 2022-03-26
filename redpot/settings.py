@@ -20,6 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY', default=get_random_secret_key())
 DEBUG = env.bool('DEBUG', default=False)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'] if DEBUG else [])
+# Send all email sent to the SUPPORT_EMAIL address - useful in test environment
+HIJACK_ALL_EMAIL = env.bool('HIJACK_ALL_EMAIL', default=DEBUG)
 
 # In production, ensure SESSION_COOKIE_SECURE = True, and enforce https at the reverse-proxy or use SECURE_SSL_REDIRECT
 SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)

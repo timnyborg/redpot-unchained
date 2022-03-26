@@ -44,7 +44,7 @@ def send_notification_mail(*, contract: models.Contract) -> int:
         'url': settings.CANONICAL_URL + contract.get_absolute_url(),
     }
     message = render_to_string('contract/email/signed_notification.html', context=context)
-    recipients = [settings.SUPPORT_EMAIL if settings.DEBUG else contract.email_notification]
+    recipients = [settings.SUPPORT_EMAIL if settings.HIJACK_ALL_EMAIL else contract.email_notification]
     return mail.send_mail(
         subject='Contract - signed',
         from_email=settings.DEFAULT_FROM_EMAIL,
@@ -88,7 +88,7 @@ def mail_pending_contracts_signature() -> int:
         }
         message = render_to_string('contract/email/pending_tutor_contracts_signatures.html', context=context)
 
-        recipients = [settings.SUPPORT_EMAIL] if settings.DEBUG else settings.CONTRACT_SIGNATURE_EMAILS
+        recipients = [settings.SUPPORT_EMAIL] if settings.HIJACK_ALL_EMAIL else settings.CONTRACT_SIGNATURE_EMAILS
         mail.send_mail(
             recipient_list=recipients,
             from_email=settings.DEFAULT_FROM_EMAIL,
@@ -115,7 +115,7 @@ def mail_pending_contracts_approval() -> int:
         }
         message = render_to_string('contract/email/pending_tutor_contracts_approval.html', context=context)
 
-        recipients = [settings.SUPPORT_EMAIL] if settings.DEBUG else [approver.email]
+        recipients = [settings.SUPPORT_EMAIL] if settings.HIJACK_ALL_EMAIL else [approver.email]
 
         mail.send_mail(
             recipient_list=recipients,

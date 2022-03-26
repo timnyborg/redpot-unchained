@@ -44,7 +44,7 @@ def mail_module_reminders(*, module: Module) -> int:
     for student in students:
         message = render_reminder(module=module, first_name=student['firstname'])
         mail.send_mail(
-            recipient_list=[settings.SUPPORT_EMAIL] if settings.DEBUG else [student['email']],
+            recipient_list=[settings.SUPPORT_EMAIL] if settings.HIJACK_ALL_EMAIL else [student['email']],
             from_email=from_email,
             subject=f'Course reminder: {module.title}',
             message=strip_tags(message),

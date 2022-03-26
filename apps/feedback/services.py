@@ -54,7 +54,7 @@ def process_and_send_emails(module: Module) -> None:
         student_feedback, created = Feedback.objects.get_or_create(enrolment=email_context['enrolment'], module=module)
 
         subject = f"Your feedback on {email_context['module_title']}"
-        to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [email_context['email']]
+        to = [settings.SUPPORT_EMAIL] if settings.HIJACK_ALL_EMAIL else [email_context['email']]
         if created:
             html_message = render_to_string('feedback/email/feedback_email.html', email_context)
             # todo: determine if it's worthwhile to bcc webmaster

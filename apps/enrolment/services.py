@@ -52,7 +52,7 @@ def send_confirmation_email(
     context = {'enrolments': enrolments, 'invoices': invoices, 'student': student, 'sender': user}
     body = render_to_string('enrolment/email/confirmation.html', context=context)
 
-    recipients = [settings.SUPPORT_EMAIL] if settings.DEBUG else [user.email]
+    recipients = [settings.SUPPORT_EMAIL] if settings.HIJACK_ALL_EMAIL else [user.email]
     email = mail.EmailMessage(
         subject=f'Enrolment confirmation for {student}',
         body=body,

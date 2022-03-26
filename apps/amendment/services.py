@@ -117,7 +117,7 @@ def send_request_created_email(*, amendment: models.Amendment) -> None:
     }
     message = render_to_string('email/change_request_created.html', context=context)
     mail.send_mail(
-        recipient_list=[settings.SUPPORT_EMAIL if settings.DEBUG else recipient],
+        recipient_list=[settings.SUPPORT_EMAIL if settings.HIJACK_ALL_EMAIL else recipient],
         from_email=settings.SUPPORT_EMAIL,
         subject=f'Finance change request from {amendment.requested_by} awaits your approval',
         message=strip_tags(message),
@@ -134,7 +134,7 @@ def send_request_approved_email(*, amendment: models.Amendment) -> None:
     }
     message = render_to_string('email/change_request_approved.html', context=context)
     mail.send_mail(
-        recipient_list=[settings.SUPPORT_EMAIL if settings.DEBUG else recipient],
+        recipient_list=[settings.SUPPORT_EMAIL if settings.HIJACK_ALL_EMAIL else recipient],
         from_email=settings.SUPPORT_EMAIL,
         subject='Finance change request approved and sent for execution',
         message=strip_tags(message),
@@ -151,7 +151,7 @@ def send_request_complete_email(*, amendment: models.Amendment) -> None:
     }
     message = render_to_string('email/change_request_complete.html', context=context)
     mail.send_mail(
-        recipient_list=[settings.SUPPORT_EMAIL if settings.DEBUG else recipient],
+        recipient_list=[settings.SUPPORT_EMAIL if settings.HIJACK_ALL_EMAIL else recipient],
         from_email=settings.SUPPORT_EMAIL,
         subject='Finance change request completed successfully',
         message=strip_tags(message),
