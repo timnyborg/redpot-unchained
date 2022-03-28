@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from django.db import models
+from django.urls import reverse
 from django.utils.functional import cached_property
 
 from apps.core.models import SignatureModel
@@ -52,6 +53,9 @@ class WebsiteAccount(SignatureModel):
         Doesn't rely on user_id, which is oddly null for password resets
         """
         return WebsiteAccountEvent.objects.filter(description__contains=self.pk)
+
+    def get_delete_url(self) -> str:
+        return reverse('website_account:delete', kwargs={'pk': self.pk})
 
 
 class WebsiteAccountEvent(models.Model):

@@ -1,4 +1,5 @@
 from django import http
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import get_object_or_404
@@ -61,3 +62,12 @@ class Edit(LoginRequiredMixin, SuccessMessageMixin, AutoTimestampMixin, PageTitl
 
     def get_success_url(self) -> str:
         return self.object.student.get_absolute_url() + '#login'
+
+
+class Delete(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
+    model = models.WebsiteAccount
+    template_name = 'core/delete_form.html'
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, f'Account {self.object} deleted')
+        return self.object.student.get_absolute_url()
