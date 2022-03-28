@@ -172,7 +172,7 @@ other_children = (
         icon='money-bill-wave',
         check=lambda request: request.user.has_perm('core.marketing'),
         children=(
-            MenuItem('Brochures', 'not-implemented', icon='map'),
+            MenuItem('Export print publicity', reverse('marketing:export'), icon='map'),
             MenuItem('Import opt-ins', 'not-implemented', icon='check'),
         ),
     ),
