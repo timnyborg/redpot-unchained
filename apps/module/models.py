@@ -616,27 +616,35 @@ class Room(models.Model):
 
 
 class Book(models.Model):
+    class Types(models.TextChoices):
+        PREPARATORY = 'Preparatory reading', 'Preparatory reading'
+        COURSE = 'Course reading', 'Course reading'
+        __empty__ = '– Select –'
+
     module = models.ForeignKey('Module', models.CASCADE, db_column='module', related_name='books')
-    title = models.TextField(blank=True, null=True)
-    author = models.TextField(blank=True, null=True)
-    type = models.CharField(max_length=24)
-    additional_information = models.TextField(blank=True, null=True)
-    solo_link = models.TextField(blank=True, null=True)
-    isbn_shelfmark = models.TextField(blank=True, null=True)
+    title = models.CharField(max_length=512)
+    author = models.CharField(max_length=512)
+    type = models.CharField(max_length=24, choices=Types.choices)
+    additional_information = models.CharField(max_length=512, blank=True, null=True)
+    solo_link = models.CharField(max_length=512, blank=True, null=True, validators=[validators.URLValidator()])
+    isbn_shelfmark = models.CharField(max_length=64, blank=True, null=True, verbose_name='ISBN / library shelfmark')
     price = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
     library_note = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'book'
 
+    def __str__(self) -> str:
+        return str(self.title)
+
     def get_absolute_url(self) -> str:
-        return '#'
+        return self.module.get_absolute_url() + '#reading-list'
 
     def get_edit_url(self) -> str:
-        return '#'
+        return reverse('module:edit-book', kwargs={'pk': self.pk})
 
     def get_delete_url(self) -> str:
-        return '#'
+        return reverse('module:delete-book', kwargs={'pk': self.pk})
 
 
 class Subject(models.Model):

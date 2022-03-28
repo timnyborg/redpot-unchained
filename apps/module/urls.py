@@ -33,6 +33,9 @@ urlpatterns = [
         name='remove-payment-plan',
     ),
     path('hesa-subjects/edit/<int:pk>', views.EditHESASubjects.as_view(), name='edit-hesa-subjects'),
+    path('book/add/<int:module_id>', views.AddBook.as_view(), name='add-book'),
+    path('book/edit/<int:pk>', views.EditBook.as_view(), name='edit-book'),
+    path('book/delete/<int:pk>', views.DeleteBook.as_view(), name='delete-book'),
     # reports
     path('student-list/<int:pk>', views.StudentList.as_view(), name='student-list'),
     path('moodle-list/<int:pk>', views.MoodleList.as_view(), name='moodle-list'),
