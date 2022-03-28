@@ -503,6 +503,40 @@ class AwardPoints(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, 
         return super().form_valid(form)
 
 
+# -- Reading list views --
+
+
+class AddBook(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.CreateView):
+    model = models.Book
+    form_class = forms.BookForm
+    template_name = 'core/form.html'
+    success_message = 'Book added: %(title)s'
+
+    def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
+        self.module = get_object_or_404(models.Module, pk=self.kwargs['module_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form) -> http.HttpResponse:
+        form.instance.module = self.module
+        return super().form_valid(form)
+
+
+class EditBook(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
+    model = models.Book
+    form_class = forms.BookForm
+    template_name = 'core/form.html'
+    success_message = 'Book updated: %(title)s'
+
+
+class DeleteBook(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.DeleteView):
+    model = models.Book
+    template_name = 'core/delete_form.html'
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, f'Book deleted: {self.object.title}')
+        return self.object.module.get_absolute_url() + '#reading-list'
+
+
 class RebuildRecommendedReading(LoginRequiredMixin, generic.View):
     def post(self, request, *args, **kwargs) -> http.HttpResponse:
         module = get_object_or_404(models.Module, pk=self.kwargs['pk'])

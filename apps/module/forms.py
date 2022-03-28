@@ -324,3 +324,28 @@ BaseAwardPointsFormSet = forms.inlineformset_factory(
 class AwardPointsFormSet(BaseAwardPointsFormSet):
     def get_queryset(self):
         return super().get_queryset().order_by('qa__student__surname', 'qa__student__firstname')
+
+
+class BookForm(forms.ModelForm):
+    class Meta:
+        model = models.Book
+        fields = [
+            'title',
+            'author',
+            'type',
+            'additional_information',
+            'solo_link',
+            'isbn_shelfmark',
+            'price',
+            'library_note',
+        ]
+        widgets = {'price': widgets.PoundInput()}
+        help_texts = {
+            'author': 'Please format as "Surname, Firstname (or initial)", e.g. "Swift, Jonathan"',
+            'type': (
+                'The preparatory list provides students with background to the materials and ideas that '
+                + 'will be covered on the course. The course list contains the main texts that will be read and '
+                + 'discussed during the course.'
+            ),
+            'additional_information': 'e.g. edition and other publication data',
+        }
