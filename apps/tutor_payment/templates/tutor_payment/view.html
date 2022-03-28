@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+
+{% block center %}
+    <div class="section">
+        <dl class="row">
+            <dt class='col-2'>Tutor</dt>
+            <dd class='col-10'>
+                <a href="{{ object.tutor_module.tutor.get_absolute_url }}">
+                    {{ object.tutor_module.tutor }}
+                </a>
+            </dd>
+            <dt class='col-2'>Engagement</dt>
+            <dd class='col-10'>
+                <a href="{{ object.tutor_module.get_absolute_url }}">{{ object.tutor_module.module }}</a>
+            </dd>
+            <dt class='col-2'>Amount</dt><dd class='col-10'>£{{ object.amount|floatformat:2 }}</dd>
+            <dt class='col-2'>Type</dt><dd class='col-10'>{{ object.type }}</dd>
+            <dt class='col-2'>Pay after</dt><dd class='col-10'>{{ object.pay_after|date:'M Y' }}</dd>
+            <dt class='col-2'>Status</dt><dd class='col-10'>{{ object.status }}</dd>
+            <dt class='col-2'>Details</dt><dd class='col-10'>{{ object.details }}</dd>
+            <dt class='col-2'>Batch</dt><dd class='col-10'>{{ object.batch }}</dd>
+            <dt class='col-2'>Hourly rate</dt><dd class='col-10'>{{ object.hourly_rate|default:'–' }}</dd>
+            <dt class='col-2'>Hours worked</dt><dd class='col-10'>{{ object.hours_worked|default:'–' }}</dd>
+            <dt class='col-2'>Weeks</dt><dd class='col-10'>{{ object.weeks|default:'–' }}</dd>
+            <dt class='col-2'>Approver</dt><dd class='col-10'>{{ object.approver }}</dd>
+            <dt class='col-2'>Raised by</dt><dd class='col-10'>{{ object.raised_by }}</dd>
+            <dt class='col-2'>Raised on</dt><dd class='col-10'>{{ object.raised_on }}</dd>
+            <dt class='col-2'>Approved by</dt><dd class='col-10'>{{ object.approved_by|default:'–' }}</dd>
+            <dt class='col-2'>Approved on</dt><dd class='col-10'>{{ object.approved_on|default:'–' }}</dd>
+            <dt class='col-2'>Transferred by</dt><dd class='col-10'>{{ object.transferred_by|default:'–' }}</dd>
+            <dt class='col-2'>Transferred on</dt><dd class='col-10'>{{ object.transferred_on|default:'–' }}</dd>
+        </dl>
+    </div>
+{% endblock %}
