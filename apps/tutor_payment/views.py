@@ -48,24 +48,36 @@ class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, gener
         return next_url_if_safe(self.request) or self.tutor_module.get_absolute_url() + '#payments'
 
 
-class Edit(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
+class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
     model = models.TutorPayment
     form_class = forms.PaymentForm
     success_message = 'Record updated'
     template_name = 'core/form.html'
     subtitle_object = False
 
-    def get_form_kwargs(self):
-        # If not allowed to edit, display instead. should this be elsewhere?
-        if not self.object.user_can_edit(self.request.user):
-            return redirect(self.object.get_absolute_url())
+    def has_permission(self) -> bool:
+        return self.get_object().user_can_edit(self.request.user)
 
+    def handle_no_permission(self) -> http.HttpResponse:
+        # If not allowed to edit, reroute to view instead
+        messages.warning(self.request, 'You cannot edit this payment')
+        return redirect(self.get_object().get_absolute_url())
+
+    def get_form_kwargs(self) -> dict:
         kwargs = super().get_form_kwargs()
         kwargs['editable_status'] = self.request.user.has_perm('tutor_payment.transfer')
         return kwargs
 
     def get_success_url(self) -> str:
         return next_url_if_safe(self.request) or self.object.tutor_module.get_absolute_url() + '#payments'
+
+
+class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
+    """A readonly view, for when staff lack edit rights"""
+
+    model = models.TutorPayment
+    template_name = 'tutor_payment/view.html'
+    subtitle_object = False
 
 
 class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
