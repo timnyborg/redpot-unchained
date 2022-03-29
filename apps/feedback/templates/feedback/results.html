@@ -20,14 +20,20 @@
             {% for year, data in feedback_years.items %}
                 <tr style="text-align: right">
                     <td><a href="{% url 'feedback:results-year' year %}">{{ year }}</a></td>
-                    <td>{{ data.satisfied | default:'-'}}</td>
-                    <td>{{ data.average }}</td>
-                    <td>{{ data.avg_teaching }}</td>
-                    <td>{{ data.avg_content }}</td>
-                    <td>{{ data.avg_facilities }}</td>
-                    <td>{{ data.avg_admin }}</td>
-                    <td>{{ data.avg_catering }}</td>
-                    <td>{{ data.avg_accommodation }}</td>
+                    <td>
+                    {% if data.satisfied %}
+                        {{ data.satisfied | floatformat:0 }}
+                    {% else %}
+                        &ndash;
+                    {% endif %}
+                    </td>
+                    <td>{{ data.average|floatformat:1 }}</td>
+                    <td>{{ data.teaching|floatformat:1 }}</td>
+                    <td>{{ data.content|floatformat:1 }}</td>
+                    <td>{{ data.facilities|floatformat:1 }}</td>
+                    <td>{{ data.admin|floatformat:1 }}</td>
+                    <td>{{ data.catering|floatformat:1 }}</td>
+                    <td>{{ data.accommodation|floatformat:1 }}</td>
                     <td>{{ data.sent }}</td>
                     <td>{{ data.returned | default:'-'}}</td>
                 </tr>
