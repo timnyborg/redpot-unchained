@@ -80,6 +80,7 @@ PROJECT_APPS = [
     'apps.staff_forms',
     'apps.waitlist',
     'apps.website_account',
+    'apps.website_basket',
 ]
 
 THIRD_PARTY_APPS = [
@@ -260,6 +261,9 @@ COURSE_PROPOSAL_ADMIN_URL = env('COURSE_PROPOSAL_ADMIN_URL', default='')
 
 # URL for accessing the documentation/user guide, while it's hosted as a separate project
 REDPOT_DOCS_URL = env('REDPOT_DOCS_URL', default='/docs/')
+
+# URL for accessing legacy jsonrpc API
+RP_API_URL = env('RP_API_URL', default='')
 
 # Login customization
 LOGIN_REDIRECT_URL = '/'

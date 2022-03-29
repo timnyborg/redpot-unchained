@@ -1,9 +1,12 @@
+import textwrap
+
 import django_filters as filters
 import django_tables2 as tables
 from dal import autocomplete
 
 from django.db.models import Q
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from apps.core.models import Division, Portfolio, User
 from apps.core.utils.datatables import EditLinkColumn, PoundsColumn
@@ -113,10 +116,9 @@ class ApprovalTable(tables.Table):
         linkify=True,
         order_by=('tutor_module__tutor__student__surname', 'tutor_module__tutor__student__firstname'),
     )
-    course_code = tables.Column(
-        accessor='tutor_module__module__code', linkify=lambda record: record.tutor_module.module.get_absolute_url()
+    title = tables.Column(
+        accessor='tutor_module__module__title', linkify=lambda record: record.tutor_module.module.get_absolute_url()
     )
-    title = tables.Column(accessor='tutor_module__module__title')
     start_date = tables.Column(accessor='tutor_module__module__start_date', attrs={'td': {'class': 'text-nowrap'}})
     amount = PoundsColumn()
     type = tables.Column(accessor='type__short_form')
@@ -126,19 +128,25 @@ class ApprovalTable(tables.Table):
         verbose_name='', linkify=lambda record: record.get_edit_url() + f'?next={reverse("tutor-payment:approve")}'
     )
 
+    def render_details(self, record):
+        if len(record.details) < 70:
+            return record.details
+        truncated = textwrap.shorten(record.details, 50, placeholder='...')
+        return mark_safe(f'<span role="button" data-bs-toggle="tooltip" title="{record.details}">{truncated}</abbr>')
+
     class Meta:
         model = models.TutorPayment
         fields = (
             'payment',
             'approvable_icon',
             'tutor',
-            'course_code',
             'title',
             'start_date',
             'amount',
             'type',
             'raised_by',
             'raised_on',
+            'details',
             'edit',
         )
         per_page = 20
