@@ -4,6 +4,7 @@ import django_tables2 as tables
 from django.db.models import QuerySet
 from django.forms import widgets
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from apps.core.utils.datatables import EditLinkColumn, PoundsColumn
 from apps.core.utils.widgets import DatePickerInput
@@ -25,6 +26,16 @@ class ApprovalTable(tables.Table):
         verbose_name='', linkify=lambda record: record.get_edit_url() + f'?next={reverse("amendment:approve")}'
     )
 
+    def render_reason(self, record):
+        # Provide the details as a tooltip on the reason
+        return mark_safe(
+            f"""
+            <abbr role="button" data-bs-toggle="tooltip" title="{record.details}">
+                {record.reason or record.details}
+            </abbr>
+            """
+        )
+
     class Meta:
         model = models.Amendment
         fields = (
@@ -35,6 +46,7 @@ class ApprovalTable(tables.Table):
             'amount',
             'requested_by',
             'requested_on',
+            'reason',
             'edit',
         )
         per_page = 20
