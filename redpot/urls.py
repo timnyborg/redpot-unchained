@@ -61,6 +61,7 @@ urlpatterns = [
     path('task/', include('apps.task_progress.urls', namespace='task')),
     path('waitlist/', include('apps.waitlist.urls')),
     path('website-account/', include('apps.website_account.urls')),
+    path('website-basket/', include('apps.website_basket.urls')),
     # django-hijack urls for impersonation
     path('impersonate', core_views.Impersonate.as_view(), name='impersonate'),
     path('impersonate-api/', include('hijack.urls')),

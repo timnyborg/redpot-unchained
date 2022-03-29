@@ -131,8 +131,8 @@ finance_children = [
         check=lambda request: request.user.has_perm('core.finance'),
     ),
     MenuItem(
-        "Paypush",
-        'not-implemented',
+        "Push web payment",
+        reverse('website_basket:push-payment'),
         icon="credit-card",
         check=lambda request: request.user.has_perm('core.finance'),
     ),
