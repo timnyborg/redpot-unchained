@@ -85,9 +85,9 @@ def user_can_edit(*, user: User, amendment: models.Amendment) -> bool:
     return (
         user.has_perm('amendment.edit_finance')
         or user.has_perm('amendment.approve')
-        and user.username == amendment.approver
+        and user == amendment.approver
         and amendment.status_id in (models.AmendmentStatuses.RAISED, models.AmendmentStatuses.APPROVED)
-        or user.username == amendment.requested_by
+        or user == amendment.requested_by
         and amendment.status_id == models.AmendmentStatuses.RAISED
     )
 
