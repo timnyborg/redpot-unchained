@@ -120,7 +120,7 @@ class EmailMultiple(LoginRequiredMixin, generic.View):
             'student_emails': student_emails,
             'new_run': new_run,
             'module': module,
-            'tutor': tutor_on_module.tutor.student,
+            'tutor': tutor_on_module.tutor.student if tutor_on_module else None,
             'sender': models.OFFICES.get(module.portfolio_id, request.user.get_full_name()),
         }
         body = render_to_string('waitlist/email/multiple.html', context=context)
