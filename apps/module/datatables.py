@@ -5,6 +5,7 @@ import django_tables2 as tables
 from dateutil.relativedelta import relativedelta
 
 import django.forms as forms
+from django.urls import reverse
 
 from apps.core.utils.datatables import DeleteLinkColumn, EditLinkColumn, LinkColumn, ViewLinkColumn
 from apps.waitlist.models import Waitlist
@@ -56,9 +57,14 @@ class ModuleSearchTable(tables.Table):
 
 
 class WaitlistTable(tables.Table):
-    id = tables.CheckBoxColumn(accessor='id', orderable=False)
+    id = tables.CheckBoxColumn(accessor='id', attrs={"th__input": {"id": "toggle-all"}}, orderable=False)
     student = tables.Column(linkify=True)
-    email = LinkColumn('', icon='envelope', title='Email student', linkify=lambda record: f'email-one/{record.id}')
+    email = LinkColumn(
+        '',
+        icon='envelope',
+        title='Email student',
+        linkify=lambda record: reverse('waitlist:email-single', kwargs={'pk': record.id}),
+    )
     delete = DeleteLinkColumn('', title='Remove from waiting list')
 
     class Meta:

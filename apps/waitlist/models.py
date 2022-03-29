@@ -3,6 +3,13 @@ from datetime import datetime
 from django.db import models
 from django.urls import reverse
 
+# todo: put this into the portfolio table
+OFFICES = {
+    31: 'Day & Weekend Events Office',
+    32: 'Weekly Classes Office',
+    17: 'Online Courses Office',
+}
+
 
 class Waitlist(models.Model):
     """A student's spot on a module waitlist"""

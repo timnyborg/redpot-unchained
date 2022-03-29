@@ -488,25 +488,21 @@
 {% if waitlist_table.rows %}
 <div class="section">
     <h2 id='waitlist' data-badge-text='{{ waitlist_table.rows | length }}' class="section-title">Waiting list</h2>
-    <form method="post" action="/send-to-the-waiting-list">
+    <form method="get" action="{% url 'waitlist:email-multiple' module.id %}">
         {% render_table waitlist_table %}
         <div class="btn-group float-end">
             <a href="#" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
                 <i class="far fa-fw fa-envelope"></i> Email entire list
                 <span class="caret"></span>
             </a>
-            <ul class="dropdown-menu">
+            <div class="dropdown-menu">
                 {% if next_run %}
-                <li>
-                    <a href="email-list/{{ module.id }}/new/{{ next_run.id }}">New run of course</a>
-                </li>
+                    <a class="dropdown-item" href="{% url 'waitlist:email-multiple' previous_module=module.id module=next_run.id %}">New run of course</a>
                 {% endif %}
-
-                <li><a class="dropdown-item" href="/email-list/{{ module.id }}/online">Places available on course (enrol online)</a></li>
-                <li><a class="dropdown-item" href="/email-list/{{ module.id }}/form">Places available on course (enrol by form)</a></li>
-            </ul>
+                <a class="dropdown-item" href="{% url 'waitlist:email-multiple' module.id %}">Places available on course</a>
+            </div>
         </div>
-        <button type="submit" value="Standard" class="btn btn-secondary">
+        <button type="submit" name="limited" class="btn btn-secondary">
             <i class="fa fa-fw fa-envelope"></i> Email selected students
         </button>
     </form>
