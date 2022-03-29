@@ -4,6 +4,7 @@ import statistics
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
+from django.db.models import Avg, Count, Q
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.template.loader import render_to_string
 from django.views import View
@@ -44,50 +45,26 @@ class ResultListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         current_year = datetime.datetime.now().year
-        from_year = current_year - 3
 
-        years = range(from_year, current_year + 1)
+        years = range(current_year - 3, current_year + 1)
         feedback_years = {}
         for year in years:
-            year_fields = Feedback.objects.get_year_range(year)
-            data = {}
-            data['avg_teaching'] = get_mean_value(
-                year_fields.values_list('rate_tutor', flat=True).filter(rate_tutor__gt=0)
+            data = Feedback.objects.get_year_range(year).aggregate(
+                teaching=Avg('rate_tutor'),
+                content=Avg('rate_content'),
+                facilities=Avg('rate_facilities'),
+                admin=Avg('rate_admin'),
+                catering=Avg('rate_refreshments'),
+                accommodation=Avg('rate_accommodation'),
+                average=Avg('avg_score'),
+                sent=Count('id'),
+                returned=Count('id', filter=Q(submitted__isnull=False)),
+                high_scorers=Count('id', filter=Q(avg_score__gt=3.5)),
+                total_scored=Count('id', filter=Q(avg_score__isnull=False)),
             )
-            data['avg_content'] = get_mean_value(
-                year_fields.values_list('rate_content', flat=True).filter(rate_content__gt=0)
-            )
-            data['avg_facilities'] = get_mean_value(
-                year_fields.values_list('rate_facilities', flat=True).filter(rate_facilities__gt=0)
-            )
-            data['avg_admin'] = get_mean_value(
-                year_fields.values_list('rate_admin', flat=True).filter(rate_admin__gt=0)
-            )
-            data['avg_catering'] = get_mean_value(
-                year_fields.values_list('rate_refreshments', flat=True).filter(rate_refreshments__gt=0)
-            )
-            data['avg_accommodation'] = get_mean_value(
-                year_fields.values_list('rate_accommodation', flat=True).filter(rate_accommodation__gt=0)
-            )
-            data['average'] = get_mean_value(  # todo get the database to do the averaging work
-                [
-                    data['avg_teaching'],
-                    data['avg_content'],
-                    data['avg_facilities'],
-                    data['avg_admin'],
-                    data['avg_catering'],
-                    data['avg_accommodation'],
-                ]
-            )
-            data['sent'] = year_fields.count()
-            data['returned'] = year_fields.filter(submitted__isnull=False).count()
-            high_scorers = year_fields.filter(avg_score__gt=3.5).count()
-            total_scored = year_fields.filter(avg_score__isnull=False).count()
 
-            try:
-                data['satisfied'] = int(float(high_scorers) / float(total_scored) * 100)
-            except ZeroDivisionError:
-                data['satisfied'] = None
+            if data['total_scored']:
+                data['satisfied'] = data['high_scorers'] / data['total_scored'] * 100
 
             feedback_years[year] = data
         context['feedback_years'] = feedback_years
