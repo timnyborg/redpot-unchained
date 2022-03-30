@@ -183,13 +183,9 @@ class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        tutors_list = []
         tutors_set = self.module.tutor_modules.filter(is_teaching=True)
-        for tutorobj in tutors_set:
-            student_id = tutorobj.tutor.student.id
-            tutor_name = tutorobj.tutor.student.firstname + ' ' + tutorobj.tutor.student.surname
-            tutors_list.append((student_id, tutor_name))
-        return {**kwargs, 'tutors_choices': tutors_list}
+        tutors_choices = [(item.tutor.student.id, str(item.tutor.student)) for item in tutors_set]
+        return {**kwargs, 'tutors_choices': tutors_choices}
 
     def get_success_url(self):
         return reverse('feedback:results-module', kwargs={'code': self.module.code})
