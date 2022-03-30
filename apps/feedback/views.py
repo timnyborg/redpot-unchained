@@ -37,26 +37,7 @@ class ResultListView(LoginRequiredMixin, SiteTitleMixin, ListView):
         current_year = datetime.datetime.now().year
 
         years = range(current_year - 3, current_year + 1)
-        feedback_years = {}
-        for year in years:
-            data = Feedback.objects.get_year_range(year).aggregate(
-                teaching=Avg('rate_tutor'),
-                content=Avg('rate_content'),
-                facilities=Avg('rate_facilities'),
-                admin=Avg('rate_admin'),
-                catering=Avg('rate_refreshments'),
-                accommodation=Avg('rate_accommodation'),
-                average=Avg('avg_score'),
-                sent=Count('id'),
-                returned=Count('id', filter=Q(submitted__isnull=False)),
-                high_scorers=Count('id', filter=Q(avg_score__gt=3.5)),
-                total_scored=Count('id', filter=Q(avg_score__isnull=False)),
-            )
-
-            if data['total_scored']:
-                data['satisfied'] = data['high_scorers'] / data['total_scored'] * 100
-
-            feedback_years[year] = data
+        feedback_years = {year: Feedback.objects.get_year_range(year).statistics() for year in years}
         context['feedback_years'] = feedback_years
         return context
 
@@ -77,27 +58,7 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        year_data = self.object_list.aggregate(
-            teaching=Avg('rate_tutor'),
-            content=Avg('rate_content'),
-            facilities=Avg('rate_facilities'),
-            admin=Avg('rate_admin'),
-            catering=Avg('rate_refreshments'),
-            accommodation=Avg('rate_accommodation'),
-            average=Avg('avg_score'),
-            sent=Count('id'),
-            returned=Count('id', filter=Q(submitted__isnull=False)),
-            high_scorers=Count('id', filter=Q(avg_score__gt=3.5)),
-            total_scored=Count('id', filter=Q(avg_score__isnull=False)),
-        )
-
-        # get year data objects
-        year_data['year'] = self.year
-
-        if year_data['total_scored']:
-            year_data['satisfied'] = year_data['high_scorers'] / year_data['total_scored'] * 100
-
-        context['year_data'] = year_data
+        context['year_data'] = self.object_list.statistics()
 
         # get all the modules for the year
         modules = (
@@ -220,28 +181,10 @@ class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['module'] = self.module
-
-        results = self.object_list
-        module_data = results.aggregate(
-            teaching=Avg('rate_tutor'),
-            content=Avg('rate_content'),
-            facilities=Avg('rate_facilities'),
-            admin=Avg('rate_admin'),
-            catering=Avg('rate_refreshments'),
-            accommodation=Avg('rate_accommodation'),
-            average=Avg('avg_score'),
-            sent=Count('id'),
-            returned=Count('id', filter=Q(submitted__isnull=False)),
-            high_scorers=Count('id', filter=Q(avg_score__gt=3.5)),
-            total_scored=Count('id', filter=Q(avg_score__isnull=False)),
-        )
-        if module_data['total_scored']:
-            module_data['satisfied'] = module_data['high_scorers'] / module_data['total_scored'] * 100
-
-        context['module_score'] = module_data
+        context['module_score'] = self.object_list.statistics()
 
         # get only submitted rows
-        context['feedback'] = results.filter(submitted__isnull=False).order_by('submitted')
+        context['feedback'] = self.object_list.filter(submitted__isnull=False).order_by('submitted')
         context['comments_list'] = self.module.feedbackadmin_set.order_by('updated')
 
         return context
