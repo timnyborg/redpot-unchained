@@ -15,43 +15,43 @@
                 <th>Facilities</th>
                 <th>Admin</th>
                 <th>Catering</th>
-                <th>Accomm</th>
+                <th>Accom</th>
                 <th>Sent</th>
                 <th>Returned</th>
             </tr>
             <tr style="text-align: right">
-                <td class="feedback-comment">{{ module_score.title }}</td>
-                <td>{{ module_score.satisfied | default:'-'}}</td>
-                <td>{{ module_score.average }}</td>
-                <td>{{ module_score.avg_teaching }}</td>
-                <td>{{ module_score.avg_content }}</td>
-                <td>{{ module_score.avg_facilities }}</td>
-                <td>{{ module_score.avg_admin }}</td>
-                <td>{{ module_score.avg_catering }}</td>
-                <td>{{ module_score.avg_accommodation }}</td>
+                <td class="feedback-comment">{{ module.title }}</td>
+                <td>{{ module_score.satisfied | floatformat:0 }}</td>
+                <td>{{ module_score.average|floatformat:1 }}</td>
+                <td>{{ module_score.teaching|floatformat:1 }}</td>
+                <td>{{ module_score.content|floatformat:1 }}</td>
+                <td>{{ module_score.facilities|floatformat:1 }}</td>
+                <td>{{ module_score.admin|floatformat:1 }}</td>
+                <td>{{ module_score.catering|floatformat:1 }}</td>
+                <td>{{ module_score.accommodation|floatformat:1 }}</td>
                 <td>{{ module_score.sent }}</td>
                 <td>{{ module_score.returned | default:'-'}}</td>
             </tr>
         </table>
         <hr>
         <h4>Detail</h4>
-        {% for key, data in feedback_data_list.items %}
+        {% for item in feedback %}
             <table class = "table table-striped table-hover table-bordered">
                 <tbody>
                     <tr>
                         <td class="feedback-green feedback-comment">
-                            <b>{{ data.student_name }}</b> submitted at {{ data.submitted_on }}
+                            <b>{{ item.your_name|default:'Anonymous' }}</b> submitted at {{ item.submitted|time }} on {{ item.submitted|date }}
                         </td>
-                        <td class="{% score_color data.average %}">{{ data.average | default:'-' }}<br>Average</td>
-                        <td class="{% score_color data.teaching %}">{{ data.teaching | default:'-' }}<br>Teaching</td>
-                        <td class="{% score_color data.content %}">{{ data.content | default:'-' }}<br>Content</td>
-                        <td class="{% score_color data.facilities %}">{{ data.facilities | default:'-' }}<br>Facilities</td>
-                        <td class="{% score_color data.admin %}">{{ data.admin | default:'-' }}<br>Admin</td>
-                        <td class="{% score_color data.catering %}">{{ data.catering | default:'-' }}<br>Catering</td>
-                        <td class="{% score_color data.accommodation %}">{{ data.accommodation | default:'-' }}<br>Accomm</td>
+                        <td class="{% score_color item.avg_score %}">{{ item.avg_score | floatformat:0 }}<br>Average</td>
+                        <td class="{% score_color item.rate_tutor %}">{{ item.rate_tutor | default:'-' }}<br>Teaching</td>
+                        <td class="{% score_color item.rate_content %}">{{ item.rate_content | default:'-' }}<br>Content</td>
+                        <td class="{% score_color item.rate_facilities %}">{{ item.rate_facilities | default:'-' }}<br>Facilities</td>
+                        <td class="{% score_color item.rate_admin %}">{{ item.rate_admin | default:'-' }}<br>Admin</td>
+                        <td class="{% score_color item.rate_catering %}">{{ item.rate_catering | default:'-' }}<br>Catering</td>
+                        <td class="{% score_color item.rate_accommodation %}">{{ item.rate_accommodation | default:'-' }}<br>Accomm</td>
                     </tr>
                     <tr>
-                        <td>{{ data.comments }}</td>
+                        <td>{{ item.comments }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -64,8 +64,8 @@
             <tbody>
                 {% for comment in comments_list %}
                 <tr>
-                    <td>{{ comment.comment }}</td>
-                    <td>{{ comment.uploaded_by }}. {{ comment.uploaded_on }}</td>
+                    <td>{{ comment.admin_comments }}</td>
+                    <td>{{ comment.person }}. {{ comment.updated|time }} on {{ comment.updated|date }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -20,37 +20,37 @@
             </tr>
             <tr style="text-align: right">
                 <td>{{ year_data.year }}</td>
-                <td>{{ year_data.satisfied | default:'-'}}</td>
-                <td>{{ year_data.average }}</td>
-                <td>{{ year_data.avg_teaching }}</td>
-                <td>{{ year_data.avg_content }}</td>
-                <td>{{ year_data.avg_facilities }}</td>
-                <td>{{ year_data.avg_admin }}</td>
-                <td>{{ year_data.avg_catering }}</td>
-                <td>{{ year_data.avg_accommodation }}</td>
+                <td>{{ year_data.satisfied|floatformat:0 }}</td>
+                <td>{{ year_data.average|floatformat:1 }}</td>
+                <td>{{ year_data.teaching|floatformat:1 }}</td>
+                <td>{{ year_data.content|floatformat:1 }}</td>
+                <td>{{ year_data.facilities|floatformat:1 }}</td>
+                <td>{{ year_data.admin|floatformat:1 }}</td>
+                <td>{{ year_data.catering|floatformat:1 }}</td>
+                <td>{{ year_data.accommodation|floatformat:1 }}</td>
                 <td>{{ year_data.sent }}</td>
                 <td>{{ year_data.returned | default:'-'}}</td>
             </tr>
         </table>
 
         <h4>Detail</h4>
-        {% for module_code, data in modules_list.items %}
+        {% for module in modules_list %}
             <table class = "table table-striped table-hover table-bordered">
                 <tbody>
                     <tr>
                         <td class="feedback-green feedback-comment">
-                            <a href="{% url 'feedback:results-module' module_code %}">{{ module_code }}</a> - {{ data.module_title }}
+                            <a href="{% url 'feedback:results-module' module.code %}">{{ module.code }}</a> - {{ module.title }}
                         </td>
-                        <td class="{% score_color data.satisfied %}">{{ data.satisfied }}<br>Satisfied</td>
-                        <td class="{% score_color data.average %}">{{ data.average }}<br>Average</td>
-                        <td class="{% score_color data.avg_teaching %}">{{ data.avg_teaching }}<br>Teaching</td>
-                        <td class="{% score_color data.avg_content %}">{{ data.avg_content }}<br>Content</td>
-                        <td class="{% score_color data.avg_facilities %}">{{ data.avg_facilities }}<br>Facilities</td>
-                        <td class="{% score_color data.avg_admin %}">{{ data.avg_admin }}<br>Admin</td>
-                        <td class="{% score_color data.avg_catering %}">{{ data.avg_catering }}<br>Catering</td>
+                        <td class="{% score_color module.satisfied %}">{{ module.satisfied|floatformat:0 }}<br>Satisfied</td>
+                        <td class="{% score_color module.average %}">{{ module.average|floatformat:1 }}<br>Average</td>
+                        <td class="{% score_color module.teaching %}">{{ module.teaching|floatformat:1 }}<br>Teaching</td>
+                        <td class="{% score_color module.content %}">{{ module.content|floatformat:1 }}<br>Content</td>
+                        <td class="{% score_color module.facilities %}">{{ module.facilities|floatformat:1 }}<br>Facilities</td>
+                        <td class="{% score_color module.admin %}">{{ module.admin|floatformat:1 }}<br>Admin</td>
+                        <td class="{% score_color module.catering %}">{{ module.catering|floatformat:1 }}<br>Catering</td>
 
-                        <td class="feedback-gray">{{ data.sent }}<br>Sent</td>
-                        <td class="feedback-gray">{{ data.returned }}<br>Returned</td>
+                        <td class="feedback-gray">{{ module.sent }}<br>Sent</td>
+                        <td class="feedback-gray">{{ module.returned }}<br>Returned</td>
                     </tr>
                 </tbody>
             </table>
