@@ -177,15 +177,14 @@ class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
     form_class = CommentAndReportForm
 
     def dispatch(self, *args, **kwargs):
-        self.code = self.kwargs['code']
+        self.module = get_object_or_404(Module, code=self.kwargs['code'])
         self.object_list = self.get_queryset()
         return super().dispatch(*args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        results = self.object_list
         tutors_list = []
-        tutors_set = results[0].module.tutor_modules.filter(is_teaching=True)
+        tutors_set = self.module.tutor_modules.filter(is_teaching=True)
         for tutorobj in tutors_set:
             student_id = tutorobj.tutor.student.id
             tutor_name = tutorobj.tutor.student.firstname + ' ' + tutorobj.tutor.student.surname
@@ -193,43 +192,40 @@ class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
         return {**kwargs, 'tutors_choices': tutors_list}
 
     def get_success_url(self):
-        return reverse('feedback:results-module', kwargs={'code': self.code})
+        return reverse('feedback:results-module', kwargs={'code': self.module.code})
 
     def form_valid(self, form):
         comments = form.cleaned_data['comments']
         tutors = form.cleaned_data['tutors']
 
         if comments or tutors:
-            module_code = self.kwargs['code']
-            module = Module.objects.get(code=module_code)
-
-            updated = datetime.datetime.now()
-            current_user = self.request.user
-            f = FeedbackAdmin(module=module, updated=updated, admin_comments=comments, person=current_user)
-            f.save()
+            FeedbackAdmin.objects.create(
+                module=self.module,
+                updated=datetime.datetime.now(),
+                admin_comments=comments,
+                person=self.request.user.get_full_name(),
+            )
 
             # todo send feedback to staffs and admin along with added attachments
-            services.email_admin_report(module, tutors)
+            services.email_admin_report(self.module, tutors)
             if tutors:
-                services.email_tutor_report(module, tutors)
+                services.email_tutor_report(self.module, tutors)
 
             messages.success(self.request, 'Your comment has been received. The tutor(s) has been sent an email')
 
         return super().form_valid(form)
 
     def get_subtitle(self):
-        module_title = Feedback.objects.filter(module__code=self.code)[0].module.title
-        return f'Results for {module_title}({self.code})'
+        return f'Results for {self.module.title}({self.module.code})'
 
     def get_queryset(self):
-        return Feedback.objects.filter(module__code=self.code)
+        return self.module.feedback_set.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        results = self.object_list
-        module = results[0].module
-        context['module'] = module
+        context['module'] = self.module
 
+        results = self.object_list
         module_data = results.aggregate(
             teaching=Avg('rate_tutor'),
             content=Avg('rate_content'),
@@ -250,7 +246,7 @@ class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
 
         # get only submitted rows
         context['feedback'] = results.filter(submitted__isnull=False).order_by('submitted')
-        context['comments_list'] = FeedbackAdmin.objects.filter(module=module).order_by('updated')
+        context['comments_list'] = self.module.feedbackadmin_set.order_by('updated')
 
         return context
 
