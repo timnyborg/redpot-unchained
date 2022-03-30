@@ -3,7 +3,7 @@ import datetime
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Avg, Count, Q
+from django.db.models import Avg, Count, Q, Subquery
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.template.loader import render_to_string
 from django.views import View
@@ -77,103 +77,51 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        year_results = self.object_list
+        year_data = self.object_list.aggregate(
+            teaching=Avg('rate_tutor'),
+            content=Avg('rate_content'),
+            facilities=Avg('rate_facilities'),
+            admin=Avg('rate_admin'),
+            catering=Avg('rate_refreshments'),
+            accommodation=Avg('rate_accommodation'),
+            average=Avg('avg_score'),
+            sent=Count('id'),
+            returned=Count('id', filter=Q(submitted__isnull=False)),
+            high_scorers=Count('id', filter=Q(avg_score__gt=3.5)),
+            total_scored=Count('id', filter=Q(avg_score__isnull=False)),
+        )
 
-        year = self.year
         # get year data objects
-        year_data = {}
+        year_data['year'] = self.year
 
-        year_data['year'] = year
-        year_data['avg_teaching'] = services.get_mean_value(
-            year_results.values_list('rate_tutor', flat=True).filter(rate_tutor__gt=0)
-        )
-        year_data['avg_content'] = services.get_mean_value(
-            year_results.values_list('rate_content', flat=True).filter(rate_content__gt=0)
-        )
-        year_data['avg_facilities'] = services.get_mean_value(
-            year_results.values_list('rate_facilities', flat=True).filter(rate_facilities__gt=0)
-        )
-        year_data['avg_admin'] = services.get_mean_value(
-            year_results.values_list('rate_admin', flat=True).filter(rate_admin__gt=0)
-        )
-        year_data['avg_catering'] = services.get_mean_value(
-            year_results.values_list('rate_refreshments', flat=True).filter(rate_refreshments__gt=0)
-        )
-        year_data['avg_accommodation'] = services.get_mean_value(
-            year_results.values_list('rate_accommodation', flat=True).filter(rate_accommodation__gt=0)
-        )
-        year_data['average'] = services.get_mean_value(
-            [
-                year_data['avg_teaching'],
-                year_data['avg_content'],
-                year_data['avg_facilities'],
-                year_data['avg_admin'],
-                year_data['avg_catering'],
-                year_data['avg_accommodation'],
-            ]
-        )
-        year_data['sent'] = year_results.count()
-        year_data['returned'] = year_results.filter(submitted__isnull=False).count()
-        high_scorers = year_results.filter(avg_score__gt=3.5).count()
-        total_scored = year_results.filter(avg_score__isnull=False).count()
-
-        try:
-            year_data['satisfied'] = int(float(high_scorers) / float(total_scored) * 100)
-        except ZeroDivisionError:
-            year_data['satisfied'] = None
+        if year_data['total_scored']:
+            year_data['satisfied'] = year_data['high_scorers'] / year_data['total_scored'] * 100
 
         context['year_data'] = year_data
 
         # get all the modules for the year
-        year_modules = year_results.order_by('module__code').values_list('module', flat=True).distinct()
-        modules_data = {}
+        modules = (
+            Module.objects.order_by('code')
+            .filter(id__in=Subquery(self.object_list.values('module')))
+            .annotate(
+                teaching=Avg('feedback__rate_tutor'),
+                content=Avg('feedback__rate_content'),
+                facilities=Avg('feedback__rate_facilities'),
+                admin=Avg('feedback__rate_admin'),
+                catering=Avg('feedback__rate_refreshments'),
+                accom=Avg('feedback__rate_accommodation'),
+                average=Avg('feedback__avg_score'),
+                sent=Count('feedback__id'),
+                returned=Count('feedback__id', filter=Q(feedback__submitted__isnull=False)),
+                high_scorers=Count('feedback__id', filter=Q(feedback__avg_score__gt=3.5)),
+                total_scored=Count('feedback__id', filter=Q(feedback__avg_score__isnull=False)),
+            )
+        )
+        for module in modules:
+            if module.total_scored:
+                module.satisfied = module.high_scorers / module.total_scored * 100
 
-        for module in year_modules:
-            module_results = year_results.filter(module=module)
-            module_data = {}
-            module_code = module_results[0].module.code
-            module_data['module_title'] = module_results[0].module.title
-            module_data['avg_teaching'] = services.get_mean_value(
-                module_results.values_list('rate_tutor', flat=True).filter(rate_tutor__gt=0)
-            )
-            module_data['avg_content'] = services.get_mean_value(
-                module_results.values_list('rate_content', flat=True).filter(rate_content__gt=0)
-            )
-            module_data['avg_facilities'] = services.get_mean_value(
-                module_results.values_list('rate_facilities', flat=True).filter(rate_facilities__gt=0)
-            )
-            module_data['avg_admin'] = services.get_mean_value(
-                module_results.values_list('rate_admin', flat=True).filter(rate_admin__gt=0)
-            )
-            module_data['avg_catering'] = services.get_mean_value(
-                module_results.values_list('rate_refreshments', flat=True).filter(rate_refreshments__gt=0)
-            )
-            module_data['avg_accommodation'] = services.get_mean_value(
-                module_results.values_list('rate_accommodation', flat=True).filter(rate_accommodation__gt=0)
-            )
-            module_data['average'] = services.get_mean_value(
-                [
-                    module_data['avg_teaching'],
-                    module_data['avg_content'],
-                    module_data['avg_facilities'],
-                    module_data['avg_admin'],
-                    module_data['avg_catering'],
-                    module_data['avg_accommodation'],
-                ]
-            )
-            module_data['sent'] = module_results.count()
-            module_data['returned'] = module_results.filter(submitted__isnull=False).count()
-            high_scorers = module_results.filter(avg_score__gt=3.5).count()
-            total_scored = module_results.filter(avg_score__isnull=False).count()
-
-            try:
-                module_data['satisfied'] = int(float(high_scorers) / float(total_scored) * 100)
-            except ZeroDivisionError:
-                module_data['satisfied'] = None
-
-            modules_data[module_code] = module_data
-
-        context['modules_list'] = modules_data
+        context['modules_list'] = modules
         return context
 
 
@@ -274,17 +222,35 @@ class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
         return f'Results for {module_title}({self.code})'
 
     def get_queryset(self):
-        module_results = Feedback.objects.filter(module__code=self.code)
-        return module_results
+        return Feedback.objects.filter(module__code=self.code)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        module_id = self.object_list.first().module.id
+        results = self.object_list
+        module = results[0].module
+        context['module'] = module
 
-        context['module_info'] = services.get_module_info(module_id)
-        context['module_summary'] = services.get_module_summary(module_id)
-        context['feedback_data_dict'] = services.get_module_feedback_details(module_id)
-        context['comments_list'] = services.get_module_comments(module_id)
+        module_data = results.aggregate(
+            teaching=Avg('rate_tutor'),
+            content=Avg('rate_content'),
+            facilities=Avg('rate_facilities'),
+            admin=Avg('rate_admin'),
+            catering=Avg('rate_refreshments'),
+            accommodation=Avg('rate_accommodation'),
+            average=Avg('avg_score'),
+            sent=Count('id'),
+            returned=Count('id', filter=Q(submitted__isnull=False)),
+            high_scorers=Count('id', filter=Q(avg_score__gt=3.5)),
+            total_scored=Count('id', filter=Q(avg_score__isnull=False)),
+        )
+        if module_data['total_scored']:
+            module_data['satisfied'] = module_data['high_scorers'] / module_data['total_scored'] * 100
+
+        context['module_score'] = module_data
+
+        # get only submitted rows
+        context['feedback'] = results.filter(submitted__isnull=False).order_by('submitted')
+        context['comments_list'] = FeedbackAdmin.objects.filter(module=module).order_by('updated')
 
         return context
 

@@ -1,12 +1,14 @@
+from numbers import Number
+
 from django import template
 
 register = template.Library()
 
 
 @register.simple_tag
-def score_color(score):
+def score_color(score) -> str:
     """Color formats for the score values"""
-    if isinstance(score, (int, float)):
+    if isinstance(score, Number):
         if score > 3.5:
             return 'feedback-green'
         elif score > 2.5:
