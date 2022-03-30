@@ -88,7 +88,6 @@ def image_filename(instance: Module, filename: str) -> str:
 class Module(SignatureModel):
     code = UpperCaseCharField(
         max_length=12,
-        help_text='For details on codes, see <link>',
         validators=[RegexValidator(r'^[A-Z]\d{2}[A-Z]\d{3}[A-Z]\w[A-Z]$', message='Must be in the form A12B345CDE')],
         unique=True,
     )

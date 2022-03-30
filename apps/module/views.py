@@ -132,7 +132,7 @@ class CopyWebFields(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gen
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
     model = models.Module
     form_class = forms.EditForm
-    template_name = 'core/form.html'
+    template_name = 'module/form.html'
     success_message = 'Details updated.'
 
     def form_valid(self, form) -> http.HttpResponse:
