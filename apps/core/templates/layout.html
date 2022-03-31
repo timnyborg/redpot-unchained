@@ -5,10 +5,15 @@
 
 <!DOCTYPE html>
 <head>
-    <title>Redpot unchained{% if title %} – {{ title }} {% if subtitle %} – {{ subtitle }} {% endif %} {% endif %}</title>
+    <title>
+        {% if title %}
+            {{ title }}{% if subtitle %} – {{ subtitle }}{% endif %}
+        {% else %}
+            Redpot unchained
+        {% endif %}
+    </title>
 
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link rel="apple-touch-icon" href="{% static 'images/favicon.png' %}">
 
     {% block head %}{% endblock %}
 

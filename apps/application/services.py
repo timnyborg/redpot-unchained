@@ -37,11 +37,11 @@ def create_student_from_application(*, application, user: User) -> Student:
         gender=application.gender,
         disability=application.disability,
         disability_detail=application.disability_details,
-        # todo: complex _id assignments can be sorted if required for all applications
+        # todo: the _id fields' logic could be simplified if the fields were required for all applications
         ethnicity_id=application.ethnicity.id if application.ethnicity else NOT_KNOWN_ETHNICITY,
         nationality_id=application.nationality.id if application.nationality else NOT_KNOWN_NATIONALITY,
         domicile_id=application.domicile.id if application.domicile else NOT_KNOWN_DOMICILE,
-        religion_or_belief_id=application.religion if application.religion else NOT_KNOWN_RELIGION,
+        religion_or_belief_id=application.religion.id if application.religion else NOT_KNOWN_RELIGION,
         highest_qualification=application.entry_qualification,
         occupation=application.occupation,
         dars_optout=not application.dars_optin,
