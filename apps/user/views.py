@@ -1,4 +1,6 @@
+import django_tables2 as tables
 from django_auth_ldap import backend
+from django_filters.views import FilterView
 
 from django import http
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -10,7 +12,7 @@ from django.views import generic
 from apps.core.models import User
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 
-from . import forms
+from . import datatables, forms
 
 
 class EditProfile(
@@ -58,3 +60,14 @@ class New(PageTitleMixin, SuccessMessageMixin, PermissionRequiredMixin, generic.
 
     def get_success_url(self) -> str:
         return reverse('user:edit', kwargs={'pk': self.object.pk})
+
+
+class Search(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableMixin, FilterView):
+    """Filterable list of change requests"""
+
+    permission_required = 'core.view_user'
+    model = User
+    table_class = datatables.SearchTable
+    filterset_class = datatables.SearchFilter
+    template_name = 'core/search.html'
+    subtitle = 'Search'

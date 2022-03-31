@@ -182,8 +182,8 @@ other_children = (
         icon='users',
         check=lambda request: request.user.has_perm('core.add_user'),
         children=(
-            MenuItem('Search', 'not-implemented', icon='search'),
-            MenuItem('New', reverse('user:new'), icon='user-plus'),
+            MenuItem('Search', reverse('user:search'), icon='search'),
+            MenuItem('New', reverse('user:new'), icon='user-plus', separator=True),
         ),
     ),
     MenuItem("Staff listing", reverse('staff_list:home'), icon='address-card'),
