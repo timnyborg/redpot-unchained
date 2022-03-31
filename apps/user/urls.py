@@ -7,4 +7,5 @@ urlpatterns = [
     path('edit', views.EditProfile.as_view(), name='edit'),
     path('edit/<int:pk>', views.EditProfile.as_view(), name='edit'),
     path('new', views.New.as_view(), name='new'),
+    path('search', views.Search.as_view(), name='search'),
 ]
