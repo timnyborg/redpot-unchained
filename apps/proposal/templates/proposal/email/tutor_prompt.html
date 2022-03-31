@@ -1,0 +1,50 @@
+<html lang="">
+<div style="font-family:Calibri;">
+    <p>Dear {{ proposal.tutor.student }},</p>
+    <p>
+        You are cordially invited to submit your course proposal(s) for
+        {{ academic_year }}-{{ academic_year|add:1 }} courses.
+    </p>
+    <p>
+        <i><b> This email should be saved so you can revisit the link as and when you wish, until you have completed
+        your proposal.</b></i>
+    </p>
+    <p>
+        Please follow the link below to complete your course proposal. A ‘SETTING UP YOUR COURSE’ guide is provided
+        on the right hand side of the page and this should be reviewed before you start completing your proposal.
+        Do not send for approval until you are happy with all of your input.
+    </p>
+    <p>
+        <b>Important note:</b> Please check the Course Summary page to ensure that the format of this course is as expected.
+        You should see the format set as ‘Weekly’ for a face to face  course or, ‘Online – live’ for a WOW course.
+    </p>
+    <p><a href="{{ app_url }}?u={{ link_hash }}">Course proposal for {{ proposal.title }}</a></p>
+
+    {% if messages %}
+        <p> Note that the director of studies has added the following message(s):</p>
+        {% for message in messages %}
+            <li><i>{{ message.message|safe }}</i></li>
+        {% endfor %}
+    {% endif %}
+    <p>Please submit your course for approval by <i><b>{{ proposal.due_date|date }}</b></i>. Proposals
+        received after this deadline may not be processed in time to be included in our printed prospectus.
+    </p>
+    <p>For further examples of completed course syllabi from the current year’s programme please see the main
+        department website at https://www.conted.ox.ac.uk.
+    </p>
+    <p>Please note that you are writing this course proposal not just for approval by your Director of Studies but
+        to entice prospective students to join your course as well. With this in mind we would ask you to review
+        the ‘Style and SEO guide’ which is there to assist you when writing the course proposal. The guide are
+        located as a resource within the ‘Course details’ tab at the top right hand side of the web page.
+    </p>
+    <p>Your proposal will be sent directly to your Director of Studies, {{ proposal.dos.get_full_name }}, on submission. Course
+        approval may involve some further negotiation with you if there are items that they wish to amend so you
+        may receive a request to amend after your original submission. After the course has been approved, it will
+        be formally added to the programme and published in our prospectus and on the departmental website.
+    </p>
+    <p>If you have any questions about the course proposal process, please do not hesitate to contact us or, if you
+        have an academic-related query, your Director of Studies.
+    </p>
+    {% include 'proposal/email/signature.html' %}
+</div>
+</html>

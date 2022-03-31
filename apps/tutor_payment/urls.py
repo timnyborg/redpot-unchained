@@ -17,6 +17,7 @@ quick_payments_patterns = (
 urlpatterns = [
     path('new/<int:tutor_module_id>', views.Create.as_view(), name='new'),
     path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
+    path('view/<int:pk>', views.View.as_view(), name='view'),
     path('delete/<int:pk>', views.Delete.as_view(), name='delete'),
     path('export/', views.Export.as_view(), name='export'),
     path('transfer/', views.Transfer.as_view(), name='transfer'),

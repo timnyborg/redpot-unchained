@@ -19,7 +19,7 @@ from apps.core.utils.mail_merge import MailMergeView
 from apps.core.utils.urls import next_url_if_safe
 from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitleMixin
 from apps.discount.models import Discount
-from apps.enrolment.models import Enrolment
+from apps.enrolment.models import CONFIRMED_STATUSES, Enrolment
 from apps.fee.models import FeeTypes
 from apps.invoice.models import ModulePaymentPlan
 from apps.tutor.utils import expense_forms
@@ -132,7 +132,7 @@ class CopyWebFields(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gen
 class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
     model = models.Module
     form_class = forms.EditForm
-    template_name = 'core/form.html'
+    template_name = 'module/form.html'
     success_message = 'Details updated.'
 
     def form_valid(self, form) -> http.HttpResponse:
@@ -277,18 +277,16 @@ class MoodleList(LoginRequiredMixin, ExcelExportView):
     def get_export_queryset(self):
         return Enrolment.objects.filter(
             module=self.module,
-            status__in=[10, 90],  # Todo: use a column or enum
+            status__in=CONFIRMED_STATUSES,
         )
 
 
 class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
     """Generates moodle IDs for all a module's students, redirecting back to the module page"""
 
-    http_method_names = ['get']
-
     # todo: convert to POST once we have a good POST-link solution,
     #  or even better, that link is ajax'ed and handles message popups!
-    def get(self, request, module_id: int) -> http.HttpResponse:
+    def post(self, request, module_id: int) -> http.HttpResponse:
         module = get_object_or_404(models.Module, pk=module_id)
         count = services.assign_moodle_ids(module=module, created_by=request.user.username)
         messages.success(request, f'{count} moodle ID(s) generated')
@@ -318,7 +316,7 @@ class EditHESASubjects(LoginRequiredMixin, PageTitleMixin, generic.detail.Single
         return self.object.get_absolute_url()
 
 
-class Uncancel(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+class Uncancel(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
     model = models.Module
     form_class = forms.UncancelForm
     template_name = 'module/uncancel.html'
@@ -330,7 +328,7 @@ class Uncancel(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.
         return super().form_valid(form)
 
 
-class Cancel(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
+class Cancel(LoginRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
     model = models.Module
     form_class = forms.CancelForm
     template_name = 'module/cancel.html'
@@ -503,3 +501,46 @@ class AwardPoints(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, 
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+
+# -- Reading list views --
+
+
+class AddBook(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.CreateView):
+    model = models.Book
+    form_class = forms.BookForm
+    template_name = 'core/form.html'
+    success_message = 'Book added: %(title)s'
+
+    def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
+        self.module = get_object_or_404(models.Module, pk=self.kwargs['module_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form) -> http.HttpResponse:
+        form.instance.module = self.module
+        return super().form_valid(form)
+
+
+class EditBook(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
+    model = models.Book
+    form_class = forms.BookForm
+    template_name = 'core/form.html'
+    success_message = 'Book updated: %(title)s'
+
+
+class DeleteBook(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.DeleteView):
+    model = models.Book
+    template_name = 'core/delete_form.html'
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, f'Book deleted: {self.object.title}')
+        return self.object.module.get_absolute_url() + '#reading-list'
+
+
+class RebuildRecommendedReading(LoginRequiredMixin, generic.View):
+    def post(self, request, *args, **kwargs) -> http.HttpResponse:
+        module = get_object_or_404(models.Module, pk=self.kwargs['pk'])
+        services.build_recommended_reading(module=module)
+        module.save()
+        messages.success(request, 'Reading list text recreated')
+        return redirect(module)

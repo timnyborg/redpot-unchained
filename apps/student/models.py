@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import json
 import random
 from datetime import date
-from typing import Optional
+from typing import Optional, Union
 
 from django.conf import settings
 from django.core import validators
@@ -41,41 +42,21 @@ class Student(SITSLockingModelMixin, SignatureModel):
     ]
 
     class MarketingOptinMethods(models.TextChoices):
-        APPLICATION_FORM = (
-            'Application form',
-            'Application form',
-        )
-        EMAIL = (
-            'Email',
-            'Email',
-        )
-        EMAIL_RESUBSCRIBE = (
-            'Email_resubscribe',
-            'Email resubscribe link',
-        )
-        IN_PERSON = (
-            'In_person',
-            'In-person',
-        )
-        NEWSLETTER = (
-            'Newsletter',
-            'Newsletter widget',
-        )
-        OTHER_FORM = (
-            'Other',
-            'Other form',
-        )
-        PHONE = (
-            'Phone',
-            'Phone',
-        )
-        WESBITE = 'Website', 'Website optin'
+        APPLICATION_FORM = 'Application form', 'Application form'
+        EMAIL = 'Email', 'Email'
+        EMAIL_RESUBSCRIBE = 'Email resubscribe link', 'Email resubscribe link'
+        IN_PERSON = 'In-person', 'In-person'
+        NEWSLETTER = 'Newsletter widget', 'Newsletter widget'
+        OTHER_FORM = 'Other form', 'Other form'
+        PHONE = 'Phone', 'Phone'
+        REGISTRATION_FORM = 'Registration form', 'Registration form'
+        WEBSITE = 'Website optin', 'Website optin'
 
     class Genders(models.TextChoices):
-        MALE = ('M', 'Male')
-        FEMALE = ('F', 'Female')
-        OTHER = ('I', 'Other')
-        UNKNOWN = ('', 'Unknown')
+        MALE = 'M', 'Male'
+        FEMALE = 'F', 'Female'
+        OTHER = 'I', 'Other'
+        UNKNOWN = '', 'Unknown'
 
     husid = models.BigIntegerField(blank=True, null=True, verbose_name='HESA ID')
     surname = models.CharField(max_length=40)
@@ -261,6 +242,27 @@ class StudentArchive(SignatureModel):
 
     class Meta:
         db_table = 'student_archive'
+
+    @property
+    def formatted_json(self) -> str:
+        """Bargain-basement way of rendering archive structure"""
+        return json.dumps(self.json, indent=4)
+
+    @property
+    def firstname(self) -> str:
+        """Extract the source firstname, whether in old (web2py) or new structure"""
+        self.json: Union[list, dict]
+        if isinstance(self.json, list):
+            return self.json[0].get('student', {}).get('firstname', 'Unknown')
+        return self.json.get('firstname', 'Unknown')
+
+    @property
+    def surname(self) -> str:
+        """Extract the source surname, whether in old (web2py) or new structure"""
+        self.json: Union[list, dict]
+        if isinstance(self.json, list):
+            return self.json[0].get('student', {}).get('surname', 'Unknown')
+        return self.json.get('surname', 'Unknown')
 
 
 class AddressQuerySet(models.QuerySet):
@@ -487,10 +489,11 @@ class Nationality(models.Model):
 class Domicile(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=64)
-    is_in_eu = models.BooleanField()
+    is_in_eu = models.BooleanField(default=False)
     hesa_code = models.CharField(max_length=8)
-    sort_order = models.IntegerField()
-    is_active = models.BooleanField()
+    sort_order = models.IntegerField(default=1)
+    is_active = models.BooleanField(default=True)
+    in_uk = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'domicile'
@@ -498,11 +501,6 @@ class Domicile(models.Model):
 
     def __str__(self) -> str:
         return str(self.name)
-
-    @property
-    def is_uk(self) -> bool:
-        # Todo: make a UK column
-        return self.pk in [240, 241, 242, 243]
 
 
 class Ethnicity(models.Model):

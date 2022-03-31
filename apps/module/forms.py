@@ -4,10 +4,12 @@ from dal import autocomplete
 from django_select2.forms import Select2MultipleWidget, Select2Widget
 
 from django import forms
+from django.conf import settings
 from django.core import exceptions
 from django.core.exceptions import NON_FIELD_ERRORS
 from django.forms import fields
 from django.forms.widgets import Textarea
+from django.utils.safestring import mark_safe
 
 from apps.core.utils import widgets
 from apps.enrolment.models import Enrolment
@@ -143,6 +145,14 @@ class EditForm(forms.ModelForm):
             'start_time': widgets.TimePickerInput(),
             'end_time': widgets.TimePickerInput(),
             'location': Select2Widget(),
+        }
+        help_texts = {
+            'code': mark_safe(
+                f"""
+                    For details on module codes, see
+                    <a href="{settings.REDPOT_DOCS_URL}/modules/#module-codes" target="_blank">the user guide</a>
+                """
+            )
         }
 
     def __init__(self, *args, **kwargs):
@@ -324,3 +334,28 @@ BaseAwardPointsFormSet = forms.inlineformset_factory(
 class AwardPointsFormSet(BaseAwardPointsFormSet):
     def get_queryset(self):
         return super().get_queryset().order_by('qa__student__surname', 'qa__student__firstname')
+
+
+class BookForm(forms.ModelForm):
+    class Meta:
+        model = models.Book
+        fields = [
+            'title',
+            'author',
+            'type',
+            'additional_information',
+            'solo_link',
+            'isbn_shelfmark',
+            'price',
+            'library_note',
+        ]
+        widgets = {'price': widgets.PoundInput()}
+        help_texts = {
+            'author': 'Please format as "Surname, Firstname (or initial)", e.g. "Swift, Jonathan"',
+            'type': (
+                'The preparatory list provides students with background to the materials and ideas that '
+                + 'will be covered on the course. The course list contains the main texts that will be read and '
+                + 'discussed during the course.'
+            ),
+            'additional_information': 'e.g. edition and other publication data',
+        }

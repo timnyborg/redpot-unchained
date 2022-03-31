@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 from django.urls import reverse
 
@@ -12,7 +14,7 @@ class Amendment(models.Model):
         related_name='amendments',
         related_query_name='amendment',
     )
-    requested_on = models.DateTimeField()
+    requested_on = models.DateTimeField(default=datetime.now)
     requested_by = models.ForeignKey(
         'core.User',
         on_delete=models.DO_NOTHING,
@@ -53,7 +55,9 @@ class Amendment(models.Model):
     transfer_invoice = models.ForeignKey(
         'invoice.Invoice', models.DO_NOTHING, db_column='transfer_invoice', blank=True, null=True, related_name='+'
     )
-    reason = models.ForeignKey('AmendmentReason', models.DO_NOTHING, db_column='reason')  # Null allowed for print-only
+    reason = models.ForeignKey(
+        'AmendmentReason', models.DO_NOTHING, db_column='reason', null=True  # Null allowed for print-only
+    )
     batch = models.IntegerField(blank=True, null=True)
     narrative = models.CharField(max_length=128)
     is_complete = models.BooleanField(

@@ -113,7 +113,7 @@ class AddressForm(SITSLockingFormMixin, forms.ModelForm):
             'type',
             'line1',
             'line2',
-            'line2',
+            'line3',
             'town',
             'countystate',
             'country',

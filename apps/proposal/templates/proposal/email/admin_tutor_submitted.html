@@ -1,0 +1,10 @@
+<html lang="">
+    <div style="font-family:Calibri;">
+        <p>Dear Weekly Classes,</p>
+        <p>This is regarding the course {{ proposal.title }}, which begins on {{ proposal.start_date|date }}</p>
+        <p>The tutor has submitted for DoS Approval.</p>
+        <p>You can see the request in its current state
+            <a href="{{ redpot_url }}{{ proposal.get_edit_url }}">on Redpot</a>.
+        </p>
+    </div>
+</html>

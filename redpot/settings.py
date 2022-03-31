@@ -10,8 +10,6 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from django.contrib import messages
 from django.core.management.utils import get_random_secret_key
 
-from . import ckeditor_backends
-
 # Get environment variables
 env = environs.Env()
 env.read_env('secrets.env')
@@ -56,6 +54,7 @@ PROJECT_APPS = [
     'apps.core',
     'apps.amendment',
     'apps.application',
+    'apps.banner',
     'apps.booking',
     'apps.contract',
     'apps.discount',
@@ -65,10 +64,12 @@ PROJECT_APPS = [
     'apps.finance',
     'apps.hesa',
     'apps.invoice',
+    'apps.marketing',
     'apps.module',
     'apps.programme',
     'apps.proposal',
     'apps.qualification_aim',
+    'apps.reminder',
     'apps.student',
     'apps.task_progress',
     'apps.transcript',
@@ -79,6 +80,7 @@ PROJECT_APPS = [
     'apps.staff_forms',
     'apps.waitlist',
     'apps.website_account',
+    'apps.website_basket',
 ]
 
 THIRD_PARTY_APPS = [
@@ -251,9 +253,17 @@ WEBSITE_MEDIA_URL = env('WEBSITE_MEDIA_URL', default=MEDIA_URL)
 PROTECTED_MEDIA_URL = env('PROTECTED_MEDIA_URL', default='/protected-media/')
 PROTECTED_MEDIA_ROOT: Path = env.path('PROTECTED_MEDIA_ROOT', default=BASE_DIR / 'protected_media')
 
-
 # URL for accessing application attachments managed by a separate app, with its own auth
 APPLICATION_ATTACHMENT_URL = env('APPLICATION_ATTACHMENT_URL', default='')
+
+# URL for accessing the admin section of the course proposal app
+COURSE_PROPOSAL_ADMIN_URL = env('COURSE_PROPOSAL_ADMIN_URL', default='')
+
+# URL for accessing the documentation/user guide, while it's hosted as a separate project
+REDPOT_DOCS_URL = env('REDPOT_DOCS_URL', default='/docs/')
+
+# URL for accessing legacy jsonrpc API
+RP_API_URL = env('RP_API_URL', default='')
 
 # Login customization
 LOGIN_REDIRECT_URL = '/'
@@ -311,6 +321,9 @@ SQUARE_URL = env(
     default='https://square.conted.ox.ac.uk/reports',
     validate=validate.URL(schemes=['https']),
 )
+PUBLIC_APPS_URL = env(
+    'PUBLIC_APPS_URL', default='https://apps.conted.ox.ac.uk', validate=validate.URL(schemes=['https'])
+)
 
 # Celery task queue - TODO: get this using the same settings as the cache
 redis_host = env('REDIS_HOST', default='redis')
@@ -320,14 +333,13 @@ password_component = f':{redis_password}@' if redis_password else ''  # Only add
 CELERY_BROKER_URL = f"redis://{password_component}{redis_host}:{redis_port}/1"
 
 CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_EXPIRES = env.int('CELERY_RESULT_EXPIRES', default=3600 * 24 * 365)  # Keep a year of results by default
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 # Since we have USE_TZ = False, celery beats must also be set to be timezone-naive
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 
-# Legacy redpot url for cross-app mapping
-W2P_REDPOT_URL = env('W2P_REDPOT_URL', default='https://redpot-staging.conted.ox.ac.uk', validate=validate.URL())
 # Website url for outbound linking
 PUBLIC_WEBSITE_URL = env('PUBLIC_WEBSITE_URL', default='https://conted.ox.ac.uk', validate=validate.URL())
 PUBLIC_APPS_URL = env('PUBLIC_APPS_URL', default='https://apps.conted.ox.ac.uk', validate=validate.URL())
@@ -349,11 +361,6 @@ WPM_FTP = env.dict(
 )
 
 CKEDITOR_CONFIGS = {
-    # todo: implement old config features where still required:
-    #       - image upload (django-ckeditor's inbuilt handling may be preferable)
-    #       - website css rules
-    #       - basehref
-    #       - default image alignment (config.js)
     'default': {
         'toolbar': 'custom',
         'toolbar_custom': [
@@ -374,7 +381,6 @@ CKEDITOR_CONFIGS = {
             [
                 # element[attributes]{styles}(classes)
                 # See: https://ckeditor.com/docs/ckeditor4/latest/guide/dev_allowed_content_rules.html
-                # Todo: triage these rules and make them stricter (esp. attributes)
                 'audio[*]',
                 'video[*]',
                 'source[*]',
@@ -384,6 +390,15 @@ CKEDITOR_CONFIGS = {
         ),
         'width': '100%',
         'removeDialogTabs': 'image:advanced;link:advanced',
+        'contentsCss': [
+            # css to replicate website styling
+            'https://code.cdn.mozilla.net/fonts/fira.css',
+            'https://use.fontawesome.com/releases/v5.7.2/css/all.css',
+            PUBLIC_WEBSITE_URL + '/static/vendor/bootstrap/css/bootstrap.min.css',
+            CANONICAL_URL + STATIC_URL + 'css/ckeditor.css',  # absolute to avoid relative to baseHref
+        ],
+        'baseHref': WEBSITE_MEDIA_URL,
+        'filebrowserBrowseUrl': '',  # no browse button
     },
     'links_only': {
         'toolbar': 'custom',
@@ -401,7 +416,7 @@ CKEDITOR_CONFIGS = {
 }
 CKEDITOR_STORAGE_BACKEND = 'redpot.storage_backends.WebsiteStorage'
 CKEDITOR_FORCE_JPEG_COMPRESSION = True
-CKEDITOR_IMAGE_BACKEND = ckeditor_backends.IMAGE_BACKEND_LABEL
+CKEDITOR_IMAGE_BACKEND = 'redpot.ckeditor_backends.ResizingPillowBackend'
 CKEDITOR_UPLOAD_PATH = 'uploads/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -412,7 +427,7 @@ HIJACK_INSERT_BEFORE = None  # Disable built-in popup
 # Contract configuration - todo: consider moving into a settings table once we have one, consider a file:// url fetcher
 CONTRACT_SIGNATORY = env('CONTRACT_SIGNATORY', default='')
 CONTRACT_SIGNATURE_IMAGE = env('CONTRACT_SIGNATURE_IMAGE', default='')  # a path within the media folder
-CONTRACT_SIGNATURE_EMAILS = env.list('CONTRACT_SIGNATURE_EMAILS', default='')
+CONTRACT_SIGNATURE_EMAILS = env.list('CONTRACT_SIGNATURE_EMAILS', default=[PERSONNEL_EMAIL])
 
 # background watermark for non-production instances
 WATERMARK = env('WATERMARK', default='')

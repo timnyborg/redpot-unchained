@@ -174,9 +174,9 @@ class TestCreatePaymentPlan(LoggedInViewTestMixin, TestCase):
         response = self.client.post(
             self.url,
             data={
-                'type': models.PaymentPlan.CUSTOM_TYPE,
+                'type': models.CUSTOM_TYPE,
                 'amount': 100,
-                'status': models.PaymentPlan.CUSTOM_PENDING_STATUS,
+                'status': models.PaymentPlan.Statuses.PENDING_CUSTOM,
             },
         )
         self.assertEqual(response.status_code, 302)

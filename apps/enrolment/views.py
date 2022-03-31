@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Prefetch
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views import generic
 
@@ -13,7 +13,9 @@ import apps.student.services as student_services
 from apps.core.utils import strings
 from apps.core.utils.views import AutoTimestampMixin, DeletionFailedMessageMixin, PageTitleMixin
 from apps.finance.models import Ledger, TransactionTypes
+from apps.invoice.models import Invoice
 from apps.qualification_aim.models import QualificationAim
+from apps.student.models import Student
 
 from . import datatables, forms, models, pdfs, services
 
@@ -108,10 +110,11 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         context['catering'] = self.object.catering.select_related('fee')
         context['accommodation'] = self.object.accommodation.select_related('limit')
         # Determine which amendments are possible, given the financial history of the enrolment
-        amendment_options = {
+        context['amendment_options'] = {
             'online': self.has_payment_of_type(TransactionTypes.ONLINE),
             'credit_card': self.has_payment_of_type(TransactionTypes.CREDIT_CARD),
             'rcp': self.has_payment_of_type(TransactionTypes.RCP),
+            'any': self.object.ledger_set.count() > 0,
         }
         context['amendment_table'] = datatables.AmendmentTable(
             data=self.object.amendments.filter(is_complete=False)
@@ -120,8 +123,6 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
             prefix='amendments-',
             request=self.request,
         )
-        amendment_options['any'] = any(amendment_options.values())
-        context['amendment_options'] = amendment_options
         context['payment_disabled'] = not self.object.ledger_set.cash().uninvoiced().exists()
         return context
 
@@ -166,3 +167,40 @@ class StatementPDF(LoginRequiredMixin, generic.View):
         return http.HttpResponse(
             document, content_type='application/pdf', headers={'Content-Disposition': f'inline;filename={filename}'}
         )
+
+
+class ConfirmationEmail(LoginRequiredMixin, generic.View):
+    """Sends a confirmation email to the admin, which they can amend and send to the student."""
+
+    def get(self, request, *args, **kwargs):
+        # Can be provided a single enrolment (0+ invoices) or a single invoice (1+ enrolments)
+        if self.kwargs.get('enrolment'):
+            # Get related invoices
+            enrolment = get_object_or_404(models.Enrolment, pk=self.kwargs['enrolment'])
+            invoices = Invoice.objects.filter(ledger_items__enrolment=enrolment).distinct()
+            enrolments = [enrolment]
+            redirect_target = enrolment
+        elif self.kwargs.get('invoice'):
+            # Get related enrolments
+            invoice = get_object_or_404(Invoice, pk=self.kwargs['invoice'])
+            enrolments = models.Enrolment.objects.filter(ledger__invoice=invoice).distinct()
+            invoices = [invoice]
+            redirect_target = invoice
+        else:
+            raise ValueError('ConfirmationEmail requires `enrolment` or `invoice`')
+
+        # Ensure we only have a single student (in the case of multiple enrolments)
+        students = Student.objects.filter(qa__enrolment__in=enrolments).distinct()
+        if students.count() > 1:
+            messages.error(request, 'Cannot produce a confirmation for multiple students')
+            return redirect(redirect_target)
+        if not request.user.email:
+            messages.error(request, 'You do not have an email address defined in your profile')
+            return redirect(redirect_target)
+
+        student = students.first()
+
+        services.send_confirmation_email(student=student, enrolments=enrolments, invoices=invoices, user=request.user)
+
+        messages.success(request, 'Email sent to your inbox for review')
+        return redirect(redirect_target)

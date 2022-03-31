@@ -148,12 +148,6 @@ def duration(seconds: int) -> str:
     return f'{minutes} minutes'
 
 
-@register.inclusion_tag('utility/google_tag_manager.html', takes_context=True)
-def google_tag_manager_script(context: dict) -> str:
-    context['google_tag_manager_id'] = settings.GOOGLE_TAG_MANAGER_ID
-    return context
-
-
 @register.simple_tag
 def square_url(*args, **kwargs) -> str:
     """Generates a link to a Square report

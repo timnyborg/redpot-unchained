@@ -1,0 +1,38 @@
+<html lang="">
+<div style="font-family:Calibri;">
+    <p>Dear {{ proposal.dos.first_name }},</p>
+    <p>This is regarding the course {{ proposal.title }}, due to commence on {{ proposal.start_date|date }},
+        which requires your approval. </p>
+    <p>The link at the bottom of this email will take you to a web page in which you can review the details for the
+        above, and other courses your tutors may have submitted for your approval.
+        <br/>For each course, the information is divided into four sections you can access via the the blue
+        buttons, and eventually sign off on with the green button, as shown below.
+        <br/>There is an additional button on the right you could use to return the proposal to the tutor, asking
+        for amendments. You can also use it to review previous message correspondence regarding this proposal.</p>
+    <p>We request that you review the details within each section. There is a blue ‘save changes’ button on each
+        page which you should use once you are happy with the information provided in the page, even if no changes
+        have been made.
+    </p>
+    <ol>
+        <li>Tutor Details – Information only – This section provides you with basic tutor info that will require no
+            amendment.
+        </li>
+        <li>Course Summary – This section is where the key course facts are located i.e. title, subject area,
+            dates, etc. Please check the details and click ‘save changes’ once you are happy. If there is any
+            incorrect information in this section please inform the Weekly Classes office at your earliest
+            convenience.
+        </li>
+        <li>Course Details – In this section you will find the course description, programme details, etc. Please
+            review, amend if and where required, and save your changes.
+        </li>
+        <li>Reading List – This section contains the reading the tutor specified for this course sorted into two
+            lists. Please review and possibly suggest additional material.
+        </li>
+    </ol>
+    <p>Please review and approve the proposal form by following
+        <a href="{{ app_url }}?u={{ link_hash }}">this link</a>
+    </p>
+    <p>Kind regards,</p>
+    <p>The Weekly Classes team</p>
+</div>
+</html>

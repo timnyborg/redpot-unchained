@@ -1,0 +1,13 @@
+{% extends 'core/form_9_3.html' %}
+
+{% block right_sidebar %}
+    <div id="sidenav" class="sticky-sidebar section">
+        <h4>Resources</h4>
+        <ul>
+            <li><a href="https://intranet.conted.ox.ac.uk/attachments/article/172/OUDCEWriting-one-sheet.pdf" target="_blank">Style & SEO guide</a></li>
+            <li><a href="https://resourcespace.conted.ox.ac.uk" target="_blank">ResourceSpace (images)</a></li>
+        </ul>
+        <hr/>
+        <input type="submit" class='btn btn-primary' form="edit-form" value="{{ form.submit_label|default:'Save' }}">
+    </div>
+{% endblock %}

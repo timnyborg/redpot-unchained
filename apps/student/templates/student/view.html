@@ -67,7 +67,7 @@
                 <dt class="col-sm-4">Merged on</dt><dd class="col-sm-8 mb-0">{{ last_merger.modified_on | date:'SHORT_DATE_FORMAT' }}</dd>
             </dl>
             <!-- TODO: Create Merge history link page -->
-            <a href="/student/merge-history/{{ last_merger.target }}" class="btn btn-secondary btn-xs mb-3">
+            <a href="{% url 'student:merge-history' student.id %}" class="btn btn-secondary btn-xs mb-3">
                 <span class="fas fa-layer-group"></span> Merge history
             </a>
             {% endif %}
@@ -390,11 +390,6 @@
             <li><a class="dropdown-item" href="{% url 'student:statement' student.id %}" target="_blank">
                 <i class="fas fa-fw fa-pound-sign"></i> Statement
             </a></li>
-            {% if qa_list.qa_certhe %}
-                <li><a class="dropdown-item" href="/student/certhe_progress/{{student.id}}" target="_blank">
-                    <i class="fas fa-fw fa-certificate"></i> CertHE progress report
-                </a></li>
-            {% endif %}
             {% if perms.transcript.print %}
                 <li class="dropdown-divider"></li>
                 <li class="dropdown-header">Transcripts</li>
@@ -526,14 +521,14 @@
             </div>
             <div>
                 Last logged in
-                <span class="timeago"
+                <time class="timeago"
                       datetime="{{ login.last_login}}"
                       data-bs-toggle="tooltip"
                       data-placement="bottom"
                       title="{{ login.last_login | date:'j M Y H:i' }}"
                 >
                     {{ login.last_login }}
-                </span>
+                </time>
             </div>
         </li>
         {% endfor %}
@@ -569,7 +564,7 @@
 
     <dl class='row'><dt class="col-sm-2"> Moodle ID</dt>
     {% if moodle_id %}
-        <dd class="col-sm-6 mb-0">{{ moodle_id.id }} <a href="{% url 'student:moodle-id:edit' moodle_id.id  %}"><span class="fas fa-fw fa-pencil-alt"></span></a></dd>
+        <dd class="col-sm-6 mb-0">{{ moodle_id.moodle_id }} <a href="{% url 'student:moodle-id:edit' moodle_id.id  %}"><span class="fas fa-fw fa-pencil-alt"></span></a></dd>
     {% else %}
         <dd class="col-sm-6 mb-0">N/A <a href="{% url 'student:moodle-id:new' student.id %}"><i class="fas fa-plus"></i></a></dd>
     {% endif %}
@@ -577,9 +572,9 @@
 
 </div>
 
+{% if enquiries %}
 <div class="section">
     <h2 id='enquiries' class='section-title'>Enquiries</h2>
-    {% if enquiries %}
     <table class="table table-hover hide-rows" data-display='3'>
     <thead><tr><th>Date</th><th>Module</th><th>Title</th><th>Details</th><th></th></tr></thead>
     <tbody>
@@ -615,8 +610,8 @@
     {% endfor %}
     </tbody>
     </table>
-    {% endif %}
 </div>
+{% endif %}
 
 {% if tutor.id %}
 <div class="section">
@@ -681,11 +676,15 @@
     <br>
 
     <h5>Biography</h5>
+    {% if tutor.biography %}
     <div class='card bg-light mb-3'>
         <div class="card-body">
-            {{tutor.custom_biography}}
+            {{ tutor.biography|safe }}
         </div>
     </div>
+    {% else %}
+        <p>None</p>
+    {% endif %}
 
     {% if tutor.tutorsubjects.all %}
         <h5>Subjects</h5>

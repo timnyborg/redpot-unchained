@@ -158,9 +158,11 @@ def add_enrolment_fee(*, enrolment_id: int, fee_id: int, discount: int = 0, user
         user=user,
     )
 
+    signature_fields = {'created_by': user.username, 'modified_by': user.username}
+
     # If the fee is victual-related, add in a catering line.
     if fee.is_catering:
-        Catering.objects.create(fee=fee, enrolment_id=enrolment_id)
+        Catering.objects.create(fee=fee, enrolment_id=enrolment_id, **signature_fields)
 
     # If the fee is accomodation-related, add in an accommodation line.
     if fee.is_single_accom or fee.is_twin_accom:
@@ -168,6 +170,7 @@ def add_enrolment_fee(*, enrolment_id: int, fee_id: int, discount: int = 0, user
             type=Accommodation.Types.SINGLE if fee.is_single_accom else Accommodation.Types.TWIN,
             limit=fee.limit,
             enrolment_id=enrolment_id,
+            **signature_fields,
         )
     return ledger_transaction
 

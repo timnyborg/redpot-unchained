@@ -42,7 +42,7 @@
         let cancelButton = exampleModal.querySelector('#cancel-button')
 
         modalTitle.textContent = title
-        modalBody.textContent = body
+        modalBody.innerHTML = body
         confirmButton.textContent = confirm_text
         cancelButton.textContent = cancel_text
         confirmButton.classList.add(confirm_class)

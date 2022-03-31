@@ -31,7 +31,7 @@ class Create(LoginRequiredMixin, generic.View):
             'created_by': self.request.user.username,
         }
         student = Student.objects.create(**kwargs, **signature_fields)
-        if 'email' in kwargs:
+        if kwargs.get('email'):
             Email.objects.create(student=student, email=kwargs['email'], is_default=True, **signature_fields)
         return student
 
@@ -197,7 +197,6 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
             )
         )
         qa_list.total_enrolments = sum(qa.enrolments.count() for qa in qa_list)
-        qa_list.qa_certhe = any(qa.programme.is_certhe for qa in qa_list)
 
         for qa in qa_list:
             if qa.programme.qualification.id == 1:
@@ -289,16 +288,16 @@ class Merge(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
     def form_valid(self, form) -> http.HttpResponse:
         records = form.cleaned_data['records']
         try:
-            target = services.merge.merge_multiple_students(records)
+            target = services.merge.merge_multiple_students(students=records, user=self.request.user)
         except services.merge.CannotMergeError as e:
             form.add_error('records', e)
             return self.form_invalid(form)
 
-        messages.success(self.request, f'{len(records)-1} records merged into {target}')
+        messages.success(self.request, f'{len(records)-1} record(s) merged into {target}')
         return redirect(target)
 
 
-class Marketing(PageTitleMixin, generic.UpdateView):
+class Marketing(PageTitleMixin, AutoTimestampMixin, generic.UpdateView):
     model = Student
     form_class = forms.MarketingForm
     template_name = 'student/marketing.html'
@@ -554,3 +553,13 @@ class StatementPDF(LoginRequiredMixin, generic.View):
         return http.HttpResponse(
             document, content_type='application/pdf', headers={'Content-Disposition': f'inline;filename={filename}'}
         )
+
+
+class MergeHistory(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
+    template_name = 'student/merge_history.html'
+    model = Student
+    subtitle = 'Merge history'
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        return {**context, 'merge_history': StudentArchive.objects.filter(target=self.object.pk)}

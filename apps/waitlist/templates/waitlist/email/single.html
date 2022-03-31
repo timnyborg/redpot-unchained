@@ -1,0 +1,42 @@
+<html lang="en">
+<body>
+<div style="width:100%; background-color:#fcf8e3; border:1px solid #faebcc; color: #8a6d3b; font-family:Calibri; margin:10px;">
+    <h3>Please review this email and then forward it to the student: <i>[email: {{ student_email }}]</i></h3>
+</div>
+<div style="font-family:Calibri;">
+    <p>Dear {{ student.firstname }},</p>
+    <p>
+        As you are on our waiting list, this is to let you know that a place has just become available on the course
+        <i>{{ module.title }}</i> ({{ module.location }}), taking place on {{ module.start_date|date:'l j M Y' }}.
+    </p>
+    <p>
+        If you would like to accept this place then please let us know ASAP, but no later than
+        {{ due_date|date:'l j M Y' }} and we can book you onto the course.<br/>
+    </p>
+    {# Todo: this portfolio-specific templating really shouldn't be in here. Should probably be a customization table #}
+    {% if module.portfolio_id == 31 %} {# D/W #}
+        <p>
+            We will need to know if you require any lunch or just the tuition fee.<br/>
+            Please download and complete the
+            <a href="https://www.conted.ox.ac.uk/mnt/attachments/DW Enrolment Form.pdf">enrolment form</a>
+            and attach it to your reply email.
+        </p>
+    {% elif module.portfolio_id == 17 or module.portfolio_id == 32 %} {# Weekly, Online #}
+        <p>
+            Please also download and fill in the enrolment form
+            (<a href="https://www.conted.ox.ac.uk/mnt/attachments/weekly-class-enrolment-form.pdf">PDF </a>
+            or <a href="https://www.conted.ox.ac.uk/mnt/attachments/weekly-classes-enrolment-form.doc"> Word</a>)
+            and attach it to your reply email.
+        </p>
+    {% endif %}
+    <p>
+        If we hear from you within the time given, then we will book you onto the course and email you an invoice for
+        payment which you can then pay online.<br/>
+    </p>
+    <p>
+        We look forward to hearing from you shortly.
+    </p>
+    {% include 'waitlist/email/signature.html' %}
+</div>
+</body>
+</html>

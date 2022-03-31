@@ -75,7 +75,6 @@ class Migration(migrations.Migration):
                 (
                     'code',
                     apps.core.utils.models.UpperCaseCharField(
-                        help_text='For details on codes, see <link>',
                         max_length=12,
                         unique=True,
                         validators=[

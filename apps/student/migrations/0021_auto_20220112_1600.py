@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='student',
             name='email_optin_method',
-            field=models.CharField(blank=True, choices=[('Application form', 'Application form'), ('Email', 'Email'), ('Email_resubscribe', 'Email resubscribe link'), ('In_person', 'In-person'), ('Newsletter', 'Newsletter widget'), ('Other', 'Other form'), ('Phone', 'Phone'), ('Website', 'Website optin')], help_text='How did this person sign up to receive marketing email?', max_length=47, null=True),
+            field=models.CharField(blank=True, choices=[('Application form', 'Application form'), ('Email', 'Email'), ('Email resubscribe link', 'Email resubscribe link'), ('In-person', 'In-person'), ('Newsletter widget', 'Newsletter widget'), ('Other form', 'Other form'), ('Phone', 'Phone'), ('Registration form', 'Registration form'), ('Website optin', 'Website optin')], help_text='How did this person sign up to receive marketing email?', max_length=47, null=True),
         ),
         migrations.AlterField(
             model_name='student',
@@ -28,7 +28,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='student',
             name='mail_optin_method',
-            field=models.CharField(blank=True, choices=[('Application form', 'Application form'), ('Email', 'Email'), ('Email_resubscribe', 'Email resubscribe link'), ('In_person', 'In-person'), ('Newsletter', 'Newsletter widget'), ('Other', 'Other form'), ('Phone', 'Phone'), ('Website', 'Website optin')], max_length=47, null=True),
+            field=models.CharField(blank=True, choices=[('Application form', 'Application form'), ('Email', 'Email'), ('Email resubscribe link', 'Email resubscribe link'), ('In-person', 'In-person'), ('Newsletter widget', 'Newsletter widget'), ('Other form', 'Other form'), ('Phone', 'Phone'), ('Registration form', 'Registration form'), ('Website optin', 'Website optin')], max_length=47, null=True),
+
         ),
         migrations.AlterField(
             model_name='student',

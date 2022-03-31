@@ -2,7 +2,6 @@ from datetime import datetime
 
 from django.conf import settings
 from django.core.mail import EmailMessage
-from django.db.models import Q
 from django.template.loader import render_to_string
 
 from apps.core.utils.celery import mail_on_failure
@@ -23,19 +22,18 @@ def update_module_statuses() -> int:
         # And some simple exclusions:
         .exclude(
             # courses not yet publishable
-            Q(is_published=False)
-            & Q(publish_date__gt=datetime.now()),
+            is_published=False,
+            publish_date__gt=datetime.now(),
         )
         .exclude(
             # courses long since unpublished
-            Q(is_published=False)
-            & Q(unpublish_date__lt=datetime.now()),
+            is_published=False,
+            unpublish_date__lt=datetime.now(),
         )
         .order_by('id')
     )
 
     for module in modules:
-        # Only commit on updates
         result = module.update_status()
         if result['changed'] and module.email and 'conted' in module.email:  # Don't email non-departmental addresses
             # Email the update

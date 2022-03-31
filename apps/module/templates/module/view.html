@@ -268,7 +268,7 @@
                 </ul>
             {% endif %}
 
-            <h6 class="mt-3">Course Status</h6>
+            <h6 class="mt-3">Course status</h6>
             <a href="#"
                class="btn btn-primary {% if module.status.id == 33 %}disabled{% else %}dropdown-toggle{% endif %}"
                data-bs-toggle="dropdown"
@@ -290,9 +290,21 @@
                     </li>
                 {% endfor %}
             </ul>
-            <a href="{{ module.get_website_url }}" target="_blank" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Webpage">
-                <i class="fas fa-fw fa-globe"></i> Webpage
+
+            <h6 class="mt-3">Course webpage</h6>
+            <a href="{{ module.get_website_url }}" target="_blank" class="btn btn-secondary">
+                <i class="fas fa-fw fa-globe"></i> View webpage
             </a>
+            {% if module.direct_enrolment %}
+                <a data-bs-toggle="tooltip"
+                   title="Copy direct enrolment URL to clipboard"
+                   class="btn btn-secondary"
+                   onclick="copyToClipboard('{{ module.get_direct_enrolment_url }}')"
+                >
+                    <span class="fa fa-copy"></span> Direct enrolment URL
+                </a>
+            {% endif %}
+
         </div>
         <div class="col-md-6">
             <h6>Reports and Tools</h6>
@@ -307,19 +319,20 @@
                 <li><a class="dropdown-item" href="module', 'refund_request/{{ module.id }}"><span class="fas fa-fw fa-pound-sign"></span> Refund request (.docx)</a></li>
                 <li><a class="dropdown-item" href="{% url 'module:class-register' module.id %}"><span class="fas fa-fw fa-file-word"></span> Class register (.docx)</a></li>
                 {# todo: better portfolio logic, relying on tags #}
-                {% if module.portfolio  in '32, 17' %}
-                    <li><a class="dropdown-item" href="syllabus/{{ module.id }}"><span class="fas fa-fw fa-th-list"></span> Weekly class syllabus</a></li>
+                {% if module.portfolio_id == 32 or module.portfolio_id == 17 %}
+                    <li><a class="dropdown-item" href="{% url 'module:syllabus' module.id%}">
+                        <span class="fas fa-fw fa-th-list"></span> Weekly class syllabus
+                    </a></li>
                 {% endif %}
                 {% if module.portfolio_id == 32 %}
-                    <li><a class="dropdown-item" href="WWW_ADDRESS+'/courses/reading-list-pdf/'+module.code"><span class="fas fa-fw fa-file-word"></span> Reading list for students (.pdf)</a></li>
+                    <li><a class="dropdown-item" href="{{ PUBLIC_WEBSITE_URL }}/courses/reading-list-pdf/{{ module.code }}">
+                        <span class="fas fa-fw fa-file-word"></span> Reading list for students (.pdf)
+                    </a></li>
                 {% endif %}
                 <li role="separator" class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{% url 'module:student-list' module.id %}"><span class="fas fa-fw fa-file-excel"></span> Student list (.xlsx)</a></li>
                 {% if module.portfolio_id == 17 %}
                     <li><a class="dropdown-item" href="{% url 'module:moodle-list' module.id %}"><span class="fas fa-fw fa-file-excel"></span> Moodle student list (.xlsx)</a></li>
-                {% endif %}
-                {% if module.code|slice:'-3:' == 'HEC' %}
-                    <li><a class="dropdown-item" href="student','certhe_progress', args=(0,module.id)"><span class="fas fa-fw fa-certificate"></span> CertHE progress report (.docx)</a></li>
                 {% endif %}
             </ul>
 
@@ -327,7 +340,17 @@
                 <i class="fas fa-fw fa-tools"></i> Tools
             </a>
             <ul class="dropdown-menu" role="menu">
-                <li><a class="dropdown-item" href="{% url 'module:assign-moodle-ids' module.id %}"><span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs</a></li>
+                <li>
+                    <a class="dropdown-item"
+                        href="#"
+                        data-bs-toggle="modal"
+                        data-bs-target="#commonModal"
+                        data-modal-body="Are you sure you wish to assign Moodle IDs to this module's students?"
+                        data-modal-href="{% url 'module:assign-moodle-ids' module.id %}"
+                    >
+                        <span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs
+                    </a>
+                </li>
                 <li><a class="dropdown-item" href="{% url 'module:award-points' module.id %}"><span class="fas fa-fw fa-graduation-cap"></span> Award CATS points</a></li>
                 <li><a class="dropdown-item" href="{% url 'module:clone' module.id %}"><span class="fas fa-fw fa-clone"></span> Clone this module</a></li>
                 <li><a class="dropdown-item" href="{% url 'module:copy-web-fields' module.id %}"><span class="fas fa-fw fa-paste"></span> Copy web fields</a></li>
@@ -362,7 +385,7 @@
                         </label>
                     {% endif %}
                     <div class="btn-group" id="preview-eye">
-                        <a href="precourse-notification/preview/{{ module.id }}" class="btn btn-outline-dark" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Preview">
+                        <a href="{% url 'reminder:preview' module.id %}" class="btn btn-outline-dark" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Preview">
                             <i class="fas fa-eye"></i>
                         </a>
                     </div>
@@ -465,25 +488,21 @@
 {% if waitlist_table.rows %}
 <div class="section">
     <h2 id='waitlist' data-badge-text='{{ waitlist_table.rows | length }}' class="section-title">Waiting list</h2>
-    <form method="post" action="/send-to-the-waiting-list">
+    <form method="get" action="{% url 'waitlist:email-multiple' module.id %}">
         {% render_table waitlist_table %}
         <div class="btn-group float-end">
             <a href="#" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
                 <i class="far fa-fw fa-envelope"></i> Email entire list
                 <span class="caret"></span>
             </a>
-            <ul class="dropdown-menu">
+            <div class="dropdown-menu">
                 {% if next_run %}
-                <li>
-                    <a href="email-list/{{ module.id }}/new/{{ next_run.id }}">New run of course</a>
-                </li>
+                    <a class="dropdown-item" href="{% url 'waitlist:email-multiple' previous_module=module.id module=next_run.id %}">New run of course</a>
                 {% endif %}
-
-                <li><a class="dropdown-item" href="/email-list/{{ module.id }}/online">Places available on course (enrol online)</a></li>
-                <li><a class="dropdown-item" href="/email-list/{{ module.id }}/form">Places available on course (enrol by form)</a></li>
-            </ul>
+                <a class="dropdown-item" href="{% url 'waitlist:email-multiple' module.id %}">Places available on course</a>
+            </div>
         </div>
-        <button type="submit" value="Standard" class="btn btn-secondary">
+        <button type="submit" name="limited" class="btn btn-secondary">
             <i class="fa fa-fw fa-envelope"></i> Email selected students
         </button>
     </form>
@@ -514,8 +533,8 @@
                 {% endif %}
             </td>
             <td>
-                <a href="form/view/{{ application.id }}" class="float-end">
-                    <i class="fas fa-fw fa-pencil-alt"></i>
+                <a href="{% url 'application:view' application.id %}" class="float-end">
+                    <i class="fas fa-fw fa-search"></i>
                 </a>
             </td>
         </tr>
@@ -528,13 +547,13 @@
 <div class="section">
     <div class="btn-group btn-group-xs float-end">
         <a href="{% url 'fee:new' module.pk %}" class="btn btn-success" role="button"><span class="fa fa-plus"></span> Add fees</a>
-      <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span class="caret"></span>
-        <span class="sr-only">Toggle Dropdown</span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="{% url 'module:copy-fees' module.id %}"><i class="fas fa-fw fa-pound-sign"></i> Copy fees</a></li>
-      </ul>
+        <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'module:copy-fees' module.id %}"><i class="fas fa-fw fa-pound-sign"></i> Copy fees</a></li>
+        </ul>
     </div>
     <h2 id="fees" class="section-title">Fees</h2>
     {% if fees %}
@@ -601,10 +620,20 @@
 {# TODO: turn the '== 32' into a portfolio property/tag #}
 {% if module.portfolio_id == 32 %}
 <div class="section">
+    <div class="float-end">
+        <a href="{% url 'module:add-book' module.id %}" class="btn btn-success btn-xs">
+            <span class="fa fa-plus"></span> Add book
+        </a>
+    </div>
     <h2 id="reading-list" class="section-title">Reading list</h2>
     {% render_table book_table %}
     <br>
-    <a href="rebuild_reading_list/{{ module.id }}" class="btn btn-secondary">
+    <a class="btn btn-secondary"
+       data-bs-toggle="modal"
+       data-bs-target="#commonModal"
+       data-modal-body="Are you sure you wish to rebuild this module's recommended reading from the book list?"
+       data-modal-href="{% url 'module:rebuild-recommended-reading' module.id %}"
+    >
         <i class="fas fa-fw fa-redo"></i> Rebuild reading list
     </a>
     <a href="{% square_url "Library" "Weekly classes reading list items by course" code=module.code %}"

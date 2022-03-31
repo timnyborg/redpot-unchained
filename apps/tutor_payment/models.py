@@ -89,13 +89,13 @@ class TutorPayment(models.Model):
             self.transferred_on = None
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        return reverse('tutor-payment:view', args=[self.pk])
+
+    def get_edit_url(self) -> str:
         return reverse('tutor-payment:edit', args=[self.pk])
 
-    def get_edit_url(self):
-        return reverse('tutor-payment:edit', args=[self.pk])
-
-    def get_delete_url(self):
+    def get_delete_url(self) -> str:
         return reverse('tutor-payment:delete', args=[self.pk])
 
     @classmethod
@@ -216,7 +216,11 @@ class TutorPayment(models.Model):
     def user_can_edit(self, user: User) -> bool:
         """Checks if a user has edit (and delete) permissions on the object"""
         if self.status_id == Statuses.RAISED:
-            return user.has_perm('tutor_payment.raise') and self.raised_by == user
+            return (
+                user.has_perm('tutor_payment.raise')
+                and self.raised_by == user
+                or user.has_perm('tutor_payment.approve')
+            )
         if self.status_id == Statuses.APPROVED:
             return user.has_perm('tutor_payment.approve')
         if self.status_id == Statuses.TRANSFERRED:

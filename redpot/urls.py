@@ -13,10 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from ckeditor_uploader.views import upload
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.urls import include, path
 from django.views.defaults import page_not_found
 
@@ -31,6 +34,7 @@ urlpatterns = [
     path('', core_views.Index.as_view(), name='home'),
     path('index/', core_views.Index.as_view()),
     path('system-info/', core_views.SystemInfo.as_view(), name='system-info'),
+    path('banner/', include('apps.banner.urls')),
     path('booking/', include('apps.booking.urls')),
     path('contract/', include('apps.contract.urls')),
     path('discount/', include('apps.discount.urls')),
@@ -39,10 +43,12 @@ urlpatterns = [
     path('finance/', include('apps.finance.urls')),
     path('hesa/', include('apps.hesa.urls')),
     path('invoice/', include('apps.invoice.urls')),
+    path('marketing/', include('apps.marketing.urls')),
+    path('module/', include('apps.module.urls')),
     path('programme/', include('apps.programme.urls')),
     path('proposal/', include('apps.proposal.urls')),
-    path('module/', include('apps.module.urls')),
     path('qa/', include('apps.qualification_aim.urls')),
+    path('reminder/', include('apps.reminder.urls')),
     path('student/', include('apps.student.urls')),
     path('transcript/', include('apps.transcript.urls')),
     path('tutor/', include('apps.tutor.urls')),
@@ -55,12 +61,13 @@ urlpatterns = [
     path('task/', include('apps.task_progress.urls', namespace='task')),
     path('waitlist/', include('apps.waitlist.urls')),
     path('website-account/', include('apps.website_account.urls')),
+    path('website-basket/', include('apps.website_basket.urls')),
     # django-hijack urls for impersonation
     path('impersonate', core_views.Impersonate.as_view(), name='impersonate'),
     path('impersonate-api/', include('hijack.urls')),
     path('unimplemented', page_not_found, {'exception': 'Haven\'t built it yet'}, name='unimplemented'),
-    # django-ckeditor urls for uploads
-    path('ckeditor/', include('ckeditor_uploader.urls')),
+    # django-ckeditor upload url done manually, to use login_required rather than staff_member_required
+    path('ckeditor/upload/', login_required(upload), name='ckeditor_upload'),
 ]
 
 if settings.DEBUG:

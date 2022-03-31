@@ -5,17 +5,16 @@ from django.test import SimpleTestCase, TestCase
 
 from apps.fee.tests.factories import FeeFactory
 
-from .. import models, services
+from .. import services
+from . import factories
 
 
 class TestClone(SimpleTestCase):
     def setUp(self):
-        self.source = models.Module(
-            title='Source title', start_date=datetime, url='source-title', division_id=1, snippet='A test module'
+        self.source = factories.ModuleFactory.build(
+            start_date=datetime, url='source-title', division_id=1, snippet='A test module'
         )
-        self.target = models.Module(
-            title='Target title',
-        )
+        self.target = factories.ModuleFactory.build(url=None, start_date=None)
 
     def test_default_fields_copied(self):
         services.clone_fields(source=self.source, target=self.target)
@@ -36,18 +35,8 @@ class TestClone(SimpleTestCase):
 class TestCopyFees(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.source = models.Module.objects.create(
-            title='Source title',
-            code='T00T000TTT',
-        )
-        cls.target = models.Module.objects.create(
-            title='Target title',
-            code='T01T000TTT',
-        )
-        FeeFactory(
-            module=cls.source,
-            amount=100,
-        )
+        cls.source, cls.target = factories.ModuleFactory.create_batch(size=2)
+        FeeFactory(module=cls.source, amount=100)
 
     def test_copy(self):
         user = MagicMock()
@@ -56,3 +45,15 @@ class TestCopyFees(TestCase):
         fees = self.target.fees.all()
         self.assertEqual(len(fees), 1)
         self.assertEqual(fees.first().amount, 100)
+
+
+class TestRebuildRecommendedReading(TestCase):
+    def test_rebuild(self):
+        module = factories.ModuleFactory()
+        books = factories.BookFactory.create_batch(module=module, size=2)
+
+        services.build_recommended_reading(module=module)
+
+        for book in books:
+            self.assertIn(book.title, module.recommended_reading)
+            self.assertIn(book.author, module.recommended_reading)

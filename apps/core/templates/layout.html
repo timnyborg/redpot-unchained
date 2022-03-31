@@ -5,10 +5,15 @@
 
 <!DOCTYPE html>
 <head>
-    <title>Redpot unchained{% if title %} – {{ title }} {% if subtitle %} – {{ subtitle }} {% endif %} {% endif %}</title>
+    <title>
+        {% if title %}
+            {{ title }}{% if subtitle %} – {{ subtitle }}{% endif %}
+        {% else %}
+            Redpot unchained
+        {% endif %}
+    </title>
 
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link rel="apple-touch-icon" href="{% static 'images/favicon.png' %}">
 
     {% block head %}{% endblock %}
 
@@ -27,7 +32,7 @@
     <script src="{% static 'js/fontawesome5/all.js' %}" type="text/javascript"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
-    {% google_tag_manager_script %}
+    {% include 'utility/google_tag_manager.html' %}
 </head>
 
 <body>
@@ -65,7 +70,7 @@
     {% if request.user.is_hijacked %}
         <div class="alert-header alert-info" role="navigation">
             <div class="container">
-                <span class="alert-icon"><i class="fas fa-fw fa-mask"></i></span>
+                <i class="me-1 fas fa-fw fa-mask"></i>
                 You are currently impersonating <b>{{ request.user.get_full_name }}</b> ({{ request.user.username }})
                 <button class="btn btn-link btn-xs" type="submit" form="release_impersonate_form" >
                     End impersonation
@@ -81,13 +86,13 @@
     {% if WARNING_BANNER %}
         <div class="alert-header alert-info">
             <div class="container">
-                <span class="alert-icon">
-                    <i class="fas fa-exclamation-circle"></i>
-                </span>
+                <i class="me-1 fas fa-exclamation-circle"></i>
                 <b class="alert-heading">Warning:</b> {{ WARNING_BANNER }}
             </div>
         </div>
     {% endif %}
+
+    {% block banner %}{% endblock %}
 
     {% for message in messages %}
         <div
@@ -95,15 +100,12 @@
             onclick="this.classList.add('alert-hidden');" role="navigation"
         >
             <div class="container">
-                <span class="alert-icon">
-                    <i class="{% message_icon_class message.level_tag %}"></i>
-                </span>
+                <i class="me-1 {% message_icon_class message.level_tag %}"></i>
                 <span class="alert-heading">{{ message.heading }}</span> {{ message }}
             </div>
         </div>
     {% endfor %}
 </div>
-{% block banner %}{% endblock %}
 {% block jumbotron %}{% endblock %}
 
 {% block top %}
@@ -144,13 +146,13 @@
             &copy; University of Oxford, Department for Continuing Education
         </span>
         <span>
-            <a href="/docs/" class="text-decoration-none small ms-2">
+            <a href="{{ REDPOT_DOCS_URL }}" class="text-decoration-none small ms-2">
                 <i class="fas fa-fw fa-book"></i> User guide
             </a>
             <a href="mailto:redpot-support@conted.ox.ac.uk" class="text-decoration-none small ms-2">
                 <i class="fas fa-fw fa-comment-dots"></i> Redpot support
             </a>
-            <a href="/banner/view/" class="text-decoration-none small ms-2">
+            <a href="{% url 'banner:list' %}" class="text-decoration-none small ms-2">
                 <i class="fas fa-fw fa-redo"></i> Updates
             </a>
             <a href="https://gitlab.conted.ox.ac.uk/django/redpot-unchained" target="_blank" class="text-decoration-none small ms-2">

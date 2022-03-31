@@ -4,6 +4,7 @@ from parameterized import parameterized
 
 from django.test import SimpleTestCase, TestCase
 
+from apps.core.tests.factories import UserFactory
 from apps.enrolment.tests.factories import EnrolmentFactory
 from apps.programme.tests.factories import ProgrammeFactory
 from apps.tutor.tests.factories import TutorFactory
@@ -41,16 +42,20 @@ class TestGettingNextHUSID(TestCase):
 
 
 class TestMerge(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = UserFactory.build()
+
     def test_merging_tutors_raises_error(self):
         source, target = TutorFactory.create_batch(size=2)
         with self.assertRaisesRegex(services.merge.CannotMergeError, 'tutor'):
-            services.merge.merge_students(source=source.student, target=target.student)
+            services.merge.merge_students(source=source.student, target=target.student, user=self.user)
 
     def test_merging_sits_students_raises_error(self):
         source = factories.StudentFactory(sits_id=1)
         target = factories.StudentFactory(sits_id=2)
         with self.assertRaisesRegex(services.merge.CannotMergeError, 'SITS'):
-            services.merge.merge_students(source=source, target=target)
+            services.merge.merge_students(source=source, target=target, user=self.user)
 
     def test_merging_overrides_defaults(self):
         source = factories.StudentFactory(birthdate=date(2000, 1, 1), nationality_id=100)
@@ -90,7 +95,7 @@ class TestMerge(TestCase):
 
     def test_archiving(self):
         source, target = factories.StudentFactory.create_batch(size=2)
-        result = services.merge._create_merge_archive_record(source=source, target=target)
+        result = services.merge._create_merge_archive_record(source=source, target=target, user=self.user)
         self.assertEqual(result.source, source.id)
         self.assertEqual(result.target, target.id)
         self.assertEqual(result.json['firstname'], source.firstname)
@@ -102,7 +107,7 @@ class TestMerge(TestCase):
         PhoneFactory(student=target)
         TutorFactory(student=source)
 
-        services.merge.merge_students(source=source, target=target)
+        services.merge.merge_students(source=source, target=target, user=self.user)
         with self.assertRaises(models.Student.DoesNotExist):
             source.refresh_from_db()
         self.assertEqual(models.StudentArchive.objects.count(), 1)

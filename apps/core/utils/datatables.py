@@ -17,7 +17,7 @@ class LinkColumn(tables.Column):
     title = 'View'
     text_class = ''
 
-    def __init__(self, verbose_name, icon=None, title=None, linkify=None, text_class=None, **kwargs):
+    def __init__(self, verbose_name='', icon=None, title=None, linkify=None, text_class=None, **kwargs):
         # Always disable sorting and header.
         # Avoids having to say so every time it's used: view = ViewLinkColumn(orderable=False...)
         kwargs.update(

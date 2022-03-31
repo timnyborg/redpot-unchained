@@ -12,6 +12,8 @@ class PaymentFactory(factory.django.DjangoModelFactory):
 
     tutor_module = factory.SubFactory(TutorModuleFactory)
     approver = factory.SubFactory(UserFactory)
+    raised_by = factory.SubFactory(UserFactory)
     type_id = models.Types.TEACHING
+    status_id = models.Statuses.RAISED
     amount = 100
     weeks = 1

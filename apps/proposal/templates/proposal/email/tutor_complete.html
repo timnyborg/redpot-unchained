@@ -1,0 +1,16 @@
+<html lang="">
+<div style="font-family:Calibri;">
+    <p>Dear {{ proposal.tutor.student }},</p>
+    <p>Many thanks for submitting your course proposal for <b>{{ proposal.title }}</b>.
+        I am writing to confirm that your course has been approved by the Director of Studies.
+    </p>
+    <p>The course is scheduled to run for {{ proposal.no_meetings }} weeks starting on
+        <b>{{ proposal.start_date|date }}</b>, every {{ proposal.start_date|date:'l' }} from
+        {{ proposal.start_time|time }} to {{ proposal.end_time|time }}.
+    </p>
+    <p>A summary of the proposal details is included below for your reference.</p>
+
+    <p>If there are any problems please let us know at your earliest convenience.</p>
+    {% include 'proposal/email/signature.html' %}
+</div>
+</html>

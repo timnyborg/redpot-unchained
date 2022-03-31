@@ -1,0 +1,12 @@
+{% extends 'layout_9_3.html' %}
+{% load redpot_tags %}
+
+{% block center %}
+    <div class='section'>
+        {% block before-form %}{% endblock %}
+        {% include 'core/components/edit_form.html' %}
+        {% block after-form %}{% endblock %}
+        {% timestamp object %}
+    </div>
+    {% block after-section %}{% endblock %}
+{% endblock %}

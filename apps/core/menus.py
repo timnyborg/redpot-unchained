@@ -131,47 +131,36 @@ finance_children = [
         check=lambda request: request.user.has_perm('core.finance'),
     ),
     MenuItem(
-        "Paypush",
-        'not-implemented',
+        "Push web payment",
+        reverse('website_basket:push-payment'),
         icon="credit-card",
         check=lambda request: request.user.has_perm('core.finance'),
+    ),
+    MenuItem(
+        'Discounts',
+        reverse('discount:search'),
+        separator=True,
+        icon='tags',
+        check=lambda request: request.user.has_perm('discount.view_discount'),
     ),
 ]
 
 Menu.add_item("main", MenuItem("Finance", '#', children=finance_children))
 
 
-def dev_children(request: http.HttpRequest) -> list[MenuItem]:
-    return [
-        MenuItem("System info", reverse('system-info'), icon="server"),
-        MenuItem(
-            "View on redpot-staging",
-            f'https://redpot-staging.conted.ox.ac.uk{request.get_full_path()}',
-            icon="sync",
-            target='_blank',
-        ),
-        MenuItem("Impersonate", reverse('impersonate'), icon="mask"),
-        MenuItem(
-            "sentry.io",
-            settings.SENTRY_URL,
-            icon="bug",
-            target="_blank",
-        ),
-        MenuItem(
-            "Gitlab issues",
-            "https://gitlab.conted.ox.ac.uk/django/redpot-unchained/issues/",
-            icon="gitlab fab",
-            target="_blank",
-            separator=True,
-        ),
-        MenuItem(
-            "Analytics",
-            settings.ANALYTICS_URL,
-            icon="chart-area",
-            target="_blank",
-            separator=True,
-        ),
-    ]
+dev_children = [
+    MenuItem("System info", reverse('system-info'), icon="server"),
+    MenuItem("Impersonate", reverse('impersonate'), icon="mask"),
+    MenuItem("sentry.io", settings.SENTRY_URL, icon="bug", target="_blank"),
+    MenuItem(
+        "Gitlab issues",
+        "https://gitlab.conted.ox.ac.uk/django/redpot-unchained/issues/",
+        icon="gitlab fab",
+        target="_blank",
+        separator=True,
+    ),
+    MenuItem("Analytics", settings.ANALYTICS_URL, icon="chart-area", target="_blank", separator=True),
+]
 
 
 Menu.add_item("main", MenuItem("Dev", '#', children=dev_children, check=lambda request: request.user.is_superuser))
@@ -183,8 +172,7 @@ other_children = (
         icon='money-bill-wave',
         check=lambda request: request.user.has_perm('core.marketing'),
         children=(
-            MenuItem('Brochures', 'not-implemented', icon='map'),
-            MenuItem('Discounts', reverse('discount:search'), icon='tags'),
+            MenuItem('Export print publicity', reverse('marketing:export'), icon='map'),
             MenuItem('Import opt-ins', 'not-implemented', icon='check'),
         ),
     ),
@@ -194,8 +182,8 @@ other_children = (
         icon='users',
         check=lambda request: request.user.has_perm('core.add_user'),
         children=(
-            MenuItem('Search', 'not-implemented', icon='search'),
-            MenuItem('New', reverse('user:new'), icon='user-plus'),
+            MenuItem('Search', reverse('user:search'), icon='search'),
+            MenuItem('New', reverse('user:new'), icon='user-plus', separator=True),
         ),
     ),
     MenuItem("Staff listing", reverse('staff_list:home'), icon='address-card'),
@@ -232,7 +220,7 @@ def myaccount_children(request: http.HttpRequest) -> list[MenuItem]:
             reverse("admin:index"),
             separator=True,
             icon='tools',
-            check=lambda request: request.user.is_superuser,
+            check=lambda request: request.user.is_staff,
         ),
         MenuItem(
             "Logout",

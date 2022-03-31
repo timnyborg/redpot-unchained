@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any
 
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 
 from apps.student.models import Student
 from apps.student.services import assign_moodle_id
@@ -86,7 +87,7 @@ def clone_fields(*, source: Module, target: Module, copy_url: bool = False, copy
         'division_id',
         'format_id',
         'location_id',
-        'points_level',  # todo: convert to _id after table implemented
+        'points_level_id',
         'portfolio_id',
         'status_id',
         'terms_and_conditions',  # todo: convert to _id aftertable implemented
@@ -172,3 +173,14 @@ def assign_moodle_ids(*, module: Module, created_by: str):
         assign_moodle_id(student=student, first_module_code=module.code, created_by=created_by)
 
     return len(students)
+
+
+def build_recommended_reading(*, module: Module) -> None:
+    """Updates a module's recommended reading field with a template populated by the module's books
+    You must call .save() yourself
+    """
+    reading_list = module.books.order_by('-type', 'author', 'title')
+    module.recommended_reading = render_to_string(
+        'module/components/recommended_reading_template.html',
+        context={'module': module, 'reading_list': reading_list},
+    )

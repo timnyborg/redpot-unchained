@@ -87,6 +87,8 @@ class Programme(SignatureModel):
         db_column='study_location',
         default=AT_PROVIDER_STUDY_LOCATION,
         limit_choices_to={'is_active': True},
+        null=True,
+        blank=True,
     )
     reporting_year_type = models.IntegerField(blank=True, null=True)
 

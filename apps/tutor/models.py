@@ -1,3 +1,4 @@
+import uuid
 from datetime import date, datetime
 from pathlib import Path
 
@@ -43,7 +44,14 @@ class Tutor(SignatureModel):
     affiliation = models.CharField(max_length=256, blank=True, null=True)
 
     nino = models.CharField(
-        max_length=64, blank=True, null=True, verbose_name='National insurance #', help_text='Enter without spaces'
+        max_length=64,
+        blank=True,
+        null=True,
+        verbose_name='National insurance #',
+        help_text=mark_safe('Enter without spaces, e.g. <i>AB123456C</i>'),
+        validators=[validators.RegexValidator(r'^[A-Z]{2}\d{6}[A-Z]$', message='Must be in the form AB123456C')],
+        unique=True,
+        error_messages={'unique': 'National Insurance number already in use'},
     )
     employee_no = models.CharField(max_length=32, blank=True, null=True, verbose_name='Employee #')
     appointment_id = models.CharField(max_length=32, blank=True, null=True, verbose_name='Appointment ID')
@@ -106,6 +114,8 @@ class Tutor(SignatureModel):
     rtw_start_date = models.DateField(blank=True, null=True, verbose_name='Document issued on')
     rtw_end_date = models.DateField(blank=True, null=True, verbose_name='Document valid until')
 
+    hash_id = models.UUIDField(default=uuid.uuid4, editable=False, null=True)
+
     modules = models.ManyToManyField(
         'module.Module',
         related_name='tutors',
@@ -140,16 +150,8 @@ class Tutor(SignatureModel):
             self.swift = self.swift.upper()
         if self.iban:
             self.iban = self.iban.upper()
-
-    def custom_biography(self):
-        if self.biography:
-            return mark_safe(self.biography)
-        else:
-            return mark_safe(
-                """
-            <span class="text-danger">Error: Invalid HTML in biography</span>
-            """
-            )
+        if self.nino:
+            self.nino = self.nino.upper()
 
     def rtw_expired(self) -> bool:
         return self.rtw_end_date is not None and self.rtw_end_date < date.today()
@@ -160,6 +162,12 @@ class Tutor(SignatureModel):
     @property
     def is_casual(self) -> bool:
         return 'cas' in (self.appointment_id or '').lower()
+
+    def populate_hash_id(self) -> None:
+        """Set a hash_id if missing.  Ensures backwards compatibility with pre-Django tutor records"""
+        if not self.hash_id:
+            self.hash_id = uuid.uuid4()
+            self.save()
 
 
 class TutorModule(SignatureModel):

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from datetime import date, datetime
 from typing import Optional
 
@@ -87,7 +88,6 @@ def image_filename(instance: Module, filename: str) -> str:
 class Module(SignatureModel):
     code = UpperCaseCharField(
         max_length=12,
-        help_text='For details on codes, see <link>',
         validators=[RegexValidator(r'^[A-Z]\d{2}[A-Z]\d{3}[A-Z]\w[A-Z]$', message='Must be in the form A12B345CDE')],
         unique=True,
     )
@@ -150,7 +150,6 @@ class Module(SignatureModel):
     auto_publish = models.BooleanField(default=False)
 
     is_published = models.BooleanField(default=False)
-    # finance_code = models.CharField(max_length=64, blank=True, null=True)  # noqa: E800 # todo: should this be used?
     email = models.EmailField(max_length=256, blank=True, null=True)
     phone = PhoneField(max_length=256, blank=True, null=True)
 
@@ -206,7 +205,7 @@ class Module(SignatureModel):
     )
     note = models.CharField(max_length=512, blank=True, null=True)
     terms_and_conditions = models.IntegerField(
-        choices=((1, 'Open access courses'), (2, 'Selective short courses')), null=True, blank=True
+        choices=((1, 'Open access courses'), (2, 'Selective short courses')), default=1
     )
     apply_url = models.CharField(max_length=512, blank=True, null=True)
     further_details = models.TextField(blank=True, null=True, **webfield_attrs)
@@ -243,6 +242,7 @@ class Module(SignatureModel):
     fee_code = models.CharField(max_length=1, blank=True, null=True)
 
     direct_enrolment = models.BooleanField(default=False)
+    hash = models.CharField(default=uuid.uuid4, editable=False, null=True, max_length=40)
 
     payment_plans = models.ManyToManyField(
         to='invoice.PaymentPlanType',
@@ -274,6 +274,8 @@ class Module(SignatureModel):
         return self.title
 
     def save(self, *args, **kwargs):
+        if not self.hash:
+            self.hash = uuid.uuid4()  # todo: removable once modules have been back-filled with hashes
         if not self.url:
             self.url = slugify(self.title)
         super().save(*args, **kwargs)
@@ -286,6 +288,10 @@ class Module(SignatureModel):
 
     def get_website_url(self) -> str:
         return f'{settings.PUBLIC_WEBSITE_URL}/courses/{self.url}?code={self.code}'
+
+    def get_direct_enrolment_url(self) -> str:
+        """The URL for adding an enrolment direct the basket, before general enrolment is open"""
+        return f'{settings.PUBLIC_WEBSITE_URL}/basket/add-module/{self.code}?_next=%2Fbasket&_enrolment={self.hash}'
 
     @property
     def full_time_equivalent(self) -> float:
@@ -583,6 +589,11 @@ class Location(SignatureModel):
             return f'{self.building}, {self.city}'
         return str(self.building)
 
+    @property
+    def full_address(self) -> str:
+        """Render a complete address of the location, useful for google maps queries, for example"""
+        return f'{self.building}, {self.address}, {self.city} {self.postcode}'
+
 
 class Room(models.Model):
     id = models.CharField(primary_key=True, max_length=12)  # CABS ids.  Will be a problem if numbers ever clash
@@ -604,27 +615,35 @@ class Room(models.Model):
 
 
 class Book(models.Model):
+    class Types(models.TextChoices):
+        PREPARATORY = 'Preparatory reading', 'Preparatory reading'
+        COURSE = 'Course reading', 'Course reading'
+        __empty__ = '– Select –'
+
     module = models.ForeignKey('Module', models.CASCADE, db_column='module', related_name='books')
-    title = models.TextField(blank=True, null=True)
-    author = models.TextField(blank=True, null=True)
-    type = models.CharField(max_length=24)
-    additional_information = models.TextField(blank=True, null=True)
-    solo_link = models.TextField(blank=True, null=True)
-    isbn_shelfmark = models.TextField(blank=True, null=True)
+    title = models.CharField(max_length=512)
+    author = models.CharField(max_length=512)
+    type = models.CharField(max_length=24, choices=Types.choices)
+    additional_information = models.CharField(max_length=512, blank=True, null=True)
+    solo_link = models.CharField(max_length=512, blank=True, null=True, validators=[validators.URLValidator()])
+    isbn_shelfmark = models.CharField(max_length=64, blank=True, null=True, verbose_name='ISBN / library shelfmark')
     price = models.DecimalField(max_digits=19, decimal_places=4, blank=True, null=True)
     library_note = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'book'
 
+    def __str__(self) -> str:
+        return str(self.title)
+
     def get_absolute_url(self) -> str:
-        return '#'
+        return self.module.get_absolute_url() + '#reading-list'
 
     def get_edit_url(self) -> str:
-        return '#'
+        return reverse('module:edit-book', kwargs={'pk': self.pk})
 
     def get_delete_url(self) -> str:
-        return '#'
+        return reverse('module:delete-book', kwargs={'pk': self.pk})
 
 
 class Subject(models.Model):

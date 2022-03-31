@@ -41,7 +41,7 @@ class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestam
 
 class RightToWork(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
     model = Tutor
-    template_name = 'tutor/rtw_form.html'
+    template_name = 'core/form.html'
     form_class = forms.RightToWork
     subtitle = 'Right to work'
     success_message = 'Right to work details updated'
@@ -196,7 +196,7 @@ class ExpenseFormView(MailMergeView):
                 'activity': record.module.activity_code,
                 'source_of_funds': record.module.source_of_funds,
             }
-            for record in self.queryset.all()[:20]  # todo: remove limit once docx-mailmerge updated
+            for record in self.queryset.all()
         ]
 
 

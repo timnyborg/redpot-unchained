@@ -1,0 +1,9 @@
+<html>
+<body>
+<p>Dear {{ first_name }},</p>
+<p>There {{ payments|pluralize:'is,are' }} {{ payments }} tutor payment{{ payments|pluralize }} awaiting your approval.</p>
+<p>
+    <a href="{{ redpot_url }}{% url 'tutor-payment:approve' %}">View pending payments in Redpot</a>
+</p>
+</body>
+</html>

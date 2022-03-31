@@ -123,7 +123,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'credit_fee',
-                    models.BooleanField(default=False, help_text='Additional fee to take a weekly class for credit'),
+                    models.BooleanField(default=False, help_text='Additional fee to take the class for credit'),
                 ),
                 (
                     'end_date',
@@ -131,14 +131,13 @@ class Migration(migrations.Migration):
                         blank=True, help_text='Optional: day on which to remove the fee from the website', null=True
                     ),
                 ),
-                ('allocation', models.IntegerField(blank=True, default=0, null=True)),
+                ('allocation', models.IntegerField(blank=True, null=True, verbose_name='Catering allocation', help_text='Optional: maximum purchasable on the website')),
                 ('catering_bookings', models.ManyToManyField(through='fee.Catering', to='enrolment.Enrolment')),
                 (
                     'limit',
                     models.ForeignKey(
                         blank=True,
                         db_column='limit',
-                        help_text='Todo: Manage limits link',
                         null=True,
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name='fees',

@@ -92,7 +92,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         }
 
 
-class Edit(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
+class Edit(PermissionRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
     model = models.Invoice
     form_class = forms.InvoiceForm
     template_name = 'core/form.html'
@@ -168,7 +168,7 @@ class Create(LoginRequiredMixin, PageTitleMixin, generic.FormView):
     Provide the invoice details in a standard form"""
 
     form_class = forms.InvoiceForm
-    template_name = 'invoice/form.html'
+    template_name = 'core/form.html'
     title = 'Invoice'
     subtitle = 'Create – additional details'
 
@@ -267,8 +267,8 @@ class CreatePaymentPlan(
         return {
             'invoice': self.invoice,
             'amount': self.invoice.balance,
-            'type': models.PaymentPlan.CUSTOM_TYPE,
-            'status': models.PaymentPlan.CUSTOM_PENDING_STATUS,
+            'type': models.CUSTOM_TYPE,
+            'status': models.PaymentPlan.Statuses.PENDING_CUSTOM,
         }
 
     def get_subtitle(self):

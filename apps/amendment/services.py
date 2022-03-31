@@ -10,6 +10,7 @@ from django.utils.html import strip_tags
 
 import apps.finance.services as finance_services
 from apps.core.models import User
+from apps.enrolment.models import Enrolment
 from apps.finance.models import Accounts, Ledger, TransactionTypes
 from apps.invoice.models import Invoice
 from apps.module.models import Module
@@ -84,9 +85,9 @@ def user_can_edit(*, user: User, amendment: models.Amendment) -> bool:
     return (
         user.has_perm('amendment.edit_finance')
         or user.has_perm('amendment.approve')
-        and user.username == amendment.approver
+        and user == amendment.approver
         and amendment.status_id in (models.AmendmentStatuses.RAISED, models.AmendmentStatuses.APPROVED)
-        or user.username == amendment.requested_by
+        or user == amendment.requested_by
         and amendment.status_id == models.AmendmentStatuses.RAISED
     )
 
@@ -180,3 +181,21 @@ def apply_online_refund(*, amendment: models.Amendment, user: User) -> None:
         enrolment_id=amendment.enrolment.id,
         user=user,
     )
+
+
+def create_paper_refund_request(*, enrolment: Enrolment, user: User) -> models.Amendment:
+    """Create a 'self-approved' amendment where the actual request is done via a document (PRF),
+    and the change request acts as bookkeeping
+    """
+    amendment = models.Amendment.objects.create(
+        type_id=models.AmendmentTypes.OTHER_REFUND,
+        enrolment=enrolment,
+        details='See Payment Request Form for details',
+        status_id=models.AmendmentStatuses.APPROVED,
+        requested_by=user,
+        approved_by=user.username,
+        approved_on=datetime.now(),
+    )
+    amendment.narrative = get_narrative(amendment=amendment)
+    amendment.save()
+    return amendment

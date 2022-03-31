@@ -9,12 +9,12 @@ from django.db import transaction
 from django.urls import reverse_lazy
 from django.views import generic
 
-from apps.core.utils.views import PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 
 from . import datatables, forms, models, services
 
 
-class Edit(PermissionRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+class Edit(PermissionRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
     permission_required = 'proposal.add_proposal'
     model = models.Proposal
     form_class = forms.EditProposalForm
@@ -25,7 +25,11 @@ class Edit(PermissionRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        return {**context, 'books': self.object.module.books.order_by('type', 'title')}
+        return {
+            **context,
+            'statuses': models.Statuses,
+            'books': self.object.module.books.order_by('type', 'title'),
+        }
 
     def form_invalid(self, form) -> http.HttpResponse:
         messages.warning(self.request, self.error_message)
@@ -72,7 +76,9 @@ class New(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.
             dos=form.cleaned_data['dos'],
             due_date=form.cleaned_data['due_date'],
             limited=language_course,
-            field_trips='None' if language_course else None,  # todo: what's the point of this
+            field_trips=models.FieldTripChoices.NONE if language_course else None,  # todo: what's the point of this
+            created_by=self.request.user.username,
+            modified_by=self.request.user.username,
         )
         services.populate_from_module(proposal=self.proposal)
         return super().form_valid(form)
@@ -81,4 +87,17 @@ class New(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, generic.
         return self.proposal.get_edit_url()
 
 
-# todo: remaining proposal views/services
+class ViewMessages(PermissionRequiredMixin, PageTitleMixin, generic.DetailView):
+    model = models.Proposal
+    permission_required = 'proposal.view_proposal'
+    template_name = 'proposal/view_messages.html'
+    subtitle = 'Message history'
+
+
+class Summary(PermissionRequiredMixin, generic.DetailView):
+    model = models.Proposal
+    permission_required = 'proposal.view_proposal'
+    template_name = 'proposal/summary.html'
+
+    def get_context_data(self, **kwargs) -> dict:
+        return services.get_summary_context(proposal=self.object)
