@@ -90,7 +90,7 @@ class TutorPayment(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return '#'
+        return reverse('tutor-payment:edit', args=[self.pk])
 
     def get_edit_url(self):
         return reverse('tutor-payment:edit', args=[self.pk])

@@ -1,10 +1,13 @@
 import datetime
+from pathlib import Path
+
+from weasyprint import CSS, HTML
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.template.loader import render_to_string
 from django.views import View
@@ -14,6 +17,7 @@ from apps.core.utils.views import PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.module.models import Module
 
+from ..core.utils.strings import normalize
 from . import services
 from .forms import CommentAndReportForm, FeedbackRequestForm, PreviewQuestionnaireForm
 from .models import Feedback, FeedbackAdmin
@@ -278,16 +282,17 @@ class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
 
         if comments or tutors:
             module_code = self.kwargs['code']
-            module_set = Module.objects.filter(code=module_code)
-            module_id = module_set[0]
+            module = Module.objects.get(code=module_code)
 
             updated = datetime.datetime.now()
             current_user = self.request.user
-            f = FeedbackAdmin(module=module_id, updated=updated, admin_comments=comments, person=current_user)
+            f = FeedbackAdmin(module=module, updated=updated, admin_comments=comments, person=current_user)
             f.save()
 
-            # todo send feedback to staffs and add attachments
-            send_mail('Subject here', 'Here is the message.', 'lokez21@gmail.com', ['lokez21@gmail.com'])
+            # todo send feedback to staffs and admin along with added attachments
+            services.email_admin_report(module, tutors)
+            if tutors:
+                services.email_tutor_report(module, tutors)
 
             messages.success(self.request, 'Your comment has been received. The tutor(s) has been sent an email')
 
@@ -308,20 +313,7 @@ class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
         context['module_info'] = services.get_module_info(module_id)
         context['module_summary'] = services.get_module_summary(module_id)
         context['feedback_data_dict'] = services.get_module_feedback_details(module_id)
-
-        comments_list = []
-        admin_comments_set = FeedbackAdmin.objects.filter(module=module_id).order_by('updated')
-        for comment_row in admin_comments_set:
-            values = {}
-            values['comment'] = comment_row.admin_comments
-            values['uploaded_by'] = comment_row.person
-            values['uploaded_on'] = (
-                comment_row.updated.strftime('%H:%M on %d-%b-%Y')
-                if isinstance(comment_row.updated, datetime.date)
-                else '-'
-            )
-            comments_list.append(values)
-        context['comments_list'] = comments_list
+        context['comments_list'] = services.get_module_comments(module_id)
 
         return context
 
@@ -476,9 +468,8 @@ class RecentlyCompletedOrFinishingSoon(LoginRequiredMixin, SiteTitleMixin, ListV
     subtitle = 'Courses that have recently finished, or will finish soon..'
 
     def dispatch(self, *args, **kwargs):
-        self.past_days = 400
-        self.future_days = 100
-        self.year = 2020
+        self.past_days = 14  # get courses for 14 days in the past
+        self.future_days = 2  # get courses for 2 days in the future
         return super().dispatch(*args, **kwargs)
 
     def get_queryset(self):
@@ -512,3 +503,37 @@ class ExportToExcel(View):
     def get(self, request, *args, **kwargs):
         module_id = kwargs['module_id']
         return services.export_users_xls(module_id)
+
+
+def make_pdf(request, **kwargs):
+    module_id = kwargs['module_id']
+    module = get_object_or_404(Module, id=module_id)
+    filename = normalize(f"feedback_report_{module.title}_{module.code}.pdf")
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename="{filename}"'
+
+    context = {
+        'module_info': services.get_module_info(module_id),
+        'module_summary': services.get_module_summary(module_id),
+        'tutors': services.get_module_tutors(module_id),
+        'feedback_data_dict': services.get_module_feedback_details(module_id),
+        'comments_list': services.get_module_comments(module_id),
+        'context_data': 'This is a context data',
+        'module_summary_headers': [
+            'Module Title',
+            'Satisfied(%)',
+            'Average',
+            'Teaching',
+            'Content',
+            'Facilities',
+            'Admin',
+            'Catering',
+            'Accomm',
+            'Sent',
+            'Returned',
+        ],
+    }
+    # font_config = FontConfiguration() #todo clarify with Tim
+    html_doc = render_to_string('feedback/pdfs/module_feedback.html', context=context)
+    HTML(string=html_doc).write_pdf(response, stylesheets=[CSS(Path(__file__).parent / 'static/css/pdf.css')])
+    return response

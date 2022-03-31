@@ -305,7 +305,7 @@ SENTRY_URL = env(
     validate=validate.URL(schemes=['https']),
 )
 # hostname used in automated emails sent by celery tasks
-CANONICAL_URL = env('CANONICAL_URL', default='https://redpot-unchained.conted.ox.ac.uk', validate=validate.URL())
+CANONICAL_URL = env('CANONICAL_URL', default='https://redpot-unchained.conted.ox.ac.uk')
 SQUARE_URL = env(
     'SQUARE_URL',
     default='https://square.conted.ox.ac.uk/reports',

@@ -1,0 +1,43 @@
+@page {
+    size: landscape;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+}
+
+td.feedback-green {
+    border-bottom: 5px solid green !important;
+    text-align: right;
+}
+td.feedback-orange {
+    border-bottom: 5px solid orange !important;
+    text-align: right;
+}
+td.feedback-red {
+    border-bottom: 5px solid red !important;
+    text-align: right;
+}
+td.feedback-gray {
+    border-bottom: 5px solid gray !important;
+    text-align: right;
+}
+
+td.feedback-comment {
+    width: 60%;
+    min-width: 200px;
+    text-align: left;
+}
+
+tr {
+    background-color: #eee;
+}
+
+td {
+  padding-top:5px;
+  padding-bottom:5px;
+}
+
+td:first-child {
+  padding-left:5px;
+}

@@ -25,15 +25,15 @@
             <tr style="text-align: right">
                 <td class="feedback-comment">{{ module_info.title }}({{ module_info.code }})<br> ({{ module_info.start_date }} - {{ module_info.end_date }})</td>
                 <td>{{ module_summary.satisfied | default:'-'}}</td>
-                <td>{{ module_summary.average }}</td>
-                <td>{{ module_summary.teaching }}</td>
-                <td>{{ module_summary.content }}</td>
-                <td>{{ module_summary.facility }}</td>
-                <td>{{ module_summary.admin }}</td>
-                <td>{{ module_summary.catering }}</td>
-                <td>{{ module_summary.accommodation }}</td>
-                <td>{{ module_summary.sent }}</td>
-                <td>{{ module_summary.returned | default:'-'}}</td>
+                <td class="{% score_color module_summary.average %}">{{ module_summary.average }}</td>
+                <td class="{% score_color module_summary.content %}">{{ module_summary.content }}</td>
+                <td class="{% score_color module_summary.teaching %}">{{ module_summary.teaching }}</td>
+                <td class="{% score_color module_summary.facility %}">{{ module_summary.facility }}</td>
+                <td class="{% score_color module_summary.admin %}">{{ module_summary.admin }}</td>
+                <td class="{% score_color module_summary.catering %}">{{ module_summary.catering }}</td>
+                <td class="{% score_color module_summary.accommodation %}">{{ module_summary.accommodation }}</td>
+                <td class="feedback-gray">{{ module_summary.sent }}</td>
+                <td class="feedback-gray">{{ module_summary.returned | default:'-'}}</td>
             </tr>
         </table>
         <hr>

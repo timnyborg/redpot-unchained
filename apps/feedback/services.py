@@ -9,8 +9,9 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-from apps.feedback.models import Feedback
+from apps.feedback.models import Feedback, FeedbackAdmin
 from apps.module.models import Module
+from apps.tutor.models import Tutor, TutorModule
 
 
 def process_and_send_emails(module: Module) -> None:
@@ -73,6 +74,37 @@ def process_and_send_emails(module: Module) -> None:
 
             student_feedback.reminder = datetime.datetime.now()
             student_feedback.save()
+
+
+module = Module.objects.filter(code='O19P254PAJ')
+tutor_ids = ['205676', '413379']
+
+
+def email_admin_report(module: Module, tutor_ids: list) -> None:
+    """Send feedback report to course admin"""
+    modinfo = get_module_info(module.id)
+    hash_key = 'todo hash_key replacement'  # hashlib.sha1(bytes(SALT + modinfo['Code'], 'utf-8')).hexdigest()
+    sender = modinfo['email']
+    tutors = [int(tutor) for tutor in tutor_ids]
+    tutors = Tutor.objects.filter(pk__in=tutors).order_by('student__surname')
+    tutors = [
+        f'{tutor.student.title} {tutor.student.firstname} {tutor.student.surname}' for tutor in tutors
+    ]  # Get only tutor names
+    url = settings.CANONICAL_URL
+    context = {}
+
+    context['url'] = url
+    context['title'] = modinfo['title']
+    context['code'] = modinfo['code']
+    context['hash_key'] = hash_key
+    context['tutors'] = tutors
+
+    html_message = render_to_string('feedback/email/updateadmin.html', context)
+    # todo: determine if it's worthwhile to bcc webmaster
+
+    to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [modinfo['email']]
+    subject = 'Feedback [' + modinfo['title'] + ']'
+    send_mail(subject, strip_tags(html_message), sender, to, html_message=html_message)
 
 
 def get_mean_value(list_of_ints):  # Takes a list of integers and returns a mean value
@@ -156,6 +188,35 @@ def get_module_feedback_details(module_id):
 
         feedback_details_dict[feedback_detail['id']] = feedback_detail
     return feedback_details_dict
+
+
+def get_module_tutors(module_id):
+    tutors_set = TutorModule.objects.filter(module=module_id, is_teaching=True).order_by('tutor__student__surname')
+    tutors = [
+        f'{tutor.tutor.student.nickname} {tutor.tutor.student.surname}'
+        if tutor.tutor.student.nickname
+        else f'{tutor.tutor.student.firstname} {tutor.tutor.student.surname}'
+        for tutor in tutors_set
+    ]
+
+    return tutors
+
+
+def get_module_comments(module_id):
+    comments_list = []
+    admin_comments_set = FeedbackAdmin.objects.filter(module=module_id).order_by('updated')
+    for comment_row in admin_comments_set:
+        values = {}
+        values['comment'] = comment_row.admin_comments
+        values['uploaded_by'] = comment_row.person
+        values['uploaded_on'] = (
+            comment_row.updated.strftime('%H:%M on %d-%b-%Y')
+            if isinstance(comment_row.updated, datetime.date)
+            else '-'
+        )
+        comments_list.append(values)
+
+    return comments_list
 
 
 def export_users_xls(module_id):
