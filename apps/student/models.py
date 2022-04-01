@@ -179,6 +179,11 @@ class Student(SITSLockingModelMixin, SignatureModel):
         return self.firstname
 
     @property
+    def formal_name(self) -> str:
+        """Returns the student's title, first, and surname.  Useful for official documents"""
+        return f"{self.title or ''} {self.firstname} {self.surname}".strip()
+
+    @property
     def sex(self) -> Optional[int]:
         """Get HESA coding for sex based on gender"""
         gender_to_sex_map = {

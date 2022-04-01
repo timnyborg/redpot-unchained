@@ -23,7 +23,7 @@ def generate_fixed_properties(*, contract: models.Contract) -> dict:
     module = contract.tutor_module.module
     address = student.get_default_address()
     return {
-        'full_name': f"{student.title or ''} {student.firstname} {student.surname}",
+        'full_name': student.formal_name,
         'salutation': f"{student.title or student.firstname} {student.surname}",
         'doc_date': datetime.today(),
         'address': FormattedAddress(address).as_list(),

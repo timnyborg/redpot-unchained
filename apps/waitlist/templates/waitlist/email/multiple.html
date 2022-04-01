@@ -9,7 +9,7 @@
     <p>Dear waiting list,</p>
     <p>
         {% if new_run %}
-            This is to let you know that {{ student.title }} {{ student.firstname }} {{ student.surname }}
+            This is to let you know that {{ student.formal_name }}
             has agreed to run the course <I>{{ module.title }}</I> again due to popular demand,
             and it is taking place on {{ module.start_date|date:'l j M Y' }} ({{ module.location }}).
         {% else %}
