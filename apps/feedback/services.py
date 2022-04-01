@@ -4,6 +4,7 @@ import statistics
 import xlwt
 
 from django.conf import settings
+from django.core import mail
 from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -83,28 +84,38 @@ tutor_ids = ['205676', '413379']
 def email_admin_report(module: Module, tutor_ids: list) -> None:
     """Send feedback report to course admin"""
     modinfo = get_module_info(module.id)
-    hash_key = 'todo hash_key replacement'  # hashlib.sha1(bytes(SALT + modinfo['Code'], 'utf-8')).hexdigest()
-    sender = modinfo['email']
+    from_email = modinfo['email']
     tutors = [int(tutor) for tutor in tutor_ids]
     tutors = Tutor.objects.filter(pk__in=tutors).order_by('student__surname')
     tutors = [
         f'{tutor.student.title} {tutor.student.firstname} {tutor.student.surname}' for tutor in tutors
     ]  # Get only tutor names
     url = settings.CANONICAL_URL
-    context = {}
+    context = {'url': url, 'from': from_email, 'title': modinfo['title'], 'code': modinfo['code'], 'tutors': tutors}
 
-    context['url'] = url
-    context['title'] = modinfo['title']
-    context['code'] = modinfo['code']
-    context['hash_key'] = hash_key
-    context['tutors'] = tutors
-
-    html_message = render_to_string('feedback/email/updateadmin.html', context)
+    body = render_to_string('feedback/email/updateadmin.html', context)
     # todo: determine if it's worthwhile to bcc webmaster
 
     to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [modinfo['email']]
+    bcc = [settings.BCC_EMAIL] if settings.DEBUG else ['webmaster@conted.ox.ac.uk']
     subject = 'Feedback [' + modinfo['title'] + ']'
-    send_mail(subject, strip_tags(html_message), sender, to, html_message=html_message)
+
+    # new_email_algo:
+    email = mail.EmailMessage(
+        subject=subject,
+        body=body,
+        to=to,
+        bcc=bcc,
+    )
+    email.content_subtype = 'html'
+    content = 'some PDF content...'
+    file_name = 'something'
+    email.attach(filename=f'FileName-{file_name}.pdf', content=content, mimetype='application/pdf')
+    email.send()
+
+
+def email_tutor_report(module: Module, tutor_ids: list):
+    pass
 
 
 def get_mean_value(list_of_ints):  # Takes a list of integers and returns a mean value
