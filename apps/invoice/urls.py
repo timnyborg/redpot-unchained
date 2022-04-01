@@ -23,4 +23,7 @@ urlpatterns = [
     path('edit-payment-plan/<int:pk>', views.EditPaymentPlan.as_view(), name='edit-payment-plan'),
     path('edit-payment-schedule/<int:pk>', views.EditSchedule.as_view(), name='edit-payment-schedule'),
     path('save-payment-schedule/<int:plan_id>', api.SaveSchedule.as_view(), name='save-payment-schedule'),
+    # website-accessible endpoints
+    path('api/invoice/<int:pk>', api.InvoicePDF.as_view()),
+    path('api/statement/<int:pk>', api.StatementPDF.as_view()),
 ]

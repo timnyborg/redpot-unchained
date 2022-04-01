@@ -1,11 +1,14 @@
 from datetime import datetime
 
-from rest_framework import generics, permissions
+from rest_framework import authentication, generics, permissions
+from rest_framework.views import APIView
 
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
-from . import models, serializers
+from apps.core.utils.api_views import OtherModelPermissions
+
+from . import models, serializers, views
 
 
 class SaveSchedule(generics.CreateAPIView):
@@ -28,3 +31,20 @@ class SaveSchedule(generics.CreateAPIView):
             modified_by=self.request.user.username,
             modified_on=datetime.now(),
         )
+
+
+# --- Website document access - wrapping normal views to allow non-session-based access ---
+class InvoicePDF(APIView):
+    permissions_required = ['invoice.print_invoice']
+    authentication_classes = [authentication.SessionAuthentication, authentication.BasicAuthentication]
+    permission_classes = [OtherModelPermissions]
+
+    get = views.PDF.get
+
+
+class StatementPDF(APIView):
+    permissions_required = ['invoice.print_invoice']
+    authentication_classes = [authentication.SessionAuthentication, authentication.BasicAuthentication]
+    permission_classes = [OtherModelPermissions]
+
+    get = views.StatementPDF.get
