@@ -100,7 +100,7 @@ def _render_transcript(
     pdf = TranscriptPDF(print_header=header, level=level)
 
     pdf.set_font('', 'B', 12)
-    name = f"{student.title or ''} {student.firstname} {student.surname}".strip()
+    name = student.formal_name
     pdf.cell(30, 4, name, ln=1)
 
     pdf.address_block(address_lines)

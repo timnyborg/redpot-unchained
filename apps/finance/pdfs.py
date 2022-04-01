@@ -35,7 +35,7 @@ def create_receipt(*, allocation: int, student: Optional[Student] = None) -> byt
         addressed_to = invoice.invoiced_to
         address_block = FormattedAddress(invoice).as_list()
     else:
-        addressed_to = f"{student.title or ''} {student.firstname} {student.surname}".strip()
+        addressed_to = student.formal_name
         address_block = FormattedAddress(student.get_billing_address()).as_list()
 
     return _render_receipt(
