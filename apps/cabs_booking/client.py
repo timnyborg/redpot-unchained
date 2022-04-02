@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import date, datetime, time
 from functools import lru_cache
 
 import requests
@@ -49,6 +49,7 @@ class CABSApiClient:
     # Endpoints
     def create_mbr(
         self,
+        *,
         title: str,
         address_1: str = '',
         address_2: str = '',
@@ -57,9 +58,7 @@ class CABSApiClient:
         postcode: str = '',
         phone: str = '',
         email: str = '',
-        status: str = 'CONFRM',
     ) -> str:
-
         data = {
             'mbr_company': title,
             'mbr_addr1': address_1,
@@ -71,7 +70,7 @@ class CABSApiClient:
             'mbr_phax2': '',
             'mbr_email': email,
             'mbr_internal': 0,
-            'mbr_status': status,
+            'mbr_status': 'CONFRM',
             'mbr_sysno': '',
             'result': 0,
         }
@@ -87,12 +86,12 @@ class CABSApiClient:
 
     def check_room_availability(
         self,
+        *,
         starting_at: datetime,
         ending_at: datetime,
         room_code: str,
         setup_minutes: int = 0,
     ) -> bool:
-
         data = {
             'Func_ref': '',
             'Book_StartDateTime': self.utc_datetime(dt=starting_at),
@@ -106,8 +105,9 @@ class CABSApiClient:
 
     def book_room(
         self,
-        mbr_sysno: str,
-        start_date: datetime,
+        *,
+        mbr: str,
+        start_date: date,
         start_time: time,
         end_time: time,
         room_code: str,
@@ -116,11 +116,10 @@ class CABSApiClient:
         max_size: int,
         tutor_name: str,
         session_id: str,
-        internal: int = 1,
     ) -> str:
         data = {
             'Func_ref': '',
-            'host_hr_id': mbr_sysno,
+            'host_hr_id': mbr,
             'book_day': start_date.strftime('%Y-%m-%d'),
             'book_start': start_time.strftime('%H:%M'),
             'book_end': end_time.strftime('%H:%M'),
@@ -137,7 +136,7 @@ class CABSApiClient:
             'sender_hr_id': 'leave this blank',
             'booked_id': 'Redpot',
             'book_purpose': tutor_name,
-            'book_internal': internal,
+            'book_internal': 1,
             'book_sessno': session_id,
             'f_startdatetime': self.utc_datetime(datetime.combine(start_date, start_time)),
             'f_enddatetime': self.utc_datetime(datetime.combine(start_date, end_time)),
@@ -150,8 +149,9 @@ class CABSApiClient:
 
     def add_extra(
         self,
+        *,
         room_sysno: str,
-        start_date: datetime,
+        start_date: date,
         start_time: time,
         end_time: time,
         note: str,
