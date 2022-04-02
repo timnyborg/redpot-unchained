@@ -355,9 +355,11 @@
                 <li><a class="dropdown-item" href="{% url 'module:clone' module.id %}"><span class="fas fa-fw fa-clone"></span> Clone this module</a></li>
                 <li><a class="dropdown-item" href="{% url 'module:copy-web-fields' module.id %}"><span class="fas fa-fw fa-paste"></span> Copy web fields</a></li>
                 <li><a class="dropdown-item" href="import_from_template/{{ module.id }}"><span class="fas fa-fw fa-upload"></span> Import students from template</a></li>
-                {% if perms.module.upload_to_cabs and module.portfolio == 32 and module.room and module.room_setup %}
-                    {# todo: handle this logic better (elsewhere as can_send_to_cabs or something) #}
-                    <li><a class="dropdown-item" href="cabs_booking/{{ module.id }}"><span class="fas fa-fw fa-taxi"></span> Book course into CABS</a></li>
+                {# todo: handle this portfolio logic better #}
+                {% if perms.module.upload_to_cabs and module.portfolio_id == 32 %}
+                    <li><a class="dropdown-item" href="{% url 'cabs_booking:module-booking' module.id %}">
+                        <span class="fas fa-fw fa-taxi"></span> Book course into CABS</a>
+                    </li>
                 {% endif %}
             </ul>
             {% if module.status.id == 33 %}
