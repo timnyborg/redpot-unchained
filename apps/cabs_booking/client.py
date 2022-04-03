@@ -6,20 +6,21 @@ import requests
 from django.conf import settings
 from django.utils import timezone
 
-SIGNIN_URL = settings.CABS_API_URL + '/Auth/auth/Token/sign-in'
-CALL_URL = settings.CABS_API_URL + '/Auth/auth/Token/api/'
-
 
 class CABSApiError(Exception):
     """Reports non-200 statuses from the API, or unexpected results"""
 
 
 class CABSApiClient:
+    def __init__(self):
+        self.signin_url = settings.CABS_API_URL + '/Auth/auth/Token/sign-in'
+        self.call_url = settings.CABS_API_URL + '/Auth/auth/Token/api/'
+
     @property
     @lru_cache
     def access_token(self) -> str:
         response = requests.post(
-            SIGNIN_URL,
+            self.signin_url,
             json=settings.CABS_API_CREDENTIALS,
             headers={'Content-type': 'application/json'},
         )
@@ -28,9 +29,8 @@ class CABSApiClient:
         raise CABSApiError(f'CABS authentication failed: {response.status_code}: {response.reason}')
 
     def _call(self, endpoint: str, data: dict) -> dict:
-        call_url = CALL_URL + endpoint
         response = requests.post(
-            call_url,
+            self.call_url + endpoint,
             json=data,
             headers={'Content-type': 'application/json', 'Authorization': f'Bearer {self.access_token}'},
         )
