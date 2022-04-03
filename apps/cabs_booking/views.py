@@ -76,8 +76,8 @@ class CreateModuleBookings(PermissionRequiredMixin, PageTitleMixin, generic.Form
 
     def form_valid(self, form) -> http.HttpResponse:
         module = self.object
-        if (
-            not module.start_date
+        if not (
+            module.start_date
             and module.start_time
             and module.end_date
             and module.end_time
