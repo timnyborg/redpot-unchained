@@ -28,6 +28,6 @@ class LoggedInViewTestMixin(LoggedInMixin):
             raise ValueError(f'You must set {self.__class__.__name__}.url')
         return self.url
 
-    def test_get(self):
+    def test_get(self, *args, **kwargs):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)

@@ -1,0 +1,25 @@
+{% extends 'core/form.html' %}
+
+{% block before-form %}
+    <p>This will create a CABS booking for the course in room {{ module.room }} (set up as {{ module.get_room_setup_display }})
+        for {{ module.no_meetings }} weeks starting {{ module.start_date|date }}.</p>
+    <p>The following equipment will added to the bookings (plus any default equipment):</p>
+    <ul>
+        {% for equipment in equipment %}
+            <li>{{ equipment }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block after-section %}
+    {% if previous_bookings %}
+        <div class="section">
+            <p>Please note that this module was already booked from redpot on:</p>
+            <ul>
+                {% for booking in previous_bookings %}
+                    <li>{{ booking.created_on | date:'DATETIME_FORMAT' }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -170,7 +170,9 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
 
 
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
-    queryset = models.Module.objects.defer(None)  # Get all fields
+    queryset = models.Module.objects.defer(None).select_related(  # defer(None) to get all fields
+        'portfolio', 'division', 'format', 'location', 'room', 'status'
+    )
     template_name = 'module/view.html'
 
     def get_subtitle(self):

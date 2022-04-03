@@ -56,6 +56,7 @@ PROJECT_APPS = [
     'apps.application',
     'apps.banner',
     'apps.booking',
+    'apps.cabs_booking',
     'apps.contract',
     'apps.discount',
     'apps.enrolment',
@@ -342,6 +343,14 @@ DJANGO_CELERY_BEAT_TZ_AWARE = False
 
 # Website url for outbound linking
 PUBLIC_WEBSITE_URL = env('PUBLIC_WEBSITE_URL', default='https://conted.ox.ac.uk', validate=validate.URL())
+
+# Base URL for the CABS api
+CABS_API_URL = env(
+    'CABS_API_URL',
+    default='https://cabsplus.conted.ox.ac.uk/CABSServices',
+    validate=validate.URL(schemes=['https']),
+)
+CABS_API_CREDENTIALS = env.dict('CABS_API_CREDENTIALS', default={'Username': '', 'Password': '', 'Source': ''})
 
 # These may be unnecessary if passed into coverage from command line
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
