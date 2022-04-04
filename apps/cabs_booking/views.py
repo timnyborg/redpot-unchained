@@ -10,7 +10,7 @@ from django.views import generic
 from apps.core.utils.views import PageTitleMixin
 from apps.module.models import Module
 
-from . import services, tasks
+from . import client, services, tasks
 
 WEEKLY_PORTFOLIO = 32
 
@@ -87,7 +87,7 @@ class CreateModuleBookings(PermissionRequiredMixin, PageTitleMixin, generic.Form
             form.add_error('', 'The module must have start and end dates and times, a room, and room setup.')
             return self.form_invalid(form)
 
-        booking = services.create_module_bookings(module=self.object)
+        booking = services.create_module_bookings(module=self.object, api_client=client.CABSApiClient())
         messages.success(
             self.request,
             f'{booking.confirmed} confirmed and {booking.provisional} provisional '
