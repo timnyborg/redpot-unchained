@@ -35,7 +35,7 @@ class TestCreateModuleBookings(LoggedInViewTestMixin, test.TestCase):
         response = self.client.post(self.url)
 
         self.assertEqual(response.status_code, 302)
-        mocked_service.assert_called_once_with(module=self.module)
+        mocked_service.assert_called_once_with(module=self.module, api_client=mock.ANY)
 
     def test_validation(self, mocked_service: mock.MagicMock):
         self.module.start_time = None
