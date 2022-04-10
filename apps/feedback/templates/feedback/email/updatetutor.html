@@ -1,20 +1,20 @@
 <html>
 <!--Called when comment added via internal apps-->
 <div style="font-family:Calibri;">
-<p>Dear {{tutor.student.firstname}},</p>
-<p>Attached you will find the feedback for your {{=modinfo['Title']}} class,
-    {{if modinfo['Portfolio'] == 17 or modinfo['Portfolio'] == 32:}}
+<p>Dear {{tutor_firstname}},</p>
+<p>Attached you will find the feedback for your {{ title }}-{{ code }} class,
+    {% if portfolio == 17 or portfolio == 32 %}
     which has been reviewed by your Director of Studies.</br>
     If you should have any queries or concerns regarding the feedback please discuss this with your DoS.</br>
-        {{if modinfo['Portfolio'] == 17:}}
+        {% if portfolio == 17 %}
         The TALL feedback can be found on <a href='https://portal.conted.ox.ac.uk'>the Portal</a>.
-        {{pass}}
-    {{else:}}
+        {% endif %}
+    {% else %}
     which has been reviewed by the course administrator.
     If you should have any queries or concerns regarding the feedback please reply to this email.
-    {{pass}}
+    {% endif %}
 </p>
-{{if modinfo['Portfolio'] == 32:}}
+{% if portfolio == 32 %}
     <p>
     Kind regards,</br>
     Mr Robin Staniland</br>
@@ -31,7 +31,7 @@
     e: <a href="mailto:ppweekly@conted.ox.ac.uk">ppweekly@conted.ox.ac.uk</a></br>
     w: <a href="http://www.conted.ox.ac.uk">http://www.conted.ox.ac.uk</a></br>
     </p>
-{{elif modinfo['Portfolio'] == 17:}}
+{% elif portfolio == 17 %}
     <p>
     Thank you for all your hard work last term.</br>
     Best wishes,</br>
@@ -40,11 +40,11 @@
     University of Oxford</br>
     Department for Continuing Education</br>
     </p>
-{{else:}}
+{% else %}
     <p>
     Best wishes,
     Department for Continuing Education</br>
-{{pass}}
+{% endif %}
 </p>
 </div>
 </html>

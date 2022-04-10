@@ -212,7 +212,7 @@ class ResultWeekListView(LoginRequiredMixin, SiteTitleMixin, ListView):
 
     def dispatch(self, *args, **kwargs):
         self.end_date = datetime.datetime.now().date()
-        self.start_date = self.end_date - datetime.timedelta(days=7)
+        self.start_date = self.end_date - datetime.timedelta(days=6)
         return super().dispatch(*args, **kwargs)
 
     def get_subtitle(self):

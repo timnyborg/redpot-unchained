@@ -1,0 +1,57 @@
+<html>
+<!--Called by scheduler-->
+<div style="font-family:Calibri;">
+    <p>Dear {{ dos }},</p>
+    {% if portfolio == 32 %}
+        <p>Please find below link regarding student feedback for {{ module_title }}. </p>
+        <p>If you have any issues/concerns to raise with the tutor please add these in the comments section at the bottom of the page. Once completed please click <i><b>‘send comment to ppweekly@conted.ox.ac.uk.’</b></i> This will send an automatic email back to us indicating you have reviewed the feedback. In this scenario we will then forward the feedback, including your comments, to the tutor and yourself. This will provide you with the opportunity to follow up and discuss anything you have raised within the comments section with the tutor. </p>
+        <p>If there is nothing specific to comment on then please indicate this in the aforementioned comments section. Then click ‘send comment to ppweekly@conted.ox.ac.uk.’ This will send an automatic email back to us indicating you have reviewed the feedback and we will then forward the feedback to the tutor.</p>
+
+        <p><a href="https://{{ server_url }}/feedback/results/module/{{ module_code }}">View report</a></p>
+
+        <p>
+        Kind regards</br>
+        </br>
+        Weekly Classes Programme Officer</br>
+        University of Oxford</br>
+        Department for Continuing Education</br>
+        Ewert House,</br>
+        Ewert Place</br>
+        Summertown,</br>
+        Oxford,</br>
+        OX2 7DD</br>
+        t: +44 (0)1865 280894</br>
+        f: +44 (0)1865 280975</br>
+        e: <a href="mailto:ppweekly@conted.ox.ac.uk">ppweekly@conted.ox.ac.uk</a></br>
+        w: <a href="http://www.conted.ox.ac.uk">http://www.conted.ox.ac.uk</a></br>
+        </p>
+    {% elif portfolio == 31 %}
+        <P>Please find attached the course feedback from the day school on "{{ module_title }}" - {{ module_start_date }}. There were {{ attended }} participants attending.</P>
+
+        <p><a href="https://{{ server_url }}/feedback/results/module/{{module_code}}">View report</a></p>
+
+
+        <p>
+        Best wishes,</br>
+        </br>
+        Day and Weekend courses office</br>
+        University of Oxford</br>
+        Department for Continuing Education</br>
+        </p>
+    {% elif portfolio == 17 %}
+        <p>Please find below link to the Departmental student feedback for {{ term }} term. You may find the TALL course survey results on <a href='https://portal.conted.ox.ac.uk'>the Portal</a>. </p>
+        <p>If you have any issues/concerns to raise with a tutor please add these in the comments section at the bottom of the page, and tick the box next to the tutor's name. Alternatively If there is nothing specific to comment on then please indicate this in the comments section. Once completed please click ‘send comment to onlinecourses@conted.ox.ac.uk.’ This will send an automatic email back to us indicating you have reviewed the feedback. </p>
+        <p>Please be aware that if there is more than one tutor teaching on a course the Departmental feedback does not distinguish between tutors. If there are multiple tutors, and the student does not specifically name them, you may not know to which tutor they are referring. There may be instances where there is criticism of one tutor and you may not wish the other tutors of the course to read these comments. If this is the case please can you let us know. This issue does not affect the TALL survey results. </p>
+
+        <p><a href="https://{{ server_url }}/feedback/results/module/{{ module_code }}">View report</a></p>
+
+        <p>
+        Best wishes,</br>
+        The Online Courses Team</br>
+        Online courses office</br>
+        University of Oxford</br>
+        Department for Continuing Education</br>
+        </p>
+    {% endif %}
+</div>
+</html>

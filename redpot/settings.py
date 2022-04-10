@@ -305,6 +305,7 @@ EMAIL_HOST = env('EMAIL_HOST', default=None)
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='redpot-support@conted.ox.ac.uk', validate=validate.Email())
 # custom email settings
 SUPPORT_EMAIL = env('SUPPORT_EMAIL', default='redpot-support@conted.ox.ac.uk', validate=validate.Email())
+BCC_EMAIL = env('BCC_EMAIL', default='redpot-support@conted.ox.ac.uk', validate=validate.Email())
 PERSONNEL_EMAIL = env('PERSONNEL_EMAIL', 'personnel@conted.ox.ac.uk', validate=validate.Email())
 
 # custom url settings

@@ -14,9 +14,6 @@ from apps.module.models import Module, Subject
 
 from . import utils
 
-XMLGenerator = Generator[tuple[str, etree.Element], None, None]  # Function yielding (filename, xml tree)
-
-
 DATES_TBD_STATUSES = (23, 24)
 
 BASE_QUERY = (
@@ -34,7 +31,7 @@ DAY_WEEKEND_PORTFOLIO = 31
 ONLINE_PORTFOLIO = 17
 
 
-def prospectus(*, start_from: datetime) -> XMLGenerator:
+def prospectus(*, start_from: datetime) -> Generator:
     """One file per subject, with modules in chronological order, with lots of detail"""
     subjects = Subject.objects.order_by('area').values_list('area', flat=True).distinct()
     for subject in subjects:
@@ -81,7 +78,7 @@ def prospectus(*, start_from: datetime) -> XMLGenerator:
         yield f'{subject}.xml', root
 
 
-def subject_area_brochures(*, start_from: datetime) -> XMLGenerator:
+def subject_area_brochures(*, start_from: datetime) -> Generator:
     """One file per subject, with modules in chronological order, with format info in the title element's name"""
     subjects = Subject.objects.order_by('area').values_list('area', flat=True).distinct()
     subsections = [
@@ -133,7 +130,7 @@ def subject_area_brochures(*, start_from: datetime) -> XMLGenerator:
         yield f'{subject}.xml', root
 
 
-def newspaper(*, start_from: datetime) -> XMLGenerator:
+def newspaper(*, start_from: datetime) -> Generator:
     """One file per portfolio, ordered by subject (with subject headers) and date"""
     subjects = Subject.objects.order_by('area').values_list('area', flat=True).distinct()
     subsections = [

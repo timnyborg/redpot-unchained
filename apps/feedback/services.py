@@ -1,7 +1,9 @@
 import datetime
 import statistics
+from pathlib import Path
 
 import xlwt
+from weasyprint import CSS, HTML
 
 from django.conf import settings
 from django.core import mail
@@ -9,13 +11,17 @@ from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils.text import slugify
 
+from apps.enrolment.models import Enrolment
 from apps.feedback.models import Feedback, FeedbackAdmin
 from apps.module.models import Module
-from apps.tutor.models import Tutor, TutorModule
+from apps.student.models import Student
+from apps.tutor.models import TutorModule
 
 
 def process_and_send_emails(module: Module) -> None:
+    mail_sent = False
     enrolments = (
         module.enrolments.filter(
             status__in=[10, 71, 90],
@@ -52,8 +58,11 @@ def process_and_send_emails(module: Module) -> None:
             'module_title': enrolment['module__title'],
             'enrolment': enrolment['id'],
         }
-        mod_contact = (
-            enrolment['module__email'] if enrolment['module__email'] else enrolment['module__portfolio__email']
+        # Avoid sending email to external people (WEA for example, by falling back to portfolio)
+        from_email = (
+            enrolment['module__email']
+            if '@conted' in enrolment['module__email']
+            else enrolment['module__portfolio__email']
         )
 
         # Create object in table if object didn't exist
@@ -63,59 +72,230 @@ def process_and_send_emails(module: Module) -> None:
         to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [email_context['email']]
         if created:
             html_message = render_to_string('feedback/email/feedback_email.html', email_context)
-            # todo: determine if it's worthwhile to bcc webmaster
-            send_mail(subject, strip_tags(html_message), mod_contact, to, html_message=html_message)
+            send_mail(subject, strip_tags(html_message), from_email, to, html_message=html_message)
 
             student_feedback.notified = datetime.datetime.now()
             student_feedback.save()
+            mail_sent = True
 
         elif not student_feedback.reminder:
             html_message = render_to_string('feedback/email/feedback_email_reminder.html', email_context)
-            send_mail(subject, strip_tags(html_message), mod_contact, to, html_message=html_message)
+            send_mail(subject, strip_tags(html_message), from_email, to, html_message=html_message)
 
             student_feedback.reminder = datetime.datetime.now()
             student_feedback.save()
+            mail_sent = True
+
+    if mail_sent:
+        from_email = 'webmaster@conted.ox.ac.uk'
+        subject = f"Automated feedback requests for {email_context['module_title']}"
+        to = [settings.SUPPORT_EMAIL] if settings.DEBUG else from_email
+        cc = [settings.SUPPORT_EMAIL] if settings.DEBUG else 'webmaster@conted.ox.ac.uk'
+        html_message = (
+            f"Requests have been sent out for {email_context['module_title']}.\n\nYou "
+            f"will be emailed when the results are in."
+        )
+        send_mail(subject, html_message, from_email, to, cc, html_message=html_message)
 
 
-module = Module.objects.filter(code='O19P254PAJ')
-tutor_ids = ['205676', '413379']
+def mail_dos(module):  # Takes module object, not id
+    live_email = module.email if '@conted' in module.email else module.portfolio.email
+    sender = [settings.SUPPORT_EMAIL] if settings.DEBUG else live_email
+    recipient = (
+        TutorModule.objects.filter(module=module.id, director_of_studies=True, tutor__student__email__is_default=True)
+        .values('tutor__student__firstname', 'tutor__student__email__email')
+        .first()
+    )
+    dos_fname = recipient['tutor__student__firstname']
+    dos_email = recipient['tutor__student__email__email']
+
+    attended = Enrolment.objects.filter(module=module.id, status__in=[10, 11, 90]).count()
+
+    server_url = settings.CANONICAL_URL
+    module_title = module.title
+    portfolio = module.portfolio
+    module_code = module.code
+    module_start_date = module.start_date.strftime('%A %d %b %Y')
+
+    sent = False
+    if module.start_date.month > 8:
+        term = 'Michaelmas'
+    elif module.start_date.month < 4:
+        term = 'Hilary'
+    else:
+        term = 'Trinity'
+
+    if recipient:
+        email_context = {
+            'module': module,
+            'module_code': module_code,
+            'portfolio': portfolio,
+            'dos': dos_fname,
+            'attended': attended,
+            'term': term,
+            'module_start_date': module_start_date,
+            'url': server_url,
+        }
+        subject = f"Student feedback - {module_title}"
+        html_message = render_to_string('feedback/email/notifydos.html', email_context)
+        to = [settings.SUPPORT_EMAIL] if settings.DEBUG else dos_email
+        cc = [settings.SUPPORT_EMAIL] if settings.DEBUG else 'webmaster@conted.ox.ac.uk'
+        sent = send_mail(subject, strip_tags(html_message), sender, to, cc, html_message=html_message)
+    return sent
+
+
+def mail_course_admin(module, dos_emailed=None):
+    server_url = settings.CANONICAL_URL
+    email_context = {'title': module.title, 'code': module.code, 'server_url': server_url, 'dos_emailed': dos_emailed}
+
+    sender = 'webmaster@conted.ox.ac.uk'
+    live_email = module.email if '@conted' in module.email else module.portfolio.email
+    to = [settings.SUPPORT_EMAIL] if settings.DEBUG else live_email
+    cc = [settings.SUPPORT_EMAIL] if settings.DEBUG else sender
+    subject = f"ACTION: feedback results {module.title} - {module.code}"
+    html_message = render_to_string('feedback/email/notifyadmin.html', email_context)
+
+    if to:
+        send_mail(subject, strip_tags(html_message), sender, to, cc, html_message=html_message)
+    else:
+        to = 'redpot-support@conted.ox.ac.uk'
+        subject = f"No course admin for {module.title} - {module.code}"
+        html_message = 'Course feedback results are ready, but no course admin!'
+        send_mail(subject, html_message, sender, to, cc, html_message=html_message)
 
 
 def email_admin_report(module: Module, tutor_ids: list) -> None:
     """Send feedback report to course admin"""
-    modinfo = get_module_info(module.id)
+    module_id = module.id
+    modinfo = get_module_info(module_id)
     from_email = modinfo['email']
-    tutors = [int(tutor) for tutor in tutor_ids]
-    tutors = Tutor.objects.filter(pk__in=tutors).order_by('student__surname')
-    tutors = [
-        f'{tutor.student.title} {tutor.student.firstname} {tutor.student.surname}' for tutor in tutors
-    ]  # Get only tutor names
+    tutors_ids = [int(tutor) for tutor in tutor_ids]
+    tutors = Student.objects.filter(pk__in=tutors_ids).order_by('surname')
+    tutors = [f'{tutor.title} {tutor.firstname} {tutor.surname}' for tutor in tutors]  # Get only tutor names
     url = settings.CANONICAL_URL
     context = {'url': url, 'from': from_email, 'title': modinfo['title'], 'code': modinfo['code'], 'tutors': tutors}
 
     body = render_to_string('feedback/email/updateadmin.html', context)
-    # todo: determine if it's worthwhile to bcc webmaster
 
     to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [modinfo['email']]
     bcc = [settings.BCC_EMAIL] if settings.DEBUG else ['webmaster@conted.ox.ac.uk']
     subject = 'Feedback [' + modinfo['title'] + ']'
+    pdf_file_name = f"Feedback-report-{modinfo['code']}-{slugify(modinfo['title'])}.pdf"
+    pdf_context = {
+        'module_info': modinfo,
+        'module_summary': get_module_summary(module_id),
+        'tutors': get_module_tutors(module_id),
+        'feedback_data_dict': get_module_feedback_details(module_id),
+        'comments_list': get_module_comments(module_id),
+        'context_data': 'This is a context data',
+        'module_summary_headers': [
+            'Module Title',
+            'Satisfied(%)',
+            'Average',
+            'Teaching',
+            'Content',
+            'Facilities',
+            'Admin',
+            'Catering',
+            'Accomm',
+            'Sent',
+            'Returned',
+        ],
+    }
 
-    # new_email_algo:
     email = mail.EmailMessage(
         subject=subject,
         body=body,
+        from_email=from_email,
         to=to,
         bcc=bcc,
     )
     email.content_subtype = 'html'
-    content = 'some PDF content...'
-    file_name = 'something'
-    email.attach(filename=f'FileName-{file_name}.pdf', content=content, mimetype='application/pdf')
+    content = make_pdf(
+        html_path='feedback/pdfs/module_feedback.html',
+        css_path=f"{Path(__file__).parent}/static/css/pdf.css",
+        pdf_context=pdf_context,
+    )
+    email.attach(filename=pdf_file_name, content=content, mimetype='application/pdf')
     email.send()
 
 
-def email_tutor_report(module: Module, tutor_ids: list):
-    pass
+def email_tutor_report(module: Module, tutor_ids: list) -> None:
+    """Send feedback report to selected course Tutors"""
+    modinfo = get_module_info(module.id)
+    module_id = modinfo['id']
+    url = settings.CANONICAL_URL
+    from_email = modinfo['email']
+
+    bcc = [settings.BCC_EMAIL] if settings.DEBUG else ['webmaster@conted.ox.ac.uk']
+    subject = f"Student feedback for { modinfo['title'] }"
+    tutors_stud_ids = [int(tutor) for tutor in tutor_ids]
+    tutors = (
+        Student.objects.filter(pk__in=tutors_stud_ids, email__is_default=1)
+        .order_by('surname')
+        .prefetch_related('emails')
+    )
+    pdf_file_name = f"Feedback-report-{modinfo['code']}-{slugify(modinfo['title'])}.pdf"
+
+    for tutor in tutors:
+        tutor_firstname = tutor.firstname
+        tutor_email = tutor.emails.get(is_default=True).email or ''
+
+        if tutor_email:
+            to = [settings.SUPPORT_EMAIL] if settings.DEBUG else tutor_email
+            context = {
+                'url': url,
+                'from': from_email,
+                'title': modinfo['title'],
+                'code': modinfo['code'],
+                'tutor_firstname': tutor_firstname,
+                'portfolio': modinfo['portfolio'],
+            }
+
+            body = render_to_string('feedback/email/updatetutor.html', context)
+
+            email = mail.EmailMessage(
+                subject=subject,
+                body=body,
+                from_email=from_email,
+                to=to,
+                bcc=bcc,
+            )
+            email.content_subtype = 'html'
+            pdf_context = {
+                'module_info': modinfo,
+                'module_summary': get_module_summary(module_id),
+                'tutors': get_module_tutors(module_id),
+                'feedback_data_dict': get_module_feedback_details(module_id),
+                'comments_list': get_module_comments(module_id),
+                'context_data': 'This is a context data',
+                'module_summary_headers': [
+                    'Module Title',
+                    'Satisfied(%)',
+                    'Average',
+                    'Teaching',
+                    'Content',
+                    'Facilities',
+                    'Admin',
+                    'Catering',
+                    'Accomm',
+                    'Sent',
+                    'Returned',
+                ],
+            }
+            content = make_pdf(
+                html_path='feedback/pdfs/module_feedback.html',
+                css_path=f"{Path(__file__).parent}/static/css/pdf.css",
+                pdf_context=pdf_context,
+            )
+            email.attach(filename=pdf_file_name, content=content, mimetype='application/pdf')
+            email.send()
+
+
+def make_pdf(html_path, css_path, pdf_context):
+    html_doc = render_to_string(html_path, context=pdf_context)
+    content = HTML(string=html_doc).write_pdf(stylesheets=[CSS(css_path)])
+    return content
 
 
 def get_mean_value(list_of_ints):  # Takes a list of integers and returns a mean value
@@ -124,7 +304,9 @@ def get_mean_value(list_of_ints):  # Takes a list of integers and returns a mean
 
 
 def get_module_info(module_id):
-    module = Module.objects.filter(id=module_id).values('id', 'title', 'code', 'start_date', 'end_date', 'email')
+    module = Module.objects.filter(id=module_id).values(
+        'id', 'title', 'code', 'start_date', 'end_date', 'email', 'portfolio'
+    )
     module_info = module.first()
     return module_info
 
