@@ -179,7 +179,7 @@ def build_recommended_reading(*, module: Module) -> None:
     """Updates a module's recommended reading field with a template populated by the module's books
     You must call .save() yourself
     """
-    reading_list = module.books.order_by('-type', 'author', 'title')
+    reading_list = module.books.filter(type=Book.Types.PREPARATORY).order_by('author', 'title')
     module.recommended_reading = render_to_string(
         'module/components/recommended_reading_template.html',
         context={'module': module, 'reading_list': reading_list},
