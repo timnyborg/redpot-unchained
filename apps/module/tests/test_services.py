@@ -5,7 +5,7 @@ from django.test import SimpleTestCase, TestCase
 
 from apps.fee.tests.factories import FeeFactory
 
-from .. import services
+from .. import models, services
 from . import factories
 
 
@@ -50,7 +50,7 @@ class TestCopyFees(TestCase):
 class TestRebuildRecommendedReading(TestCase):
     def test_rebuild(self):
         module = factories.ModuleFactory()
-        books = factories.BookFactory.create_batch(module=module, size=2)
+        books = factories.BookFactory.create_batch(module=module, size=2, type=models.Book.Types.PREPARATORY)
 
         services.build_recommended_reading(module=module)
 

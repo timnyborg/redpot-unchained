@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime, time
 from itertools import groupby
 from operator import itemgetter
-from typing import Generator
+from typing import Generator, Tuple
 
 from lxml import etree
 
@@ -14,7 +14,7 @@ from apps.module.models import Module, Subject
 
 from . import utils
 
-XMLGenerator = Generator[tuple[str, etree.Element], None, None]  # Function yielding (filename, xml tree)
+XMLGenerator = Generator[Tuple[str, etree.Element], None, None]  # Function yielding (filename, xml tree)
 
 
 DATES_TBD_STATUSES = (23, 24)
