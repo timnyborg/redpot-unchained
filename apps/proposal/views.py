@@ -9,19 +9,25 @@ from django.db import transaction
 from django.urls import reverse_lazy
 from django.views import generic
 
-from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, ErrorBannerMixin, PageTitleMixin
 
 from . import datatables, forms, models, services
 
 
-class Edit(PermissionRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.UpdateView):
+class Edit(
+    PermissionRequiredMixin,
+    ErrorBannerMixin,
+    AutoTimestampMixin,
+    PageTitleMixin,
+    SuccessMessageMixin,
+    generic.UpdateView,
+):
     permission_required = 'proposal.add_proposal'
     model = models.Proposal
     form_class = forms.EditProposalForm
     template_name = 'proposal/form.html'
     success_message = 'Changes saved'
     success_url = '#'  # self-redirect, since these have no detail view
-    error_message = 'There are errors in the form'
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
@@ -30,12 +36,6 @@ class Edit(PermissionRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessM
             'statuses': models.Statuses,
             'books': self.object.module.books.order_by('type', 'title'),
         }
-
-    def form_invalid(self, form) -> http.HttpResponse:
-        messages.warning(self.request, self.error_message)
-        return super().form_invalid(form)
-
-    # todo: image filename modification (why?)
 
 
 class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):

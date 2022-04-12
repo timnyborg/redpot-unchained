@@ -46,6 +46,42 @@ class RoomSetups(models.TextChoices):
     UTBLS = 'UTBLS', 'U of tables'
 
 
+class CostCentres(models.TextChoices):  # Todo: convert to a table
+    XB6107 = 'XB6107', 'OUDCE Graduate School - XB6107'
+    EQ9000 = 'EQ9000', 'OUDCE Central - EQ9000'
+    XA1010 = 'XA1010', 'International Summer Schools - XA1010'
+    XA1020 = 'XA1020', 'US University Programmes - XA1020'
+    XA1030 = 'XA1030', 'Human Rights Law - XA1030'
+    XA1040 = 'XA1040', 'PreMasters and Academic English - XA1040'
+    XA1050 = 'XA1050', 'Leadership and Public Policy - XA1050'
+    XA1070 = 'XA1070', 'Diplomatic Studies - XA1070'
+    XA1080 = 'XA1080', 'MLA - XA1080'
+    XB2900 = 'XB2900', 'Surgical Science and Practice - XB2900'
+    XB4700 = 'XB4700', 'Vaccinology - XB4700'
+    XB4900 = 'XB4900', 'Conferences - XB4900'
+    XB4950 = 'XB4950', 'Practical Ethics - XB4950'
+    XB5100 = 'XB5100', 'MOAC - XB5100'
+    XB6000 = 'XB6000', 'Integrating Sustainability - XB6000'
+    XB6101 = 'XB6101', 'Translational Health Sciences - XB6101'
+    XB6104 = 'XB6104', 'Evidence Based Healthcare - XB6104'
+    XB6204 = 'XB6204', 'DPhils - XB6204'
+    XB6400 = 'XB6400', 'Technology - XB6400'
+    XB6602 = 'XB6602', 'Nanotechnology - XB6602'
+    XB6700 = 'XB6700', 'Sustainable Urban Development - XB6700'
+    XB7200 = 'XB7200', 'Environment and Sustainability - XB7200'
+    XB7250 = 'XB7250', 'Environmental Conservation - XB7250'
+    XB7800 = 'XB7800', 'Business & Scientific Skills - XB7800'
+    XB7901 = 'XB7901', 'Experimental Therapeutics - XB7901'
+    XB8001 = 'XB8001', 'Paediatric Infectious Diseases - XB8001'
+    XB8101 = 'XB8101', 'Cognitive Therapy - XB8101'
+    XB8201 = 'XB8201', 'Ecological Survey Techniques - XB8201'
+    XG9900 = 'XG9900', 'Weekly Classes - XG9900'
+    XG9910 = 'XG9910', 'Award Bearing UG - XG9910'
+    XG9935 = 'XG9935', 'Day/Weekend - XG9935'
+    XG9960 = 'XG9960', 'Online Short Courses - XG9960'
+    XG9985 = 'XG9985', 'Award Bearing PG - XG9985'
+
+
 class ModuleManager(models.Manager):
     """A manager which defers html blob fields by default"""
 
@@ -224,6 +260,7 @@ class Module(SignatureModel):
         blank=True,
         null=True,
         help_text='Cost centre, activity code and source of funds form the finance code',
+        choices=CostCentres.choices,
     )
     activity_code = models.CharField(
         max_length=2,
