@@ -199,7 +199,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         waitlist_table = datatables.WaitlistTable(self.object.waitlists.all(), request=self.request)
         book_table = datatables.BookTable(self.object.books.all(), request=self.request)
 
-        discounts = Discount.objects.matching_module(self.object).with_eligibility()
+        discounts = Discount.objects.matching_module(self.object)
 
         other_runs = self.object.other_runs()
         next_run = self.object.next_run()

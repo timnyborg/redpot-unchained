@@ -601,18 +601,12 @@
 
     {% if discounts %}
     <table class="table">
-        <thead><tr><th>Discount codes</th><th></th><th></th></tr></thead>
+        <thead><tr><th colspan="100%">Discount codes</th></tr></thead>
         {% for discount in discounts %}
             <tr>
                 <td>{{ discount }} ({{ discount.percent }}%)</td>
                 <td>{{ discount.code }}</td>
-                <td>
-                {% if discount.all_eligible %}
-                    All students eligible
-                {% else %}
-                    Limited eligibility (see discount manager)
-                {% endif %}
-                </td>
+                <td>{% if discount.expires_on %}Expires {{ discount.expires_on }}{% endif %}</td>
             </tr>
         {% endfor %}
     </table>
