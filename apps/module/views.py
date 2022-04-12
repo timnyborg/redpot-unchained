@@ -254,15 +254,15 @@ class AddProgramme(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gene
 class StudentList(LoginRequiredMixin, ExcelExportView):
     export_class = exports.StudentListExport
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> http.HttpResponse:
         self.module = get_object_or_404(models.Module, pk=kwargs['pk'])
         return super().get(request, *args, **kwargs)
 
-    def get_filename(self):
+    def get_filename(self) -> str:
         return f'{self.module.code}_student_list.xlsx'
 
-    def get_export_queryset(self):
-        return Enrolment.objects.filter(module=self.module)
+    def get_export_queryset(self) -> QuerySet[Enrolment]:
+        return self.module.enrolments.filter(status__takes_place=True)
 
 
 class MoodleList(LoginRequiredMixin, ExcelExportView):
@@ -277,10 +277,7 @@ class MoodleList(LoginRequiredMixin, ExcelExportView):
         return f"{self.module.code}_{title}.xlsx"
 
     def get_export_queryset(self):
-        return Enrolment.objects.filter(
-            module=self.module,
-            status__in=CONFIRMED_STATUSES,
-        )
+        return self.module.enrolments.filter(status__in=CONFIRMED_STATUSES)
 
 
 class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
