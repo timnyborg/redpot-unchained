@@ -206,7 +206,7 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         other_runs = self.object.other_runs()
         next_run = self.object.next_run()
 
-        applications = self.object.applications.select_related('student')
+        applications = self.object.applications.exclude(firstname__isnull=True).select_related('student')
         subjects = self.object.subjects.all()
         hecos_subjects = self.object.hecos_subjects.all()
         payment_plans = self.object.payment_plans.all()
