@@ -17,7 +17,7 @@ from django.views import generic
 from apps.core.utils.dates import academic_year
 from apps.core.utils.mail_merge import MailMergeView
 from apps.core.utils.urls import next_url_if_safe
-from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, ErrorBannerMixin, ExcelExportView, PageTitleMixin
 from apps.discount.models import Discount
 from apps.enrolment.models import CONFIRMED_STATUSES, Enrolment
 from apps.fee.models import FeeTypes
@@ -129,7 +129,9 @@ class CopyWebFields(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gen
         return redirect(self.target_module.get_absolute_url())
 
 
-class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
+class Edit(
+    LoginRequiredMixin, PageTitleMixin, ErrorBannerMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView
+):
     model = models.Module
     form_class = forms.EditForm
     template_name = 'module/form.html'
