@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.mail import EmailMultiAlternatives
+from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -94,3 +95,28 @@ class RequestSite(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, FormV
 
     def get_success_url(self) -> str:
         return self.module.get_absolute_url()
+
+
+class AddStudents(PageTitleMixin, generic.TemplateView):
+    template_name = 'moodle/add_students.html'
+    title = 'Moodle'
+    subtitle = 'Add people to a site'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.module = get_object_or_404(Module, pk=self.kwargs['module_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_students(self) -> QuerySet[Student]:
+        return Student.objects.filter(qa__enrolment__module=self.module, qa__enrolment__status__takes_place=True)
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        return {**context, 'module': self.module, 'students': self.get_students()}
+
+    def post(self, request, **kwargs) -> http.HttpResponse:
+        content = services.generate_student_spreadsheet(module=self.module, students=self.get_students())
+        return http.HttpResponse(
+            content=content,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            headers={'Content-Disposition': f'attachment; filename="moodle_students_{self.module.code}.xlsx"'},
+        )

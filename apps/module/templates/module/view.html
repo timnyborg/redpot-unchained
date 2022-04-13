@@ -364,7 +364,10 @@
                     </a>
                 </li>
                 <a class="dropdown-item" href="{% url 'moodle:request-site' module.id %}">
-                    <span class="fas fa-fw fa-graduation-cap"></span> Request site
+                    <span class="fas fa-fw fa-plus"></span> Request site
+                </a>
+                <a class="dropdown-item" href="{% url 'moodle:add-students/' module.id %}">
+                    <span class="fas fa-fw fa-user-plus"></span> Add students to a site
                 </a>
             </ul>
             {% if module.status.id == 33 %}

@@ -199,6 +199,9 @@ class Student(SITSLockingModelMixin, SignatureModel):
     def get_billing_address(self) -> Optional[Address]:
         return self.addresses.billing().first() or self.get_default_address()
 
+    def get_sso(self) -> Optional[OtherID]:
+        return self.other_ids.filter(type=OtherID.Types.SSO).first()
+
     def get_invoices(self) -> QuerySet[Invoice]:
         return Invoice.objects.filter(invoice_ledger__ledger__enrolment__qa__student=self).distinct()
 
