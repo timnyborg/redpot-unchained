@@ -20,7 +20,6 @@ NOT_KNOWN_NATIONALITY = 181
 NOT_KNOWN_ETHNICITY = 90
 NOT_KNOWN_RELIGION = 99
 NOT_AVAILABLE_SEXUAL_ORIENTATION = 99
-NOT_AVAILABLE_PARENTAL_EDUCATION = 8
 NOT_AVAILABLE_GENDER_IDENTITY = 99
 
 MINIMUM_BIRTHDATE = date(1900, 1, 1)
@@ -105,7 +104,10 @@ class Student(SITSLockingModelMixin, SignatureModel):
         'ParentalEducation',
         models.DO_NOTHING,
         db_column='parental_education',
-        default=NOT_AVAILABLE_PARENTAL_EDUCATION,
+        null=True,
+        blank=True,
+        help_text="Do any of your parents (natural, adoptive, step- or guardians who brought you up) have any higher "
+        "education qualifications, such as a degree, diploma or certificate of higher education?",
     )
     gender_identity = models.ForeignKey(
         'GenderIdentity',
