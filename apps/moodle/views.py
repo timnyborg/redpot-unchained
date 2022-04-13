@@ -1,9 +1,14 @@
 from django import http
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.views import generic
+from django.views.generic import FormView
 
 from apps.core.utils.views import AutoTimestampMixin, PageTitleMixin
 from apps.module.models import Module
@@ -47,3 +52,45 @@ class AssignToModule(LoginRequiredMixin, SuccessMessageMixin, generic.View):
         count = services.assign_moodle_ids(module=module, created_by=request.user.username)
         messages.success(request, f'{count} moodle ID(s) generated')
         return redirect(module)
+
+
+class RequestSite(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, FormView):
+    form_class = forms.RequestSiteForm
+    template_name = 'core/form.html'
+    title = 'Moodle'
+    subtitle = 'Request site'
+    success_message = 'Site request submitted'
+
+    def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
+        self.module = get_object_or_404(Module, pk=self.kwargs['module_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self) -> dict:
+        return {
+            'title': self.module.title,
+            'start_date': self.module.start_date,
+            'access_start_date': self.module.start_date,
+            'end_date': self.module.end_date,
+            'access_end_date': self.module.end_date,
+            'email': self.module.email,
+            'admin': self.request.user.get_full_name(),
+        }
+
+    def form_valid(self, form) -> http.HttpResponse:
+        message = render_to_string(
+            'moodle/email/request_site.html',
+            context={'module': self.module, **form.cleaned_data},
+        )
+        mail = EmailMultiAlternatives(
+            subject=f'Moodle course setup request:{self.module.title} ({self.module.code})',
+            body=strip_tags(message),
+            to=[settings.SUPPORT_EMAIL if settings.DEBUG else 'tallithelp@conted.ox.ac.uk'],
+            cc=None if settings.DEBUG else [form.cleaned_data['email']],
+            from_email=form.cleaned_data['email'],
+        )
+        mail.attach_alternative(message, 'text/html')
+        mail.send()
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return self.module.get_absolute_url()

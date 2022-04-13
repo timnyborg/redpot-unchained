@@ -9,4 +9,5 @@ urlpatterns = (
     path('edit/<int:pk>', views.Edit.as_view(), name='edit'),
     path('delete/<int:pk>', views.Delete.as_view(), name='delete'),
     path('assign/<int:module_id>', views.AssignToModule.as_view(), name='assign'),
+    path('request-site/<int:module_id>', views.RequestSite.as_view(), name='request-site'),
 )
