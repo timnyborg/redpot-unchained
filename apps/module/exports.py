@@ -3,7 +3,8 @@ from import_export import fields, resources, widgets
 from django.db.models import Max, Q
 
 from apps.enrolment.models import Enrolment
-from apps.student.models import MoodleID, OtherID
+from apps.moodle.models import MoodleID
+from apps.student.models import OtherID
 
 
 class FormattedAddressWidget(widgets.Widget):

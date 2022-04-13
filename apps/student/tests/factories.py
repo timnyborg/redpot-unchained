@@ -35,14 +35,6 @@ class EmailFactory(factory.django.DjangoModelFactory):
     is_default = True
 
 
-class MoodleFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = models.MoodleID
-
-    student = factory.SubFactory(StudentFactory)
-    moodle_id = factory.Sequence(lambda pk: 100000 + pk)
-
-
 class PhoneFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Phone

@@ -282,18 +282,6 @@ class MoodleList(LoginRequiredMixin, ExcelExportView):
         return self.module.enrolments.filter(status__in=CONFIRMED_STATUSES)
 
 
-class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
-    """Generates moodle IDs for all a module's students, redirecting back to the module page"""
-
-    # todo: convert to POST once we have a good POST-link solution,
-    #  or even better, that link is ajax'ed and handles message popups!
-    def post(self, request, module_id: int) -> http.HttpResponse:
-        module = get_object_or_404(models.Module, pk=module_id)
-        count = services.assign_moodle_ids(module=module, created_by=request.user.username)
-        messages.success(request, f'{count} moodle ID(s) generated')
-        return redirect(module)
-
-
 class EditHESASubjects(LoginRequiredMixin, PageTitleMixin, generic.detail.SingleObjectMixin, generic.FormView):
     model = models.Module
     form_class = forms.HESASubjectFormSet
