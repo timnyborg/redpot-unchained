@@ -4,10 +4,12 @@ from django import forms
 from django.core import validators
 from django.db import transaction
 from django.forms import ValidationError
-from django.forms.models import fields_for_model
+from django.urls import reverse_lazy
+from django.utils.text import format_lazy
 
 from apps.core.utils import widgets
 from apps.core.utils.forms import ApproverChoiceField
+from apps.core.utils.strings import mark_safe_lazy
 from apps.core.utils.widgets import PoundInput
 
 from . import models
@@ -16,7 +18,12 @@ from . import models
 class PaymentForm(forms.ModelForm):
     """Form for creating or editing a payment"""
 
-    approver = ApproverChoiceField('tutor_payment.approve')
+    approver = ApproverChoiceField(
+        'tutor_payment.approve',
+        help_text=mark_safe_lazy(
+            format_lazy("Your default approver can be set in <a href='{}'>your profile</a>", reverse_lazy('user:edit'))
+        ),
+    )
 
     class Meta:
         model = models.TutorPayment
@@ -60,7 +67,7 @@ class ExtrasForm(forms.Form):
         help_text='At £%.2f per extra enrolment',
         required=False,
     )
-    approver = fields_for_model(models.TutorPayment)['approver']
+    approver = ApproverChoiceField('tutor_payment.approve')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

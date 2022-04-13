@@ -82,6 +82,7 @@ class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, AutoT
             'venue': module.location,
             'start_date': module.start_date,
             'end_date': module.end_date,
+            'approver': self.request.user.default_approver,
         }
 
     def get_context_data(self, **kwargs) -> dict:
