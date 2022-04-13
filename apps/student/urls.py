@@ -40,15 +40,6 @@ other_id_urls = (
     'other-id',
 )
 
-moodle_id_urls = (
-    [
-        path('new/<int:student_id>', views.CreateMoodleID.as_view(), name='new'),
-        path('edit/<int:pk>', views.EditMoodleID.as_view(), name='edit'),
-        path('delete/<int:pk>', views.DeleteMoodleID.as_view(), name='delete'),
-    ],
-    'moodle-id',
-)
-
 emergency_email_urls = (
     [
         path('edit/<int:student_id>', views.CreateOrEditEmergencyContact.as_view(), name='edit'),
@@ -70,7 +61,6 @@ urlpatterns = [
     path('email/', include(email_urls)),
     path('phone/', include(phone_urls)),
     path('other-id/', include(other_id_urls)),
-    path('moodle-id/', include(moodle_id_urls)),
     path('enquiry/', include(enquiry_urls)),
     path('edit-diet/<int:student_id>', views.CreateOrEditDiet.as_view(), name='edit-diet'),
     path('emergency-contact/', include(emergency_email_urls)),

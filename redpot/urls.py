@@ -46,6 +46,7 @@ urlpatterns = [
     path('invoice/', include('apps.invoice.urls')),
     path('marketing/', include('apps.marketing.urls')),
     path('module/', include('apps.module.urls')),
+    path('moodle/', include('apps.moodle.urls')),
     path('programme/', include('apps.programme.urls')),
     path('proposal/', include('apps.proposal.urls')),
     path('qa/', include('apps.qualification_aim.urls')),

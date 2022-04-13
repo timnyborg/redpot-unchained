@@ -198,25 +198,6 @@ class TestExcelExportViews(TestCase):
         self.assertIn('spreadsheetml', response['content-type'])
 
 
-class TestAssignMoodleIDsView(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.enrolment = EnrolmentFactory()
-        cls.url = reverse('module:assign-moodle-ids', args=[cls.enrolment.module.pk])
-
-    def setUp(self):
-        self.client.force_login(self.user)
-
-    def test_student_list(self):
-        response = self.client.post(self.url)
-        self.assertEqual(response.status_code, 302)
-        # Check that a moodle record has been created with the right details
-        moodle_record = self.enrolment.qa.student.moodle_id
-        self.assertEqual(moodle_record.first_module_code, self.enrolment.module.code)
-        self.assertEqual(moodle_record.created_by, self.user.username)
-
-
 class TestCopyFees(TestCase):
     @classmethod
     def setUpTestData(cls):

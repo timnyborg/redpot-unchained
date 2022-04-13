@@ -67,6 +67,7 @@ PROJECT_APPS = [
     'apps.invoice',
     'apps.marketing',
     'apps.module',
+    'apps.moodle',
     'apps.programme',
     'apps.proposal',
     'apps.qualification_aim',
@@ -87,6 +88,7 @@ PROJECT_APPS = [
 THIRD_PARTY_APPS = [
     'ckeditor',  # django-ckeditor
     'ckeditor_uploader',
+    'fontawesomefree',
     'hijack',  # django-hijack
     'menu',  # django-simple-menu
     'django_select2',

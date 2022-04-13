@@ -564,9 +564,9 @@
 
     <dl class='row'><dt class="col-sm-2"> Moodle ID</dt>
     {% if moodle_id %}
-        <dd class="col-sm-6 mb-0">{{ moodle_id.moodle_id }} <a href="{% url 'student:moodle-id:edit' moodle_id.id  %}"><span class="fas fa-fw fa-pencil-alt"></span></a></dd>
+        <dd class="col-sm-6 mb-0">{{ moodle_id.moodle_id }} <a href="{% url 'moodle:edit' moodle_id.id  %}"><span class="fas fa-fw fa-pencil-alt"></span></a></dd>
     {% else %}
-        <dd class="col-sm-6 mb-0">N/A <a href="{% url 'student:moodle-id:new' student.id %}"><i class="fas fa-plus"></i></a></dd>
+        <dd class="col-sm-6 mb-0">N/A <a href="{% url 'moodle:new' student.id %}"><i class="fas fa-plus"></i></a></dd>
     {% endif %}
     </dl>
 

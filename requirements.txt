@@ -25,6 +25,7 @@ djangorestframework==3.13.1
 git+https://github.com/Bouke/docx-mailmerge@7024217#egg=docx-mailmerge
 environs==9.5.0
 factory-boy==3.2.1
+fontawesomefree==6.1.1
 fpdf==1.7.2
 freezegun==1.2.1
 lxml==4.8.0
@@ -47,3 +48,4 @@ sentry-sdk==1.5.9
 uk-postcode-utils==1.1
 unittest-xml-reporting==3.2.0
 weasyprint==52.5  # pinned while dev environments run on Debian 10
+XlsxWriter==3.0.3

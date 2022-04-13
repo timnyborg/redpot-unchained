@@ -1,8 +1,11 @@
 from dal.autocomplete import ModelSelect2
 
 from django import forms
+from django.urls import reverse_lazy
+from django.utils.text import format_lazy
 
 from apps.core.utils.forms import ApproverChoiceField
+from apps.core.utils.strings import mark_safe_lazy
 from apps.core.utils.widgets import PoundInput, ReadOnlyModelWidget
 from apps.enrolment.models import Enrolment
 from apps.invoice.models import Invoice
@@ -14,7 +17,12 @@ from . import models
 class BaseForm(forms.ModelForm):
     """Base class for common aspects of all amendment forms"""
 
-    approver = ApproverChoiceField('amendment.approve', help_text='Your default approver can be set in your profile')
+    approver = ApproverChoiceField(
+        'amendment.approve',
+        help_text=mark_safe_lazy(
+            format_lazy("Your default approver can be set in <a href='{}'>your profile</a>", reverse_lazy('user:edit'))
+        ),
+    )
 
     class Meta:
         first_fields, last_fields = ['enrolment', 'type', 'status', 'amount', 'reason'], [

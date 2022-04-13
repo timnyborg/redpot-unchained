@@ -21,7 +21,7 @@ from apps.tutor import services as tutor_services
 from apps.tutor.models import Tutor
 
 from . import datatables, forms, pdfs, services
-from .models import Address, Diet, Email, EmergencyContact, Enquiry, MoodleID, OtherID, Phone, Student, StudentArchive
+from .models import Address, Diet, Email, EmergencyContact, Enquiry, OtherID, Phone, Student, StudentArchive
 
 
 class Create(LoginRequiredMixin, generic.View):
@@ -446,36 +446,6 @@ class DeleteOtherID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
     def get_success_url(self) -> str:
         messages.success(self.request, 'Other ID deleted')
         return self.object.student.get_absolute_url()
-
-
-# --- Moodle views ---
-
-
-class CreateMoodleID(LoginRequiredMixin, AutoTimestampMixin, PageTitleMixin, SuccessMessageMixin, generic.CreateView):
-    model = MoodleID
-    form_class = forms.CreateMoodleIDForm
-    template_name = 'core/form.html'
-
-    def get_initial(self) -> dict:
-        return {'student': get_object_or_404(Student, pk=self.kwargs['student_id'])}
-
-    def get_success_url(self) -> str:
-        return self.object.student.get_absolute_url() + '#other_ids'
-
-
-class EditMoodleID(LoginRequiredMixin, PageTitleMixin, AutoTimestampMixin, SuccessMessageMixin, generic.UpdateView):
-    model = MoodleID
-    template_name = 'core/form.html'
-    form_class = forms.MoodleIDForm
-
-
-class DeleteMoodleID(LoginRequiredMixin, PageTitleMixin, generic.DeleteView):
-    model = MoodleID
-    template_name = 'core/delete_form.html'
-
-    def get_success_url(self) -> str:
-        messages.success(self.request, 'Moodle ID deleted')
-        return self.object.student.get_absolute_url() + '#other_ids'
 
 
 # --- Emergency contact views ---

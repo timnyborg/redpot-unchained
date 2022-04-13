@@ -6,9 +6,6 @@ from typing import Any
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 
-from apps.student.models import Student
-from apps.student.services import assign_moodle_id
-
 from .models import Book, Module
 
 WEB_FIELDS = [
@@ -155,24 +152,6 @@ def copy_children(*, source: Module, target: Module, user: User) -> None:
             percentage=record.percentage,
             **signature_fields,
         )
-
-
-def assign_moodle_ids(*, module: Module, created_by: str):
-    """
-    Acquires and attaches MoodleIDs for students enrolled on a module.
-    Marks newly generated IDs with the module code, so the
-    report used by TALL can show new passwords and "same as before"
-    """
-
-    students = Student.objects.filter(
-        qa__enrolment__module=module,
-        qa__enrolment__status__takes_place=True,
-    ).exclude(moodle_id__id__isnull=False)
-
-    for student in students:
-        assign_moodle_id(student=student, first_module_code=module.code, created_by=created_by)
-
-    return len(students)
 
 
 def build_recommended_reading(*, module: Module) -> None:
