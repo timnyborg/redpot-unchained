@@ -2,10 +2,13 @@ from django import forms
 from django.core import validators
 from django.db.models import TextChoices
 from django.template import loader
+from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
+from django.utils.text import format_lazy
 
 from apps.contract import models
 from apps.core.utils.forms import ApproverChoiceField
+from apps.core.utils.strings import mark_safe_lazy
 from apps.core.utils.widgets import DatePickerInput, PoundInput
 
 
@@ -33,7 +36,10 @@ class ContractForm(forms.ModelForm):
     """Base class for the tailored contract forms, with shared definitions and logic"""
 
     approver = ApproverChoiceField(
-        'contract.approve_contract', help_text='Your default approver can be set in your profile'
+        'contract.approve_contract',
+        help_text=mark_safe_lazy(
+            format_lazy("Your default approver can be set in <a href='{}'>your profile</a>", reverse_lazy('user:edit'))
+        ),
     )
     # Common option fields
     phone = forms.CharField(
