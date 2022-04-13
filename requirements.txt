@@ -25,6 +25,7 @@ djangorestframework==3.13.1
 git+https://github.com/Bouke/docx-mailmerge@7024217#egg=docx-mailmerge
 environs==9.5.0
 factory-boy==3.2.1
+fontawesomefree==6.1.1
 fpdf==1.7.2
 freezegun==1.2.1
 lxml==4.8.0
