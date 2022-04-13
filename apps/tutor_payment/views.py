@@ -36,6 +36,9 @@ class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, gener
         self.tutor_module = get_object_or_404(TutorModule, pk=self.kwargs['tutor_module_id'])
         return super().dispatch(request, *args, **kwargs)
 
+    def get_initial(self) -> dict:
+        return {'approver': self.request.user.default_approver}
+
     def form_valid(self, form):
         form.instance.tutor_module = self.tutor_module
         form.instance.raised_by = self.request.user
@@ -142,6 +145,9 @@ class Extras(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleObje
         self.object = self.get_object()
         return super().dispatch(request, *args, **kwargs)
 
+    def get_initial(self) -> dict:
+        return {'approver': self.request.user.default_approver}
+
     def get_success_url(self) -> str:
         return self.object.get_absolute_url() + '#payments'
 
@@ -164,6 +170,9 @@ class OnlineTeaching(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, Si
     def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
         self.object = self.get_object()
         return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self) -> dict:
+        return {'approver': self.request.user.default_approver}
 
     def form_valid(self, form) -> http.HttpResponse:
         # All variations of the form include the schedule field
@@ -197,6 +206,7 @@ class WeeklyTeaching(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, Si
         return {
             'rate': models.PaymentRate.objects.lookup('weekly_hourly_rate'),
             'no_meetings': self.object.module.no_meetings,
+            'approver': self.request.user.default_approver,
         }
 
     def form_valid(self, form) -> http.HttpResponse:
