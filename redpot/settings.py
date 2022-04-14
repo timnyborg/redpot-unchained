@@ -305,7 +305,6 @@ EMAIL_HOST = env('EMAIL_HOST', default=None)
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='redpot-support@conted.ox.ac.uk', validate=validate.Email())
 # custom email settings
 SUPPORT_EMAIL = env('SUPPORT_EMAIL', default='redpot-support@conted.ox.ac.uk', validate=validate.Email())
-BCC_EMAIL = env('BCC_EMAIL', default='redpot-support@conted.ox.ac.uk', validate=validate.Email())
 PERSONNEL_EMAIL = env('PERSONNEL_EMAIL', 'personnel@conted.ox.ac.uk', validate=validate.Email())
 
 # custom url settings
@@ -316,7 +315,7 @@ SENTRY_URL = env(
     validate=validate.URL(schemes=['https']),
 )
 # hostname used in automated emails sent by celery tasks
-CANONICAL_URL = env('CANONICAL_URL', default='https://redpot-unchained.conted.ox.ac.uk')
+CANONICAL_URL = env('CANONICAL_URL', default='https://redpot-unchained.conted.ox.ac.uk', validate=validate.URL())
 SQUARE_URL = env(
     'SQUARE_URL',
     default='https://square.conted.ox.ac.uk/reports',

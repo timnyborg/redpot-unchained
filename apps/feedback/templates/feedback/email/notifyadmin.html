@@ -3,7 +3,7 @@
 <div style="font-family:Calibri;">
     <p>Feedback report ready for {{title}}
 
-    <p><a href="https://{{server_url}}/feedback/results/module/{{code}}">View report</a></p>
+    <p><a href="{% url 'feedback:results-module' module_code %}">View report</a></p>
 
     {% if dos_emailed %}
         <p>A copy of the course feedback was also emailed to the director of studies</p>

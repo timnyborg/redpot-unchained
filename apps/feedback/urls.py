@@ -16,5 +16,4 @@ urlpatterns = [
     path('request_feedback/<int:module_id>', views.RequestFeedback.as_view(), name='request-feedback'),
     path('recently-completed', views.RecentlyCompletedOrFinishingSoon.as_view(), name='recently-completed'),
     path('export/xls/<int:module_id>', views.ExportToExcel.as_view(), name='export_users_xls'),
-    path('make_pdf/<int:module_id>', views.make_pdf, name='make_pdf'),
 ]

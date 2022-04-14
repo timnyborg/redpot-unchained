@@ -1,13 +1,9 @@
 import datetime
-from pathlib import Path
-
-from weasyprint import CSS, HTML
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.template.loader import render_to_string
 from django.views import View
@@ -17,7 +13,6 @@ from apps.core.utils.views import PageTitleMixin
 from apps.enrolment.models import Enrolment
 from apps.module.models import Module
 
-from ..core.utils.strings import normalize
 from . import services
 from .forms import CommentAndReportForm, FeedbackRequestForm, PreviewQuestionnaireForm
 from .models import Feedback, FeedbackAdmin
@@ -209,14 +204,11 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
 class ResultWeekListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     template_name = 'feedback/this_week.html'
     model = Feedback
+    end_date = datetime.datetime.now().date()
+    start_date = end_date - datetime.timedelta(days=6)
 
-    def dispatch(self, *args, **kwargs):
-        self.end_date = datetime.datetime.now().date()
-        self.start_date = self.end_date - datetime.timedelta(days=6)
-        return super().dispatch(*args, **kwargs)
-
-    def get_subtitle(self):
-        return f'Student feedback submitted between ({self.start_date} - {self.end_date})'
+    def get_subtitle(self, start_date, end_date):
+        return f'Student feedback submitted between ({start_date} - {end_date})'
 
     def get_queryset(self):
         return Feedback.objects.filter(submitted__gt=self.start_date).order_by('submitted')
@@ -465,16 +457,11 @@ class RequestFeedback(LoginRequiredMixin, View):
 class RecentlyCompletedOrFinishingSoon(LoginRequiredMixin, SiteTitleMixin, ListView):
     template_name = 'feedback/recently_completed_or_finishing_soon.html'
     model = Module
-    subtitle = 'Courses that have recently finished, or will finish soon..'
-
-    def dispatch(self, *args, **kwargs):
-        self.past_days = 14  # get courses for 14 days in the past
-        self.future_days = 2  # get courses for 2 days in the future
-        return super().dispatch(*args, **kwargs)
+    subtitle = 'Courses that have recently finished, or will finish soon.'
 
     def get_queryset(self):
-        start_date = datetime.date.today() - datetime.timedelta(days=self.past_days)
-        end_date = datetime.date.today() + datetime.timedelta(days=self.future_days)
+        start_date = datetime.date.today() - datetime.timedelta(days=14)  # get courses for 14 days in the past
+        end_date = datetime.date.today() + datetime.timedelta(days=2)  # get courses for 2 days in the future
         return (
             Module.objects.filter(~Q(status=33), end_date__range=[start_date, end_date])
             .values('id', 'code', 'title', 'end_date', 'email')
@@ -489,7 +476,7 @@ class RecentlyCompletedOrFinishingSoon(LoginRequiredMixin, SiteTitleMixin, ListV
         for module in modules_list:
             if Feedback.objects.filter(module=module['id']).count() > 0:
                 module['status'] = 'Send reminder'
-                if Feedback.objects.filter(module=module['id'], reminder__isnull=False).count() > 0:
+                if Feedback.objects.filter(module=module['id'], reminder__isnull=False).exists():
                     module['status'] = 'See results'
             else:
                 module['status'] = 'Send feedback request'
@@ -499,41 +486,7 @@ class RecentlyCompletedOrFinishingSoon(LoginRequiredMixin, SiteTitleMixin, ListV
         return context
 
 
-class ExportToExcel(View):
+class ExportToExcel(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        module_id = kwargs['module_id']
-        return services.export_users_xls(module_id)
-
-
-def make_pdf(request, **kwargs):
-    module_id = kwargs['module_id']
-    module = get_object_or_404(Module, id=module_id)
-    filename = normalize(f"feedback_report_{module.title}_{module.code}.pdf")
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'filename="{filename}"'
-
-    context = {
-        'module_info': services.get_module_info(module_id),
-        'module_summary': services.get_module_summary(module_id),
-        'tutors': services.get_module_tutors(module_id),
-        'feedback_data_dict': services.get_module_feedback_details(module_id),
-        'comments_list': services.get_module_comments(module_id),
-        'context_data': 'This is a context data',
-        'module_summary_headers': [
-            'Module Title',
-            'Satisfied(%)',
-            'Average',
-            'Teaching',
-            'Content',
-            'Facilities',
-            'Admin',
-            'Catering',
-            'Accomm',
-            'Sent',
-            'Returned',
-        ],
-    }
-    # font_config = FontConfiguration() #todo clarify with Tim
-    html_doc = render_to_string('feedback/pdfs/module_feedback.html', context=context)
-    HTML(string=html_doc).write_pdf(response, stylesheets=[CSS(Path(__file__).parent / 'static/css/pdf.css')])
-    return response
+        module = Module.objects.filter(id=kwargs['module_id'])
+        return services.export_users_xls(module)
