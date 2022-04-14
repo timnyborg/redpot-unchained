@@ -119,7 +119,7 @@ def send_request_created_email(*, amendment: models.Amendment) -> None:
     mail.send_mail(
         recipient_list=[settings.SUPPORT_EMAIL if settings.DEBUG else recipient],
         from_email=settings.SUPPORT_EMAIL,
-        subject=f'Finance change request from {amendment.requested_by} awaits your approval',
+        subject=f'Finance change request from {amendment.requested_by.get_full_name()} awaits your approval',
         message=strip_tags(message),
         html_message=message,
     )
