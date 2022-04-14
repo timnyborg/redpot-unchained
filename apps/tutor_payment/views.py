@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
@@ -86,12 +86,15 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
 class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
     model = models.TutorPayment
     template_name = 'core/delete_form.html'
-    success_url = reverse_lazy('tutor-payment:search')
     subtitle = 'Delete'
     subtitle_object = False
 
     def has_permission(self) -> bool:
         return self.get_object().user_can_edit(self.request.user)
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Payment deleted')
+        return self.object.tutor_module.get_absolute_url()
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):

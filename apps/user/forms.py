@@ -16,7 +16,23 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'username', 'email', 'role', 'phone', 'room', 'image', 'default_approver')
+        fields = (
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'role',
+            'phone',
+            'room',
+            'image',
+            'on_facewall',
+            'default_approver',
+        )
+
+    def __init__(self, admin: bool = False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not admin:
+            del self.fields['on_facewall']
 
 
 class CreateUserForm(forms.ModelForm):
