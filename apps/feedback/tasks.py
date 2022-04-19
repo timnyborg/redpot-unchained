@@ -1,5 +1,4 @@
-# Feedback automation process:
-from datetime import datetime
+import datetime
 
 from apps.feedback import services
 from apps.module.models import Module
@@ -19,9 +18,8 @@ def feedback_mail_students():
         end_date__in=[yesterdays_finishers, week_old_reminders],
     )
 
-    if modules_for_feedback.exists():
-        for module in modules_for_feedback:
-            services.process_and_send_emails(module)
+    for module in modules_for_feedback:
+        services.process_and_send_emails(module)
 
     return 'Success!'
 
@@ -33,9 +31,8 @@ def feedback_mail_dos_and_course_admin():
         auto_feedback=True, is_cancelled=False, email__isnull=False, end_date=date
     )
 
-    if completed_modules.exists():
-        for module in completed_modules:
-            sent = services.mail_dos(module) if module.portfolio in [32, 31, 17] else None
-            services.mail_course_admin(module, sent)
+    for module in completed_modules:
+        sent = services.mail_dos(module) if module.portfolio in [32, 31, 17] else None
+        services.mail_course_admin(module, sent)
 
     return 'Success!'

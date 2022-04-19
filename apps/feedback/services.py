@@ -44,11 +44,6 @@ def process_and_send_emails(module: Module) -> None:
             'module__email',
             'module__portfolio__email',
         )
-        .order_by(
-            '-qa__student__email__email',
-            'qa__student__surname',
-            'qa__student__firstname',
-        )
     )
 
     for enrolment in enrolments:
@@ -83,19 +78,18 @@ def process_and_send_emails(module: Module) -> None:
             mail_sent = True
 
     if mail_sent:
-        subject = f"Automated feedback requests for {email_context['module_title']}"
+        subject = f"Automated feedback requests for {module.title}"
         to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [admin_email]
         cc = [settings.SUPPORT_EMAIL] if settings.DEBUG else ['webmaster@conted.ox.ac.uk']
         html_message = (
-            f"Requests have been sent out for {email_context['module_title']}.\n\nYou "
-            f"will be emailed when the results are in."
+            f"Requests have been sent out for {module.title}.\n\nYou " f"will be emailed when the results are in."
         )
         send_mail(subject, html_message, admin_email, to, cc, html_message=html_message)
 
 
 def mail_dos(module: Module):
-    live_email = module.email if '@conted' in module.email else module.portfolio.email
-    sender = [settings.SUPPORT_EMAIL] if settings.DEBUG else live_email
+    admin_email = module.email if '@conted' in module.email else module.portfolio.email
+    sender = [settings.SUPPORT_EMAIL] if settings.DEBUG else admin_email
     recipient = TutorModule.objects.filter(
         module=module.id, director_of_studies=True, tutor__student__email__is_default=True
     ).first()
@@ -106,7 +100,7 @@ def mail_dos(module: Module):
 
     if recipient:
         email_context = {
-            'email': live_email,
+            'email': admin_email,
             'module_code': module.code,
             'portfolio': module.portfolio,
             'dos': recipient['tutor__student__firstname'],
