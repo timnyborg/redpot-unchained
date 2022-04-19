@@ -47,6 +47,9 @@ def process_and_send_emails(module: Module) -> None:
     )
 
     for enrolment in enrolments:
+        # Create object in table if object didn't exist
+        student_feedback, created = Feedback.objects.get_or_create(enrolment=enrolment['id'], module=module)
+
         email_context = {
             'firstname': enrolment['qa__student__firstname'],
             'email': enrolment['qa__student__email__email'],
@@ -54,10 +57,9 @@ def process_and_send_emails(module: Module) -> None:
             'module_id': enrolment['module__id'],
             'module_title': enrolment['module__title'],
             'enrolment': enrolment['id'],
+            'PUBLIC_APPS_URL': settings.PUBLIC_APPS_URL,
+            'hash_id': student_feedback.hash_id,
         }
-
-        # Create object in table if object didn't exist
-        student_feedback, created = Feedback.objects.get_or_create(enrolment=email_context['enrolment'], module=module)
 
         subject = f"Your feedback on {email_context['module_title']}"
         to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [email_context['email']]
