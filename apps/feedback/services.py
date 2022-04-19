@@ -155,13 +155,6 @@ def email_admin_report(module: Module, tutor_ids: list) -> None:
     bcc = [settings.SUPPORT_EMAIL] if settings.DEBUG else ['webmaster@conted.ox.ac.uk']
     subject = f'Feedback - {module.title}'
     pdf_file_name = f"Feedback-report-{module.code}-{slugify(module.title)}.pdf"
-    pdf_context = {
-        'module': module,
-        'module_summary': get_module_summary(module.id),
-        'tutors': get_module_tutors(module.id),
-        'feedback_data_dict': get_module_feedback_details(module.id),
-        'comments_list': get_module_comments(module.id),
-    }
 
     email = mail.EmailMessage(
         subject=subject,
@@ -171,18 +164,13 @@ def email_admin_report(module: Module, tutor_ids: list) -> None:
         bcc=bcc,
     )
     email.content_subtype = 'html'
-    content = make_pdf(
-        html_path='feedback/pdfs/module_feedback.html',
-        css_path=f"{Path(__file__).parent}/static/css/pdf.css",
-        pdf_context=pdf_context,
-    )
+    content = make_pdf(module=module)
     email.attach(filename=pdf_file_name, content=content, mimetype='application/pdf')
     email.send()
 
 
 def email_tutor_report(module: Module, tutor_ids: list) -> None:
     """Send feedback report to selected course Tutors"""
-    module_id = module.id
     url = settings.CANONICAL_URL
     from_email = module.email
 
@@ -222,27 +210,22 @@ def email_tutor_report(module: Module, tutor_ids: list) -> None:
                 bcc=bcc,
             )
             email.content_subtype = 'html'
-            pdf_context = {
-                'module': module,
-                'module_summary': get_module_summary(module_id),
-                'tutors': get_module_tutors(module_id),
-                'feedback_data_dict': get_module_feedback_details(module_id),
-                'comments_list': get_module_comments(module_id),
-                'context_data': 'This is a context data',
-            }
-            content = make_pdf(
-                html_path='feedback/pdfs/module_feedback.html',
-                css_path=f"{Path(__file__).parent}/static/css/pdf.css",
-                pdf_context=pdf_context,
-            )
+
+            content = make_pdf(module=module)
             email.attach(filename=pdf_file_name, content=content, mimetype='application/pdf')
             email.send()
 
 
-def make_pdf(html_path, css_path, pdf_context):
-    html_doc = render_to_string(html_path, context=pdf_context)
-    content = HTML(string=html_doc).write_pdf(stylesheets=[CSS(css_path)])
-    return content
+def make_pdf(*, module: Module) -> str:
+    context = {
+        'module': module,
+        'module_summary': get_module_summary(module.id),
+        'tutors': get_module_tutors(module.id),
+        'feedback_data_dict': get_module_feedback_details(module.id),
+        'comments_list': get_module_comments(module.id),
+    }
+    html_doc = render_to_string('feedback/pdfs/module_feedback.html', context=context)
+    return HTML(string=html_doc).write_pdf(stylesheets=[CSS(f"{Path(__file__).parent}/static/css/pdf.css")])
 
 
 def get_module_summary(module_id: int) -> dict:
