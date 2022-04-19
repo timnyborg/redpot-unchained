@@ -14,7 +14,7 @@ from django.utils.html import strip_tags
 from django.utils.text import slugify
 
 from apps.enrolment.models import CONFIRMED_STATUSES
-from apps.feedback.models import Feedback, FeedbackAdmin
+from apps.feedback.models import Feedback
 from apps.module.models import Module
 from apps.student.models import Student
 from apps.tutor.models import TutorModule
@@ -222,7 +222,7 @@ def make_pdf(*, module: Module) -> str:
         'module_summary': get_module_summary(module.id),
         'tutors': get_module_tutors(module.id),
         'feedback_data_dict': get_module_feedback_details(module.id),
-        'comments_list': get_module_comments(module.id),
+        'comments_list': module.feedbackadmin_set.order_by('updated'),
     }
     html_doc = render_to_string('feedback/pdfs/module_feedback.html', context=context)
     return HTML(string=html_doc).write_pdf(stylesheets=[CSS(f"{Path(__file__).parent}/static/css/pdf.css")])
@@ -278,23 +278,6 @@ def get_module_tutors(module_id):
     ]
 
     return tutors
-
-
-def get_module_comments(module_id):
-    comments_list = []
-    admin_comments_set = FeedbackAdmin.objects.filter(module=module_id).order_by('updated')
-    for comment_row in admin_comments_set:
-        values = {}
-        values['comment'] = comment_row.admin_comments
-        values['uploaded_by'] = comment_row.person
-        values['uploaded_on'] = (
-            comment_row.updated.strftime('%H:%M on %d-%b-%Y')
-            if isinstance(comment_row.updated, datetime.date)
-            else '-'
-        )
-        comments_list.append(values)
-
-    return comments_list
 
 
 def export_users_xls(module: Module) -> HttpResponse:
