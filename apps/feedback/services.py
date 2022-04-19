@@ -21,6 +21,8 @@ from apps.tutor.models import TutorModule
 
 
 def process_and_send_emails(module: Module) -> None:
+    # Avoid sending email to external people (WEA for example, by falling back to portfolio)
+    admin_email = module.email if '@conted' in module.email else module.portfolio.email
     mail_sent = False
     enrolments = (
         module.enrolments.filter(
@@ -58,12 +60,6 @@ def process_and_send_emails(module: Module) -> None:
             'module_title': enrolment['module__title'],
             'enrolment': enrolment['id'],
         }
-        # Avoid sending email to external people (WEA for example, by falling back to portfolio)
-        from_email = (
-            enrolment['module__email']
-            if '@conted' in enrolment['module__email']
-            else enrolment['module__portfolio__email']
-        )
 
         # Create object in table if object didn't exist
         student_feedback, created = Feedback.objects.get_or_create(enrolment=email_context['enrolment'], module=module)
@@ -72,7 +68,7 @@ def process_and_send_emails(module: Module) -> None:
         to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [email_context['email']]
         if created:
             html_message = render_to_string('feedback/email/feedback_email.html', email_context)
-            send_mail(subject, strip_tags(html_message), from_email, to, html_message=html_message)
+            send_mail(subject, strip_tags(html_message), admin_email, to, html_message=html_message)
 
             student_feedback.notified = datetime.datetime.now()
             student_feedback.save()
@@ -80,22 +76,21 @@ def process_and_send_emails(module: Module) -> None:
 
         elif not student_feedback.reminder:
             html_message = render_to_string('feedback/email/feedback_email_reminder.html', email_context)
-            send_mail(subject, strip_tags(html_message), from_email, to, html_message=html_message)
+            send_mail(subject, strip_tags(html_message), admin_email, to, html_message=html_message)
 
             student_feedback.reminder = datetime.datetime.now()
             student_feedback.save()
             mail_sent = True
 
     if mail_sent:
-        from_email = 'webmaster@conted.ox.ac.uk'
         subject = f"Automated feedback requests for {email_context['module_title']}"
-        to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [from_email]
+        to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [admin_email]
         cc = [settings.SUPPORT_EMAIL] if settings.DEBUG else ['webmaster@conted.ox.ac.uk']
         html_message = (
             f"Requests have been sent out for {email_context['module_title']}.\n\nYou "
             f"will be emailed when the results are in."
         )
-        send_mail(subject, html_message, from_email, to, cc, html_message=html_message)
+        send_mail(subject, html_message, admin_email, to, cc, html_message=html_message)
 
 
 def mail_dos(module: Module):
