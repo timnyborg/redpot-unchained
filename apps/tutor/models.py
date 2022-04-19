@@ -170,6 +170,7 @@ class Tutor(SignatureModel):
             self.save()
 
 
+# Todo: seriously consider renaming this concept a 'TutorEngagement'
 class TutorModule(SignatureModel):
     module = models.ForeignKey(
         Module,

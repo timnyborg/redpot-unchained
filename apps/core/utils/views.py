@@ -148,3 +148,19 @@ def not_implemented(request: http.HttpRequest, message: str = 'Not implemented',
     """Stub view to indicate pages that haven't been implemented yet during development"""
 
     return page_not_found(request, exception=http.Http404(message))
+
+
+class ErrorBannerMixin:
+    """Simple mixin to send an error message (to be displayed as a banner) on form error.
+    Useful on long forms where the validation errors might not be visible immediately after page load
+    todo: implement protocols for type hinting on mixin classes
+    """
+
+    error_message = 'There are errors in the form'
+
+    def form_invalid(self, form) -> http.HttpResponse:
+        messages.warning(self.request, self.get_error_message())
+        return super().form_invalid(form)
+
+    def get_error_message(self) -> str:
+        return self.error_message

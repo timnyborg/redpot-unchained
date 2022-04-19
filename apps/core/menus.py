@@ -38,7 +38,7 @@ module_children = (
     ),
     MenuItem(
         "Upload to Cabs",
-        'not-implemented',
+        reverse("cabs_booking:annual-booking"),
         icon="taxi",
         check=lambda request: request.user.has_perm('module.upload_to_cabs'),
     ),

@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
                     'division',
                     models.ForeignKey(
                         db_column='division',
-                        limit_choices_to=models.Q(('id__gt', 8), ('id__lt', 5), _connector='OR'),
+                        limit_choices_to={'is_active': True},
                         on_delete=django.db.models.deletion.DO_NOTHING,
                         to='core.Division',
                     ),

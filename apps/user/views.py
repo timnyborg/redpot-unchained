@@ -27,6 +27,10 @@ class EditProfile(
     subtitle_object = False
     success_message = 'Profile updated'
 
+    def get_form_kwargs(self) -> dict:
+        kwargs = super().get_form_kwargs()
+        return {**kwargs, 'admin': self.request.user.has_perm('core.change_user')}
+
     def get_permission_required(self) -> list:
         if self.kwargs.get('pk'):
             return ['core.change_user']

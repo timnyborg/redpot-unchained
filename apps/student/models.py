@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 import json
-import random
 from datetime import date
 from typing import Optional, Union
 
-from django.conf import settings
 from django.core import validators
-from django.core.exceptions import ImproperlyConfigured
 from django.db import models, transaction
 from django.db.models import QuerySet
 from django.urls import reverse
@@ -23,7 +20,6 @@ NOT_KNOWN_NATIONALITY = 181
 NOT_KNOWN_ETHNICITY = 90
 NOT_KNOWN_RELIGION = 99
 NOT_AVAILABLE_SEXUAL_ORIENTATION = 99
-NOT_AVAILABLE_PARENTAL_EDUCATION = 8
 NOT_AVAILABLE_GENDER_IDENTITY = 99
 
 MINIMUM_BIRTHDATE = date(1900, 1, 1)
@@ -108,7 +104,10 @@ class Student(SITSLockingModelMixin, SignatureModel):
         'ParentalEducation',
         models.DO_NOTHING,
         db_column='parental_education',
-        default=NOT_AVAILABLE_PARENTAL_EDUCATION,
+        null=True,
+        blank=True,
+        help_text="Do any of your parents (natural, adoptive, step- or guardians who brought you up) have any higher "
+        "education qualifications, such as a degree, diploma or certificate of higher education?",
     )
     gender_identity = models.ForeignKey(
         'GenderIdentity',
@@ -179,6 +178,11 @@ class Student(SITSLockingModelMixin, SignatureModel):
         return self.firstname
 
     @property
+    def formal_name(self) -> str:
+        """Returns the student's title, first, and surname.  Useful for official documents"""
+        return f"{self.title or ''} {self.firstname} {self.surname}".strip()
+
+    @property
     def sex(self) -> Optional[int]:
         """Get HESA coding for sex based on gender"""
         gender_to_sex_map = {
@@ -196,6 +200,9 @@ class Student(SITSLockingModelMixin, SignatureModel):
 
     def get_billing_address(self) -> Optional[Address]:
         return self.addresses.billing().first() or self.get_default_address()
+
+    def get_sso(self) -> Optional[OtherID]:
+        return self.other_ids.filter(type=OtherID.Types.SSO).first()
 
     def get_invoices(self) -> QuerySet[Invoice]:
         return Invoice.objects.filter(invoice_ledger__ledger__enrolment__qa__student=self).distinct()
@@ -377,41 +384,6 @@ class NextHUSID(models.Model):
 
     class Meta:
         db_table = 'next_husid'
-
-
-class MoodleID(SignatureModel):
-    moodle_id = models.IntegerField(
-        unique=True, error_messages={'unique': 'Moodle ID already in use'}, verbose_name='Moodle ID'
-    )  # todo: rename this field
-    student = models.OneToOneField('Student', models.DO_NOTHING, db_column='student', related_name='moodle_id')
-    first_module_code = models.CharField(max_length=12, blank=True, null=True)
-
-    class Meta:
-        db_table = 'moodle_id'
-        verbose_name = 'Moodle ID'
-
-    def get_absolute_url(self) -> str:
-        return self.student.get_absolute_url() + '#other_ids'
-
-    def get_edit_url(self) -> str:
-        return reverse('student:moodle-id:edit', kwargs={'pk': self.pk})
-
-    def get_delete_url(self) -> str:
-        return reverse('student:moodle-id:delete', kwargs={'pk': self.pk})
-
-    def __str__(self) -> str:
-        return str(self.moodle_id)
-
-    @property
-    def initial_password(self) -> str:
-        """Create an initial password for new accounts, which must be changed on login"""
-        if not settings.MOODLE_PASSWORD_COMPONENTS:
-            raise ImproperlyConfigured('To generate passwords, MOODLE_PASSWORD_COMPONENTS must be set')
-        random.seed(str(self.moodle_id) + self.first_module_code)
-        password = '-'.join(
-            random.choice(settings.MOODLE_PASSWORD_COMPONENTS) for i in range(settings.MOODLE_PASSWORD_COMPONENT_COUNT)
-        )
-        return password
 
 
 class OtherID(SITSLockingModelMixin, SignatureModel):

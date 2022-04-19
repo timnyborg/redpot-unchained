@@ -292,39 +292,6 @@ class TestCreateAddress(LoggedInViewTestMixin, TestCase):
         self.assertEqual(address.student_id, self.student.id)
 
 
-class TestMoodleIdViews(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.MOODLE_ID = 8902567
-        cls.student = factories.StudentFactory()
-        cls.url = reverse('student:moodle-id:new', kwargs={'student_id': cls.student.id})
-
-    def setUp(self):
-        self.client.force_login(self.user)
-
-    def test_moodle_id(self):
-        response = self.client.post(
-            self.url, data={'student': self.student.pk, 'moodle_id': self.MOODLE_ID, 'first_module_code': 123}
-        )
-        self.assertEqual(response.status_code, 302)
-        moodle_id = models.MoodleID.objects.last()
-        self.assertEqual(moodle_id.student_id, self.student.id)
-
-    def test_edit_moodle_id(self):
-        self.moodle = factories.MoodleFactory(student=self.student)
-        self.client.post(reverse('student:moodle-id:edit', kwargs={'pk': self.moodle.id}), {'moodle_id': 876987987})
-        self.moodle.refresh_from_db()
-        self.assertEqual(self.moodle.moodle_id, 876987987)
-
-    def test_delete_moodle_id(self):
-        self.moodle = factories.MoodleFactory(student=self.student, moodle_id=self.MOODLE_ID)
-        self.assertEqual(self.moodle.moodle_id, self.MOODLE_ID)
-        self.client.post(reverse('student:moodle-id:delete', kwargs={'pk': self.moodle.pk}))
-        with self.assertRaises(models.MoodleID.DoesNotExist):
-            self.moodle.refresh_from_db()
-
-
 class TestPhone(TestCase):
     @classmethod
     def setUpTestData(cls):

@@ -50,7 +50,7 @@ cd redpot-unchained
 ```
 
 ### Option 1: connecting to existing services (database, redis, etc.)
-Get a copy of the secrets file, containing dev database login details, etc.
+Get a copy of the dev secrets file, containing dev database login details, ldap, etc.
 ```bash
 scp <your_username>@deltamap:/home/www-data/django/redpot/secrets.env .
 ```
@@ -60,7 +60,7 @@ Build and start the container
 sudo docker-compose up --build -d django
 ```
 
-### Option 2: a standalone dev stack (running mssql, redis, etc. as containers)
+### Option 2: an entirely stand-alone dev stack (running mssql, redis, etc. as containers)
 Build and start the containers
 ```bash
 sudo docker-compose up --build -d
@@ -68,17 +68,17 @@ sudo docker-compose up --build -d
 
 Create the empty database
 ```bash
-sudo docker compose exec mssql /opt/mssql-tools/bin/sqlcmd -U sa -P Test@only -Q "CREATE DATABASE redpot;"
+sudo docker-compose exec mssql /opt/mssql-tools/bin/sqlcmd -U sa -P Test@only -Q "CREATE DATABASE redpot;"
 ```
 
 Create the database structure
 ```bash
-sudo docker compose exec django python manage.py migrate
+sudo docker-compose exec django python manage.py migrate
 ```
 
 Create a superuser
 ```bash
-sudo docker compose exec django python manage.py createsuperuser
+sudo docker-compose exec django python manage.py createsuperuser
 ```
 Choose username, email, and password when prompted.  Now you can login!
 

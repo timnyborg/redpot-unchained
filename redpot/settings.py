@@ -56,6 +56,7 @@ PROJECT_APPS = [
     'apps.application',
     'apps.banner',
     'apps.booking',
+    'apps.cabs_booking',
     'apps.contract',
     'apps.discount',
     'apps.enrolment',
@@ -66,6 +67,7 @@ PROJECT_APPS = [
     'apps.invoice',
     'apps.marketing',
     'apps.module',
+    'apps.moodle',
     'apps.programme',
     'apps.proposal',
     'apps.qualification_aim',
@@ -86,6 +88,7 @@ PROJECT_APPS = [
 THIRD_PARTY_APPS = [
     'ckeditor',  # django-ckeditor
     'ckeditor_uploader',
+    'fontawesomefree',
     'hijack',  # django-hijack
     'menu',  # django-simple-menu
     'django_select2',
@@ -345,6 +348,14 @@ PUBLIC_WEBSITE_URL = env('PUBLIC_WEBSITE_URL', default='https://conted.ox.ac.uk'
 PUBLIC_APPS_URL = env('PUBLIC_APPS_URL', default='https://apps.conted.ox.ac.uk', validate=validate.URL())
 
 
+# Base URL for the CABS api
+CABS_API_URL = env(
+    'CABS_API_URL',
+    default='https://cabsplus.conted.ox.ac.uk/CABSServices',
+    validate=validate.URL(schemes=['https']),
+)
+CABS_API_CREDENTIALS = env.dict('CABS_API_CREDENTIALS', default={'Username': '', 'Password': '', 'Source': ''})
+
 # These may be unnecessary if passed into coverage from command line
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
 TEST_OUTPUT_FILE_NAME = 'test_results.xml'
@@ -438,10 +449,6 @@ WARNING_BANNER = env('WARNING_BANNER', default='')
 
 # Tag manager config
 GOOGLE_TAG_MANAGER_ID = env('GOOGLE_TAG_MANAGER_ID', default='')
-
-# Moodle ID config
-MOODLE_PASSWORD_COMPONENTS = env.list('MOODLE_PASSWORD_COMPONENTS', default=[])
-MOODLE_PASSWORD_COMPONENT_COUNT = env.int('MOODLE_PASSWORD_COMPONENT_COUNT', default=5)
 
 # Require authentication for all DRF apis
 REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated']}

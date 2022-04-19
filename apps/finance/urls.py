@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import api, views
 
 app_name = 'finance'
 
@@ -22,4 +22,6 @@ urlpatterns = [
     path('my-batches', views.MyBatches.as_view(), name='my-batches'),
     path('create-batch/<int:type_id>/<str:created_by>', views.CreateBatch.as_view(), name='create-batch'),
     path('print-batch/<int:batch>', views.PrintBatch.as_view(), name='print-batch'),
+    # website-accessible endpoints
+    path('api/receipt/<int:allocation>/<int:enrolment_id>', api.ReceiptPDF.as_view()),
 ]

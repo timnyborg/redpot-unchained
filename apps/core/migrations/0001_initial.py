@@ -113,10 +113,10 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=64)),
                 ('shortname', models.CharField(blank=True, max_length=8, null=True)),
                 ('email', models.EmailField(blank=True, max_length=256, null=True)),
-                ('finance_prefix', models.CharField(blank=True, max_length=2, null=True)),
                 ('manager', models.ForeignKey(blank=True, db_column='manager', null=True,
                                               on_delete=django.db.models.deletion.DO_NOTHING,
                                               to=settings.AUTH_USER_MODEL)),
+                ('is_active', models.BooleanField(default=True))
             ],
             options={
                 'db_table': 'division',

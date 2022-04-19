@@ -185,7 +185,7 @@ class Create(LoginRequiredMixin, PageTitleMixin, generic.FormView):
         # Use the first fee to get default contact information
         module = self.fees[0].enrolment.module
         initial = {
-            'invoiced_to': str(self.student),
+            'invoiced_to': self.student.formal_name,
             'due_date': datetime.today() + relativedelta(months=1),
             'contact_person': self.request.user.get_full_name(),
             'contact_email': module.email or module.portfolio.email,

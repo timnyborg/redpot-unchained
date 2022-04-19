@@ -27,6 +27,7 @@ class EditForm(SITSLockingFormMixin, forms.ModelForm):
             'start_date',
             'end_date',
             'study_location',
+            'entry_qualification',
             'reason_for_ending',
             'sits_code',
         )

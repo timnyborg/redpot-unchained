@@ -1,0 +1,28 @@
+<html lang="en">
+<body>
+<h3>{{ admin }} has requested a moodle course with the following details:</h3>
+
+<p>
+    Course code: {{ module.code }}<br/>
+    Title in Moodle: {{ title }}
+</p>
+
+<p>
+    Course start date: {{ start_date }}<br/>
+    Course end date: {{ end_date }}<br/>
+    Student first access date: {{ access_start_date }}<br/>
+    Student last access date: {{ access_end_date }}<br/>
+    Using online assignments: {{ online_submission|yesno }}
+</p>
+
+<p>Template: {{ url|default:'New course' }}</p>
+
+<p>
+    Course administrator name: {{ admin }}<br/>
+    Course administrator email: {{ email }}<br/>
+    Backup email: {{ backup_email|default:'None' }}
+</p>
+
+<p>Please add the course administrator email as an editing tutor</p>
+</body>
+</html>

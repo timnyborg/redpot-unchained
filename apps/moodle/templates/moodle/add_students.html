@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block center %}
+    <div class="section">
+        <h2>{{ module.title }} ({{ module.code }})</h2>
+        <hr>
+        <p>The following {{ students|length }} students are enrolled on the course:</p>
+        <table class='table table-sm'>
+            <thead><tr><th>Surname</th><th>Firstname</th><th>Email</th><th>City</th><th>Country</th><th>SSO</th></tr></thead>
+            {% for student in students %}
+                <tr>
+                    <td>{{ student.surname|default:'–' }}</td>
+                    <td>{{ student.firstname|default:'–' }}</td>
+                    <td>{{ student.get_default_email.email|default:'–' }}</td>
+                    <td>{{ student.get_default_address.town|default:'–' }}</td>
+                    <td>{{ student.get_default_address.country|default:'–' }}</td>
+                    <td>{{ student.get_sso.number|default:'–' }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="section">
+        <h2>Add/amend student and staff details</h2>
+        <p>You will need to modify this list to add or remove any students and/or add:</p>
+        <ul>
+            <li>Tutors ("tutor" role)</li>
+            <li>Course administrator(s) - ie yourself, to ensure you can access the course ("courseadmin" role)</li>
+            <li>The Course Director ("coursedirector" role)</li>
+            <li>The course Director of Studies ("directorofstudies" role)</li>
+            <li>If appropriate, staff that need to view the course, but shouldn't be able to participate or edit anything ("observer" role)</li>
+        </ul>
+        <p>Download the list in Excel format and edit it as required (instructions included), then email the file to <a href='mailto:tallithelp@conted.ox.ac.uk'>tallithelp@conted.ox.ac.uk</a>, with the course name and course code in the email subject.</p>
+        <form action="" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Download and edit</button>
+        </form>
+    </div>
+{% endblock %}

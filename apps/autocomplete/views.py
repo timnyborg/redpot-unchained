@@ -26,10 +26,11 @@ class TutorAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self) -> QuerySet[Tutor]:
         qs = Tutor.objects.select_related('student')
         if self.q:
-            # Filter on '<first> <last>' containing the string
-            qs = (
+            # Filter on '<first> <last>' or '<nickname> <last>' containing the string
+            return (
                 qs.annotate(search_name=Concat('student__firstname', Value(' '), 'student__surname'))
-                .filter(search_name__unaccent__icontains=self.q)
+                .annotate(search_nickname=Concat('student__nickname', Value(' '), 'student__surname'))
+                .filter(Q(search_name__unaccent__icontains=self.q) | Q(search_nickname__unaccent__icontains=self.q))
                 .order_by('student__firstname', 'student__surname')
                 .prefetch_related('subjects')
             )

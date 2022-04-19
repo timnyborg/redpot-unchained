@@ -86,10 +86,15 @@ class TestEditPayment(test.TestCase):
         self.assertEqual(self.payment.amount, 25)
 
 
-class TestExtras(test.TestCase):
+class TestExtras(LoggedInMixin, test.TestCase):
+    superuser = True
+
     @classmethod
     def setUpTestData(cls):
-        cls.user = get_user_model().objects.create_user(username='testuser', is_superuser=True)
+        super().setUpTestData()
+        cls.user.user_permissions.add(
+            Permission.objects.get(content_type__app_label='tutor_payment', codename='approve')
+        )
         cls.tutor_module = TutorModuleFactory(module__start_date=date(2020, 1, 1), module__end_date=date(2021, 1, 1))
         cls.url = reverse('tutor-payment:quick:extras', kwargs={'pk': cls.tutor_module.pk})
 
@@ -97,9 +102,6 @@ class TestExtras(test.TestCase):
         models.PaymentRate.objects.create(tag='marking_rate', amount=6)
         cls.summative_rate = models.PaymentRate.objects.create(type='summative', amount=10, description='Summ')
         cls.formative_rate = models.PaymentRate.objects.create(type='formative', amount=10, description='Form')
-
-    def setUp(self):
-        self.client.force_login(self.user)
 
     def test_create_formative(self):
         response = self.client.post(

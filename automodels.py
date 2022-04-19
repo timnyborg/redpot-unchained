@@ -8,21 +8,6 @@
 from django.db import models
 
 
-class ModuleCabsBooking(models.Model):
-    module = models.ForeignKey(Module, models.DO_NOTHING, db_column='module')
-    mbr_id = models.TextField(blank=True, null=True)
-    confirmed = models.IntegerField(blank=True, null=True)
-    provisional = models.IntegerField(blank=True, null=True)
-    created_on = models.DateTimeField(blank=True, null=True)
-    created_by = models.TextField(blank=True, null=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    modified_by = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'module_cabs_booking'
-
-
 class ModuleType(models.Model):
     type = models.CharField(max_length=50)
 
