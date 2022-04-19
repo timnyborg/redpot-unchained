@@ -387,18 +387,13 @@ def get_module_comments(module_id):
     return comments_list
 
 
-def export_users_xls(module: Module):
-    response = HttpResponse(content_type='application/ms-excel')
-    file_name = f"feedback_{module.code}_{datetime.datetime.now().strftime('%Y-%m-%d')}.xls"
-    response['Content-Disposition'] = f'attachment; filename={file_name}'
-
+def export_users_xls(module: Module) -> HttpResponse:
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Feedback')
 
     # Sheet title in first row
     row_num = 0
-    sheet_title = f'''Feedback for {module.title}({module.code}) -
-    ({module.start_date.strftime('%d-%b-%Y')} to {module.end_date.strftime('%d-%b-%Y')})'''
+    sheet_title = f"Feedback for {module.title} ({module.code})"
 
     font_style = xlwt.XFStyle()
     font_style.font.bold = True  # applies bold format
@@ -406,7 +401,7 @@ def export_users_xls(module: Module):
 
     # Create a table for module_summary
     row_num = 2
-    column_headers1 = [
+    headers = [
         'Satisfied (%)',
         'Average',
         'Teaching',
@@ -419,11 +414,11 @@ def export_users_xls(module: Module):
         'Returned',
     ]
 
-    for col_num in range(len(column_headers1)):
-        ws.write(row_num, col_num, column_headers1[col_num], font_style)
+    for column, data in enumerate(headers):
+        ws.write(row_num, column, data, font_style)
 
     module_summary = get_module_summary(module.id)
-    column_data1 = [
+    row = [
         module_summary['satisfied'],
         module_summary['average'],
         module_summary['teaching'],
@@ -437,36 +432,40 @@ def export_users_xls(module: Module):
     ]
     row_num = 3
     font_style = xlwt.XFStyle()
-    for col_num in range(len(column_data1)):
-        ws.write(row_num, col_num, column_data1[col_num], font_style)
+    for column, data in enumerate(row):
+        ws.write(row_num, column, data, font_style)
 
     # Create a table for feedback_details
     row_num = 5
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    column_headers2 = ['Name', 'Average', 'Teaching', 'Content', 'Facility', 'Admin', 'Catering', 'Accomm', 'Comments']
+    headers = ['Name', 'Average', 'Teaching', 'Content', 'Facility', 'Admin', 'Catering', 'Accomm', 'Comments']
 
-    for col_num in range(len(column_headers2)):
-        ws.write(row_num, col_num, column_headers2[col_num], font_style)
+    for column, data in enumerate(headers):
+        ws.write(row_num, column, data, font_style)
 
-    module_feedback_details = get_module_feedback_details(module.id)
+    feedback = module.feedback_set.filter(submitted__isnull=False)
     font_style = xlwt.XFStyle()
-    for feedback_detail in module_feedback_details.values():
+    for item in feedback:
         row_num += 1
-        column_data2 = [
-            feedback_detail['name'],
-            feedback_detail['average'],
-            feedback_detail['teaching'],
-            feedback_detail['content'],
-            feedback_detail['facility'],
-            feedback_detail['admin'],
-            feedback_detail['catering'],
-            feedback_detail['accommodation'],
-            feedback_detail['comment'],
+        row = [
+            item.your_name or 'Anonymous',
+            round(item.avg_score, 1),
+            item.rate_tutor,
+            item.rate_content,
+            item.rate_facilities,
+            item.rate_admin,
+            item.rate_refreshments,
+            item.rate_accommodation,
+            item.comments,
         ]
-        for col_num in range(len(column_data2)):
-            ws.write(row_num, col_num, column_data2[col_num], font_style)
+        for column, data in enumerate(row):
+            ws.write(row_num, column, data, font_style)
 
+    file_name = f"feedback_{module.code}_{datetime.datetime.now():%Y-%m-%d}.xls"
+    response = HttpResponse(
+        content_type='application/ms-excel', headers={'Content-Disposition': f'attachment; filename={file_name}'}
+    )
     wb.save(response)
     return response
