@@ -154,7 +154,7 @@ def email_admin_report(module: Module, tutor_ids: list) -> None:
 
     to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [module.email]
     bcc = [settings.SUPPORT_EMAIL] if settings.DEBUG else ['webmaster@conted.ox.ac.uk']
-    subject = 'Feedback [' + module.title + ']'
+    subject = f'Feedback - {module.title}'
     pdf_file_name = f"Feedback-report-{module.code}-{slugify(module.title)}.pdf"
     pdf_context = {
         'module': module,
@@ -162,20 +162,6 @@ def email_admin_report(module: Module, tutor_ids: list) -> None:
         'tutors': get_module_tutors(module.id),
         'feedback_data_dict': get_module_feedback_details(module.id),
         'comments_list': get_module_comments(module.id),
-        'context_data': 'This is a context data',
-        'module_summary_headers': [
-            'Module Title',
-            'Satisfied(%)',
-            'Average',
-            'Teaching',
-            'Content',
-            'Facilities',
-            'Admin',
-            'Catering',
-            'Accomm',
-            'Sent',
-            'Returned',
-        ],
     }
 
     email = mail.EmailMessage(
@@ -244,19 +230,6 @@ def email_tutor_report(module: Module, tutor_ids: list) -> None:
                 'feedback_data_dict': get_module_feedback_details(module_id),
                 'comments_list': get_module_comments(module_id),
                 'context_data': 'This is a context data',
-                'module_summary_headers': [
-                    'Module Title',
-                    'Satisfied(%)',
-                    'Average',
-                    'Teaching',
-                    'Content',
-                    'Facilities',
-                    'Admin',
-                    'Catering',
-                    'Accomm',
-                    'Sent',
-                    'Returned',
-                ],
             }
             content = make_pdf(
                 html_path='feedback/pdfs/module_feedback.html',
