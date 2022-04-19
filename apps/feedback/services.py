@@ -265,26 +265,24 @@ def get_module_summary(module_id: int) -> dict:
     return summary
 
 
-def get_module_feedback_details(module_id):
+def get_module_feedback_details(module_id: int) -> dict:
     feedback_results = Feedback.objects.filter(module=module_id, submitted__isnull=False).order_by('submitted')
-    feedback_details_dict = {}
-
-    for feedback_result in feedback_results:
-        feedback_detail = {}
-        feedback_detail['id'] = feedback_result.id
-        feedback_detail['name'] = feedback_result.your_name if feedback_result.your_name else 'Anonymous'
-        feedback_detail['submitted_on'] = feedback_result.submitted.strftime('%H:%M on %d-%b-%Y')
-        feedback_detail['average'] = round(float(feedback_result.avg_score or 0), 1)
-        feedback_detail['teaching'] = feedback_result.rate_tutor
-        feedback_detail['content'] = feedback_result.rate_content
-        feedback_detail['facility'] = feedback_result.rate_facilities
-        feedback_detail['admin'] = feedback_result.rate_admin
-        feedback_detail['catering'] = feedback_result.rate_refreshments
-        feedback_detail['accommodation'] = feedback_result.rate_accommodation
-        feedback_detail['comment'] = feedback_result.comments
-
-        feedback_details_dict[feedback_detail['id']] = feedback_detail
-    return feedback_details_dict
+    return {
+        item.id: {
+            'id': item.id,
+            'name': item.your_name or 'Anonymous',
+            'submitted_on': item.submitted.strftime('%H:%M on %d-%b-%Y'),
+            'average': round(float(item.avg_score or 0), 1),
+            'teaching': item.rate_tutor,
+            'content': item.rate_content,
+            'facilities': item.rate_facilities,
+            'admin': item.rate_admin,
+            'catering': item.rate_refreshments,
+            'accommodation': item.rate_accommodation,
+            'comment': item.comments,
+        }
+        for item in feedback_results
+    }
 
 
 def get_module_tutors(module_id):
@@ -369,7 +367,7 @@ def export_users_xls(module: Module) -> HttpResponse:
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    headers = ['Name', 'Average', 'Teaching', 'Content', 'Facility', 'Admin', 'Catering', 'Accomm', 'Comments']
+    headers = ['Name', 'Average', 'Teaching', 'Content', 'Facilities', 'Admin', 'Catering', 'Accomm', 'Comments']
 
     for column, data in enumerate(headers):
         ws.write(row_num, column, data, font_style)
