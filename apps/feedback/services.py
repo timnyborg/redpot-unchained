@@ -89,10 +89,8 @@ def process_and_send_emails(module: Module) -> None:
 
 def mail_dos(module: Module):
     admin_email = module.email if '@conted' in module.email else module.portfolio.email
-    sender = [settings.SUPPORT_EMAIL] if settings.DEBUG else admin_email
-    recipient = TutorModule.objects.filter(
-        module=module.id, director_of_studies=True, tutor__student__email__is_default=True
-    ).first()
+    sender = settings.SUPPORT_EMAIL if settings.DEBUG else admin_email
+    recipient = module.tutors.filter(tutor_module__director_of_studies=True, student__email__is_default=True).first()
 
     attended = module.enrolments.filter(status__in=CONFIRMED_STATUSES).count()
 
@@ -102,17 +100,22 @@ def mail_dos(module: Module):
         email_context = {
             'email': admin_email,
             'module_code': module.code,
-            'portfolio': module.portfolio,
-            'dos': recipient['tutor__student__firstname'],
+            'portfolio': module.portfolio_id,
+            'dos': recipient.student.firstname,
             'attended': attended,
             'module_start_month': module.start_date.month,
             'module_start_date': module.start_date,
         }
         subject = f"Student feedback - {module.title}"
         html_message = render_to_string('feedback/email/notifydos.html', email_context)
-        to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [recipient['tutor__student__email__email']]
-        cc = [settings.SUPPORT_EMAIL] if settings.DEBUG else ['webmaster@conted.ox.ac.uk']
-        sent = send_mail(subject, strip_tags(html_message), sender, to, cc, html_message=html_message)
+        to = [settings.SUPPORT_EMAIL] if settings.DEBUG else [recipient.student.get_default_email().email]
+        sent = send_mail(
+            subject=subject,
+            message=strip_tags(html_message),
+            from_email=sender,
+            recipient_list=to,
+            html_message=html_message,
+        )
     return sent
 
 
