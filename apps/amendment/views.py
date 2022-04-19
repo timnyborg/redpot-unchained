@@ -57,6 +57,7 @@ class Create(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, generic.Cr
         return {
             'type': self.amendment_type,
             'enrolment': self.enrolment,
+            'approver': self.request.user.default_approver,
         }
 
     def form_valid(self, form) -> http.HttpResponse:

@@ -340,25 +340,35 @@
                 <i class="fas fa-fw fa-tools"></i> Tools
             </a>
             <ul class="dropdown-menu" role="menu">
-                <li>
-                    <a class="dropdown-item"
-                        href="#"
-                        data-bs-toggle="modal"
-                        data-bs-target="#commonModal"
-                        data-modal-body="Are you sure you wish to assign Moodle IDs to this module's students?"
-                        data-modal-href="{% url 'module:assign-moodle-ids' module.id %}"
-                    >
-                        <span class="fas fa-fw fa-id-card"></span> Assign Moodle IDs
-                    </a>
-                </li>
                 <li><a class="dropdown-item" href="{% url 'module:award-points' module.id %}"><span class="fas fa-fw fa-graduation-cap"></span> Award CATS points</a></li>
                 <li><a class="dropdown-item" href="{% url 'module:clone' module.id %}"><span class="fas fa-fw fa-clone"></span> Clone this module</a></li>
                 <li><a class="dropdown-item" href="{% url 'module:copy-web-fields' module.id %}"><span class="fas fa-fw fa-paste"></span> Copy web fields</a></li>
                 <li><a class="dropdown-item" href="import_from_template/{{ module.id }}"><span class="fas fa-fw fa-upload"></span> Import students from template</a></li>
-                {% if perms.module.upload_to_cabs and module.portfolio == 32 and module.room and module.room_setup %}
-                    {# todo: handle this logic better (elsewhere as can_send_to_cabs or something) #}
-                    <li><a class="dropdown-item" href="cabs_booking/{{ module.id }}"><span class="fas fa-fw fa-taxi"></span> Book course into CABS</a></li>
+                {# todo: handle this portfolio logic better #}
+                {% if perms.module.upload_to_cabs and module.portfolio_id == 32 %}
+                    <li><a class="dropdown-item" href="{% url 'cabs_booking:module-booking' module.id %}">
+                        <span class="fas fa-fw fa-taxi"></span> Book course into CABS</a>
+                    </li>
                 {% endif %}
+                <li role="separator" class="dropdown-divider"></li>
+                <li class="dropdown-header">Moodle</li>
+                <li>
+                    <a class="dropdown-item"
+                       href="#"
+                       data-bs-toggle="modal"
+                       data-bs-target="#commonModal"
+                       data-modal-body="Are you sure you wish to assign Moodle IDs to this module's students?"
+                       data-modal-href="{% url 'moodle:assign' module.id %}"
+                    >
+                        <span class="fas fa-fw fa-id-card"></span> Assign IDs
+                    </a>
+                </li>
+                <a class="dropdown-item" href="{% url 'moodle:request-site' module.id %}">
+                    <span class="fas fa-fw fa-plus"></span> Request site
+                </a>
+                <a class="dropdown-item" href="{% url 'moodle:add-students/' module.id %}">
+                    <span class="fas fa-fw fa-user-plus"></span> Add students to a site
+                </a>
             </ul>
             {% if module.status.id == 33 %}
             <a href="{% url 'module:uncancel' module.id %}" class="btn btn-danger">
@@ -599,18 +609,12 @@
 
     {% if discounts %}
     <table class="table">
-        <thead><tr><th>Discount codes</th><th></th><th></th></tr></thead>
+        <thead><tr><th colspan="100%">Discount codes</th></tr></thead>
         {% for discount in discounts %}
             <tr>
                 <td>{{ discount }} ({{ discount.percent }}%)</td>
                 <td>{{ discount.code }}</td>
-                <td>
-                {% if discount.all_eligible %}
-                    All students eligible
-                {% else %}
-                    Limited eligibility (see discount manager)
-                {% endif %}
-                </td>
+                <td>{% if discount.expires_on %}Expires {{ discount.expires_on }}{% endif %}</td>
             </tr>
         {% endfor %}
     </table>

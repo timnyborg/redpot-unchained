@@ -38,7 +38,7 @@ def _render_statement(enrolment: models.Enrolment, student: Student, address: Ad
 
     # Creating name and address information on the left
     pdf.set_font_size(12)
-    name = f"{student.title or ''} {student.firstname} {student.surname}".strip()
+    name = student.formal_name
     pdf.cell(30, 4, name)
     pdf.cell(0, 4, date.today().strftime(DATE_FORMAT), 0, 1, 'R')
 

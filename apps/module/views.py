@@ -17,7 +17,7 @@ from django.views import generic
 from apps.core.utils.dates import academic_year
 from apps.core.utils.mail_merge import MailMergeView
 from apps.core.utils.urls import next_url_if_safe
-from apps.core.utils.views import AutoTimestampMixin, ExcelExportView, PageTitleMixin
+from apps.core.utils.views import AutoTimestampMixin, ErrorBannerMixin, ExcelExportView, PageTitleMixin
 from apps.discount.models import Discount
 from apps.enrolment.models import CONFIRMED_STATUSES, Enrolment
 from apps.fee.models import FeeTypes
@@ -129,7 +129,9 @@ class CopyWebFields(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gen
         return redirect(self.target_module.get_absolute_url())
 
 
-class Edit(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView):
+class Edit(
+    LoginRequiredMixin, PageTitleMixin, ErrorBannerMixin, SuccessMessageMixin, AutoTimestampMixin, generic.UpdateView
+):
     model = models.Module
     form_class = forms.EditForm
     template_name = 'module/form.html'
@@ -170,7 +172,9 @@ class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
 
 
 class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
-    queryset = models.Module.objects.defer(None)  # Get all fields
+    queryset = models.Module.objects.defer(None).select_related(  # defer(None) to get all fields
+        'portfolio', 'division', 'format', 'location', 'room', 'status'
+    )
     template_name = 'module/view.html'
 
     def get_subtitle(self):
@@ -197,12 +201,12 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
         waitlist_table = datatables.WaitlistTable(self.object.waitlists.all(), request=self.request)
         book_table = datatables.BookTable(self.object.books.all(), request=self.request)
 
-        discounts = Discount.objects.matching_module(self.object).with_eligibility()
+        discounts = Discount.objects.matching_module(self.object)
 
         other_runs = self.object.other_runs()
         next_run = self.object.next_run()
 
-        applications = self.object.applications.select_related('student')
+        applications = self.object.applications.exclude(firstname__isnull=True).select_related('student')
         subjects = self.object.subjects.all()
         hecos_subjects = self.object.hecos_subjects.all()
         payment_plans = self.object.payment_plans.all()
@@ -252,15 +256,15 @@ class AddProgramme(LoginRequiredMixin, SuccessMessageMixin, PageTitleMixin, gene
 class StudentList(LoginRequiredMixin, ExcelExportView):
     export_class = exports.StudentListExport
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> http.HttpResponse:
         self.module = get_object_or_404(models.Module, pk=kwargs['pk'])
         return super().get(request, *args, **kwargs)
 
-    def get_filename(self):
+    def get_filename(self) -> str:
         return f'{self.module.code}_student_list.xlsx'
 
-    def get_export_queryset(self):
-        return Enrolment.objects.filter(module=self.module)
+    def get_export_queryset(self) -> QuerySet[Enrolment]:
+        return self.module.enrolments.filter(status__takes_place=True)
 
 
 class MoodleList(LoginRequiredMixin, ExcelExportView):
@@ -275,22 +279,7 @@ class MoodleList(LoginRequiredMixin, ExcelExportView):
         return f"{self.module.code}_{title}.xlsx"
 
     def get_export_queryset(self):
-        return Enrolment.objects.filter(
-            module=self.module,
-            status__in=CONFIRMED_STATUSES,
-        )
-
-
-class AssignMoodleIDs(LoginRequiredMixin, SuccessMessageMixin, generic.View):
-    """Generates moodle IDs for all a module's students, redirecting back to the module page"""
-
-    # todo: convert to POST once we have a good POST-link solution,
-    #  or even better, that link is ajax'ed and handles message popups!
-    def post(self, request, module_id: int) -> http.HttpResponse:
-        module = get_object_or_404(models.Module, pk=module_id)
-        count = services.assign_moodle_ids(module=module, created_by=request.user.username)
-        messages.success(request, f'{count} moodle ID(s) generated')
-        return redirect(module)
+        return self.module.enrolments.filter(status__in=CONFIRMED_STATUSES)
 
 
 class EditHESASubjects(LoginRequiredMixin, PageTitleMixin, generic.detail.SingleObjectMixin, generic.FormView):

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.core import validators
 from django.db import models
-from django.db.models import Case, Min, Q, Value, When
+from django.db.models import Q, Value
 from django.db.models.functions import Replace
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -20,18 +20,6 @@ class DiscountQuerySet(models.QuerySet):
             Q(portfolio=module.portfolio_id) | Q(portfolio=None),
             # We currently allow use of * in place of %
             search_module_code__like=Replace('module_mask', Value('*'), Value('%')),
-        )
-
-    def with_eligibility(self) -> models.QuerySet:
-        # Adds a boolean column 'all_eligible', which is True if all students can use a code
-        return self.annotate(
-            # 0 indicates all students
-            Min('student__student'),
-            all_eligible=Case(
-                When(student__student__min=0, then=True),
-                default=False,
-                output_field=models.BooleanField(),
-            ),
         )
 
 
@@ -67,16 +55,3 @@ class Discount(SignatureModel):
 
     def get_delete_url(self) -> str:
         return reverse('discount:delete', kwargs={'pk': self.pk})
-
-
-class DiscountStudent(models.Model):
-    discount = models.ForeignKey(
-        Discount, models.DO_NOTHING, db_column='discount', related_name='students', related_query_name='student'
-    )
-    student = models.IntegerField()
-    redeemed = models.BooleanField(default=False)
-    expires_on = models.DateField(blank=True, null=True)
-    email = models.CharField(max_length=50, blank=True, null=True)
-
-    class Meta:
-        db_table = 'discount_student'

@@ -23,6 +23,7 @@ class PickerOptionsMixin:
         'showClose': False,
         'showClear': False,
         'showTodayButton': False,
+        'useCurrent': False,  # disable autofill with current date/time on focus
     }
 
 

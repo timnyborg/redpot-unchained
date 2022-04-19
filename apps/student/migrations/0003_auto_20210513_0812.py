@@ -70,30 +70,6 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Other ID',
             },
         ),
-        migrations.CreateModel(
-            name='MoodleID',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
-                ('created_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
-                ('modified_by', models.CharField(blank=True, editable=False, max_length=150, null=True)),
-                ('modified_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
-                ('moodle_id', models.IntegerField(unique=True)),
-                ('first_module_code', models.CharField(max_length=12)),
-                (
-                    'student',
-                    models.OneToOneField(
-                        db_column='student',
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='moodle_id',
-                        to='student.Student',
-                    ),
-                ),
-            ],
-            options={
-                'db_table': 'moodle_id',
-            },
-        ),
         migrations.AlterField(
             model_name='student',
             name='domicile',

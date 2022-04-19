@@ -1,0 +1,12 @@
+{% extends 'core/form.html' %}
+
+{% block before-form %}
+    <p>This will create a CABS booking for all future Weekly Classes courses which have been assigned
+        start and end dates and times, rooms, and room setups.
+        <br/>Each course will have the assigned equipment added to its booking as extras.
+        <br/>Courses previously booked through Redpot will be excluded.
+    </p>
+    <p>This batch will include <b>{{ module_count }}</b> courses.</p>
+    <p><b>Important! Remember to remove provisional block bookings before running this.</b></p>
+    <p>The booking process may take a <b>very</b> long time.</p>
+{% endblock %}

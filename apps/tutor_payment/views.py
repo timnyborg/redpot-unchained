@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
@@ -35,6 +35,9 @@ class Create(PermissionRequiredMixin, SuccessMessageMixin, PageTitleMixin, gener
         # get the parent record for generating the title and adding to the child record on form submission
         self.tutor_module = get_object_or_404(TutorModule, pk=self.kwargs['tutor_module_id'])
         return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self) -> dict:
+        return {'approver': self.request.user.default_approver}
 
     def form_valid(self, form):
         form.instance.tutor_module = self.tutor_module
@@ -83,12 +86,15 @@ class View(LoginRequiredMixin, PageTitleMixin, generic.DetailView):
 class Delete(PermissionRequiredMixin, PageTitleMixin, generic.DeleteView):
     model = models.TutorPayment
     template_name = 'core/delete_form.html'
-    success_url = reverse_lazy('tutor-payment:search')
     subtitle = 'Delete'
     subtitle_object = False
 
     def has_permission(self) -> bool:
         return self.get_object().user_can_edit(self.request.user)
+
+    def get_success_url(self) -> str:
+        messages.success(self.request, 'Payment deleted')
+        return self.object.tutor_module.get_absolute_url()
 
 
 class Search(LoginRequiredMixin, PageTitleMixin, SingleTableMixin, FilterView):
@@ -142,6 +148,9 @@ class Extras(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, SingleObje
         self.object = self.get_object()
         return super().dispatch(request, *args, **kwargs)
 
+    def get_initial(self) -> dict:
+        return {'approver': self.request.user.default_approver}
+
     def get_success_url(self) -> str:
         return self.object.get_absolute_url() + '#payments'
 
@@ -164,6 +173,9 @@ class OnlineTeaching(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, Si
     def dispatch(self, request, *args, **kwargs) -> http.HttpResponse:
         self.object = self.get_object()
         return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self) -> dict:
+        return {'approver': self.request.user.default_approver}
 
     def form_valid(self, form) -> http.HttpResponse:
         # All variations of the form include the schedule field
@@ -197,6 +209,7 @@ class WeeklyTeaching(LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, Si
         return {
             'rate': models.PaymentRate.objects.lookup('weekly_hourly_rate'),
             'no_meetings': self.object.module.no_meetings,
+            'approver': self.request.user.default_approver,
         }
 
     def form_valid(self, form) -> http.HttpResponse:

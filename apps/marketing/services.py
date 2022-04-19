@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime, time
 from itertools import groupby
 from operator import itemgetter
-from typing import Generator
+from typing import Generator, Tuple
 
 from lxml import etree
 

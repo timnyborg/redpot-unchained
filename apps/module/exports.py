@@ -3,7 +3,9 @@ from import_export import fields, resources, widgets
 from django.db.models import Max, Q
 
 from apps.enrolment.models import Enrolment
-from apps.student.models import MoodleID, OtherID
+from apps.moodle import services as moodle_services
+from apps.moodle.models import MoodleID
+from apps.student.models import OtherID
 
 
 class FormattedAddressWidget(widgets.Widget):
@@ -92,7 +94,7 @@ class MoodleListExport(resources.ModelResource):
         try:
             moodle_id = enrolment.qa.student.moodle_id
             if moodle_id.first_module_code == enrolment.module.code:
-                return moodle_id.initial_password
+                return moodle_services.get_random_string()
             return 'the same as before'
         except MoodleID.DoesNotExist:
             return ''

@@ -1,0 +1,10 @@
+{% extends 'core/search.html' %}
+
+{% block after-sections %}
+    <div class="section">
+        <a href="{% url 'discount:create' %}" class="btn btn-success">
+            <i class="fas fa-fw fa-plus"></i>
+            New discount
+        </a>
+    </div>
+{% endblock %}

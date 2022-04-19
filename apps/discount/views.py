@@ -18,7 +18,7 @@ class Search(PermissionRequiredMixin, PageTitleMixin, tables.SingleTableMixin, F
     table_class = datatables.SearchTable
     filterset_class = datatables.SearchFilter
     subtitle = 'Search'
-    template_name = 'core/search.html'
+    template_name = 'discount/search.html'
 
 
 class Create(PermissionRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, generic.CreateView):
@@ -26,10 +26,11 @@ class Create(PermissionRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, P
     model = models.Discount
     form_class = forms.DiscountForm
     template_name = 'core/form.html'
-    success_message = 'Discount %(code)s created – please assign recipients'
+    success_message = 'Discount %(code)s created'
+    success_url = reverse_lazy('discount:search')
 
     def get_success_url(self):
-        return reverse('discount:assign', args=[self.object.id])
+        return reverse('discount:search') + f'?code={self.object.code}'
 
 
 class Edit(PermissionRequiredMixin, AutoTimestampMixin, SuccessMessageMixin, PageTitleMixin, generic.UpdateView):
