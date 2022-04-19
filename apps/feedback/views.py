@@ -491,5 +491,5 @@ class RecentlyCompletedOrFinishingSoon(LoginRequiredMixin, SiteTitleMixin, ListV
 
 class ExportToExcel(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        module = Module.objects.filter(id=kwargs['module_id'])
+        module = get_object_or_404(Module, id=kwargs['module_id'])
         return services.export_users_xls(module)
