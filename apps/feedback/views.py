@@ -204,11 +204,14 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
 class ResultWeekListView(LoginRequiredMixin, SiteTitleMixin, ListView):
     template_name = 'feedback/this_week.html'
     model = Feedback
-    end_date = datetime.datetime.now().date()
-    start_date = end_date - datetime.timedelta(days=6)
 
-    def get_subtitle(self, start_date, end_date):
-        return f'Student feedback submitted between ({start_date} - {end_date})'
+    def dispatch(self, *args, **kwargs):
+        self.end_date = datetime.datetime.now().date()
+        self.start_date = self.end_date - datetime.timedelta(days=7)
+        return super().dispatch(*args, **kwargs)
+
+    def get_subtitle(self):
+        return f'Student feedback submitted between ({self.start_date} - {self.end_date})'
 
     def get_queryset(self):
         return Feedback.objects.filter(submitted__gt=self.start_date).order_by('submitted')
