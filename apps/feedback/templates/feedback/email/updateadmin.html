@@ -1,0 +1,18 @@
+<html>
+<!--Called when comment added via internal apps-->
+<div style="font-family:Calibri;">
+    <p>A comment has been added to the feedback report for {{title}}</p>
+
+    <p>
+    <a href="{{url}}/feedback/results/module/{{code}}">View report (internal)</a><br>
+    </p>
+
+    {% if tutors %}
+    <p>A PDF report of the course feedback was also sent to the following tutor(s):<br>
+        {% for tutor in tutors %}
+            {{ tutor }} <br>
+        {% endfor %}
+    </p>
+    {% endif %}
+</div>
+</html>

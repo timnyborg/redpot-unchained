@@ -1,0 +1,40 @@
+{% extends 'feedback_layout.html' %}
+{% load feedback_tags %}
+
+{% block center %}
+    <div class="section">
+        {% if modules %}
+            <h4>Courses that have recently finished, or will finish soon.</h4>
+
+            <table class="table table-condensed table-striped hide-rows table-bordered">
+            <tr style="text-align: left">
+                <th>Code</th>
+                <th>Title</th>
+                <th>End date</th>
+                <th>Administrator</th>
+                <th>Action</th>
+            </tr>
+
+            {% for module in modules %}
+                <tr>
+                    <td class="feedback-green">{{ module.code }}</td>
+                    <td>{{ module.title }}</td>
+                    <td>{{ module.end_date }}</td>
+                    <td>{{ module.email }}</td>
+                    {% if module.status == 'Send reminder' %}
+                        <td class="{% status_color module.status %}"><a href="{% url 'feedback:preview' module.id %}">{{ module.status }}</a></td>
+                    {% elif module.status == 'See results' %}
+                        <td class="{% status_color module.status %}"><a href="{% url 'feedback:results-module' module.code %}">{{ module.status }}</a></td>
+                    {% elif module.status == 'Send feedback request' %}
+                        <td class="{% status_color module.status %}"><a href="{% url 'feedback:preview' module.id %}">{{ module.status }}</a></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </table>
+        {% else %}
+            <h4>No courses to show</h4><br>
+        {% endif %}
+
+        <a href="{% url 'feedback:feedbackrequest' %}">Send out a request or reminder for another course</a>
+    </div>
+{% endblock %}

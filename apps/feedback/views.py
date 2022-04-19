@@ -1,10 +1,10 @@
 import datetime
-import statistics
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.template.loader import render_to_string
 from django.views import View
 from django.views.generic import FormView, ListView
@@ -18,17 +18,8 @@ from .forms import CommentAndReportForm, FeedbackRequestForm, PreviewQuestionnai
 from .models import Feedback, FeedbackAdmin
 
 
-def home(request):
-    return render(request, 'feedback/home.html')
-
-
 class SiteTitleMixin(PageTitleMixin):
     title = 'Feedback'
-
-
-def get_mean_value(list_of_ints):  # Takes a list of integers and returns a mean value
-    value = round(statistics.mean(list_of_ints or [0]), 1)
-    return value
 
 
 class ResultListView(LoginRequiredMixin, SiteTitleMixin, ListView):
@@ -51,25 +42,25 @@ class ResultListView(LoginRequiredMixin, SiteTitleMixin, ListView):
         for year in years:
             year_fields = Feedback.objects.get_year_range(year)
             data = {}
-            data['avg_teaching'] = get_mean_value(
+            data['avg_teaching'] = services.get_mean_value(
                 year_fields.values_list('rate_tutor', flat=True).filter(rate_tutor__gt=0)
             )
-            data['avg_content'] = get_mean_value(
+            data['avg_content'] = services.get_mean_value(
                 year_fields.values_list('rate_content', flat=True).filter(rate_content__gt=0)
             )
-            data['avg_facilities'] = get_mean_value(
+            data['avg_facilities'] = services.get_mean_value(
                 year_fields.values_list('rate_facilities', flat=True).filter(rate_facilities__gt=0)
             )
-            data['avg_admin'] = get_mean_value(
+            data['avg_admin'] = services.get_mean_value(
                 year_fields.values_list('rate_admin', flat=True).filter(rate_admin__gt=0)
             )
-            data['avg_catering'] = get_mean_value(
+            data['avg_catering'] = services.get_mean_value(
                 year_fields.values_list('rate_refreshments', flat=True).filter(rate_refreshments__gt=0)
             )
-            data['avg_accommodation'] = get_mean_value(
+            data['avg_accommodation'] = services.get_mean_value(
                 year_fields.values_list('rate_accommodation', flat=True).filter(rate_accommodation__gt=0)
             )
-            data['average'] = get_mean_value(  # todo get the database to do the averaging work
+            data['average'] = services.get_mean_value(  # todo get the database to do the averaging work
                 [
                     data['avg_teaching'],
                     data['avg_content'],
@@ -115,26 +106,27 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
         year = self.year
         # get year data objects
         year_data = {}
+
         year_data['year'] = year
-        year_data['avg_teaching'] = get_mean_value(
+        year_data['avg_teaching'] = services.get_mean_value(
             year_results.values_list('rate_tutor', flat=True).filter(rate_tutor__gt=0)
         )
-        year_data['avg_content'] = get_mean_value(
+        year_data['avg_content'] = services.get_mean_value(
             year_results.values_list('rate_content', flat=True).filter(rate_content__gt=0)
         )
-        year_data['avg_facilities'] = get_mean_value(
+        year_data['avg_facilities'] = services.get_mean_value(
             year_results.values_list('rate_facilities', flat=True).filter(rate_facilities__gt=0)
         )
-        year_data['avg_admin'] = get_mean_value(
+        year_data['avg_admin'] = services.get_mean_value(
             year_results.values_list('rate_admin', flat=True).filter(rate_admin__gt=0)
         )
-        year_data['avg_catering'] = get_mean_value(
+        year_data['avg_catering'] = services.get_mean_value(
             year_results.values_list('rate_refreshments', flat=True).filter(rate_refreshments__gt=0)
         )
-        year_data['avg_accommodation'] = get_mean_value(
+        year_data['avg_accommodation'] = services.get_mean_value(
             year_results.values_list('rate_accommodation', flat=True).filter(rate_accommodation__gt=0)
         )
-        year_data['average'] = get_mean_value(
+        year_data['average'] = services.get_mean_value(
             [
                 year_data['avg_teaching'],
                 year_data['avg_content'],
@@ -165,25 +157,25 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
             module_data = {}
             module_code = module_results[0].module.code
             module_data['module_title'] = module_results[0].module.title
-            module_data['avg_teaching'] = get_mean_value(
+            module_data['avg_teaching'] = services.get_mean_value(
                 module_results.values_list('rate_tutor', flat=True).filter(rate_tutor__gt=0)
             )
-            module_data['avg_content'] = get_mean_value(
+            module_data['avg_content'] = services.get_mean_value(
                 module_results.values_list('rate_content', flat=True).filter(rate_content__gt=0)
             )
-            module_data['avg_facilities'] = get_mean_value(
+            module_data['avg_facilities'] = services.get_mean_value(
                 module_results.values_list('rate_facilities', flat=True).filter(rate_facilities__gt=0)
             )
-            module_data['avg_admin'] = get_mean_value(
+            module_data['avg_admin'] = services.get_mean_value(
                 module_results.values_list('rate_admin', flat=True).filter(rate_admin__gt=0)
             )
-            module_data['avg_catering'] = get_mean_value(
+            module_data['avg_catering'] = services.get_mean_value(
                 module_results.values_list('rate_refreshments', flat=True).filter(rate_refreshments__gt=0)
             )
-            module_data['avg_accommodation'] = get_mean_value(
+            module_data['avg_accommodation'] = services.get_mean_value(
                 module_results.values_list('rate_accommodation', flat=True).filter(rate_accommodation__gt=0)
             )
-            module_data['average'] = get_mean_value(
+            module_data['average'] = services.get_mean_value(
                 [
                     module_data['avg_teaching'],
                     module_data['avg_content'],
@@ -206,6 +198,52 @@ class ResultYearListView(LoginRequiredMixin, SiteTitleMixin, ListView):
             modules_data[module_code] = module_data
 
         context['modules_list'] = modules_data
+        return context
+
+
+class ResultWeekListView(LoginRequiredMixin, SiteTitleMixin, ListView):
+    template_name = 'feedback/this_week.html'
+    model = Feedback
+
+    def dispatch(self, *args, **kwargs):
+        self.end_date = datetime.datetime.now().date()
+        self.start_date = self.end_date - datetime.timedelta(days=7)
+        return super().dispatch(*args, **kwargs)
+
+    def get_subtitle(self):
+        return f'Student feedback submitted between ({self.start_date} - {self.end_date})'
+
+    def get_queryset(self):
+        return Feedback.objects.filter(submitted__gt=self.start_date).order_by('submitted')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        feedback_list = self.object_list
+
+        feedback_set = {}
+        for feedback in feedback_list:
+            feedback_dict = {}
+
+            feedback_dict['feedback_id'] = feedback.id
+            feedback_dict['module_code'] = feedback.module.code
+            feedback_dict['module_title'] = feedback.module.title
+            feedback_dict['submitted_on'] = feedback.submitted.strftime('%H:%M on %d-%b-%Y')
+            feedback_dict['student_name'] = feedback.your_name if feedback.your_name else 'Anonymous'
+            feedback_dict['rate_tutor'] = feedback.rate_tutor
+            feedback_dict['rate_content'] = feedback.rate_content
+            feedback_dict['rate_admin'] = feedback.rate_admin
+            feedback_dict['rate_facility'] = feedback.rate_facilities
+            feedback_dict['rate_accommodation'] = feedback.rate_accommodation
+            feedback_dict['rate_refreshments'] = feedback.rate_refreshments
+            feedback_dict['average'] = round(float(feedback.avg_score or 0), 1)
+            feedback_dict['comment'] = feedback.comments
+            tutors = feedback.module.tutor_modules.all().order_by('tutor')
+            feedback_dict['tutors_list'] = [
+                f'{tutor.tutor.student.firstname} {tutor.tutor.student.surname}' for tutor in tutors
+            ]
+            feedback_set[feedback_dict['feedback_id']] = feedback_dict
+
+            context['feedback_set'] = feedback_set
         return context
 
 
@@ -239,16 +277,17 @@ class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
 
         if comments or tutors:
             module_code = self.kwargs['code']
-            module_set = Module.objects.filter(code=module_code)
-            module_id = module_set[0]
+            module = Module.objects.get(code=module_code)
 
             updated = datetime.datetime.now()
             current_user = self.request.user
-            f = FeedbackAdmin(module=module_id, updated=updated, admin_comments=comments, person=current_user)
+            f = FeedbackAdmin(module=module, updated=updated, admin_comments=comments, person=current_user)
             f.save()
 
-            # todo send feedback to staffs and add attachments
-            send_mail('Subject here', 'Here is the message.', 'lokez21@gmail.com', ['lokez21@gmail.com'])
+            # todo send feedback to staffs and admin along with added attachments
+            services.email_admin_report(module, tutors)
+            if tutors:
+                services.email_tutor_report(module, tutors)
 
             messages.success(self.request, 'Your comment has been received. The tutor(s) has been sent an email')
 
@@ -264,98 +303,28 @@ class ResultModuleListView(LoginRequiredMixin, SiteTitleMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        results = self.object_list
+        module_id = self.object_list.first().module.id
 
-        module_id = results[0].module.id
-        module_title = results[0].module.title
-
-        module_data = {}
-        module_data['title'] = module_title
-        module_data['avg_teaching'] = get_mean_value(
-            results.values_list('rate_tutor', flat=True).filter(rate_tutor__gt=0)
-        )
-        module_data['avg_content'] = get_mean_value(
-            results.values_list('rate_content', flat=True).filter(rate_content__gt=0)
-        )
-        module_data['avg_facilities'] = get_mean_value(
-            results.values_list('rate_facilities', flat=True).filter(rate_facilities__gt=0)
-        )
-        module_data['avg_admin'] = get_mean_value(
-            results.values_list('rate_admin', flat=True).filter(rate_admin__gt=0)
-        )
-        module_data['avg_catering'] = get_mean_value(
-            results.values_list('rate_refreshments', flat=True).filter(rate_refreshments__gt=0)
-        )
-        module_data['avg_accommodation'] = get_mean_value(
-            results.values_list('rate_accommodation', flat=True).filter(rate_accommodation__gt=0)
-        )
-        module_data['average'] = get_mean_value(
-            [
-                module_data['avg_teaching'],
-                module_data['avg_content'],
-                module_data['avg_facilities'],
-                module_data['avg_admin'],
-                module_data['avg_catering'],
-                module_data['avg_accommodation'],
-            ]
-        )
-        module_data['sent'] = results.count()
-        module_data['returned'] = results.filter(submitted__isnull=False).count()
-        high_scorers = results.filter(avg_score__gt=3.5).count()
-        total_scored = results.filter(avg_score__isnull=False).count()
-
-        try:
-            module_data['satisfied'] = int(float(high_scorers) / float(total_scored) * 100)
-        except ZeroDivisionError:
-            module_data['satisfied'] = None
-
-        context['module_score'] = module_data
-
-        feedback_results = results.filter(submitted__isnull=False).order_by('submitted')  # get only submitted rows
-        feedback_data_list = {}
-
-        for feedback_result in feedback_results:
-            feedback_data = {}
-            feedback_data['id'] = feedback_result.id
-            feedback_data['student_name'] = feedback_result.your_name if feedback_result.your_name else 'Anonymous'
-            feedback_data['submitted_on'] = feedback_result.submitted.strftime('%H:%M on %d-%b-%Y')
-            feedback_data['average'] = round(float(feedback_result.avg_score), 1)
-            feedback_data['teaching'] = feedback_result.rate_tutor
-            feedback_data['content'] = feedback_result.rate_content
-            feedback_data['facilities'] = feedback_result.rate_facilities
-            feedback_data['admin'] = feedback_result.rate_admin
-            feedback_data['catering'] = feedback_result.rate_refreshments
-            feedback_data['accommodation'] = feedback_result.rate_accommodation
-            feedback_data['comment'] = feedback_result.comments
-
-            feedback_data_list[feedback_data['id']] = feedback_data
-
-        context['feedback_data_list'] = feedback_data_list
-
-        comments_list = []
-        admin_comments_set = FeedbackAdmin.objects.filter(module=module_id).order_by('updated')
-        for comment_row in admin_comments_set:
-            values = {}
-            values['comment'] = comment_row.admin_comments
-            values['uploaded_by'] = comment_row.person
-            values['uploaded_on'] = (
-                comment_row.updated.strftime('%H:%M on %d-%b-%Y')
-                if isinstance(comment_row.updated, datetime.date)
-                else '-'
-            )
-            comments_list.append(values)
-        context['comments_list'] = comments_list
+        context['module_info'] = services.get_module_info(module_id)
+        context['module_summary'] = services.get_module_summary(module_id)
+        context['feedback_data_dict'] = services.get_module_feedback_details(module_id)
+        context['comments_list'] = services.get_module_comments(module_id)
 
         return context
 
 
-class PreviewQuestionnaireView(LoginRequiredMixin, SiteTitleMixin, FormView):
+class PreviewQuestionnaireFormView(LoginRequiredMixin, SiteTitleMixin, FormView):
     template_name = 'feedback/preview_questionnaire.html'
     model = Feedback
     form_class = PreviewQuestionnaireForm
 
+    def form_valid(self, form):
+        module_obj = form.cleaned_data['module_code']
+        url = f'{settings.PUBLIC_APPS_URL}/feedback/submit/{module_obj.id}'
+        return redirect(url)
 
-class FeedbackRequestView(LoginRequiredMixin, SiteTitleMixin, FormView):
+
+class FeedbackRequestFormView(LoginRequiredMixin, SiteTitleMixin, FormView):
     template_name = 'feedback/feedback_request.html'
     model = Feedback
     form_class = FeedbackRequestForm
@@ -486,3 +455,41 @@ class RequestFeedback(LoginRequiredMixin, View):
         services.process_and_send_emails(module)
         messages.success(request, 'The email has been sent to students')
         return redirect(reverse('feedback:results-module', kwargs={'code': module.code}))
+
+
+class RecentlyCompletedOrFinishingSoon(LoginRequiredMixin, SiteTitleMixin, ListView):
+    template_name = 'feedback/recently_completed_or_finishing_soon.html'
+    model = Module
+    subtitle = 'Courses that have recently finished, or will finish soon.'
+
+    def get_queryset(self):
+        start_date = datetime.date.today() - datetime.timedelta(days=14)  # get courses for 14 days in the past
+        end_date = datetime.date.today() + datetime.timedelta(days=2)  # get courses for 2 days in the future
+        return (
+            Module.objects.filter(~Q(status=33), end_date__range=[start_date, end_date])
+            .values('id', 'code', 'title', 'end_date', 'email')
+            .order_by('end_date')
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        modules_list = self.object_list
+        modules = []
+        for module in modules_list:
+            if Feedback.objects.filter(module=module['id']).count() > 0:
+                module['status'] = 'Send reminder'
+                if Feedback.objects.filter(module=module['id'], reminder__isnull=False).exists():
+                    module['status'] = 'See results'
+            else:
+                module['status'] = 'Send feedback request'
+            modules.append(module)
+
+        context['modules'] = modules
+        return context
+
+
+class ExportToExcel(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        module = Module.objects.filter(id=kwargs['module_id'])
+        return services.export_users_xls(module)

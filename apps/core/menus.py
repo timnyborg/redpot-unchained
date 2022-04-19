@@ -187,6 +187,7 @@ other_children = (
         ),
     ),
     MenuItem("Staff listing", reverse('staff_list:home'), icon='address-card'),
+    MenuItem("Feedback", reverse('feedback:home'), icon='comments'),
     MenuItem(
         'Transcripts',
         reverse('transcript:create-batch'),

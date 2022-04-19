@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'feedback_layout.html' %}
 
 {% block center %}
     <div class="section">
@@ -33,5 +33,11 @@
                 </tr>
             {% endfor %}
         </table>
+    </div>
+
+    <div class="section">
+        <h4>Submitted in the past 7 days</h4>
+        <p><a href="{% url 'feedback:results-last-week' %}">Review feedback submitted in the past seven days</a></p>
+
     </div>
 {% endblock %}

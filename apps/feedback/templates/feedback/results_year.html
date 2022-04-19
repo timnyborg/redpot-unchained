@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'feedback_layout.html' %}
 {% load feedback_tags %}
 
 {% block center %}
@@ -21,15 +21,15 @@
             <tr style="text-align: right">
                 <td>{{ year_data.year }}</td>
                 <td>{{ year_data.satisfied | default:'-'}}</td>
-                <td>{{ year_data.average }}</td>
-                <td>{{ year_data.avg_teaching }}</td>
-                <td>{{ year_data.avg_content }}</td>
-                <td>{{ year_data.avg_facilities }}</td>
-                <td>{{ year_data.avg_admin }}</td>
-                <td>{{ year_data.avg_catering }}</td>
-                <td>{{ year_data.avg_accommodation }}</td>
-                <td>{{ year_data.sent }}</td>
-                <td>{{ year_data.returned | default:'-'}}</td>
+                <td class="{% score_color year_data.average %}">{{ year_data.average }}</td>
+                <td class="{% score_color year_data.avg_teaching %}">{{ year_data.avg_teaching }}</td>
+                <td class="{% score_color year_data.avg_content %}">{{ year_data.avg_content }}</td>
+                <td class="{% score_color year_data.avg_facilities %}">{{ year_data.avg_facilities }}</td>
+                <td class="{% score_color year_data.avg_admin %}">{{ year_data.avg_admin }}</td>
+                <td class="{% score_color year_data.avg_catering %}">{{ year_data.avg_catering }}</td>
+                <td class="{% score_color year_data.avg_accommodation %}">{{ year_data.avg_accommodation }}</td>
+                <td class="feedback-gray">{{ year_data.sent }}</td>
+                <td class="feedback-gray">{{ year_data.returned | default:'-'}}</td>
             </tr>
         </table>
 
