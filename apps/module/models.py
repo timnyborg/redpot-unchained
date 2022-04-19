@@ -146,7 +146,7 @@ class Module(SignatureModel):
         'core.Division',
         models.DO_NOTHING,
         db_column='division',
-        limit_choices_to=models.Q(id__gt=8) | models.Q(id__lt=5),
+        limit_choices_to={'is_active': True},
         default=1,
     )
     portfolio = models.ForeignKey('core.Portfolio', models.DO_NOTHING, db_column='portfolio', default=1)
