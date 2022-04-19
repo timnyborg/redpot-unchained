@@ -1,5 +1,4 @@
 import datetime
-import statistics
 from pathlib import Path
 
 import xlwt
@@ -8,6 +7,7 @@ from weasyprint import CSS, HTML
 from django.conf import settings
 from django.core import mail
 from django.core.mail import send_mail
+from django.db.models import Avg, Count, Q
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -245,67 +245,24 @@ def make_pdf(html_path, css_path, pdf_context):
     return content
 
 
-def get_mean_value(list_of_ints):  # Takes a list of integers and returns a mean value
-    value = round(statistics.mean(list_of_ints or [0]), 1)
-    return value
-
-
-def get_module_info(module_id):
-    module = Module.objects.filter(id=module_id).values(
-        'id', 'title', 'code', 'start_date', 'end_date', 'email', 'portfolio'
+def get_module_summary(module_id: int) -> dict:
+    """Return a dictionary of a module's aggregate feedback scores"""
+    summary = Module.objects.filter(id=module_id).aggregate(
+        teaching=Avg('feedback__rate_tutor'),
+        content=Avg('feedback__rate_content'),
+        facilities=Avg('feedback__rate_facilities'),
+        admin=Avg('feedback__rate_admin'),
+        catering=Avg('feedback__rate_refreshments'),
+        accommodation=Avg('feedback__rate_accommodation'),
+        average=Avg('feedback__avg_score'),
+        sent=Count('feedback__id'),
+        returned=Count('feedback__id', filter=Q(feedback__submitted__isnull=False)),
+        high_scorers=Count('feedback__id', filter=Q(feedback__avg_score__gt=3.5)),
+        total_scored=Count('feedback__id', filter=Q(feedback__avg_score__isnull=False)),
     )
-    module_info = module.first()
-    return module_info
-
-
-def get_module_summary(module_id):
-    module_summary = {}
-    module = Module.objects.filter(id=module_id).values('id', 'title')
-    module_info = module.first()
-
-    module_summary['id'] = module_info['id']
-    module_summary['title'] = module_info['title']
-
-    module_feedback_sent = Feedback.objects.filter(module=module_id).count()
-    module_feedback_submitted = Feedback.objects.filter(module=module_id, submitted__isnull=False)
-
-    module_summary['teaching'] = get_mean_value(
-        module_feedback_submitted.values_list('rate_tutor', flat=True).filter(rate_tutor__gt=0)
-    )
-    module_summary['content'] = get_mean_value(
-        module_feedback_submitted.values_list('rate_content', flat=True).filter(rate_content__gt=0)
-    )
-    module_summary['facility'] = get_mean_value(
-        module_feedback_submitted.values_list('rate_facilities', flat=True).filter(rate_facilities__gt=0)
-    )
-    module_summary['admin'] = get_mean_value(
-        module_feedback_submitted.values_list('rate_admin', flat=True).filter(rate_admin__gt=0)
-    )
-    module_summary['catering'] = get_mean_value(
-        module_feedback_submitted.values_list('rate_refreshments', flat=True).filter(rate_refreshments__gt=0)
-    )
-    module_summary['accommodation'] = get_mean_value(
-        module_feedback_submitted.values_list('rate_accommodation', flat=True).filter(rate_accommodation__gt=0)
-    )
-    module_summary['sent'] = module_feedback_sent
-    module_summary['returned'] = module_feedback_submitted.count()
-    module_summary['average'] = get_mean_value(
-        [
-            module_summary['teaching'],
-            module_summary['content'],
-            module_summary['facility'],
-            module_summary['admin'],
-            module_summary['catering'],
-            module_summary['accommodation'],
-        ]
-    )
-    high_scores = module_feedback_submitted.filter(avg_score__gt=3.5).count()
-    total_scores = module_feedback_submitted.filter(avg_score__isnull=False).count()
-    try:
-        module_summary['satisfied'] = int(float(high_scores) / float(total_scores) * 100)
-    except ZeroDivisionError:
-        module_summary['satisfied'] = None
-    return module_summary
+    if summary['total_scored']:
+        summary['satisfied'] = summary['high_scorers'] / summary['total_scored'] * 100
+    return summary
 
 
 def get_module_feedback_details(module_id):
@@ -392,10 +349,10 @@ def export_users_xls(module: Module) -> HttpResponse:
     module_summary = get_module_summary(module.id)
     row = [
         module_summary['satisfied'],
-        module_summary['average'],
+        round(module_summary['average'], 1),
         module_summary['teaching'],
         module_summary['content'],
-        module_summary['facility'],
+        module_summary['facilities'],
         module_summary['admin'],
         module_summary['catering'],
         module_summary['accommodation'],
