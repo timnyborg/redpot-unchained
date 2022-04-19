@@ -4,7 +4,7 @@
 
 {% block center %}
     <div class="section">
-        <a href="{% url 'feedback:export_users_xls' module_info.id %}" class="btn btn-warning float-end"><span class="fa fa-file"></span> Export (.xls)</a>
+        <a href="{% url 'feedback:export_users_xls' module_info.id %}" class="btn btn-secondary float-end"><span class="fa fa-file"></span> Export (.xls)</a>
         <br>
         <h4>Summary</h4>
 
@@ -23,7 +23,7 @@
                 <th>Returned</th>
             </tr>
             <tr style="text-align: right">
-                <td class="feedback-comment">{{ module_info.title }}({{ module_info.code }})<br> ({{ module_info.start_date }} - {{ module_info.end_date }})</td>
+                <td class="feedback-comment">{{ module_info.title }} ({{ module_info.code }})<br> ({{ module_info.start_date }} - {{ module_info.end_date }})</td>
                 <td>{{ module_summary.satisfied | default:'-'}}</td>
                 <td class="{% score_color module_summary.average %}">{{ module_summary.average }}</td>
                 <td class="{% score_color module_summary.content %}">{{ module_summary.content }}</td>
@@ -54,7 +54,7 @@
                         <td class="{% score_color feedback.accommodation %}">{{ feedback.accommodation | default:'-' }}<br>Accomm</td>
                     </tr>
                     <tr>
-                        <td colspan="8">{{ feedback.comment | default:'None'}}</td>
+                        <td colspan="8">{{ feedback.comment | default:'No comment'}}</td>
                     </tr>
                 </tbody>
             </table>
