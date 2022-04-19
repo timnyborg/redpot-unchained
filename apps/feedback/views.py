@@ -10,7 +10,6 @@ from django.views import View
 from django.views.generic import FormView, ListView
 
 from apps.core.utils.views import PageTitleMixin
-from apps.enrolment.models import Enrolment
 from apps.module.models import Module
 
 from . import services
@@ -196,106 +195,76 @@ class PreviewView(LoginRequiredMixin, SiteTitleMixin, ListView):
         return super().dispatch(*args, **kwargs)
 
     def get_subtitle(self):
-        module_title = self.module.title
-        module_code = self.module.code
-        return f'{module_title} - {module_code}'
+        return f'{self.module.title} - {self.module.code}'
 
     def get_queryset(self):
         # Build a query for fetching students on modules:
         module_students = (
-            Enrolment.objects.filter(module=self.module_id, status__in=[10, 71, 90])
-            .select_related('module', 'qa', 'qa__student', 'qa__student__email', 'status__description')
-            .values(
-                'qa__student__id',
-                'qa__student__firstname',
-                'qa__student__surname',
-                'id',
-                'status__description',
-                'qa__student__email__id',
-                'qa__student__email__email',
-                'module',
-            )
-            .order_by(
-                '-qa__student__email__email',
-                'qa__student__surname',
-                'qa__student__firstname',
-            )
+            self.module.enrolments.filter(status__in=[10, 71, 90])
+            .select_related('module', 'qa', 'qa__student')
+            .order_by('qa__student__email__email')
         )
 
         return module_students
 
-    def email_preview(self, list_dict=None):
-        if list_dict:
-            for item in list_dict:
-                firstname = item['firstname']
-                module_id = item['module_id']
-                module = Module.objects.filter(id=module_id).first()
-                module_title = module.title
-                if item['action'] == 'Notify':
-                    return render_to_string(
-                        'feedback/email/feedback_email.html',
-                        {'firstname': firstname, 'module_title': module_title, 'module_id': module_id},
-                    )
+    def email_preview(self, list_dict: list):
+        for item in list_dict:
+            firstname = item['firstname']
+            if item['action'] == 'Notify':
+                return render_to_string(
+                    'feedback/email/feedback_email.html',
+                    {'firstname': firstname, 'module_title': self.module.title, 'module_id': self.module.id},
+                )
 
-                elif item['action'] == 'Remind':
-                    return render_to_string(
-                        'feedback/email/feedback_email_reminder.html',
-                        {'firstname': firstname, 'module_title': module_title, 'module_id': module_id},
-                    )
+            elif item['action'] == 'Remind':
+                return render_to_string(
+                    'feedback/email/feedback_email_reminder.html',
+                    {'firstname': firstname, 'module_title': self.module.title, 'module_id': self.module.id},
+                )
 
-                elif item['action'] == 'Reminder sent (Skip)':
-                    return 'Reminder already sent to students.'
+            elif item['action'] == 'Reminder sent (Skip)':
+                return 'Reminder already sent to students.'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        students = self.object_list
+        enrolments = self.object_list
         list_dict = []
         today = datetime.datetime.now()
-        for student in students:
-            email = student['qa__student__email__email']
-            firstname = student['qa__student__firstname']
-            surname = student['qa__student__surname']
-            student_id = student['qa__student__id']
-            email_id = student['qa__student__email__id']
-            module_id = student['module']
+        for enrolment in enrolments:
+            email = enrolment.qa.student.get_default_email().email
             action = 'Notify'
 
+            student_feedback = Feedback.objects.filter(enrolment=enrolment.id).first()
             if not email:
                 action = 'The student has no Email address. (Skip)'
             else:
-                student_feedback = Feedback.objects.filter(hash_id=student['id'])
-                if student_feedback.first():
-                    if str(today) in str(
-                        student_feedback.first().notified
-                    ):  # Prevent sending reminder on same day of notification!
+                if student_feedback:
+                    if today.date() == student_feedback.notified.date():
+                        # Prevent sending reminder on same day of notification!
                         action = 'Notification just sent today. (Skip)'
-                    elif student_feedback.first().reminder is None:
+                    elif not student_feedback.reminder:
                         action = 'Remind'
-                    elif student_feedback.first().reminder is not None:
+                    elif student_feedback.reminder:
                         action = 'Reminder sent (Skip)'
-
-                    if student_feedback.first().submitted is not None:
+                    if student_feedback.submitted:
                         action = 'Submitted (Skip)'
 
             list_dict.append(
                 {
-                    'student_id': student_id,
-                    'firstname': firstname,
-                    'surname': surname,
+                    'student_id': enrolment.qa.student.id,
+                    'firstname': enrolment.qa.student.firstname,
+                    'surname': enrolment.qa.student.surname,
                     'email': email,
-                    'email_id': email_id,
-                    'module_id': module_id,
                     'action': action,
                 }
             )
 
         context['list_dict'] = list_dict
-        context['module_id'] = self.module_id
+        context['module_id'] = self.module.id
         context['Send_email_button'] = False
-        if list_dict:
-            if list_dict[0]['action'] in ['Remind', 'Notify']:
-                context['Send_email_button'] = True
+        if list_dict and list_dict[0]['action'] in ['Remind', 'Notify']:
+            context['Send_email_button'] = True
 
         context['email_preview'] = self.email_preview(list_dict)
         return context
