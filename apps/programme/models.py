@@ -66,12 +66,11 @@ class Programme(SignatureModel):
     ]
 
     title = models.CharField(max_length=96)
-    # todo: replace with is_active
     division = models.ForeignKey(
         'core.Division',
         models.DO_NOTHING,
         db_column='division',
-        limit_choices_to=models.Q(id__gt=8) | models.Q(id__lt=5),
+        limit_choices_to=models.Q(id__gt=8) | models.Q(id__lt=5),  # todo: replace with is_active
     )
     portfolio = models.ForeignKey('core.Portfolio', models.DO_NOTHING, db_column='portfolio')
     qualification = models.ForeignKey('Qualification', models.DO_NOTHING, db_column='qualification')
@@ -90,6 +89,7 @@ class Programme(SignatureModel):
         null=True,
         blank=True,
     )
+    # todo: Why does reporting_year_type exist?  Should be a constant in hesa instance.  Probably irrelevant with HDF
     reporting_year_type = models.IntegerField(blank=True, null=True)
 
     is_active = models.BooleanField(default=True)
