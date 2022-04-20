@@ -21,7 +21,10 @@ class ApprovalTable(tables.Table):
     amount = PoundsColumn()
     student = tables.Column('Student', accessor='enrolment__qa__student', linkify=True)
     module = tables.Column('Module', accessor='enrolment__module', linkify=True)
-    requested_by = tables.Column(accessor='requested_by__get_full_name')
+    requested_by = tables.Column(
+        accessor='requested_by__get_full_name',
+        order_by=('requested_by__first_name', 'requested_by__last_name'),
+    )
     edit = EditLinkColumn(
         verbose_name='', linkify=lambda record: record.get_edit_url() + f'?next={reverse("amendment:approve")}'
     )
@@ -97,7 +100,10 @@ class SearchTable(tables.Table):
     edit = EditLinkColumn(
         verbose_name='', linkify=lambda record: record.get_edit_url() + f'?next={reverse("amendment:search")}'
     )
-    requested_by = tables.Column(accessor='requested_by__get_full_name')
+    requested_by = tables.Column(
+        accessor='requested_by__get_full_name',
+        order_by=('requested_by__first_name', 'requested_by__last_name'),
+    )
 
     class Meta:
         model = models.Amendment

@@ -70,6 +70,10 @@ class SearchFilter(filters.FilterSet):
 
 
 class SearchTable(tables.Table):
+    raised_by = tables.Column(
+        accessor='raised_by__get_full_name',
+        order_by=('raised_by__first_name', 'raised_by__last_name'),
+    )
     approvable_icon = tables.TemplateColumn(verbose_name='', template_name='tutor_payment/approvable_icon_column.html')
     amount = PoundsColumn()
     edit = EditLinkColumn('')
@@ -82,7 +86,7 @@ class SearchTable(tables.Table):
             'tutor_module__module__code',
             'amount',
             'type',
-            'raised_by__get_full_name',
+            'raised_by',
             'approved_by',
             'transferred_on',
             'status',
@@ -122,7 +126,10 @@ class ApprovalTable(tables.Table):
     start_date = tables.Column(accessor='tutor_module__module__start_date', attrs={'td': {'class': 'text-nowrap'}})
     amount = PoundsColumn()
     type = tables.Column(accessor='type__short_form')
-    raised_by = tables.Column(accessor='raised_by__get_full_name')
+    raised_by = tables.Column(
+        accessor='raised_by__get_full_name',
+        order_by=('raised_by__first_name', 'raised_by__last_name'),
+    )
     raised_on = tables.Column(accessor='raised_on__date', attrs={'td': {'class': 'text-nowrap'}})
     edit = EditLinkColumn(
         verbose_name='', linkify=lambda record: record.get_edit_url() + f'?next={reverse("tutor-payment:approve")}'
