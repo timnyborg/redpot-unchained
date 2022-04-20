@@ -107,6 +107,7 @@ def mail_dos(module: Module):
             'attended': attended,
             'module_start_month': module.start_date.month,
             'module_start_date': module.start_date,
+            'REDPOT_URL': settings.CANONICAL_URL,
         }
         subject = f"Student feedback - {module.title}"
         html_message = render_to_string('feedback/email/notifydos.html', email_context)
@@ -122,7 +123,12 @@ def mail_dos(module: Module):
 
 
 def mail_course_admin(module, dos_emailed=None):
-    email_context = {'title': module.title, 'module_code': module.code, 'dos_emailed': dos_emailed}
+    email_context = {
+        'title': module.title,
+        'module_code': module.code,
+        'dos_emailed': dos_emailed,
+        'REDPOT_URL': settings.CANONICAL_URL,
+    }
 
     sender = 'webmaster@conted.ox.ac.uk'
     live_email = module.email if '@conted' in module.email else module.portfolio.email
@@ -147,7 +153,14 @@ def email_admin_report(module: Module, tutor_ids: list) -> None:
     tutors = Student.objects.filter(pk__in=tutors_ids).order_by('surname')
     tutors = [f'{tutor.title} {tutor.firstname} {tutor.surname}' for tutor in tutors]  # Get only tutor names
     url = settings.CANONICAL_URL
-    context = {'url': url, 'from': from_email, 'title': module.title, 'code': module.code, 'tutors': tutors}
+    context = {
+        'url': url,
+        'from': from_email,
+        'title': module.title,
+        'module_code': module.code,
+        'tutors': tutors,
+        'REDPOT_URL': settings.CANONICAL_URL,
+    }
 
     body = render_to_string('feedback/email/updateadmin.html', context)
 
