@@ -1,7 +1,26 @@
+# Production stack, hosting redpot on http :8000
+
+# Overridable variables (with environment variables locally, or gitlab CI/CD variables in deployment):
+#  REDPOT_IMAGE: the registry url of the redpot image to be deployed.
+#     When run by a gitlab pipeline, this is set to the image created by the branch, allowing rollbacks.
+#     e.g. gitlab.conted.ox.ac.uk:5050/django/redpot-unchained/redpot:<branchname>-<commit hash>
+#  STATIC_FOLDER: the path to a host folder with /media & /static subfolders, all owned by the REDPOT_DOCKER_USER user.
+#     This allows static content to be served by NGINX, sitting outside docker.
+#     e.g. /srv/redpot
+#  REDPOT_DOCKER_USER: the user with access to the STATIC_FOLDER folder and its subfolders, e.g. www-data
+#  SETTINGS_TIMESTAMP: a workaround to allow updating secrets.env with `docker stack deploy`.
+#     Secrets are immutable, so we have gitlab create a new name each time with a timestamp
+
+#  Requires:
+#    The folder specified by STATIC_FOLDER must exist on the host.
+#    It needs to have /static and /media subfolders, all accessible by REDPOT_DOCKER_USER
+#    If it's not in place, the django & worker services will fail to start, due to a bad bind mount configuration, or
+#    permission denied on those folders.
+
 version: "3.9"
 services:
   django:
-    image: ${REDPOT_IMAGE:?}
+    image: ${REDPOT_IMAGE:-gitlab.conted.ox.ac.uk:5050/django/redpot-unchained/redpot:latest}
     secrets:
       - source: app_config
         target: /code/secrets.env
@@ -19,14 +38,14 @@ services:
       retries: 3
     ports:
       - 8000:8000
-    user: ${REDPOT_DOCKER_USER}  # uid:gid for permissions on bind mounts
+    user: ${REDPOT_DOCKER_USER:-www-data:www-data}  # uid:gid for permissions on bind mounts
     entrypoint: ["/code/docker/prod_static_entrypoint.sh", "uwsgi"]
     volumes:
-      - ${STATIC_FOLDER:?}/static:/volumes/static
-      - ${STATIC_FOLDER:?}/media:/volumes/media
+      - ${STATIC_FOLDER:-/srv/redpot}/static:/volumes/static
+      - ${STATIC_FOLDER:-/srv/redpot}/media:/volumes/media
 
   worker:
-    image: ${REDPOT_IMAGE:?}
+    image: ${REDPOT_IMAGE:-gitlab.conted.ox.ac.uk:5050/django/redpot-unchained/redpot:latest}
     secrets:
       - source: app_config
         target: /code/secrets.env
@@ -36,9 +55,9 @@ services:
       update_config:
         order: stop-first  # avoid multiple beats processes
         failure_action: rollback
-    user: ${REDPOT_DOCKER_USER}  # uid:gid for permissions on bind mounts
+    user: ${REDPOT_DOCKER_USER:-www-data:www-data}  # uid:gid for permissions on bind mounts
     volumes:
-      - ${STATIC_FOLDER:?}/media:/volumes/media
+      - ${STATIC_FOLDER:-/srv/redpot}/media:/volumes/media
 
   redis:
     image: redis:6.2
