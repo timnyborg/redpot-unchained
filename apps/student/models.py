@@ -445,14 +445,14 @@ class OtherID(SITSLockingModelMixin, SignatureModel):
 class Nationality(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=64)
-    is_in_eu = models.BooleanField()
+    is_in_eu = models.BooleanField(default=False)
     hesa_code = models.CharField(max_length=8)
-    sort_order = models.IntegerField()
-    is_active = models.BooleanField()
+    sort_order = models.IntegerField(default=1)  # Used for website ordering to put UK first
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'nationality'
-        ordering = ('sort_order', 'name')
+        ordering = ('name',)
 
     def __str__(self) -> str:
         return str(self.name)
@@ -463,13 +463,13 @@ class Domicile(models.Model):
     name = models.CharField(max_length=64)
     is_in_eu = models.BooleanField(default=False)
     hesa_code = models.CharField(max_length=8)
-    sort_order = models.IntegerField(default=1)
+    sort_order = models.IntegerField(default=1)  # Used for website ordering to put UK first
     is_active = models.BooleanField(default=True)
     in_uk = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'domicile'
-        ordering = ('sort_order', 'name')
+        ordering = ('name',)
 
     def __str__(self) -> str:
         return str(self.name)

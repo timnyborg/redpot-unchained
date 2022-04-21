@@ -32,6 +32,7 @@ class ModuleSearchFilter(django_filters.FilterSet):
         field_name='title',
         lookup_expr='unaccent__icontains',
         label='Title',
+        widget=forms.TextInput(attrs={'autofocus': True}),
     )
 
     class Meta:
