@@ -71,7 +71,7 @@ def process_and_send_emails(module: Module) -> None:
             student_feedback.save()
             mail_sent = True
 
-        elif not student_feedback.reminder:
+        elif not student_feedback.submitted and not student_feedback.reminder:
             html_message = render_to_string('feedback/email/feedback_email_reminder.html', email_context)
             send_mail(subject, strip_tags(html_message), admin_email, to, html_message=html_message)
 
