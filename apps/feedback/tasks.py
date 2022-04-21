@@ -32,7 +32,7 @@ def feedback_mail_dos_and_course_admin():
     )
 
     for module in completed_modules:
-        sent = services.mail_dos(module) if module.portfolio in [32, 31, 17] else None
+        sent = services.mail_dos(module) if module.portfolio_id in [32, 31, 17] else None
         services.mail_course_admin(module, sent)
 
     return 'Success!'
