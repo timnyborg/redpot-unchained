@@ -101,6 +101,7 @@ def mail_dos(module: Module):
     if recipient:
         email_context = {
             'email': admin_email,
+            'module_title': module.title,
             'module_code': module.code,
             'portfolio': module.portfolio_id,
             'dos': recipient.student.firstname,
