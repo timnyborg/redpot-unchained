@@ -2,38 +2,42 @@
 {% load feedback_tags %}
 <head>
     <title>
-        Feedback for {{ module.title }}({{ module.code }})
+        Feedback for {{ module.title }} ({{ module.code }})
     </title>
 </head>
 
-<h4>Feedback results for {{ module.title }}({{ module.code }})</h4>
+<h4>Feedback results for {{ module.title }} ({{ module.code }})</h4>
 
 <h4>{{module.start_date}}
-{%  if module.start_date != module.end_date %}
- to {{module.end_date}}</h4>
-{% endif %}
+    {%  if module.start_date != module.end_date %}
+        to {{module.end_date}}</h4>
+    {% endif %}
 <hr>
 <h3>Summary</h3>
 <table class = "table table-striped table-hover table-bordered" border = '1'>
     <tr>
-    {% for header in module_summary_headers %}
-        {% if header == 'Module Title' %}
-            <th style="text-align:left;" class="feedback-comment">{{ header }}</th>
-        {% else %}
-            <th style="text-align:right;">{{ header }}</th>
-        {% endif %}
-    {% endfor %}
+        <th style="text-align:right;" class="feedback-comment">Module title</th>
+        <th style="text-align:right;">Satisfied(%)</th>
+        <th style="text-align:right;">Average</th>
+        <th style="text-align:right;">Teaching</th>
+        <th style="text-align:right;">Content</th>
+        <th style="text-align:right;">Facilities</th>
+        <th style="text-align:right;">Admin</th>
+        <th style="text-align:right;">Catering</th>
+        <th style="text-align:right;">Accom</th>
+        <th style="text-align:right;">Sent</th>
+        <th style="text-align:right;">Returned</th>
     </tr>
     <tr>
-        <td class="feedback-comment">{{ module_summary.title }} ({{ tutors|join:", " }})</td>
-        <td style="text-align: right">{{ module_summary.satisfied }}</td>
-        <td class="{% score_color module_summary.average %}">{{ module_summary.average }}</td>
-        <td class="{% score_color module_summary.teaching %}">{{ module_summary.teaching }}</td>
-        <td class="{% score_color module_summary.content %}">{{ module_summary.content }}</td>
-        <td class="{% score_color module_summary.facility %}">{{ module_summary.facility }}</td>
-        <td class="{% score_color module_summary.admin %}">{{ module_summary.admin }}</td>
-        <td class="{% score_color module_summary.catering %}">{{ module_summary.catering }}</td>
-        <td class="{% score_color module_summary.accommodation %}">{{ module_summary.accommodation }}</td>
+        <td class="feedback-comment">{{ module.title }} ({{ tutors|join:", " }})</td>
+        <td style="text-align: right">{{ module_summary.satisfied|floatformat:0 }}</td>
+        <td class="{% score_color module_summary.average %}">{{ module_summary.average|floatformat:1 }}</td>
+        <td class="{% score_color module_summary.teaching %}">{{ module_summary.teaching|floatformat:1 }}</td>
+        <td class="{% score_color module_summary.content %}">{{ module_summary.content|floatformat:1 }}</td>
+        <td class="{% score_color module_summary.facilities %}">{{ module_summary.facilities|floatformat:1 }}</td>
+        <td class="{% score_color module_summary.admin %}">{{ module_summary.admin|floatformat:1 }}</td>
+        <td class="{% score_color module_summary.catering %}">{{ module_summary.catering|floatformat:1 }}</td>
+        <td class="{% score_color module_summary.accommodation %}">{{ module_summary.accommodation|floatformat:1 }}</td>
         <td class="feedback-gray">{{ module_summary.sent }}</td>
         <td class="feedback-gray">{{ module_summary.returned }}</td>
     </tr>
@@ -46,7 +50,7 @@
     {% for feedback in feedback_data_dict.values %}
         <tr>
             <td class="feedback-comment feedback-green">
-                <b>{{ feedback.name }}</b> submitted at {{ feedback.submitted_on }}
+                Submitted at {{ feedback.submitted_on }}
             </td>
             <td class="{% score_color feedback.average %}">{{ feedback.average | default:'-' }}<br>Average</td>
             <td class="{% score_color feedback.teaching %}">{{ feedback.teaching | default:'-' }}<br>Teaching</td>
@@ -68,11 +72,11 @@
 <p>Please use to record any follow up actions</p>
 <table class = "table table-striped table-bordered">
     <tbody>
-        {% for comment in comments_list %}
+    {% for comment in comments_list %}
         <tr>
-            <td>{{ comment.comment }}</td>
-            <td>{{ comment.uploaded_by }}. {{ comment.uploaded_on }}</td>
+            <td>{{ comment.admin_comments }}</td>
+            <td>{{ comment.person }}. {{ comment.updated|time }} on {{ comment.updated|date }}</td>
         </tr>
-        {% endfor %}
+    {% endfor %}
     </tbody>
 </table>

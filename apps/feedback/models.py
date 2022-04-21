@@ -3,6 +3,7 @@ import uuid
 from typing import Optional
 
 from django.db import models
+from django.db.models import Avg, Count, Q
 
 
 class FeedbackQuerySet(models.QuerySet):
@@ -12,6 +13,26 @@ class FeedbackQuerySet(models.QuerySet):
             module__start_date__gt=datetime.date(start_year, 8, 31),
             module__start_date__lt=datetime.date(end_year + 1, 9, 1),
         )
+
+    def statistics(self) -> dict:
+        """Returns a standard set of statistics, used on multiple pages"""
+        results = self.aggregate(
+            teaching=Avg('rate_tutor'),
+            content=Avg('rate_content'),
+            facilities=Avg('rate_facilities'),
+            admin=Avg('rate_admin'),
+            catering=Avg('rate_refreshments'),
+            accommodation=Avg('rate_accommodation'),
+            average=Avg('avg_score'),
+            sent=Count('id'),
+            returned=Count('id', filter=Q(submitted__isnull=False)),
+            high_scorers=Count('id', filter=Q(avg_score__gt=3.5)),
+            total_scored=Count('id', filter=Q(avg_score__isnull=False)),
+        )
+        results['satisfied'] = None
+        if results['total_scored']:
+            results['satisfied'] = results['high_scorers'] / results['total_scored'] * 100
+        return results
 
 
 class Feedback(models.Model):
