@@ -15,6 +15,12 @@ class ProgrammeSearchFilter(django_filters.FilterSet):
         widget=forms.CheckboxInput,
         initial=False,
     )
+    title__icontains = django_filters.CharFilter(
+        field_name='title',
+        lookup_expr='unaccent__icontains',
+        label='Title',
+        widget=forms.TextInput(attrs={'autofocus': True}),
+    )
 
     class Meta:
         model = Programme

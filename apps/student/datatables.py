@@ -24,7 +24,9 @@ class SearchFilter(filters.FilterSet):
             models.Q(firstname__unaccent__startswith=value) | models.Q(nickname__unaccent__startswith=value)
         )
 
-    firstname = filters.CharFilter(label='First name', method='filter_firstname')
+    firstname = filters.CharFilter(
+        label='First name', method='filter_firstname', widget=forms.TextInput(attrs={'autofocus': True})
+    )
 
     surname = filters.CharFilter(
         label='Surname',
