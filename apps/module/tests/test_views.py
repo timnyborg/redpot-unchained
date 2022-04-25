@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -32,7 +33,7 @@ class TestViewsWithLogin(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(username='testuser')
-        cls.object = factories.ModuleFactory()
+        cls.object = factories.ModuleFactory(start_date=date(2000, 1, 1))
 
     def setUp(self):
         self.client.force_login(self.user)
