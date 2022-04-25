@@ -15,6 +15,7 @@ class HECoSSubject(models.Model):
     class Meta:
         db_table = 'hecos_subject'
         ordering = ('name',)
+        verbose_name = 'HECoS subject'
 
     def __str__(self) -> str:
         return str(self.name)
@@ -42,6 +43,8 @@ class ProgrammeHecosSubject(models.Model):
 
     class Meta:
         db_table = 'programme_hecos_subject'
+        ordering = ('programme', 'hecos_subject')
+        verbose_name = 'Programme HECoS subject'
 
 
 class HESACostCentre(models.Model):
@@ -50,3 +53,8 @@ class HESACostCentre(models.Model):
 
     class Meta:
         db_table = 'hesa_cost_centre'
+        ordering = ('description',)
+        verbose_name = 'HESA cost centre'
+
+    def __str__(self) -> str:
+        return f'{self.description}: {self.price_group}'
