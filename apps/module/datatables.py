@@ -17,7 +17,7 @@ class ModuleSearchFilter(django_filters.FilterSet):
     def limit_years_filter(self, queryset, field_name, value):
         if value:
             date_threshold = date.today() - relativedelta(years=3)
-            return queryset.filter(start_date__gte=date_threshold)
+            return queryset.exclude(start_date__lt=date_threshold)
         return queryset
 
     limit_years = django_filters.BooleanFilter(
