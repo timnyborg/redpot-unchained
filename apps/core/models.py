@@ -163,8 +163,6 @@ class Portfolio(models.Model):
 
 class Division(models.Model):
     name = models.CharField(max_length=64)
-    shortname = models.CharField(max_length=8, blank=True, null=True)
-    email = models.EmailField(max_length=256, blank=True, null=True)
     manager = models.ForeignKey(
         'core.User', models.DO_NOTHING, db_column='manager', related_name='manager_of', blank=True, null=True
     )

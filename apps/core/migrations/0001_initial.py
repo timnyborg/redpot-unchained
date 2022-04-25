@@ -111,8 +111,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=64)),
-                ('shortname', models.CharField(blank=True, max_length=8, null=True)),
-                ('email', models.EmailField(blank=True, max_length=256, null=True)),
                 ('manager', models.ForeignKey(blank=True, db_column='manager', null=True,
                                               on_delete=django.db.models.deletion.DO_NOTHING,
                                               to=settings.AUTH_USER_MODEL)),
