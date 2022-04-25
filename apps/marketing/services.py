@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime, time
 from itertools import groupby
 from operator import itemgetter
-from typing import Generator, Tuple
+from typing import Generator
 
 from lxml import etree
 
@@ -134,11 +134,10 @@ def newspaper(*, start_from: datetime) -> Generator:
     """One file per portfolio, ordered by subject (with subject headers) and date"""
     subjects = Subject.objects.order_by('area').values_list('area', flat=True).distinct()
     subsections = [
-        (WEEKLY_PORTFOLIO, 'Weekly classes in Oxford', 'O%'),
-        (DAY_WEEKEND_PORTFOLIO, 'Day and weekend events', None),
-        (ONLINE_PORTFOLIO, 'Online courses', None),
+        ([WEEKLY_PORTFOLIO, ONLINE_PORTFOLIO], 'Weekly and online classes', 'O%'),
+        ([DAY_WEEKEND_PORTFOLIO], 'Day and weekend events', None),
     ]
-    for portfolio, description, code_mask in subsections:
+    for portfolios, description, code_mask in subsections:
         root = etree.Element('document')
         el_title = 'title-' + slugify(description)
         for subject in subjects:
@@ -146,7 +145,7 @@ def newspaper(*, start_from: datetime) -> Generator:
                 BASE_QUERY.filter(
                     Q(start_date__gte=start_from) | PUBLISHED_TBD,
                     subjects__area=subject,
-                    portfolio=portfolio,
+                    portfolio__in=portfolios,
                 )
                 .exclude(snippet='')
                 .order_by('url', 'start_date', 'start_time')
@@ -185,21 +184,12 @@ def newspaper(*, start_from: datetime) -> Generator:
                     if is_first_run:
                         etree.SubElement(item, el_title).text = utils.strip_online(module.title)
 
-                        if portfolio == WEEKLY_PORTFOLIO:
-                            # Tutors only for weekly
-                            etree.SubElement(item, 'tutor').text = utils.render_tutors(module)
-
                     # Lowest price listed
                     fee_text = utils.render_min_fee(module)
                     etree.SubElement(item, 'price-and-code').text = f'{fee_text} {module.code}'
 
-                    meta_sections = []
-
-                    if portfolio != ONLINE_PORTFOLIO:
-                        # Non-online-flexible courses show format
-                        meta_sections.append(utils.render_format(module))
-
-                    meta_sections += [
+                    meta_sections = [
+                        utils.render_format(module),
                         utils.render_times(module),
                         utils.render_dates(module),
                         utils.render_meetings_and_location(module),
