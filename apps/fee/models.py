@@ -24,7 +24,6 @@ class Fee(SignatureModel):
         limit_choices_to={'is_active': True},
     )
     description = models.CharField(max_length=64)
-    finance_code = models.CharField(max_length=64, blank=True, null=True)
     eu_fee = models.BooleanField(
         db_column='eufee', default=False, verbose_name='Home/EU', help_text='Only payable by Home/EU students?'
     )
@@ -89,6 +88,14 @@ class Fee(SignatureModel):
         # Limit should only be set if an accommodation flag is true
         if self.limit and not (self.is_single_accom or self.is_twin_accom):
             raise ValidationError({'limit': 'The fee must be marked as a single or twin accommodation to use a limit'})
+
+    @property
+    def finance_code(self) -> str:
+        """Generate a finance code from the parent module's finance code and the account"""
+        parent = self.module
+        if not parent.finance_code:
+            return ''
+        return f'{parent.cost_centre} {self.type.account_id} {parent.activity_code} {parent.source_of_funds}'
 
 
 class FeeType(models.Model):
