@@ -23,7 +23,7 @@ class DiscountFactory(factory.django.DjangoModelFactory):
 
 class TestCreate(LoggedInViewTestMixin, test.TestCase):
     superuser = True
-    url = reverse_lazy('discount:create')
+    url = reverse_lazy('discount:new')
 
     def test_post(self):
         response = self.client.post(
