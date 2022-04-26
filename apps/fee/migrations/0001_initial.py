@@ -83,7 +83,6 @@ class Migration(migrations.Migration):
                 ('modified_on', models.DateTimeField(default=datetime.datetime.now, editable=False, null=True, blank=True)),
                 ('amount', models.DecimalField(decimal_places=4, max_digits=19)),
                 ('description', models.CharField(max_length=64)),
-                ('finance_code', models.CharField(blank=True, max_length=64, null=True)),
                 (
                     'eu_fee',
                     models.BooleanField(
