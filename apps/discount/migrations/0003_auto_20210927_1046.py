@@ -34,11 +34,6 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True, db_column='portfolio', help_text='Optional', null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='core.portfolio'),
         ),
         migrations.AlterField(
-            model_name='discount',
-            name='usable_once',
-            field=models.BooleanField(default=False, verbose_name='Usable only once?'),
-        ),
-        migrations.AlterField(
             model_name='discountstudent',
             name='redeemed',
             field=models.BooleanField(default=False),

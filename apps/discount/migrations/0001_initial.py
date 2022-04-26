@@ -24,7 +24,6 @@ class Migration(migrations.Migration):
                 ('name', models.TextField()),
                 ('code', models.CharField(max_length=20, unique=True)),
                 ('percent', models.IntegerField(blank=True, null=True)),
-                ('usable_once', models.BooleanField(blank=True, null=True)),
                 ('expires_on', models.DateField(blank=True, null=True)),
                 ('module_mask', models.CharField(max_length=20)),
             ],

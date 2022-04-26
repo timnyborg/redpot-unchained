@@ -27,7 +27,6 @@ class Discount(SignatureModel):
     name = models.CharField(max_length=128)
     code = models.CharField(max_length=20, unique=True)
     percent = models.IntegerField(validators=[validators.MinValueValidator(1), validators.MaxValueValidator(100)])
-    usable_once = models.BooleanField(default=False, verbose_name='Usable only once?')
     expires_on = models.DateField(blank=True, null=True)
     module_mask = models.CharField(
         max_length=20,
