@@ -50,9 +50,9 @@ class WebsiteAccount(SignatureModel):
 
     def get_history(self) -> models.QuerySet['WebsiteAccountEvent']:
         """Returns a queryset of auth event records attached to the account
-        Doesn't rely on user_id, which is oddly null for password resets
+        Doesn't rely on user_id, which is oddly null for password resets, but checks description for 'User {pk} action'
         """
-        return WebsiteAccountEvent.objects.filter(description__contains=self.pk)
+        return WebsiteAccountEvent.objects.filter(description__contains=f' {self.pk} ')
 
     def get_delete_url(self) -> str:
         return reverse('website_account:delete', kwargs={'pk': self.pk})
