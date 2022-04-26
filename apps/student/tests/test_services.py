@@ -11,7 +11,6 @@ from apps.tutor.tests.factories import TutorFactory
 
 from .. import models, services
 from . import factories
-from .factories import PhoneFactory
 
 
 class TestGenerateHUSID(SimpleTestCase):
@@ -24,6 +23,12 @@ class TestGenerateHUSID(SimpleTestCase):
     )
     def test_generation(self, year, seed, result):
         self.assertEqual(services._generate_husid(academic_year=year, seed=seed), result)
+
+
+class TestGenerateSID(SimpleTestCase):
+    def test_generation(self):
+        sid = services._generate_sid(academic_year=2012, seed=123456, ukprn=10007145)
+        self.assertEqual(sid, 12100071451234560)
 
 
 class TestGettingNextHUSID(TestCase):
@@ -103,8 +108,8 @@ class TestMerge(TestCase):
     def test_full_merge(self):
         """Check that the full merge method creates an archive and deletes the source student"""
         source, target = factories.StudentFactory.create_batch(size=2)
-        PhoneFactory(student=source)
-        PhoneFactory(student=target)
+        factories.PhoneFactory(student=source)
+        factories.PhoneFactory(student=target)
         TutorFactory(student=source)
 
         services.merge.merge_students(source=source, target=target, user=self.user)
