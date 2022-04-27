@@ -21,6 +21,7 @@ NOT_KNOWN_ETHNICITY = 90
 NOT_KNOWN_RELIGION = 99
 NOT_AVAILABLE_SEXUAL_ORIENTATION = 99
 NOT_AVAILABLE_GENDER_IDENTITY = 99
+NOT_KNOWN_PARENTAL_EDUCATION = 7
 
 MINIMUM_BIRTHDATE = date(1900, 1, 1)
 
@@ -79,6 +80,7 @@ class Student(SITSLockingModelMixin, SignatureModel):
         limit_choices_to={'is_active': True},
     )
     ethnicity = models.ForeignKey('Ethnicity', models.DO_NOTHING, db_column='ethnicity', default=NOT_KNOWN_ETHNICITY)
+    # todo: rename to just 'religion', in line with HDF
     religion_or_belief = models.ForeignKey(
         'Religion', models.DO_NOTHING, db_column='religion_or_belief', default=NOT_KNOWN_RELIGION
     )
@@ -104,10 +106,9 @@ class Student(SITSLockingModelMixin, SignatureModel):
         'ParentalEducation',
         models.DO_NOTHING,
         db_column='parental_education',
-        null=True,
-        blank=True,
         help_text="Do any of your parents (natural, adoptive, step- or guardians who brought you up) have any higher "
         "education qualifications, such as a degree, diploma or certificate of higher education?",
+        default=NOT_KNOWN_PARENTAL_EDUCATION,
     )
     gender_identity = models.ForeignKey(
         'GenderIdentity',
@@ -478,6 +479,7 @@ class Domicile(models.Model):
 class Ethnicity(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=32)
+    data_futures_code = models.CharField(max_length=3)
 
     class Meta:
         db_table = 'ethnicity'
@@ -592,6 +594,7 @@ class Religion(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=64)
     web_publish = models.BooleanField(default=True)
+    data_futures_code = models.IntegerField()
 
     class Meta:
         db_table = 'religion_or_belief'
@@ -618,6 +621,7 @@ class Suspension(SignatureModel):
 class SexualOrientation(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=64)
+    data_futures_code = models.IntegerField()
 
     class Meta:
         db_table = 'sexual_orientation'
@@ -629,6 +633,7 @@ class SexualOrientation(models.Model):
 class ParentalEducation(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=64)
+    data_futures_code = models.IntegerField()
 
     class Meta:
         db_table = 'parental_education'

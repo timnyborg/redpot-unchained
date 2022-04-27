@@ -733,6 +733,7 @@ class PointsLevel(models.Model):
     id = models.IntegerField(primary_key=True)  # hesa value
     description = models.CharField(max_length=255)
     fheq_level = models.IntegerField()
+    data_futures_code = models.IntegerField()
 
     class Meta:
         db_table = 'points_level'

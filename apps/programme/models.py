@@ -100,6 +100,8 @@ class Programme(SignatureModel):
         'module.Module', through='ProgrammeModule', related_name='programmes', related_query_name='programme'
     )
 
+    hecos_subjects = models.ManyToManyField(to='hesa.HECoSSubject', through='hesa.ProgrammeHECoSSubject')
+
     class Meta:
         db_table = 'programme'
         ordering = ('title',)
@@ -148,6 +150,7 @@ class Qualification(SignatureModel):
     hesa_code = models.CharField(max_length=8)
     elq_rank = models.IntegerField()
     is_matriculated = models.BooleanField()
+    data_futures_code = models.CharField(max_length=5, null=True, blank=True)
 
     class Meta:
         db_table = 'qualification'

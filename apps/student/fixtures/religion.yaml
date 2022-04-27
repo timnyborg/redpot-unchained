@@ -3,53 +3,64 @@
   fields:
     name: No religion
     web_publish: true
+    data_futures_code: 20
 - model: student.religion
   pk: 2
   fields:
     name: Buddhist
     web_publish: true
+    data_futures_code: 21
 - model: student.religion
   pk: 3
   fields:
     name: Christian
     web_publish: true
+    data_futures_code: 22
 - model: student.religion
   pk: 10
   fields:
     name: Hindu
     web_publish: true
+    data_futures_code: 29
 - model: student.religion
   pk: 11
   fields:
     name: Jewish
     web_publish: true
+    data_futures_code: 30
 - model: student.religion
   pk: 12
   fields:
     name: Muslim
     web_publish: true
+    data_futures_code: 31
 - model: student.religion
   pk: 13
   fields:
     name: Sikh
     web_publish: true
+    data_futures_code: 33
 - model: student.religion
   pk: 14
   fields:
     name: Spiritual
     web_publish: true
+    data_futures_code: 80
 - model: student.religion
   pk: 80
   fields:
     name: Any other religion or belief
     web_publish: true
+    data_futures_code: 80
 - model: student.religion
   pk: 98
   fields:
     name: Prefer not to say
     web_publish: true
+    data_futures_code: 98
 - model: student.religion
   pk: 99
   fields:
     name: Not known
     web_publish: false
+    data_futures_code: 99

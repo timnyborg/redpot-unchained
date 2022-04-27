@@ -36,14 +36,15 @@ class Migration(migrations.Migration):
         # Update this to track the last migration as baseline fixtures are added or modified
         ('core', '0002_auto_20210708_1429'),
         ('amendment', '0001_initial'),
-        ('programme', '0002_auto_20210513_0856'),
+        ('programme', '0010_data_futures_columns'),
         ('tutor_payment', '0001_initial'),
-        ('enrolment', '0001_initial'),
+        ('enrolment', '0008_data_futures_columns'),
         ('fee', '0004_feetype_account'),
         ('finance', '0001_initial'),
         ('invoice', '0001_initial'),
-        ('qualification_aim', '0001_squashed_0004'),
-        ('student', '0023_uk_domicile_column'),
+        ('qualification_aim', '0005_data_futures_columns'),
+        ('student', '0025_data_futures_columns'),
+        ('module', '0020_data_futures_columns')
     ]
 
     operations = [migrations.RunPython(load_fixture)]
