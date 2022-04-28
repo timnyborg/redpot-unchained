@@ -357,25 +357,23 @@ class TestOtherID(TestCase):
             data={
                 'student': self.student.pk,
                 'number': '2345678998765',
-                'type': models.OtherID.OtherIdTypeChoices.STUDENT_SUPPORT_NUM,
+                'type': models.OtherID.Types.STUDENT_SUPPORT_NUM,
             },
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.student.other_ids.first().number, '2345678998765')
-        self.assertEqual(
-            self.student.other_ids.first().type, models.OtherID.OtherIdTypeChoices.STUDENT_SUPPORT_NUM.value
-        )
+        self.assertEqual(self.student.other_ids.first().type, models.OtherID.Types.STUDENT_SUPPORT_NUM.value)
 
     def test_edit_other_id(self):
         self.other_id = factories.OtherIDFactory(student=self.student)
         response = self.client.post(
             reverse('student:other-id:edit', kwargs={'pk': self.other_id.pk}),
-            {'number': '2345678998765', 'type': models.OtherID.OtherIdTypeChoices.VISA_ID},
+            {'number': '2345678998765', 'type': models.OtherID.Types.VISA_ID},
         )
         self.other_id.refresh_from_db()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.other_id.number, '2345678998765')
-        self.assertEqual(self.student.other_ids.first().type, models.OtherID.OtherIdTypeChoices.VISA_ID)
+        self.assertEqual(self.student.other_ids.first().type, models.OtherID.Types.VISA_ID)
 
     def test_invalid_student_other_id_returns_404(self):
         response = self.client.get(self.invalid_url)

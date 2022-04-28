@@ -51,7 +51,7 @@ class OtherIDFactory(factory.django.DjangoModelFactory):
 
     student = factory.SubFactory(StudentFactory)
     number = factory.Faker('numerify', text='########')
-    type = models.OtherID.OtherIdTypeChoices.VISA_ID
+    type = models.OtherID.Types.VISA_ID
 
 
 class DietFactory(factory.django.DjangoModelFactory):

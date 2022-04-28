@@ -391,13 +391,7 @@ class OtherID(SITSLockingModelMixin, SignatureModel):
     sits_managed_fields = ['type', 'number']
 
     class Types(models.IntegerChoices):
-        STUDENT_CARD = 1
-        SSO = 7
-        OSS = 8
-        SSN = 9
-
-    class OtherIdTypeChoices(models.IntegerChoices):
-        STUDENT_BAR_CODE_ID = 1, 'Student Bar code ID'
+        STUDENT_CARD = 1, 'Student Bar code ID'
         PASSPORT_ID = 2, 'Passport ID'
         VISA_ID = 3, 'Visa ID'
         HESA_ID = 4, 'HESA ID'
@@ -417,7 +411,7 @@ class OtherID(SITSLockingModelMixin, SignatureModel):
         related_query_name='other_id',
     )
     number = models.CharField(max_length=64)
-    type = models.IntegerField(choices=OtherIdTypeChoices.choices)
+    type = models.IntegerField(choices=Types.choices)
     note = models.CharField(max_length=64, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)

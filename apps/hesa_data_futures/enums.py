@@ -48,6 +48,8 @@ class Sexes(TextChoices):
     FEMALE = "10"
     MALE = "11"
     OTHER = "12"
+    PREFER_NOT_TO_SAY = "98"
+    NOT_AVAILABLE = "99"
 
 
 gender_to_sexid_map = {

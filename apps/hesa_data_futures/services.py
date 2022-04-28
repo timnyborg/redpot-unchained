@@ -13,12 +13,12 @@ from django.db.models import F, FilteredRelation, Prefetch, Q, Subquery
 
 from apps.core.utils import strings
 from apps.enrolment.models import Enrolment
-from apps.finance.models import Ledger
+from apps.finance.models import Ledger, TransactionTypes
 from apps.hesa.models import ModuleHECoSSubject
 from apps.module.models import Module
 from apps.programme.models import Programme
 from apps.qualification_aim.models import QualificationAim
-from apps.student.models import Student
+from apps.student.models import NOT_KNOWN_DOMICILE, OtherID, Student
 
 from . import models
 from .enums import (
@@ -27,13 +27,11 @@ from .enums import (
     EngagementEndReasons,
     FundingCompletionValues,
     ModuleOutcomes,
+    Sexes,
     gender_to_sexid_map,
 )
 
 OVERSEAS_STUDY_LOCATION = 9
-SSN_OTHER_ID = 9
-UNKNOWN_DOMICILE = 181
-FEE_TRANSACTION_TYPE = 1
 
 
 @dataclass
@@ -81,7 +79,7 @@ class HESAReturn:
                 status__on_hesa_return=True,  # Confirmed (etc) student
             )
             # Exclude students lacking both a domicile and gender (a shorthand for incomplete registrations)
-            .exclude(Q(qa__student__domicile=UNKNOWN_DOMICILE) | Q(qa__student__gender__isnull=True))
+            .exclude(qa__student__domicile=NOT_KNOWN_DOMICILE, qa__student__gender__isnull=True)
             # We exclude distance learners
             .exclude(qa__study_location_id=OVERSEAS_STUDY_LOCATION)
             # and cancelled courses
@@ -121,7 +119,7 @@ class HESAReturn:
             .annotate(
                 default_address=FilteredRelation('address', condition=Q(address__is_default=True)),
                 postcode=F('default_address__postcode'),
-                ssn_row=FilteredRelation('other_id', condition=Q(other_id__id=SSN_OTHER_ID)),
+                ssn_row=FilteredRelation('other_id', condition=Q(other_id__id=OtherID.Types.STUDENT_SUPPORT_NUM)),
                 ssn=F('ssn_row__id'),
             )
             .order_by('id')
@@ -139,7 +137,7 @@ class HESAReturn:
                 nation=row.nationality.hesa_code.replace('ZZ', '97'),  # todo: swap this value post-legacy hesa
                 ownstu=row.sits_id or row.id,
                 religion=row.religion_or_belief.data_futures_code,
-                sexid=gender_to_sexid_map.get(row.gender),
+                sexid=gender_to_sexid_map.get(row.gender, Sexes.NOT_AVAILABLE),
                 sexort=row.sexual_orientation.data_futures_code,
                 ssn=row.ssn,
                 surname=row.surname.upper().strip(),
@@ -176,7 +174,7 @@ class HESAReturn:
                         Prefetch(
                             'ledger_set',
                             to_attr='fee_ledger_items',
-                            queryset=Ledger.objects.filter(type__id=FEE_TRANSACTION_TYPE).debts(),
+                            queryset=Ledger.objects.filter(type__id=TransactionTypes.FEE).debts(),
                         ),
                     ),
                 ),
