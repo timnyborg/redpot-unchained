@@ -15,7 +15,6 @@ from apps.core.utils import strings
 from apps.enrolment.models import Enrolment
 from apps.finance.models import Ledger
 from apps.hesa.models import ModuleHECoSSubject
-from apps.hesa.models.staging_tables import XMLStagingModel
 from apps.module.models import Module
 from apps.programme.models import Programme
 from apps.qualification_aim.models import QualificationAim
@@ -495,7 +494,7 @@ def get_netfee(*, enrolments) -> int:
     return round(sum(enrolment_sum(enrolment) for enrolment in enrolments))
 
 
-def _model_to_node(model: XMLStagingModel) -> etree.Element:
+def _model_to_node(model: models.XMLStagingModel) -> etree.Element:
     """Convert an XMLStagingModel and its children into an xml tree"""
     node = etree.Element(model.element_name)
     # Fill with elements
@@ -512,11 +511,8 @@ def _model_to_node(model: XMLStagingModel) -> etree.Element:
 
 
 def _generate_tree(batch: models.Batch) -> str:
-    root = etree.Element('DataFutures')
-    for child in itertools.chain.from_iterable(batch.children()):
-        root.append(_model_to_node(child))
-
-    return etree.tostring(root, pretty_print=True).decode('utf8')
+    tree = _model_to_node(batch)
+    return etree.tostring(tree, pretty_print=True).decode('utf8')
 
 
 def save_xml(batch: models.Batch) -> None:

@@ -26,6 +26,8 @@ class XMLStagingModel:
 
 
 class Batch(XMLStagingModel, models.Model):
+    element_name = 'DataFutures'
+
     academic_year = models.IntegerField()
     created_on = models.DateTimeField(default=datetime.now)
     created_by = models.CharField(max_length=32, blank=True, null=True)
