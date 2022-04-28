@@ -200,6 +200,12 @@ other_children = (
         icon='code',
         check=lambda request: request.user.has_perm('hesa.view_batch'),
     ),
+    MenuItem(
+        'Data Futures returns',
+        reverse('hesa_data_futures:list'),
+        icon='code',
+        check=lambda request: request.user.has_perm('hesa_data_futures.view_batch'),
+    ),
     MenuItem("Other apps", '#', icon='external-link-alt', children=get_external_apps, separator=True),
 )
 
