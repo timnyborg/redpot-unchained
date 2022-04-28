@@ -9,7 +9,7 @@ from celery_progress.backend import ProgressRecorder
 from lxml import etree
 
 from django.conf import settings
-from django.db.models import F, FilteredRelation, Prefetch, Q, Subquery, TextChoices
+from django.db.models import F, FilteredRelation, Prefetch, Q, Subquery
 
 from apps.core.utils import strings
 from apps.enrolment.models import Enrolment
@@ -21,67 +21,19 @@ from apps.qualification_aim.models import QualificationAim
 from apps.student.models import Student
 
 from . import models
+from .enums import (
+    DistanceValues,
+    ELQValues,
+    EngagementEndReasons,
+    FundingCompletionValues,
+    ModuleOutcomes,
+    gender_to_sexid_map,
+)
 
 OVERSEAS_STUDY_LOCATION = 9
 SSN_OTHER_ID = 9
 UNKNOWN_DOMICILE = 181
 FEE_TRANSACTION_TYPE = 1
-
-
-class ELQValues(TextChoices):
-    """https://codingmanual.hesa.ac.uk/22056/FundingAndMonitoring/field/ELQ"""
-
-    ELQ = '01'
-    NOT_ELQ = '03'
-
-
-class FundingCompletionValues(TextChoices):
-    """https://codingmanual.hesa.ac.uk/22056/FundingAndMonitoring/field/ELQ"""
-
-    COMPLETED = '01'
-    DID_NOT_COMPLETE = '02'
-    NOT_YET_COMPLETE = '03'
-
-
-class EngagementEndReasons(TextChoices):
-    """https://codingmanual.hesa.ac.uk/22056/Leaver/field/RSNENGEND"""
-
-    AWARDED_CREDIT = "01"
-    DEATH = "05"
-    NO_CREDIT = "11"
-    CREDIT_NOT_YET_KNOWN = "98"
-
-
-class ModuleResults(TextChoices):
-    """https://codingmanual.hesa.ac.uk/22056/ModuleInstance/field/MODULERESULT"""
-
-    PASSED = "01"
-    FAILED = "06"
-
-
-class ModuleOutcomes(TextChoices):
-    """https://codingmanual.hesa.ac.uk/22056/ModuleInstance/field/MODULEOUTCOME"""
-
-    COMPLETE = "01"
-    DID_NOT_COMPLETE = "03"
-    NOT_FOR_CREDIT = "04"
-    NOT_YET_KNOWN = "05"
-    NOT_CODED = "96"
-
-
-class Sexes(TextChoices):
-    """https://codingmanual.hesa.ac.uk/22056/Student/field/SEXID"""
-
-    FEMALE = "10"
-    MALE = "11"
-    OTHER = "12"
-
-
-class DistanceValues(TextChoices):
-    """https://codingmanual.hesa.ac.uk/22056/StudyLocation/field/DISTANCE"""
-
-    IN_UK = "01"
-    OUTSIDE_THE_UK = "02"  # likely never to be needed
 
 
 @dataclass
@@ -106,13 +58,6 @@ def get_fte_in_reference_period(*, fte: float, start_date: date, end_date: date,
     module_duration = (end_date - start_date).days + 1
     overlap = min(ref_period.end_date - start_date, end_date - ref_period.start_date).days + 1
     return max((overlap / module_duration) * fte, 0)
-
-
-gender_to_sexid_map = {
-    'M': Sexes.MALE,
-    'F': Sexes.FEMALE,
-    'I': Sexes.OTHER,
-}
 
 
 class HESAReturn:
@@ -158,10 +103,6 @@ class HESAReturn:
         self.build_students()
 
         return self.batch
-
-    def get_numhus(self, qa_id: int) -> str:
-        # Encode the academic year and QA id to make an instance id (unique each year)
-        return f'{qa_id}-{self.academic_year}'
 
     def build_students(self) -> None:
         """Generates all student entities, and their child entities"""
@@ -245,7 +186,7 @@ class HESAReturn:
         )
 
         for row in results:
-            numhus = self.get_numhus(row.id)
+            numhus = get_numhus(qa_id=row.id, academic_year=self.academic_year)
             enrolments: Iterable[Enrolment] = row.returned_enrolments  # type: ignore
             reason_for_ending = get_reason_for_ending(enrolments=enrolments)
             engagement = parent.engagement_set.create(
@@ -423,6 +364,11 @@ class HESAReturn:
             venuename='Department for Continuing Education, Rewley House',
             venueukprn=models.INSTITUTION_CODE,
         )
+
+
+def get_numhus(*, qa_id: int, academic_year: int) -> str:
+    # Encode the academic year and QA id to make an instance id (unique each year)
+    return f'{qa_id}-{academic_year}'
 
 
 def get_qualid(programme: Programme) -> str:
