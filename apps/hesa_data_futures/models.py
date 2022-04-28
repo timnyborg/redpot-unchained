@@ -43,12 +43,23 @@ class Batch(XMLStagingModel, models.Model):
         return reverse('hesa_data_futures:view', kwargs={'pk': self.pk})
 
     def children(self) -> list[models.QuerySet]:
+        # by prefetching the entire batch, xml generation uses dozens of database reads instead of >10000
         return [
-            self.course_set.all(),
-            self.module_set.all(),
-            self.qualification_set.all(),
+            self.course_set.prefetch_related('courserole_set'),
+            self.module_set.prefetch_related('modulecostcentre_set', 'modulesubject_set'),
+            self.qualification_set.prefetch_related('awardingbodyrole_set', 'qualificationsubject_set'),
             self.sessionyear_set.all(),
-            self.student_set.all(),
+            self.student_set.prefetch_related(
+                'disability_set',
+                'engagement_set',
+                'engagement_set__entryprofile_set',
+                'engagement_set__leaver_set',
+                'engagement_set__qualificationawarded_set',
+                'engagement_set__studentcoursesession_set__fundingandmonitoring_set',
+                'engagement_set__studentcoursesession_set__moduleinstance_set',
+                'engagement_set__studentcoursesession_set__referenceperiodstudentload_set',
+                'engagement_set__studentcoursesession_set__studylocation_set',
+            ),
             self.venue_set.all(),
         ]
 
