@@ -8,7 +8,7 @@ from . import models, services
 @app.task(name='create_data_futures_return', bind=True)
 def create_return(self, *, academic_year: int, created_by: str):
     recorder = ProgressRecorder(self)
-    batch = services.create_return(academic_year, created_by, recorder=recorder)
+    batch = services.HESAReturn(academic_year, created_by, recorder=recorder).create()
     recorder.set_progress(current=2, total=2, description='Generating XML')
     services.save_xml(batch=batch)
     return {'redirect': batch.get_absolute_url()}

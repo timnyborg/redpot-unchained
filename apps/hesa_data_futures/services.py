@@ -115,12 +115,6 @@ gender_to_sexid_map = {
 }
 
 
-# todo: determine if we need both the task and services
-def create_return(academic_year, created_by, *, recorder: Optional[ProgressRecorder] = None) -> models.Batch:
-    """The schedulable routine which call the magic below"""
-    return HESAReturn(academic_year, created_by, recorder=recorder).create()
-
-
 class HESAReturn:
     def __init__(self, academic_year: int, created_by: str, *, recorder: Optional[ProgressRecorder] = None) -> None:
         self.academic_year = academic_year
@@ -494,7 +488,7 @@ def get_netfee(*, enrolments) -> int:
     return round(sum(enrolment_sum(enrolment) for enrolment in enrolments))
 
 
-def _model_to_node(model: models.XMLStagingModel) -> etree.Element:
+def model_to_node(model: models.XMLStagingModel) -> etree.Element:
     """Convert an XMLStagingModel and its children into an xml tree"""
     node = etree.Element(model.element_name)
     # Fill with elements
@@ -505,13 +499,13 @@ def _model_to_node(model: models.XMLStagingModel) -> etree.Element:
 
     # Create subnodes if any exist
     for child in itertools.chain.from_iterable(model.children()):
-        node.append(_model_to_node(child))
+        node.append(model_to_node(child))
 
     return node
 
 
-def _generate_tree(batch: models.Batch) -> str:
-    tree = _model_to_node(batch)
+def generate_tree(batch: models.Batch) -> str:
+    tree = model_to_node(batch)
     return etree.tostring(tree, pretty_print=True).decode('utf8')
 
 
@@ -523,7 +517,7 @@ def save_xml(batch: models.Batch) -> None:
     filename = f'conted_data_futures_batch_{batch.id}.xml'
     fullpath = file_path / filename
     with open(fullpath, 'w') as f:
-        xml_string = _generate_tree(batch)
+        xml_string = generate_tree(batch)
         f.write(xml_string)
     batch.filename = filename
     batch.save()
