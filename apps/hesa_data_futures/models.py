@@ -38,6 +38,7 @@ class Batch(XMLStagingModel, models.Model):
     created_on = models.DateTimeField(default=datetime.now)
     created_by = models.CharField(max_length=32, blank=True, null=True)
     filename = models.CharField(max_length=512, blank=True, null=True)
+    errors = models.JSONField(null=True)
 
     class Meta:
         db_table = 'data_futures_batch'

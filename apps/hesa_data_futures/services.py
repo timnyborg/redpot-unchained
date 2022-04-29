@@ -1,4 +1,3 @@
-import itertools
 import re
 from collections import defaultdict
 from dataclasses import dataclass
@@ -6,9 +5,7 @@ from datetime import date
 from typing import Iterable, Optional
 
 from celery_progress.backend import ProgressRecorder
-from lxml import etree
 
-from django.conf import settings
 from django.db.models import F, FilteredRelation, Prefetch, Q, Subquery
 
 from apps.core.utils import strings
@@ -436,38 +433,3 @@ def get_netfee(*, enrolments) -> int:
         return sum(line.amount for line in enrolment.fee_ledger_items)
 
     return round(sum(enrolment_sum(enrolment) for enrolment in enrolments))
-
-
-def model_to_node(model: models.XMLStagingModel) -> etree.Element:
-    """Convert an XMLStagingModel and its children into an xml tree"""
-    node = etree.Element(model.element_name)
-    # Fill with elements
-    for column in model.xml_fields:
-        value = getattr(model, column)
-        if value is not None:
-            etree.SubElement(node, column.upper()).text = str(value)
-
-    # Create subnodes if any exist
-    for child in itertools.chain.from_iterable(model.children()):
-        node.append(model_to_node(child))
-
-    return node
-
-
-def generate_tree(batch: models.Batch) -> str:
-    tree = model_to_node(batch)
-    return etree.tostring(tree, pretty_print=True).decode('utf8')
-
-
-def save_xml(batch: models.Batch) -> None:
-    # create the media subfolder if required
-    file_path = settings.PROTECTED_MEDIA_ROOT / 'hesa_data_futures'
-    file_path.mkdir(parents=True, exist_ok=True)
-
-    filename = f'conted_data_futures_batch_{batch.id}.xml'
-    fullpath = file_path / filename
-    with open(fullpath, 'w') as f:
-        xml_string = generate_tree(batch)
-        f.write(xml_string)
-    batch.filename = filename
-    batch.save()

@@ -25,6 +25,7 @@ class Migration(migrations.Migration):
                 ('created_on', models.DateTimeField(default=datetime.datetime.now)),
                 ('created_by', models.CharField(blank=True, max_length=32, null=True)),
                 ('filename', models.CharField(blank=True, max_length=512, null=True)),
+                ('errors', models.JSONField(null=True)),
             ],
             options={
                 'db_table': 'data_futures_batch',
