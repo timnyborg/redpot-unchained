@@ -1,0 +1,7 @@
+{% extends 'layout.html' %}
+{% load django_tables2 %}
+{% block center %}
+    <div class="section">
+        {% render_table table %}
+    </div>
+{% endblock %}

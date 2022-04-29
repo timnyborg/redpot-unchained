@@ -57,6 +57,24 @@ class View(PermissionRequiredMixin, PageTitleMixin, tables.views.SingleTableMixi
         return context
 
 
+class Errors(PermissionRequiredMixin, PageTitleMixin, tables.views.SingleTableMixin, generic.DetailView):
+    """Generic datatable to view all the records in any of the hesa tables"""
+
+    permission_required = 'hesa.view_batch'
+    model = models.Batch
+    template_name = 'hesa_data_futures/errors.html'
+    title = 'HESA Data Futures'
+    subtitle = 'Schema errors'
+
+    def get_table(self, **kwargs) -> tables.Table:
+        class ErrorTable(tables.Table):
+            error = tables.Column()
+            count = tables.Column()
+
+        data = [{'error': error, 'count': count} for error, count in self.object.errors.items()]
+        return ErrorTable(data=data, request=self.request)
+
+
 class Create(PermissionRequiredMixin, PageTitleMixin, generic.FormView):
     permission_required = 'hesa_data_futures.add_batch'
     form_class = forms.CreateBatchForm

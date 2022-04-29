@@ -57,6 +57,10 @@ class Batch(XMLStagingModel, models.Model):
     def unique_errors(self) -> int:
         return len(self.errors)
 
+    @property
+    def is_complete(self) -> bool:
+        return self.status == self.Statuses.COMPLETE
+
     def children(self) -> list[models.QuerySet]:
         # by prefetching the entire batch, xml generation uses dozens of database reads instead of >10000
         return [

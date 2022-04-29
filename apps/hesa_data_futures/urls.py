@@ -9,6 +9,7 @@ urlpatterns = [
     path('batches/', views.List.as_view(), name='list'),
     path('batch/<int:pk>', views.View.as_view(), name='view'),
     path('batch/<int:pk>/<str:model_name>', views.View.as_view(), name='view'),
+    path('errors/<int:pk>', views.Errors.as_view(), name='errors'),
     path('new-batch/', views.Create.as_view(), name='new-batch'),
     path('build-xml/<int:pk>', views.BuildXML.as_view(), name='build-xml'),
     path('delete-batch/<int:pk>', views.Delete.as_view(), name='delete-batch'),

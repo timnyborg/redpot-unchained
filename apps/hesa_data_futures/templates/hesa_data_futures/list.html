@@ -10,6 +10,7 @@
                 <th>Year</th>
                 <th>Created by</th>
                 <th>Date</th>
+                <th>Status</th>
                 <th>Schema errors</th>
                 <th colspan=3></th>
             </tr>
@@ -20,10 +21,19 @@
                     <td>{{ batch.created_by | user_name }}</td>
                     <td>{{ batch.created_on }}</td>
                     <td>
-                        {% if batch.error_count %}
-                            <span class="badge rounded-pill bg-danger">{{ batch.error_count }} ({{ batch.unique_errors }} rules)</span>
-                        {% else %}
-                            <span class="badge rounded-pill bg-success">Valid</span>
+                        {{ batch.get_status_display }}
+                    </td>
+                    <td>
+                        {% if batch.is_complete %}
+                            {% if batch.error_count %}
+                                <a href="{% url 'hesa_data_futures:errors' batch.id %}">
+                                    <span class="badge rounded-pill bg-danger">
+                                        {{ batch.error_count }} ({{ batch.unique_errors }} rules)
+                                    </span>
+                                </a>
+                            {% else %}
+                                <span class="badge rounded-pill bg-success">Valid</span>
+                            {% endif %}
                         {% endif %}
                     </td>
                     <td>
