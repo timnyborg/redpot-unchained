@@ -52,6 +52,7 @@ class Student(SITSLockingModelMixin, SignatureModel):
         MALE = 'M', 'Male'
         FEMALE = 'F', 'Female'
         OTHER = 'I', 'Other'
+        PREFER_NOT_TO_SAY = 'R', 'Prefer not to say'
         UNKNOWN = '', 'Unknown'
 
     husid = models.BigIntegerField(blank=True, null=True, verbose_name='HESA ID')
