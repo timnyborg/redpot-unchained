@@ -49,6 +49,14 @@ class Batch(XMLStagingModel, models.Model):
     def get_absolute_url(self) -> str:
         return reverse('hesa_data_futures:view', kwargs={'pk': self.pk})
 
+    @property
+    def error_count(self) -> int:
+        return sum(self.errors.values()) if self.errors else 0
+
+    @property
+    def unique_errors(self) -> int:
+        return len(self.errors)
+
     def children(self) -> list[models.QuerySet]:
         # by prefetching the entire batch, xml generation uses dozens of database reads instead of >10000
         return [

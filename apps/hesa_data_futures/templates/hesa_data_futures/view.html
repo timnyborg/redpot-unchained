@@ -6,7 +6,18 @@
         <a class="btn btn-secondary btn-xs float-end" href={% url 'hesa_data_futures:download-xml' batch.id %} >
             <span class="fa fa-download"></span> XML
         </a>
-        <h5>Academic year {{ batch.academic_year }}</h5>
+        <dl class="row">
+            <dd class="col-2">Academic year</dd>
+            <dd class="col-10">{{ batch.academic_year }}</dd>
+            <dd class="col-2">Schema validation</dd>
+            <dd class="col-10">
+                {% if batch.error_count %}
+                    <span class="badge rounded-pill bg-danger">{{ batch.error_count }} errors ({{ batch.unique_errors }} rules)</span>
+                {% else %}
+                    <span class="badge rounded-pill bg-success">Valid</span>
+                {% endif %}
+            </dd>
+        </dl>
 
         <hr>
         <nav class="nav nav-pills">
