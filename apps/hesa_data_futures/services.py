@@ -93,12 +93,18 @@ class HESAReturn:
 
     def create(self) -> models.Batch:
         """Populate all entity tables for the entire batch"""
+        self.batch.status = self.batch.Statuses.INCOMPLETE
+        self.batch.save()
+
         self.set_progress(1, 2, 'Courses, modules, etc.')
         self.build_courses()
         self.build_modules()
         self.build_session_year()
         self.build_venue()
         self.build_students()
+
+        self.batch.status = self.batch.Statuses.COMPLETE
+        self.batch.save()
 
         return self.batch
 

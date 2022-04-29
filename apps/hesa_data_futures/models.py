@@ -28,6 +28,12 @@ class XMLStagingModel:
 class Batch(XMLStagingModel, models.Model):
     element_name = 'DataFutures'
 
+    class Statuses(models.TextChoices):
+        EMPTY = 'EMPTY'
+        INCOMPLETE = 'INCOMPLETE'
+        COMPLETE = 'COMPLETE'
+
+    status = models.CharField(max_length=32, choices=Statuses.choices, default=Statuses.EMPTY)
     academic_year = models.IntegerField()
     created_on = models.DateTimeField(default=datetime.now)
     created_by = models.CharField(max_length=32, blank=True, null=True)
