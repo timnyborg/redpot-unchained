@@ -74,6 +74,7 @@ class Batch(XMLStagingModel, models.Model):
                 'engagement_set__entryprofile_set',
                 'engagement_set__leaver_set',
                 'engagement_set__qualificationawarded_set',
+                'engagement_set__studentcoursesession_set__fundingbody_set',
                 'engagement_set__studentcoursesession_set__fundingandmonitoring_set',
                 'engagement_set__studentcoursesession_set__moduleinstance_set',
                 'engagement_set__studentcoursesession_set__referenceperiodstudentload_set',
@@ -415,7 +416,6 @@ class FundingAndMonitoring(XMLStagingModel, models.Model):
         db_table = 'data_futures_funding_and_monitoring'
 
 
-# todo: determine which (if any) students this should be returned for.
 class FundingBody(XMLStagingModel, models.Model):
     # structure
     student_course_session = models.ForeignKey('StudentCourseSession', on_delete=models.CASCADE)

@@ -23,6 +23,7 @@ from .enums import (
     ELQValues,
     EngagementEndReasons,
     FundingCompletionValues,
+    HomeFeeEligibility,
     ModuleOutcomes,
     Sexes,
     gender_to_sexid_map,
@@ -190,11 +191,15 @@ class HESAReturn:
             numhus = get_numhus(qa_id=row.id, academic_year=self.academic_year)
             enrolments: Iterable[Enrolment] = row.returned_enrolments  # type: ignore
             reason_for_ending = get_reason_for_ending(enrolments=enrolments)
+
+            # todo: change to use a home_fees_eligible column on the student table, rather than is_eu
+            home_fee_eligibility = HomeFeeEligibility.ELIGIBLE if student.is_eu else HomeFeeEligibility.NOT_ELIGIBLE
+
             engagement = parent.engagement_set.create(
                 numhus=numhus,
                 engexpectedenddate=self.end_date,
                 engstartdate=min(enrolment.module.start_date for enrolment in enrolments),
-                feeelig='01' if student.is_eu else '02',  # todo: changing to use a home_fees_eligible column
+                feeelig=home_fee_eligibility,
                 # Required field for our Master's level courses, but we have no research council students
                 rcstdnt='9997' if row.programme.qualification.data_futures_code[0] in ('E', 'M') else None,
             )
@@ -230,10 +235,18 @@ class HESAReturn:
                 sessionyearid='short-course-year',
             )
 
+            elq = get_elq(qa=row)
             student_course_session.fundingandmonitoring_set.create(
-                elq=get_elq(qa=row),
+                elq=elq,
                 fundcomp=get_funding_completion(enrolments=enrolments),
             )
+
+            # todo: proper investigation into the what rules determine returning a FundingBody record.
+            #  currently, this just approximates legacy HESA's FUNDCODE logic
+            if elq == ELQValues.NOT_ELQ and home_fee_eligibility == HomeFeeEligibility.ELIGIBLE:
+                student_course_session.fundingbody_set.create(
+                    fundingbody="5016",  # Office for Students
+                )
 
             for reference_period in self.reference_periods:
                 student_load = 0

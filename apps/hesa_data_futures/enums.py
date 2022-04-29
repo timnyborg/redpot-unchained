@@ -64,3 +64,11 @@ class DistanceValues(TextChoices):
 
     IN_UK = "01"
     OUTSIDE_THE_UK = "02"  # likely never to be needed
+
+
+class HomeFeeEligibility(TextChoices):
+    """https://codingmanual.hesa.ac.uk/22056/Engagement/field/FEEELIG"""
+
+    ELIGIBLE = "01"
+    NOT_ELIGIBLE = "02"
+    NOT_ASSESSED = "03"
