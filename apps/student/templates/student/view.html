@@ -57,7 +57,7 @@
                 <dt class="col-sm-4">Nationality</dt><dd class="col-sm-8 mb-0">{{ student.nationality.name }}</dd>
                 <dt class="col-sm-4">Domicile</dt><dd class="col-sm-8 mb-0">{{ student.domicile.name }}</dd>
                 <dt class="col-sm-4">Ethnicity</dt><dd class="col-sm-8 mb-0">{{ student.ethnicity.name }}</dd>
-                <dt class="col-sm-4">Home/EU?</dt><dd class="col-sm-8 mb-0">{{ student.is_eu | default:'Unknown'  }}</dd>
+                <dt class="col-sm-4">Home/EU?</dt><dd class="col-sm-8 mb-0">{{ student.is_eu | default_if_none:'Unknown'  }}</dd>
                 <dt class="col-sm-4">Occupation</dt><dd class="col-sm-8 mb-0">{{ student.occupation | default:'–'  }}</dd>
                 <dt class="col-sm-4">Note</dt><dd class="col-sm-8 mb-0">{{ student.note | default:'–' }}</dd>
             </dl>

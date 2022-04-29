@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='student',
             name='gender',
-            field=models.CharField(blank=True, choices=[('M', 'Male'), ('F', 'Female'), ('I', 'Other'), ('', 'Unknown')], max_length=1, null=True),
+            field=models.CharField(blank=True, choices=[('M', 'Male'), ('F', 'Female'), ('I', 'Other'), ('R', 'Prefer not to say'), ('', 'Unknown')], max_length=1, null=True),
         ),
     ]

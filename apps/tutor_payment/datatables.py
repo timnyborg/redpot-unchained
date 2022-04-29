@@ -70,6 +70,11 @@ class SearchFilter(filters.FilterSet):
 
 
 class SearchTable(tables.Table):
+    tutor = tables.Column(
+        'Tutor',
+        accessor='tutor_module__tutor__student',
+        order_by=('tutor_module__tutor__student__firstname', 'tutor_module__tutor__student__surname'),
+    )
     raised_by = tables.Column(
         accessor='raised_by__get_full_name',
         order_by=('raised_by__first_name', 'raised_by__last_name'),
@@ -82,7 +87,7 @@ class SearchTable(tables.Table):
         model = TutorPayment
         fields = (
             'approvable_icon',
-            'tutor_module__tutor__student',
+            'tutor',
             'tutor_module__module__code',
             'amount',
             'type',
