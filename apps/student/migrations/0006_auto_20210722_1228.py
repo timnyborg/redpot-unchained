@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
             name='Ethnicity',
             fields=[
                 ('id', models.IntegerField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=32)),
+                ('name', models.CharField(max_length=64)),
             ],
             options={
                 'db_table': 'ethnicity',

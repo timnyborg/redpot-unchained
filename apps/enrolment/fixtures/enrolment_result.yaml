@@ -6,6 +6,8 @@
     display_order: 1
     hesa_code: '1'
     allow_certificate: true
+    data_futures_outcome: '01'
+    data_futures_result: '01'
 - model: enrolment.enrolmentresult
   pk: '2'
   fields:
@@ -14,6 +16,8 @@
     display_order: 2
     hesa_code: '2'
     allow_certificate: true
+    data_futures_outcome: '01'
+    data_futures_result: '02'
 - model: enrolment.enrolmentresult
   pk: '2.1'
   fields:
@@ -22,6 +26,8 @@
     display_order: 3
     hesa_code: '4'
     allow_certificate: false
+    data_futures_outcome: '03'
+    data_futures_result: null
 - model: enrolment.enrolmentresult
   pk: '3'
   fields:
@@ -30,6 +36,8 @@
     display_order: 4
     hesa_code: C
     allow_certificate: false
+    data_futures_outcome: '05'
+    data_futures_result: null
 - model: enrolment.enrolmentresult
   pk: '4'
   fields:
@@ -38,6 +46,8 @@
     display_order: 5
     hesa_code: '4'
     allow_certificate: false
+    data_futures_outcome: '03'
+    data_futures_result: null
 - model: enrolment.enrolmentresult
   pk: '5'
   fields:
@@ -46,6 +56,8 @@
     display_order: 6
     hesa_code: '5'
     allow_certificate: false
+    data_futures_outcome: '04'
+    data_futures_result: null
 - model: enrolment.enrolmentresult
   pk: '6'
   fields:
@@ -54,6 +66,8 @@
     display_order: 7
     hesa_code: '6'
     allow_certificate: false
+    data_futures_outcome: '05'
+    data_futures_result: null
 - model: enrolment.enrolmentresult
   pk: '7'
   fields:
@@ -62,22 +76,8 @@
     display_order: 8
     hesa_code: '7'
     allow_certificate: false
-- model: enrolment.enrolmentresult
-  pk: A
-  fields:
-    description: Passed (late result)
-    is_active: false
-    display_order: 95
-    hesa_code: A
-    allow_certificate: false
-- model: enrolment.enrolmentresult
-  pk: B
-  fields:
-    description: Failed (late result)
-    is_active: false
-    display_order: 96
-    hesa_code: B
-    allow_certificate: false
+    data_futures_outcome: '96'
+    data_futures_result: null
 - model: enrolment.enrolmentresult
   pk: C
   fields:
@@ -86,3 +86,5 @@
     display_order: 97
     hesa_code: C
     allow_certificate: false
+    data_futures_outcome: '05'
+    data_futures_result: null

@@ -130,6 +130,10 @@ class EnrolmentResult(SignatureModel):
     hesa_code = models.CharField(max_length=1)
     allow_certificate = models.BooleanField(default=False)
 
+    # split in two in data-futures
+    data_futures_outcome = models.CharField(max_length=2, null=True)  # whether the module was completed or not
+    data_futures_result = models.CharField(max_length=2, null=True)  # whether a completed module was passed or failed
+
     class Meta:
         db_table = 'enrolment_result'
         ordering = ('display_order', 'id')

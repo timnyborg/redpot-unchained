@@ -64,6 +64,7 @@ PROJECT_APPS = [
     'apps.feedback',
     'apps.finance',
     'apps.hesa',
+    'apps.hesa_data_futures',
     'apps.invoice',
     'apps.marketing',
     'apps.module',

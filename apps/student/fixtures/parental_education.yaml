@@ -2,19 +2,24 @@
   pk: 1
   fields:
     name: 'Yes'
+    data_futures_code: 1
 - model: student.parentaleducation
   pk: 2
   fields:
     name: 'No'
+    data_futures_code: 2
 - model: student.parentaleducation
   pk: 7
   fields:
     name: No response given
+    data_futures_code: 99
 - model: student.parentaleducation
   pk: 8
   fields:
     name: Don't know
+    data_futures_code: 98
 - model: student.parentaleducation
   pk: 9
   fields:
-    name: Information refused
+    name: Prefer not to say
+    data_futures_code: 97

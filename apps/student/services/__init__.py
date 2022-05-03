@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import itertools
+
 from .. import models
 from . import merge
 
@@ -28,7 +30,26 @@ def _generate_husid(*, academic_year: int, seed: int) -> int:
     head = year_digits + '1156' + seed_digits
 
     # Get the checksum (weighted product of 12 digits -> summed -> last digit subtracted from 10).
-    multipliers = [1, 3, 7, 9] * 3
+    multipliers = itertools.cycle([1, 3, 7, 9])
+    checkdigit = (10 - sum(int(a) * b for a, b in zip(head, multipliers))) % 10
+    husid = head + str(checkdigit)
+
+    return int(husid)
+
+
+def _generate_sid(*, academic_year: int, seed: int, ukprn: int = 10007774):
+    """Produce a valid SID from an academic year and seed value, according to the HESA guidance
+    See https://www.hesa.ac.uk/collection/student/datafutures/a/student_sid
+    Identical to husid production, but the 4 digit institution code has been replaced with 8 digits for data futures.
+    """
+
+    # First 14 digits are: two year digits, the institution (ukprn), and the seed (zero padded to 6 digits)
+    year_digits = str(academic_year)[-2:]
+    seed_digits = str(seed).zfill(6)
+    head = year_digits + str(ukprn) + seed_digits
+
+    # Get the checksum (weighted product of 14 digits -> summed -> last digit subtracted from 10).
+    multipliers = itertools.cycle([1, 3, 7, 9])
     checkdigit = (10 - sum(int(a) * b for a, b in zip(head, multipliers))) % 10
     husid = head + str(checkdigit)
 

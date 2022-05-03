@@ -112,6 +112,7 @@ class EntryQualification(models.Model):
     elq_rank = models.IntegerField()
     web_publish = models.BooleanField(db_column='web_publish')
     display_order = models.IntegerField()
+    data_futures_code = models.CharField(max_length=5, blank=True, null=True)
 
     class Meta:
         db_table = 'entry_qualification'

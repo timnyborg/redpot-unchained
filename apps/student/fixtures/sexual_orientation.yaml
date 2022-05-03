@@ -1,28 +1,45 @@
 - model: student.sexualorientation
   pk: 1
   fields:
-    name: Bisexual
+    name: Bi/Bisexual
+    data_futures_code: 11
 - model: student.sexualorientation
   pk: 2
   fields:
-    name: Gayman
+    name: Gay man
+    data_futures_code: 12
 - model: student.sexualorientation
   pk: 3
   fields:
     name: "Gay woman/lesbian"
+    data_futures_code: 13
 - model: student.sexualorientation
   pk: 4
   fields:
-    name: Heterosexual
+    name: Heterosexual/straight
+    data_futures_code: 14
 - model: student.sexualorientation
   pk: 5
   fields:
     name: Other
+    data_futures_code: 15
+- model: student.sexualorientation
+  pk: 10
+  fields:
+    name: Asexual
+    data_futures_code: 10
+- model: student.sexualorientation
+  pk: 16
+  fields:
+    name: Queer
+    data_futures_code: 16
 - model: student.sexualorientation
   pk: 98
   fields:
-    name: "Information refused\r\n"
+    name: Prefer not to say
+    data_futures_code: 98
 - model: student.sexualorientation
   pk: 99
   fields:
-    name: "Not available\r\n"
+    name: "Not available"
+    data_futures_code: 99

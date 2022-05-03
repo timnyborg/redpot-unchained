@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+{% load django_tables2 %}
+{% load redpot_tags %}
+{% block center %}
+    <div class="section">
+        <a class="btn btn-secondary btn-xs float-end" href={% url 'hesa_data_futures:download-xml' batch.id %} >
+            <span class="fa fa-download"></span> XML
+        </a>
+        <dl class="row">
+            <dd class="col-2">Academic year</dd>
+            <dd class="col-10">{{ batch.academic_year }}</dd>
+            <dd class="col-2">Schema validation</dd>
+            <dd class="col-10">
+                {% if batch.error_count %}
+                    <a href="{% url 'hesa_data_futures:errors' batch.id %}">
+                        <span class="badge rounded-pill bg-danger">
+                            {{ batch.error_count }} errors ({{ batch.unique_errors }} rules)
+                        </span>
+                    </a>
+                {% else %}
+                    <span class="badge rounded-pill bg-success">Valid</span>
+                {% endif %}
+            </dd>
+        </dl>
+
+        <hr>
+        <nav class="nav nav-pills">
+            {% for link, label in models.items %}
+                <a class="nav-link {% if link == view.kwargs.model_name %}active{% endif %}"
+                   href="{% url 'hesa_data_futures:view' batch.id link %}"
+                >{{ label }}</a>
+            {% endfor %}
+        </nav>
+        {% timestamp object %}
+    </div>
+    <div class="section">
+        {% render_table table %}
+    </div>
+{% endblock %}

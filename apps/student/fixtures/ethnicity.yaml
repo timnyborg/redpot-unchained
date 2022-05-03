@@ -2,71 +2,114 @@
   pk: 10
   fields:
     name: White
+    data_futures_code: 179
 - model: student.ethnicity
   pk: 15
   fields:
-    name: Gypsy or Traveller
+    name: White - Gypsy or Irish Traveller
+    data_futures_code: 163
 - model: student.ethnicity
   pk: 21
   fields:
-    name: Black Caribbean
+    name: Black - Caribbean or Caribbean British
+    data_futures_code: 121
 - model: student.ethnicity
   pk: 22
   fields:
-    name: Black African
+    name: "\tBlack - African or African British"
+    data_futures_code: 120
 - model: student.ethnicity
   pk: 29
   fields:
-    name: Black Other
+    name: Black - other background
+    data_futures_code: 139
 - model: student.ethnicity
   pk: 31
   fields:
-    name: Asian Indian
+    name: Asian - Indian or Indian British
+    data_futures_code: 103
 - model: student.ethnicity
   pk: 32
   fields:
-    name: Asian Pakistani
+    name: Asian - Pakistani or Pakistani British
+    data_futures_code: 104
 - model: student.ethnicity
   pk: 33
   fields:
-    name: Asian Bangladeshi
+    name: Asian - Bangladeshi or Bangladeshi British
+    data_futures_code: 100
 - model: student.ethnicity
   pk: 34
   fields:
-    name: Chinese
+    name: Asian - Chinese or Chinese British
+    data_futures_code: 101
 - model: student.ethnicity
   pk: 39
   fields:
-    name: Asian Other
+    name: Asian - other background
+    data_futures_code: 119
 - model: student.ethnicity
   pk: 41
   fields:
-    name: Mixed White & Black Caribbean
+    name: Mixed or multiple - White & Black Caribbean
+    data_futures_code: 142
 - model: student.ethnicity
   pk: 42
   fields:
-    name: Mixed White & Black African
+    name: Mixed or multiple - White & Black African
+    data_futures_code: 141
 - model: student.ethnicity
   pk: 43
   fields:
-    name: Mixed White & Asian
+    name: Mixed or multiple - White & Asian
+    data_futures_code: 140
 - model: student.ethnicity
   pk: 49
   fields:
-    name: Other Mixed background
+    name: Mixed or multiple - other background
+    data_futures_code: 159
 - model: student.ethnicity
   pk: 50
   fields:
     name: Arab
+    data_futures_code: 180
 - model: student.ethnicity
   pk: 80
   fields:
-    name: Other Ethnic background
+    name: Any other ethnic background
+    data_futures_code: 899
 - model: student.ethnicity
   pk: 90
   fields:
-    name: Not known
+    name: Not available
+    data_futures_code: 999
+- model: student.ethnicity
+  pk: 97
+  fields:
+    name: Not known by student
+    data_futures_code: 997
 - model: student.ethnicity
   pk: 98
   fields:
-    name: Information Refused
+    name: Prefer not to say
+    data_futures_code: 998
+- model: student.ethnicity
+  pk: 160
+  fields:
+    name: White - English, Scottish, Welsh, Northern Irish or British
+    data_futures_code: 160
+- model: student.ethnicity
+  pk: 166
+  fields:
+    name: White - Irish
+    data_futures_code: 166
+- model: student.ethnicity
+  pk: 168
+  fields:
+    name: White - Roma
+    data_futures_code: 168
+- model: student.ethnicity
+  pk: 179
+  fields:
+    name: White - other background
+    data_futures_code: 179

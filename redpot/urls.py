@@ -43,6 +43,7 @@ urlpatterns = [
     path('fee/', include('apps.fee.urls')),
     path('finance/', include('apps.finance.urls')),
     path('hesa/', include('apps.hesa.urls')),
+    path('data-futures/', include('apps.hesa_data_futures.urls')),
     path('invoice/', include('apps.invoice.urls')),
     path('marketing/', include('apps.marketing.urls')),
     path('module/', include('apps.module.urls')),

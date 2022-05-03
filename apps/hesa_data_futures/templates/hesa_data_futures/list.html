@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+{% load redpot_tags %}
+
+{% block center %}
+    <div class="section">
+        <h3>Recent batches</h3>
+        <table class="table table-hover">
+            <tr>
+                <th>ID</th>
+                <th>Year</th>
+                <th>Created by</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Schema errors</th>
+                <th colspan=3></th>
+            </tr>
+            {% for batch in object_list %}
+                <tr>
+                    <td><a href="{{ batch.get_absolute_url }}">{{ batch.id }}</a></td>
+                    <td>{{ batch.academic_year }}</td>
+                    <td>{{ batch.created_by | user_name }}</td>
+                    <td>{{ batch.created_on }}</td>
+                    <td>
+                        {{ batch.get_status_display }}
+                    </td>
+                    <td>
+                        {% if batch.is_complete %}
+                            {% if batch.error_count %}
+                                <a href="{% url 'hesa_data_futures:errors' batch.id %}">
+                                    <span class="badge rounded-pill bg-danger">
+                                        {{ batch.error_count }} ({{ batch.unique_errors }} rules)
+                                    </span>
+                                </a>
+                            {% else %}
+                                <span class="badge rounded-pill bg-success">Valid</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'hesa_data_futures:download-xml' batch.id %}">
+                            <i class="fas fa-download"></i> XML
+                        </a>
+                    </td>
+                    <td>
+                        <a href="#"
+                           data-bs-target="#commonModal"
+                           data-bs-toggle="modal"
+                           data-modal-href="{% url 'hesa_data_futures:build-xml' batch.id %}"
+                           data-modal-body="Are you sure you want to rebuild this batch's XML?."
+                        >
+                            <i class="fas fa-redo"></i> Rebuild XML
+                        </a>
+                    </td>
+                    <td>
+                        <a class="float-end" href="#" data-bs-toggle="tooltip" title="Delete">
+                            <i class="fas fa-times text-danger"
+                               data-bs-target="#commonModal"
+                               data-bs-toggle="modal"
+                               data-modal-href="{% url 'hesa_data_futures:delete-batch' batch.id %}"
+                               data-modal-body="Are you sure you want to delete this batch?  This cannot be undone."
+                               data-modal-confirm-text="Delete batch"
+                               data-modal-confirm-class="btn-danger"
+                            ></i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <hr>
+
+        <a class="btn btn-primary" href="{% url 'hesa_data_futures:new-batch' %}">
+            <i class="fas fa-fw fa-plus"></i> New batch
+        </a>
+    </div>
+{% endblock %}
