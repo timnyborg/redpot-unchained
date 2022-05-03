@@ -322,7 +322,7 @@ class EntryProfile(XMLStagingModel, models.Model):
     # todo: careleaver potentially empty by default, populated by business rules
     careleaver = models.CharField(max_length=2, null=True, default='99')
     highestqoe = models.CharField(max_length=5, null=True)  # nullable while qualification.entry_profile is
-    pared = models.IntegerField(null=True)
+    pared = models.CharField(max_length=2, null=True)
     permaddcountry = models.CharField(max_length=2)  # domicile.  todo: Not Known value appears changed
     permaddpostcode = models.CharField(max_length=8, null=True)
 
