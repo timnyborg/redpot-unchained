@@ -207,7 +207,7 @@ class HESAReturn:
             engagement.entryprofile_set.create(
                 careleaver='99' if row.programme.qualification.data_futures_code.startswith('C') else None,
                 highestqoe=row.entry_qualification and row.entry_qualification.data_futures_code,
-                pared=student.parental_education.data_futures_code
+                pared=str(student.parental_education.data_futures_code).zfill(2)
                 if row.programme.qualification.data_futures_code.startswith('C')
                 else None,
                 # todo: swap this value post-legacy hesa
