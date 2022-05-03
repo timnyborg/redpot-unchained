@@ -315,7 +315,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('careleaver', models.CharField(default='99', max_length=2, null=True)),
                 ('highestqoe', models.CharField(max_length=5, null=True)),
-                ('pared', models.IntegerField(null=True)),
+                ('pared', models.CharField(max_length=2, null=True)),
                 ('permaddcountry', models.CharField(max_length=2)),
                 ('permaddpostcode', models.CharField(max_length=8, null=True)),
                 ('engagement', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='hesa_data_futures.engagement')),
