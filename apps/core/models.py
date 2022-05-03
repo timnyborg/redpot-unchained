@@ -127,9 +127,10 @@ class User(SignatureModel, AbstractUser):
     def get_edit_url(self) -> str:
         return reverse('user:edit', args=[self.pk])
 
-    def phone_number(self):
+    def short_phone(self) -> str:
         if self.phone:
             return self.phone.replace('+44 (0)1865 2', '')
+        return ''
 
 
 class UserRightsSupport(models.Model):

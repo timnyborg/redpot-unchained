@@ -11,7 +11,7 @@
                             <h6 class="text-dark">{{ staff.first_name }} {{ staff.last_name }}</h6>
                             <p class="card-text link-dark">
                                 {% if staff.phone %}
-                                    <i class='fas fa-fw fa-phone'></i> {{ staff.phone_number }}<br/>
+                                    <i class='fas fa-fw fa-phone'></i> {{ staff.short_phone }}<br/>
                                 {% endif %}
                                 {% if staff.role %}
                                     <span class='fas fa-fw fa-briefcase'></span> {{ staff.role }}
