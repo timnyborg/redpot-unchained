@@ -472,7 +472,7 @@ class Domicile(models.Model):
 
 class Ethnicity(models.Model):
     id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=64)
     data_futures_code = models.CharField(max_length=3)
 
     class Meta:
