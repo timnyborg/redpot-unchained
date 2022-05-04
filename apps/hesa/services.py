@@ -59,7 +59,7 @@ class HESAReturn:
                 status__on_hesa_return=True,  # Confirmed (etc) student
             )
             # Exclude students lacking both a domicile and gender (a shorthand for incomplete registrations)
-            .exclude(Q(qa__student__domicile=UNKNOWN_DOMICILE) | Q(qa__student__gender__isnull=True))
+            .exclude(qa__student__domicile=UNKNOWN_DOMICILE, qa__student__gender__isnull=True)
             # We exclude distance learners
             .exclude(qa__study_location_id=OVERSEAS_STUDY_LOCATION)
             # and cancelled courses
