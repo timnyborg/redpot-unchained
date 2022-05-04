@@ -22,7 +22,7 @@ def save_xml(batch_id: int, tree: etree.Element) -> str:
     with open(fullpath, 'w') as f:
         xml_string = etree.tostring(tree, pretty_print=True).decode('utf8')
         f.write(xml_string)
-    return str(fullpath)
+    return filename
 
 
 def _model_to_node(model: models.XMLStagingModel) -> etree.Element:
