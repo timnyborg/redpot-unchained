@@ -17,7 +17,7 @@ class CABSApiClient:
         self.call_url = settings.CABS_API_URL + '/Auth/auth/Token/api/'
 
     @property
-    @lru_cache
+    @lru_cache(8)
     def access_token(self) -> str:
         response = requests.post(
             self.signin_url,
