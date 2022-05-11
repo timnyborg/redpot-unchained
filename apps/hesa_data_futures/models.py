@@ -1,6 +1,8 @@
 """
 For the (2022-23) definitions, see https://codingmanual.hesa.ac.uk/22056/dataDictionary
 """
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Iterable
 
