@@ -147,7 +147,6 @@ def newspaper(*, start_from: datetime) -> Generator:
                     subjects__area=subject,
                     portfolio__in=portfolios,
                 )
-                .exclude(snippet='')
                 .order_by('url', 'start_date', 'start_time')
             )
 
