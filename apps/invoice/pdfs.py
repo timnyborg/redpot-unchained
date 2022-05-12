@@ -143,8 +143,9 @@ def _generate_invoice(*, invoice: models.Invoice, fees: list[Ledger]) -> bytes:
     pdf.cell(0, 4, 'You can pay using a debit or credit card at:', ln=1)
     pdf.ln(2)
     pdf.cell(10)
-    pdf.set_font('', 'B', 9)
+    pdf.set_font('', 'U', 9)
     pdf.cell(0, 4, 'https://www.conted.ox.ac.uk/invoicepayments', ln=1)
+
     pdf.set_font('', '', 8)
     pdf.ln(2)
     pdf.cell(10)
