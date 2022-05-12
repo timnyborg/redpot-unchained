@@ -39,7 +39,7 @@ def prospectus(*, start_from: datetime) -> Generator:
         modules = BASE_QUERY.filter(
             Q(start_date__gte=start_from) | PUBLISHED_TBD,
             subjects__area=subject,
-        ).exclude(snippet='')
+        )
 
         # Languages have their own sort order
         if 'language' in subject:
@@ -65,13 +65,9 @@ def prospectus(*, start_from: datetime) -> Generator:
             ]
             etree.SubElement(item, 'meta').text = '; '.join(filter(None, meta_sections))  # Strip out empty strings
 
-            # Snippet only once for each title
-            snippet = etree.SubElement(item, 'snippet')
-            snippet.text = module.snippet
-
             # if marketing type includes 4 (lecture series) add tag
             if 4 in utils.get_marketing_types(module):
-                etree.SubElement(snippet, 'lecture_series').text = 'Lecture series'
+                etree.SubElement(item, 'lecture_series').text = 'Lecture series'
 
         # Blank heading for award
         etree.SubElement(root, 'item').text = 'Award courses'
@@ -98,7 +94,7 @@ def subject_area_brochures(*, start_from: datetime) -> Generator:
                 Q(start_date__gte=start_from) | PUBLISHED_TBD,
                 subjects__area=subject,
                 format=format_id,
-            ).exclude(snippet='')
+            )
 
             if code_mask:  # Allows us to filter out Reading courses easyish
                 modules = modules.filter(code__like=code_mask)
